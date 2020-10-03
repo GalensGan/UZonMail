@@ -1,0 +1,42 @@
+﻿<Window x:Class="SendMultipleEmails.Pages.AddSendersView"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:pu="clr-namespace:Panuon.UI.Silver;assembly=Panuon.UI.Silver"
+      xmlns:s="https://github.com/canton7/Stylet"
+      mc:Ignorable="d"
+      WindowStyle="None"
+      FontFamily="{StaticResource FontAwesome}"
+      WindowStartupLocation="Manual"      
+      Background="Transparent"  
+      AllowsTransparency="True"
+      Title="LoginView" Height="250" Width="550">
+
+    <Grid>
+        <Border BorderThickness="1" BorderBrush="Gray"  CornerRadius="5,5,5,5" Background="White" />
+        <StackPanel Margin="20,20,20,10">
+            <TextBlock Margin="10,10,10,20" FontSize="24" HorizontalAlignment="Center">从Excel添加发件人</TextBlock>
+            <TextBox pu:TextBoxHelper.Watermark="双击选择excel文件路径"
+                         ToolTip="{Binding ExcelFullPath,Mode=TwoWay}"
+                         pu:TextBoxHelper.Icon="&#xf11c;"
+                         pu:TextBoxHelper.FocusedBorderBrush="#B5B5B5"
+                         pu:TextBoxHelper.FocusedShadowColor="#B5B5B5"
+                         pu:TextBoxHelper.IsClearButtonVisible="True"
+                         Margin="5,5,5,10" FontSize="16" Height="40"
+                         Text="{Binding ExcelFullPath,Mode=TwoWay}"
+                         MouseDoubleClick="{s:Action SelectFile}"></TextBox>
+            <ComboBox   pu:ComboBoxHelper.Watermark="选择 Sheet"
+                        pu:ComboBoxHelper.Icon="&#xf11c;"
+                        pu:ComboBoxHelper.HoverBackground="#1EB5B5B5"
+                        pu:ComboBoxHelper.SelectedBackground="#32B5B5B5"
+                        Margin="5" FontSize="16" Height="36"
+                        ItemsSource="{Binding Sheets}"
+                        SelectedItem="{Binding SelectedSheet}"/>
+            <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft" Margin="0,15,5,0">
+                <Button FontSize="16" Width="60" Height="30" Margin="0,0,10,0" Command="{s:Action AddSenders}" IsDefault="True">确定</Button>
+                <Button FontSize="16" Width="60" Height="30" Command="{s:Action Quite}">退出</Button>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Window>
