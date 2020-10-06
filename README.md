@@ -165,4 +165,3 @@ GitHub：https://github.com/GalensGan/SendMultipleEmails
 如果你觉得本软件帮助到你了，欢迎赞赏支持，你的支持，将是我继续优化的动力！
 
  ![8cee0aef69c70889092500d509df5b8](https://i.loli.net/2020/10/05/tg3HAo4R8L5OilP.jpg)
-
