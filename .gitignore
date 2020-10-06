@@ -240,6 +240,7 @@ Generated_Code/
 # because we have git ;-)
 _UpgradeReport_Files/
 Backup*/
+MigrationBackup/
 UpgradeLog*.XML
 UpgradeLog*.htm
 ServiceFabricBackup/

@@ -1,4 +1,5 @@
-﻿using Stylet;
+﻿using SendMultipleEmails.ResponseJson;
+using Stylet;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -89,6 +90,11 @@ namespace SendMultipleEmails.Datas
         public string MainTitle { get; set; } = string.Empty;
 
         public string TemplateName { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 版本信息
+        /// </summary>
+        public VersionInfo VersionInfo { get; set; }
         #endregion        
     }
 }

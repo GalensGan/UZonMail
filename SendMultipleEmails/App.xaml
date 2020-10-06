@@ -3,8 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:SendMultipleEmails"
              xmlns:converter="clr-namespace:SendMultipleEmails.Converter"
-             xmlns:s="https://github.com/canton7/Stylet"
-             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
+             xmlns:s="https://github.com/canton7/Stylet">
     <Application.Resources>        
         <ResourceDictionary>            
             <ResourceDictionary.MergedDictionaries>

@@ -11,7 +11,7 @@
 
     <Grid>
         <Button Height="40" Width="40" pu:ButtonHelper.CornerRadius="20" Command="{s:Action New}"
-                    FontSize="38" pu:ButtonHelper.ClickStyle="Sink" FontFamily="{StaticResource FontAwesome}" ToolTip="新建发送">&#xf055;</Button>
+                    FontSize="38" pu:ButtonHelper.ClickStyle="Sink" FontFamily="{StaticResource FontAwesome}" ToolTip="{Binding NewTip}">&#xf055;</Button>
         <Button Height="24" Width="24" pu:ButtonHelper.CornerRadius="20" Command="{s:Action History}" Margin="10" VerticalAlignment="Bottom" HorizontalAlignment="Right"
                     FontSize="22" pu:ButtonHelper.ClickStyle="Sink" FontFamily="{StaticResource FontAwesome}" ToolTip="查看发送记录">&#xf0a9;</Button>
     </Grid>

@@ -26,11 +26,18 @@ namespace SendMultipleEmails.Datas
         // 账户保存目录
         public string accountsPath = "Data\\accounts.json";
 
-        public string aboutMePath = "Data\\AboutMe.md";
+        public string aboutMePath = "https://noctiflorous.gitee.io/2020/10/05/README/";
 
         public string userPersonalDataFileName = "personalData.json";
 
         public bool isAutoSave = false;
+
+        // 程序更新验证位置
+        public string gitHubVersionUrl = "https://api.github.com/repos/GalensGan/SendMultipleEmails/releases/latest";
+
+        public string giteeVersionUrl = "";
+
+        public string versionConfigName = "latest.json";
 
         [JsonIgnore]
         public string UserTemplateDir { get; set; }

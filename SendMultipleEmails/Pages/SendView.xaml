@@ -6,7 +6,6 @@
       xmlns:local="clr-namespace:SendMultipleEmails.Pages"
       xmlns:s="https://github.com/canton7/Stylet"
       xmlns:pu="clr-namespace:Panuon.UI.Silver;assembly=Panuon.UI.Silver"
-      xmlns:wpf="clr-namespace:TheArtOfDev.HtmlRenderer.WPF;assembly=HtmlRenderer.WPF"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800">
 

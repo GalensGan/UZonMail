@@ -1,7 +1,9 @@
 ﻿using log4net;
+using Newtonsoft.Json.Bson;
 using Panuon.UI.Silver;
 using SendMultipleEmails.Datas;
 using SendMultipleEmails.Pages;
+using Stylet;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -19,12 +21,47 @@ namespace SendMultipleEmails.Pages
         private static readonly ILog _logger = LogManager.GetLogger(typeof(SendViewModel));
         public Send_PreviewViewModel(Store store) : base(store) { }
 
-        public string ContentHtml { get; set; }
+
+
+        private Microsoft.Web.WebView2.Wpf.WebView2 _webView;
+        private string _contentHtml = string.Empty;
+        public string ContentHtml
+        {
+            get => _contentHtml;
+            set
+            {
+                base.SetAndNotify(ref _contentHtml, value);
+
+                if (_webView != null)
+                {
+                    Execute.OnUIThreadSync(new Action(() =>
+                    {
+                        _webView.NavigateToString(value);
+                    }));
+                }
+            }
+        }
+
         protected override void OnViewLoaded()
         {
             base.OnViewLoaded();
-            //Send_PreviewView view = (Send_PreviewView)this.View;
-            //view.Wb.DocumentText = ContentHtml;
+            Send_PreviewView view = (Send_PreviewView)this.View;
+            _webView = view.webView;
+            EnsureCoreWebView2Async();
+        }
+
+        private async void EnsureCoreWebView2Async()
+        {
+            await _webView.EnsureCoreWebView2Async();
+            // 读取第一个数据
+            Tuple<Person, string> data = Store.QueueReceivers.FirstOrDefault();
+            if (data != null && _webView != null)
+            {
+                Execute.OnUIThreadSync(new Action(() =>
+                {
+                    _webView.NavigateToString(data.Item2);
+                }));
+            }
         }
 
         private List<string> Contents;
@@ -54,7 +91,7 @@ namespace SendMultipleEmails.Pages
 
             // 因为是双括号，所以从1开始，防止从0开始索引为负
             for (int i = 1; i < chars.Length; i++)
-            {                
+            {
                 if (chars[i] == '{' && chars[i - 1] == '{')
                 {
                     startIndex = i + 1;
@@ -90,7 +127,7 @@ namespace SendMultipleEmails.Pages
             DataRow[] receivers = Store.PersonalDataManager.GetCurrentReceiver();
             // 判断变量中存在的是 Name 还是 姓名
             string keyColumn = string.Empty;
-             if (tableNames.Contains("Name"))
+            if (tableNames.Contains("Name"))
             {
                 keyColumn = "Name";
             }
@@ -102,9 +139,12 @@ namespace SendMultipleEmails.Pages
             {
                 // 未找到姓名
                 _logger.Info("未找到姓名（Name）列，退出");
-                MessageBoxX.Show("在数据中未找到“Name”或者“姓名”列。", "格式错误");
-                NextCommand(Enums.SendStatus.New);
-                return;
+                Execute.OnUIThreadSync(new Action(() =>
+                {
+                    MessageBoxX.Show("在数据中未找到“Name”或者“姓名”列。", "格式错误");
+                    NextCommand(Enums.SendStatus.New);
+                    return;
+                })); 
             }
 
             foreach (DataRow receiverRow in receivers)
