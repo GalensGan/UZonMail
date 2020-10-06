@@ -33,7 +33,13 @@
   所有的发送过程都有记录，对于未发送成功的邮件，可以在发送任务完成后，点击“重复发送”按钮进行重发。
 
   重发过程支持多线程。
-  
+
+## 使用环境要求
+
+1. windows
+
+2. .NET Framework 4.6.2 或者以上，下载地址：https://dotnet.microsoft.com/download/dotnet-framework
+  3. 安装 Edge 浏览器，且版本不低于 Edge dev 87.0.654.0，下载地址：https://www.microsoftedgeinsider.com/zh-cn/download
 
 ## 功能介绍
 
