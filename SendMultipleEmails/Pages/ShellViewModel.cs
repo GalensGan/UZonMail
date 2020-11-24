@@ -7,12 +7,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using GalensSDK.StyletEx;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NPOI.OpenXmlFormats.Dml;
 using Panuon.UI.Silver;
 using Panuon.UI.Silver.Core;
 using SendMultipleEmails.Datas;
+using SendMultipleEmails.Enums;
 using SendMultipleEmails.ResponseJson;
 using Stylet;
 
@@ -21,108 +23,16 @@ namespace SendMultipleEmails.Pages
     /// <summary>
     /// 主窗体
     /// </summary>
-    public class ShellViewModel : Conductor<Screen>.Collection.OneActive
+    public class ShellViewModel : KeyOneActive<ScreenChild>
     {
+        public void TreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            TreeViewItem tvi = e.NewValue as TreeViewItem;
+
+            base.InvokeTo(new InvokeParameter() { InvokeId = tvi.Name });
+        }
+
         #region 属性
-
-        private bool _isDashboard = true;
-        public bool IsDashboard
-        {
-            get => _isDashboard;
-            set
-            {
-                base.SetAndNotify(ref _isDashboard, value);
-                if (value) ActiveItemByDisplayName("个人中心");
-            }
-        }
-
-        private bool _isSendSettings = false;
-        public bool IsSendSettings
-        {
-            get => _isSendSettings;
-            set
-            {
-                base.SetAndNotify(ref _isSendSettings, value);
-                if (value) ActiveItemByDisplayName("发送设置");
-            }
-        }
-
-        private bool _isSenders = false;
-        public bool IsSenders
-        {
-            get => _isSenders;
-            set
-            {
-                base.SetAndNotify(ref _isSenders, value);
-                if (value) ActiveItemByDisplayName("发件人");
-            }
-        }
-
-        private bool _isReceivers = false;
-        public bool IsReceivers
-        {
-            get => _isReceivers;
-            set
-            {
-                SetAndNotify(ref _isReceivers, value);
-                if (value) ActiveItemByDisplayName("收件人");
-            }
-        }
-
-        private bool _isImportData;
-        public bool IsImportData
-        {
-            get => _isImportData;
-            set
-            {
-                base.SetAndNotify(ref _isImportData, value);
-                if (value) ActiveItemByDisplayName("导入数据");
-            }
-        }
-
-        private bool _isTemplate = false;
-        public bool IsTemplate
-        {
-            get => _isTemplate;
-            set
-            {
-                base.SetAndNotify(ref _isTemplate, value);
-                if (value) ActiveItemByDisplayName("模板");
-            }
-        }
-
-        private bool _isSend = false;
-        public bool IsSend
-        {
-            get => _isSend;
-            set
-            {
-                base.SetAndNotify(ref _isSend, value);
-                if (value) ActiveItemByDisplayName("发送");
-            }
-        }
-
-        private bool _isLog = false;
-        public bool IsLog
-        {
-            get => _isLog;
-            set
-            {
-                SetAndNotify(ref _isLog, value);
-                if (value) ActiveItemByDisplayName("日志");
-            }
-        }
-
-        private bool _isAboutMe = false;
-        public bool IsAboutMe
-        {
-            get => _isAboutMe;
-            set
-            {
-                SetAndNotify(ref _isAboutMe, value);
-                if (value) ActiveItemByDisplayName("关于");
-            }
-        }
 
         public Store Store { get; private set; }
 
@@ -138,12 +48,6 @@ namespace SendMultipleEmails.Pages
         #region 私有字段
         private IWindowManager _windowManager;
         #endregion
-        private void ActiveItemByDisplayName(string displayName)
-        {
-            Screen screen = this.Items.Where(item => item.DisplayName == displayName).FirstOrDefault();
-            if (screen != null) this.ActivateItem(screen);
-        }
-
 
         public ShellViewModel(IWindowManager windowManager)
         {
@@ -181,58 +85,95 @@ namespace SendMultipleEmails.Pages
             Screen loginVM = new LoginViewModel(Store);
             _windowManager.ShowDialog(loginVM);
 
-            this.Items.Add(new DashboardViewModel(Store, _windowManager)
+            #region 主要界面
+            RegisterItem(new DashboardViewModel(Store, _windowManager)
             {
                 DisplayName = "个人中心",
+                ID = InvokeID.Dashboard.ToString(),
             });
 
-            this.Items.Add(new SendSettingsViewModel(Store)
+            RegisterItem(new SendSettingsViewModel(Store)
             {
                 DisplayName = "发送设置",
-                IconName = "&#xf015;"
+                ID = InvokeID.Settings.ToString(),
             });
 
-            this.Items.Add(new SendersViewModel(Store, _windowManager)
+            RegisterItem(new SendersViewModel(Store, _windowManager)
             {
                 DisplayName = "发件人",
-                IconName = "&#xf015;"
+                ID = InvokeID.Senders.ToString(),
             });
 
-            this.Items.Add(new ReceiversViewModel(Store, _windowManager)
+            RegisterItem(new ReceiversViewModel(Store, _windowManager)
             {
                 DisplayName = "收件人",
-                IconName = "&#xf015;"
+                ID = InvokeID.Receivers.ToString(),
             });
 
-            this.Items.Add(new SendDataViewModel(Store, _windowManager)
+            RegisterItem(new SendDataViewModel(Store, _windowManager)
             {
                 DisplayName = "导入数据",
-                IconName = "&#xf015;"
+                ID = InvokeID.ImportVariables.ToString(),
             });
 
-            this.Items.Add(new TemplateViewModel(Store, _windowManager)
+            RegisterItem(new TemplateViewModel(Store, _windowManager)
             {
                 DisplayName = "模板",
-                IconName = "&#xf015;"
+                ID = InvokeID.Template.ToString(),
             });
 
-            this.Items.Add(new SendViewModel(Store, _windowManager)
+            RegisterItem(new SendViewModel(Store, _windowManager)
             {
-                DisplayName = "发送"
+                DisplayName = "发送",
+                ID = InvokeID.Send.ToString(),
             });
 
-            this.Items.Add(new LogViewModel(Store)
+            RegisterItem(new LogViewModel(Store)
             {
-                DisplayName = "日志"
+                DisplayName = "日志",
+                ID = InvokeID.Log.ToString(),
             });
 
-            this.Items.Add(new AboutMeViewModel(Store)
+            RegisterItem(new AboutMeViewModel(Store)
             {
                 DisplayName = "关于",
+                ID = InvokeID.About.ToString(),
+            });
+            #endregion
+
+            #region 发送模块
+            // 初始化
+            RegisterItem(new Send_NewViewModel(Store)
+            {
+                DisplayName = SendStatus.New.ToString(),
+                ID = InvokeID.Send_New.ToString(),
             });
 
+
+            RegisterItem(new Send_PreviewViewModel(Store)
+            {
+                DisplayName = SendStatus.Preview.ToString(),
+                ID = InvokeID.Send_Preview.ToString(),
+            });
+
+
+            RegisterItem(new Send_SendingViewModel(Store)
+            {
+                DisplayName = SendStatus.Sending.ToString(),
+                ID = InvokeID.Send_Sending.ToString(),
+            });
+
+
+            RegisterItem(new Send_SentViewModel(Store)
+            {
+                DisplayName = SendStatus.Sent.ToString(),
+                ID = InvokeID.Send_Sent.ToString(),
+            });
+            #endregion
+
             // 激活
-            ActiveItemByDisplayName("个人中心");
+            InvokeTo(new InvokeParameter() { InvokeId = "个人中心" });
+
             base.OnInitialActivate();
         }
 
@@ -292,7 +233,8 @@ namespace SendMultipleEmails.Pages
                 // 比较版本号
                 System.Version serviceVersion = new Version(latestConfig.version);
                 System.Version currentVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-                if (serviceVersion > currentVersion)                {
+                if (serviceVersion > currentVersion)
+                {
 
                     // 显示到界面
                     NewVersion = latestConfig.version;

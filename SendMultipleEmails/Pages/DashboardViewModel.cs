@@ -18,36 +18,14 @@ using Screen = Stylet.Screen;
 
 namespace SendMultipleEmails.Pages
 {
-    class DashboardViewModel: Conductor<Screen>.Collection.OneActive
+    class DashboardViewModel: ScreenChild
     {
         private Store _store;
         private IWindowManager _windowManager;
-        public DashboardViewModel(Store store,IWindowManager windowManager) 
+        public DashboardViewModel(Store store,IWindowManager windowManager):base(store)
         {
             _store = store;
             _windowManager = windowManager;
-        }
-
-        protected override void OnInitialActivate()
-        {
-            base.OnInitialActivate();
-
-            this.Items.Add(new Dashboard_MainViewModel(_store)
-            {
-                DisplayName = "main"
-            });
-
-            // 激活
-            ActiveItemByDisplayName("main");
-        }
-
-        private void ActiveItemByDisplayName(string displayName)
-        {
-            Screen screen = this.Items.Where(item => item.DisplayName == displayName).FirstOrDefault();
-            if (screen is ScreenChild sc)
-            {
-                this.ActivateItem(sc);
-            }
         }
 
         // 退出

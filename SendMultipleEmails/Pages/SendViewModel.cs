@@ -21,7 +21,7 @@ using Screen = Stylet.Screen;
 
 namespace SendMultipleEmails.Pages
 {
-    public class SendViewModel : Conductor<Screen>.Collection.OneActive
+    public class SendViewModel : ScreenChild
     {
         private static readonly ILog _logger = LogManager.GetLogger(typeof(SendViewModel));
 
@@ -34,57 +34,10 @@ namespace SendMultipleEmails.Pages
 
         public Visibility IsShowView { get; set; } = Visibility.Collapsed;
         #endregion
-        public SendViewModel(Store store, IWindowManager windowManager)
+        public SendViewModel(Store store, IWindowManager windowManager):base(store)
         {
             _store = store;
             _windowManager = windowManager;
-        }
-
-        protected override void OnInitialActivate()
-        {
-            // 初始化
-            SendScreenBase send = new Send_NewViewModel(_store)
-            {
-                DisplayName = SendStatus.New.ToString(),
-            };
-            send.CommandChanged += ActiveItemByStatus;
-            this.Items.Add(send);
-
-            send = new Send_PreviewViewModel(_store)
-            {
-                DisplayName = SendStatus.Preview.ToString(),
-            };
-            send.CommandChanged += ActiveItemByStatus;
-            this.Items.Add(send);
-
-            send = new Send_SendingViewModel(_store)
-            {
-                DisplayName = SendStatus.Sending.ToString(),
-            };
-            send.CommandChanged += ActiveItemByStatus;
-            this.Items.Add(send);
-
-            send = new Send_SentViewModel(_store)
-            {
-                DisplayName = SendStatus.Sent.ToString(),
-            };
-            send.CommandChanged += ActiveItemByStatus;
-            this.Items.Add(send);
-
-            ActiveItemByStatus(SendStatus.New);
-
-            base.OnInitialActivate();
-        }
-
-
-        private void ActiveItemByStatus(SendStatus sendStatus)
-        {
-            Screen screen = this.Items.Where(item => item.DisplayName == sendStatus.ToString()).FirstOrDefault();
-            if (screen is SendScreenBase scb)
-            {
-                this.ActivateItem(scb);
-                scb.Load();
-            }
         }
     }
 }
