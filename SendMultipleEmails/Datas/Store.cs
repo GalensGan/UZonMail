@@ -1,4 +1,5 @@
-﻿using SendMultipleEmails.ResponseJson;
+﻿using SendMultipleEmails.Database;
+using SendMultipleEmails.ResponseJson;
 using Stylet;
 using System;
 using System.Collections.Concurrent;
@@ -95,6 +96,20 @@ namespace SendMultipleEmails.Datas
         /// 版本信息
         /// </summary>
         public VersionInfo VersionInfo { get; set; }
-        #endregion        
+        #endregion
+
+        #region 数据库
+        /// <summary>
+        /// 获取相应类型的数据库
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public T GetDatabase<T>()
+        {
+            return (T)_database;
+        }
+
+        private IDatabase _database;
+        #endregion
     }
 }

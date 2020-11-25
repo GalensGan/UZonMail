@@ -16,6 +16,7 @@ namespace SendMultipleEmails.Pages
     {
         public string UserName { get; set; }
         public string Password { get; set; }
+
         public LoginViewModel(Store store) : base(store)
         {
             // 加载上次登陆的用户
