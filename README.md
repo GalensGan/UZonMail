@@ -63,7 +63,7 @@
 
 ### 个人中心
 
-![](https://i.loli.net/2020/10/03/ZXMVRPlD1K3eqg8.png)
+![](C:\Users\galens\Desktop\ZXMVRPlD1K3eqg8.png)
 
 个人中心主要是对账户内发件信息的统计、发件箱种类及数量图、收件箱种类及数量图和个人信息中心。个人信息中心包括注销账户和退出两个功能。
 
