@@ -48,7 +48,7 @@ namespace SendMultipleEmails.Datas
 
         public Tuple<bool, string> Register(Account account)
         {
-            Account existAccount = _accounts.accounts.Where(item => item.userName == account.userName).FirstOrDefault();
+            Account existAccount = _accounts.accounts.Where(item => item.UserName == account.UserName).FirstOrDefault();
             if (existAccount != null)
             {
                 return new Tuple<bool, string>(false, "账户已经存在");
@@ -56,8 +56,8 @@ namespace SendMultipleEmails.Datas
 
             Account newAccount = new Account()
             {
-                userName = account.userName,
-                passWord = MD5Hash.Hash.Content(account.passWord),
+                UserName = account.UserName,
+                PassWord = MD5Hash.Hash.Content(account.PassWord),
             };
 
             // 用户不存在，添加用户
@@ -72,7 +72,7 @@ namespace SendMultipleEmails.Datas
         public Tuple<bool, string> Validate(Account account)
         {
             // 验证数据，如果不存在用户名，则添加，如果存在，则验证用户名，密码
-            Account existAccount = _accounts.accounts.Where(item => item.userName == account.userName).FirstOrDefault();
+            Account existAccount = _accounts.accounts.Where(item => item.UserName == account.UserName).FirstOrDefault();
             if (existAccount == null)
             {
                 return new Tuple<bool, string>(false, "账户不存在，请注册");
@@ -80,7 +80,7 @@ namespace SendMultipleEmails.Datas
             else
             {
                 // 用户存在时，验证密码
-                if (existAccount.passWord == MD5Hash.Hash.Content(account.passWord))
+                if (existAccount.PassWord == MD5Hash.Hash.Content(account.PassWord))
                 {
                     // 将一些数据加载到 config 中
                     CurrentAccount = account;
@@ -102,9 +102,9 @@ namespace SendMultipleEmails.Datas
         private void LoadLoginUserDir()
         {
             // 计算出其它目录
-            Config.UserTemplateDir = Config.userDataParent + "\\" + CurrentAccount.userName + "\\Template";
-            Config.UserDataDir = Config.userDataParent + "\\" + CurrentAccount.userName + "\\Data";
-            Config.UserHistoryPath = Config.userDataParent + "\\" + CurrentAccount.userName + "\\Data\\history.json";
+            Config.UserTemplateDir = Config.userDataParent + "\\" + CurrentAccount.UserName + "\\Template";
+            Config.UserDataDir = Config.userDataParent + "\\" + CurrentAccount.UserName + "\\Data";
+            Config.UserHistoryPath = Config.userDataParent + "\\" + CurrentAccount.UserName + "\\Data\\history.json";
         }
     }
 }

@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace SendMultipleEmails.Datas
 {
+    /// <summary>
+    /// 基本数据设置
+    /// </summary>
     public class Config
     {
         public int smtpPort = 25;
@@ -23,8 +26,14 @@ namespace SendMultipleEmails.Datas
         // 个人数据位置
         public string userDataParent = "UserData";
 
+        // 数据库位置
+        public string databaseFilePath = "Data\\data.db";
+
         // 账户保存目录
         public string accountsPath = "Data\\accounts.json";
+
+        // 是否记住上次登陆的账户
+        public bool isRememberLoginInfo = false;
 
         public string aboutMePath = "https://noctiflorous.gitee.io/2020/10/05/README/";
 
@@ -39,11 +48,26 @@ namespace SendMultipleEmails.Datas
 
         public string versionConfigName = "latest.json";
 
+        #region 不保存的属性
         [JsonIgnore]
-        public string UserTemplateDir { get; set; }
+        public Account CurrentAccount { get; set; }
         [JsonIgnore]
-        public string UserDataDir { get; set; }
+        public string UserTemplateDir
+        {
+            get
+            {
+                return string.Format("{0}\\{1}\\{2}", userDataParent, CurrentAccount.UserName, "Template");
+            }
+        }
         [JsonIgnore]
-        public string UserHistoryPath { get; set; }
+        public string UserDataDir
+        {
+            get
+            {
+                return string.Format("{0}\\{1}\\{2}", userDataParent, CurrentAccount.UserName, "Data");
+            }
+        }
+        #endregion
+
     }
 }

@@ -45,16 +45,9 @@ namespace SendMultipleEmails.Pages
         }
         #endregion
 
-        #region 私有字段
-        private IWindowManager _windowManager;
-        #endregion
-
         public ShellViewModel(IWindowManager windowManager)
         {
-            // 进行环境检查，暂时取消
-
-            _windowManager = windowManager;
-            Store = new Store(this);
+            Store = new Store(windowManager);
         }
 
         protected override void OnClose()
@@ -83,10 +76,10 @@ namespace SendMultipleEmails.Pages
         protected override void OnInitialActivate()
         {
             Screen loginVM = new LoginViewModel(Store);
-            _windowManager.ShowDialog(loginVM);
+            Store.WindowManager.ShowDialog(loginVM);
 
             #region 主要界面
-            RegisterItem(new DashboardViewModel(Store, _windowManager)
+            RegisterItem(new DashboardViewModel(Store)
             {
                 DisplayName = "个人中心",
                 ID = InvokeID.Dashboard.ToString(),
@@ -98,31 +91,31 @@ namespace SendMultipleEmails.Pages
                 ID = InvokeID.Settings.ToString(),
             });
 
-            RegisterItem(new SendersViewModel(Store, _windowManager)
+            RegisterItem(new SendersViewModel(Store)
             {
                 DisplayName = "发件人",
                 ID = InvokeID.Senders.ToString(),
             });
 
-            RegisterItem(new ReceiversViewModel(Store, _windowManager)
+            RegisterItem(new ReceiversViewModel(Store)
             {
                 DisplayName = "收件人",
                 ID = InvokeID.Receivers.ToString(),
             });
 
-            RegisterItem(new SendDataViewModel(Store, _windowManager)
+            RegisterItem(new SendDataViewModel(Store)
             {
                 DisplayName = "导入数据",
                 ID = InvokeID.ImportVariables.ToString(),
             });
 
-            RegisterItem(new TemplateViewModel(Store, _windowManager)
+            RegisterItem(new TemplateViewModel(Store)
             {
                 DisplayName = "模板",
                 ID = InvokeID.Template.ToString(),
             });
 
-            RegisterItem(new SendViewModel(Store, _windowManager)
+            RegisterItem(new SendViewModel(Store)
             {
                 DisplayName = "发送",
                 ID = InvokeID.Send.ToString(),
@@ -180,6 +173,9 @@ namespace SendMultipleEmails.Pages
         protected override void OnViewLoaded()
         {
             base.OnViewLoaded();
+
+            // 将 view 保存到全局
+            Store.MainWindow = this.View as WindowX;
 
             // 另起一个线程检查更新
             Thread thread = new Thread(() =>

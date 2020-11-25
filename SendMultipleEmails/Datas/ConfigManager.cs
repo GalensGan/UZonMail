@@ -14,6 +14,7 @@ namespace SendMultipleEmails.Datas
     {
         // 配置文件位置，不可改变
         private const string _configDir = "Data\\config.json";
+
         public ConfigManager() : base(null)
         {
             // 从特定位置读取配置，然后发送给父类

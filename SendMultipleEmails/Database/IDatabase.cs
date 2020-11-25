@@ -8,6 +8,5 @@ namespace SendMultipleEmails.Database
 {
     public interface IDatabase
     {
-        string ConnectionStr { get; set; }
     }
 }

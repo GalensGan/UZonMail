@@ -1,4 +1,5 @@
 ﻿using Panuon.UI.Silver;
+using SendMultipleEmails.Database;
 using SendMultipleEmails.Datas;
 using System;
 using System.Collections.Generic;
@@ -9,6 +10,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using GalensSDK.Encrypt;
+using GalensSDK.TimeEx;
 
 namespace SendMultipleEmails.Pages
 {
@@ -20,9 +23,12 @@ namespace SendMultipleEmails.Pages
         public LoginViewModel(Store store) : base(store)
         {
             // 加载上次登陆的用户
-            if (store.AccountManager.LastAccount != null)
+            if (store.ConfigManager.AppConfig.isRememberLoginInfo)
             {
-                this.UserName = store.AccountManager.LastAccount.userName;
+                // 从数据库中读取最近登陆的用户名称
+                Account latest = store.GetDatabase<IAccount>().GetLatestVisitAccount();
+
+                this.UserName = latest.UserName;
             }
         }
 
@@ -52,13 +58,28 @@ namespace SendMultipleEmails.Pages
         {
             if (!ValidateAccount()) return;
 
-            Tuple<bool, string> tuple = Store.AccountManager.Register(new Account() { userName = UserName, passWord = Password });
+            IAccount iAccount = Store.GetDatabase<IAccount>();
 
-            if (!tuple.Item1)
+            // 查找是否存在当前用户，如果存在，则不进行注册
+            Account account = iAccount.FindAccount(UserName);
+            if (account != null)
             {
-                MessageBoxX.Show(tuple.Item2, "注册");
+                MessageBoxX.Show("当前用户已经存在，请更换账号注册", "注册失败");
                 return;
+            }
+
+            // 开始注册
+            Account newAccount = new Account()
+            {
+                UserName = this.UserName,
+                PassWord = MD5Ex.EncryptString(this.Password),
+                LastVisitTimestamp = TimeHelper.TimestampNow()
             };
+            if (!iAccount.InsertAccount(newAccount))
+            {
+                MessageBoxX.Show("未能添加到数据库", "注册失败");
+                return;
+            }
 
             MessageBoxX.Show("注册成功，请登陆", "注册");
         }
@@ -67,22 +88,28 @@ namespace SendMultipleEmails.Pages
         {
             if (!ValidateAccount()) return;
 
-            // 保存数据
-            Account loginAccount = new Account() { userName = UserName, passWord = Password };
-            Tuple<bool, string> tuple = Store.AccountManager.Validate(loginAccount);
-            if (!tuple.Item1)
+            // 查找当前账户
+            Account result = Store.GetDatabase<IAccount>().FindAccount(UserName);
+            if (result == null)
             {
-                MessageBoxX.Show(tuple.Item2, "验证失败");
+                MessageBoxX.Show("用户不存在，请重新输入", "验证失败");
                 return;
-            };
+            }
 
-            // 记住登陆的账户
-            Store.AccountManager.RememberAccount(loginAccount);
+            // 验证密码
+            if (result.PassWord != MD5Ex.EncryptString(this.Password))
+            {
+                MessageBoxX.Show("密码错误，请重新输入", "验证失败");
+                return;
+            }
 
-            Store.AccountManager.Save();
+            // 更改服务器最后访问时间
+            result.LastVisitTimestamp = TimeHelper.TimestampNow();
+            Store.GetDatabase<IAccount>().UpdateAccount(result);
 
             // 加载数据
-            Store.LoadDataForUser();
+            Store.LoginAccount(result);
+
             this.RequestClose(true);
         }
 

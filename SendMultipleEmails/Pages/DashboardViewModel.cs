@@ -49,7 +49,7 @@ namespace SendMultipleEmails.Pages
 
         public string UserName
         {
-            get => _store.AccountManager.CurrentAccount.userName;
+            get => _store.AccountManager.CurrentAccount.UserName;
         }
     }
 }

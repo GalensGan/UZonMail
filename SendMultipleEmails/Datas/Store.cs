@@ -1,4 +1,5 @@
-﻿using SendMultipleEmails.Database;
+﻿using Panuon.UI.Silver;
+using SendMultipleEmails.Database;
 using SendMultipleEmails.ResponseJson;
 using Stylet;
 using System;
@@ -16,44 +17,39 @@ namespace SendMultipleEmails.Datas
     {
         private Screen _mainScreen;
         private List<ManagerBase> _managers;
+
         #region 配置
         public ConfigManager ConfigManager { get; private set; }
         #endregion
 
 
         #region 构造函数
-        public Store(Screen main)
-        {
-            _mainScreen = main;
+        public IWindowManager WindowManager { get; private set; }
 
-            _managers = new List<ManagerBase>();
+        // 主窗体
+        public WindowX MainWindow { get; set; }
+        public Store(IWindowManager windowManager)
+        {
+            WindowManager = windowManager;
 
             // 初始化配置文件
             ConfigManager = new ConfigManager();
-            _managers.Add(ConfigManager);
 
-            // 初始化登陆信息
-            AccountManager = new AccountManager(ConfigManager.AppConfig);
-            _managers.Add(AccountManager);
+            // 初始化数据库
+            _database = new LiteDbConcrete(ConfigManager.AppConfig.databaseFilePath);
         }
         #endregion
 
 
         #region // 登陆,登陆之后需要加载其它用户数据
-        public AccountManager AccountManager { get; set; }
 
-        public void LoadDataForUser()
+        /// <summary>
+        /// 登陆后，将登陆的用户保存
+        /// </summary>
+        /// <param name="account"></param>
+        public void LoginAccount(Account account)
         {
-            // 加载模板
-            TemplateManager = new TemplateManager(ConfigManager.AppConfig);
-            _managers.Add(TemplateManager);
-
-            // 初始化其它数据
-            PersonalDataManager = new PersonalDataManager(ConfigManager.AppConfig);
-            _managers.Add(PersonalDataManager);
-
-            HistoryManager = new HistoryManager(ConfigManager.AppConfig);
-            _managers.Add(HistoryManager);
+            ConfigManager.AppConfig.CurrentAccount = account;
         }
         #endregion
 
