@@ -12,7 +12,7 @@ namespace SendMultipleEmails.Datas
     {
         public int Id { get; set; }
 
-        public string UserName { get; set; } = string.Empty;
+        public string UserId { get; set; } = string.Empty;
 
         // password 是加密过的
         public string PassWord { get; set; } = string.Empty;
@@ -20,18 +20,23 @@ namespace SendMultipleEmails.Datas
         // 上次访问时间
         public long LastVisitTimestamp { get; set; } = TimeHelper.TimestampNow();
 
+        /// <summary>
+        /// 是否自动保存
+        /// </summary>
+        public bool IsAutoSave { get; set; }
+
         public override bool Equals(object obj)
         {
             if(obj is Account account)
             {
-                return account.UserName.Equals(UserName);
+                return account.UserId.Equals(UserId);
             }
 
             return false;
         }
         public override int GetHashCode()
         {
-            return UserName.GetHashCode();
+            return UserId.GetHashCode();
         }
     }
 }

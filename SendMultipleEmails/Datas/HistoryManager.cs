@@ -18,7 +18,7 @@ namespace SendMultipleEmails.Datas
         public DataTable HistoryTable { get; private set; }
         public int Index { get; private set; }
 
-        public HistoryManager(Config config) : base(config)
+        public HistoryManager(DefaultConfig config) : base(config)
         {
             // 从数据文件读取
             if (File.Exists(config.UserHistoryPath))

@@ -20,18 +20,12 @@ namespace SendMultipleEmails.Pages
 {
     class DashboardViewModel: ScreenChild
     {
-        private Store _store;
-        private IWindowManager _windowManager;
-        public DashboardViewModel(Store store,IWindowManager windowManager):base(store)
-        {
-            _store = store;
-            _windowManager = windowManager;
-        }
+        public DashboardViewModel(Store store) : base(store) { }
 
         // 退出
         public void Exit()
         {
-            _store.Close();
+            Store.Close();
         }
 
         public void Unsubscribe()
@@ -39,9 +33,7 @@ namespace SendMultipleEmails.Pages
             MessageBoxResult result = MessageBoxX.Show("注销账户将清空账户内产生的所有数据，是否继续？", "注销确认", null, System.Windows.MessageBoxButton.YesNo);
             if (result == MessageBoxResult.OK)
             {
-                // 清除账户数据
-                Directory.Delete(this._store.ConfigManager.AppConfig.UserDataDir);
-
+                Directory.Delete(Store.ConfigManager.AppConfig.UserDataDir);
                 // 退出
                 Exit();
             }
@@ -49,7 +41,7 @@ namespace SendMultipleEmails.Pages
 
         public string UserName
         {
-            get => _store.AccountManager.CurrentAccount.UserName;
+            get => Store.AccountManager.CurrentAccount.UserName;
         }
     }
 }

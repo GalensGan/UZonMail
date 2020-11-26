@@ -16,11 +16,7 @@ namespace SendMultipleEmails.Pages
 {
     public class SendersViewModel:ScreenChild
     {
-        IWindowManager _windowManager;
-        public SendersViewModel(Store store,IWindowManager windowManager) : base(store) 
-        {
-            _windowManager = windowManager;            
-        }
+        public SendersViewModel(Store store) : base(store) { }
 
         protected override void OnInitialActivate()
         {
@@ -41,7 +37,7 @@ namespace SendMultipleEmails.Pages
             CanAddSender = false;
 
             AddSenderViewModel vm = new AddSenderViewModel(Store);
-            _windowManager.ShowDialog(vm);
+            Store.WindowManager.ShowDialog(vm);
 
             CanAddSender = true;
         }
@@ -52,7 +48,7 @@ namespace SendMultipleEmails.Pages
             CanAddSenders = false;
 
             AddSendersViewModel vm = new AddSendersViewModel(Store);
-            _windowManager.ShowDialog(vm);
+            Store.WindowManager.ShowDialog(vm);
 
             CanAddSenders = true;
         }

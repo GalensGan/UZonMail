@@ -17,11 +17,7 @@ namespace SendMultipleEmails.Pages
 {
     class SendDataViewModel:ScreenChild
     {
-        private IWindowManager _windowManager;
-        public SendDataViewModel(Store store,IWindowManager windowManager) : base(store) 
-        {
-            _windowManager = windowManager;
-        }
+        public SendDataViewModel(Store store) : base(store) { }
 
         protected override void OnInitialActivate()
         {
@@ -46,7 +42,9 @@ namespace SendMultipleEmails.Pages
         public void ReadData()
         {
             Screen s = new AddVariableViewModel(Store);
-            _windowManager.ShowDialog(s);
+            Store.WindowManager.ShowDialog(s);
+
+
             // 更新 Data
             Variables = new BindingSource
             {

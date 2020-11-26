@@ -15,9 +15,6 @@ namespace SendMultipleEmails.Datas
 {
     public class Store
     {
-        private Screen _mainScreen;
-        private List<ManagerBase> _managers;
-
         #region 配置
         public ConfigManager ConfigManager { get; private set; }
         #endregion
@@ -28,6 +25,9 @@ namespace SendMultipleEmails.Datas
 
         // 主窗体
         public WindowX MainWindow { get; set; }
+
+        public Screen MainScreen { get; set; }
+
         public Store(IWindowManager windowManager)
         {
             WindowManager = windowManager;
@@ -35,33 +35,62 @@ namespace SendMultipleEmails.Datas
             // 初始化配置文件
             ConfigManager = new ConfigManager();
 
-            // 初始化数据库
-            _database = new LiteDbConcrete(ConfigManager.AppConfig.databaseFilePath);
+            // 初始化账户数据库
+            _accountdatabase = new LiteDbConcrete(ConfigManager.AppConfig.AccountDatabaseFullName);
         }
         #endregion
 
 
         #region // 登陆,登陆之后需要加载其它用户数据
-
+        /// <summary>
+        /// 登陆的账户
+        /// </summary>
+        public Account CurrentAccount => ConfigManager.AppConfig.CurrentAccount;
         /// <summary>
         /// 登陆后，将登陆的用户保存
         /// </summary>
         /// <param name="account"></param>
         public void LoginAccount(Account account)
         {
+            // 将登录的数据写到配置中
             ConfigManager.AppConfig.CurrentAccount = account;
+            ConfigManager.AppConfig.LastVisitUserId = account.UserId;
+            ConfigManager.Save();
+
+            // 打开个人数据库
+            _userDatabase = new LiteDbConcrete(ConfigManager.AppConfig.UserDatabaseFullName);
         }
         #endregion
 
         #region 公共方法
+        /// <summary>
+        /// 保存数据库之外的数据
+        /// </summary>
         public void Save()
         {
-            _managers.ForEach(m => m.Save());
+            ConfigManager.Save();
         }
 
+        /// <summary>
+        /// 关闭主窗体
+        /// </summary>
         public void Close()
         {
-            _mainScreen?.RequestClose();
+            this.MainScreen.RequestClose();
+        }
+
+        /// <summary>
+        /// 打开模态对话框
+        /// </summary>
+        /// <param name="screen"></param>
+        /// <returns></returns>
+        public bool? ShowDialogWithMask(object screen)
+        {
+            MainWindow.IsMaskVisible = true;
+            bool? result = this.WindowManager.ShowDialog(screen);
+            MainWindow.IsMaskVisible = false;
+
+            return result;
         }
         #endregion
 
@@ -100,12 +129,19 @@ namespace SendMultipleEmails.Datas
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public T GetDatabase<T>()
+        public T GetAccountDatabase<T>() where T:IAccount
         {
-            return (T)_database;
+            return (T)_accountdatabase;
         }
 
-        private IDatabase _database;
+        private IDatabase _accountdatabase;
+
+        public T GetUserDatabase<T>()
+        {
+            return (T)_userDatabase;
+        }
+
+        private IDatabase _userDatabase;
         #endregion
     }
 }

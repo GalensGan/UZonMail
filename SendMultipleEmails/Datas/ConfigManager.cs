@@ -13,23 +13,23 @@ namespace SendMultipleEmails.Datas
     public class ConfigManager:ManagerBase
     {
         // 配置文件位置，不可改变
-        private const string _configDir = "Data\\config.json";
+        private const string _configDir = "Data\\default.json";
 
         public ConfigManager() : base(null)
         {
             // 从特定位置读取配置，然后发送给父类
             if (!File.Exists(_configDir))
             {
-                Config = new Config();
+                Config = new DefaultConfig();
             }
             else
             {
                 // 读取配置文件
-                Config = this.ReadData<Config, JObject>(_configDir);
+                Config = this.ReadData<DefaultConfig, JObject>(_configDir);
             }
         }
 
-        public Config AppConfig => Config;
+        public DefaultConfig AppConfig => Config;
 
         public override bool Save()
         {

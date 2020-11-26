@@ -14,12 +14,7 @@ namespace SendMultipleEmails.Pages
 {
     class ReceiversViewModel:ScreenChild
     {
-        private IWindowManager _windowManager;
-        public ReceiversViewModel(Store store, IWindowManager windowManager) : base(store)
-        {
-            _windowManager = windowManager;
-        }
-
+        public ReceiversViewModel(Store store) : base(store) { }
         protected override void OnInitialActivate()
         {
             base.OnInitialActivate();
@@ -36,23 +31,15 @@ namespace SendMultipleEmails.Pages
 
         public void AddReceiver()
         {
-            CanAddReceiver = false;
-
             AddReceiverViewModel vm = new AddReceiverViewModel(Store);
-            _windowManager.ShowDialog(vm);
-
-            CanAddReceiver = true;
+            Store.ShowDialogWithMask(vm);
         }
 
         public bool CanAddReceivers { get; set; } = true;
         public void AddReceivers()
         {
-            CanAddReceivers = false;
-
             AddReceiversViewModel vm = new AddReceiversViewModel(Store);
-            _windowManager.ShowDialog(vm);
-
-            CanAddReceivers = true;
+            Store.ShowDialogWithMask(vm);
         }
 
         public Sender SelectedSender { get; set; }

@@ -172,7 +172,7 @@
     <Compile Include="Converter\BoolVisibility.cs" />
     <Compile Include="Datas\Account.cs" />
     <Compile Include="Datas\AccountManager.cs" />
-    <Compile Include="Datas\Config.cs" />
+    <Compile Include="Datas\DefaultConfig.cs" />
     <Compile Include="Datas\ManagerBase.cs" />
     <Compile Include="Datas\Person.cs" />
     <Compile Include="Datas\PersonalData.cs" />

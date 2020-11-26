@@ -25,19 +25,11 @@ namespace SendMultipleEmails.Pages
     {
         private static readonly ILog _logger = LogManager.GetLogger(typeof(SendViewModel));
 
-        private Store _store;
-
-        private IWindowManager _windowManager;
-
         #region 属性
         public Visibility IsShowNew { get; set; } = Visibility.Visible;
 
         public Visibility IsShowView { get; set; } = Visibility.Collapsed;
         #endregion
-        public SendViewModel(Store store, IWindowManager windowManager):base(store)
-        {
-            _store = store;
-            _windowManager = windowManager;
-        }
+        public SendViewModel(Store store) : base(store) { }
     }
 }

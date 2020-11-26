@@ -23,13 +23,7 @@ namespace SendMultipleEmails.Pages
         public LoginViewModel(Store store) : base(store)
         {
             // 加载上次登陆的用户
-            if (store.ConfigManager.AppConfig.isRememberLoginInfo)
-            {
-                // 从数据库中读取最近登陆的用户名称
-                Account latest = store.GetDatabase<IAccount>().GetLatestVisitAccount();
-
-                this.UserName = latest.UserName;
-            }
+            this.UserName = store.ConfigManager.AppConfig.LastVisitUserId;
         }
 
         public void PasswordChanged(object sender, RoutedEventArgs e)
@@ -58,7 +52,7 @@ namespace SendMultipleEmails.Pages
         {
             if (!ValidateAccount()) return;
 
-            IAccount iAccount = Store.GetDatabase<IAccount>();
+            IAccount iAccount = Store.GetAccountDatabase<IAccount>();
 
             // 查找是否存在当前用户，如果存在，则不进行注册
             Account account = iAccount.FindAccount(UserName);
@@ -71,7 +65,7 @@ namespace SendMultipleEmails.Pages
             // 开始注册
             Account newAccount = new Account()
             {
-                UserName = this.UserName,
+                UserId = this.UserName,
                 PassWord = MD5Ex.EncryptString(this.Password),
                 LastVisitTimestamp = TimeHelper.TimestampNow()
             };
@@ -89,7 +83,7 @@ namespace SendMultipleEmails.Pages
             if (!ValidateAccount()) return;
 
             // 查找当前账户
-            Account result = Store.GetDatabase<IAccount>().FindAccount(UserName);
+            Account result = Store.GetAccountDatabase<IAccount>().FindAccount(UserName);
             if (result == null)
             {
                 MessageBoxX.Show("用户不存在，请重新输入", "验证失败");
@@ -105,7 +99,7 @@ namespace SendMultipleEmails.Pages
 
             // 更改服务器最后访问时间
             result.LastVisitTimestamp = TimeHelper.TimestampNow();
-            Store.GetDatabase<IAccount>().UpdateAccount(result);
+            Store.GetAccountDatabase<IAccount>().UpdateAccount(result);
 
             // 加载数据
             Store.LoginAccount(result);

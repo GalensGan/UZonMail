@@ -17,11 +17,8 @@ namespace SendMultipleEmails.Pages
 {
     class TemplateViewModel : ScreenChild
     {
-        private IWindowManager _windowManager;
-        public TemplateViewModel(Store store, IWindowManager windowManager) : base(store)
+        public TemplateViewModel(Store store) : base(store)
        {
-            _windowManager = windowManager;
-
             Templates = store.TemplateManager.TemplateFiles;
             if (Templates.Count > 0)
             {

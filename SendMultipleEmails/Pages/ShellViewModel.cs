@@ -13,6 +13,7 @@ using Newtonsoft.Json.Linq;
 using NPOI.OpenXmlFormats.Dml;
 using Panuon.UI.Silver;
 using Panuon.UI.Silver.Core;
+using SendMultipleEmails.Database;
 using SendMultipleEmails.Datas;
 using SendMultipleEmails.Enums;
 using SendMultipleEmails.ResponseJson;
@@ -53,7 +54,7 @@ namespace SendMultipleEmails.Pages
         protected override void OnClose()
         {
             base.OnClose();
-            if (Store.ConfigManager.AppConfig.isAutoSave)
+            if (Store.CurrentAccount.IsAutoSave)
             {
                 Store.Save();
                 return;
@@ -68,8 +69,9 @@ namespace SendMultipleEmails.Pages
             else if (dialogResult == MessageBoxResult.Cancel)
             {
                 // 自动保存
-                Store.ConfigManager.AppConfig.isAutoSave = true;
-                Store.Save();
+                Store.CurrentAccount.IsAutoSave = true;
+                // 更新数据库，保存本地数据
+                Store.GetAccountDatabase<IAccount>().UpdateAccount(Store.CurrentAccount);
             }
         }
 
@@ -176,6 +178,7 @@ namespace SendMultipleEmails.Pages
 
             // 将 view 保存到全局
             Store.MainWindow = this.View as WindowX;
+            Store.MainScreen = this;
 
             // 另起一个线程检查更新
             Thread thread = new Thread(() =>
@@ -193,7 +196,7 @@ namespace SendMultipleEmails.Pages
             client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36");
             try
             {
-                HttpResponseMessage response = await client.GetAsync(Store.ConfigManager.AppConfig.gitHubVersionUrl);
+                HttpResponseMessage response = await client.GetAsync(Store.ConfigManager.AppConfig.GitHubVersionUrl);
 
                 if (response.StatusCode != HttpStatusCode.OK) return;
 
@@ -203,7 +206,7 @@ namespace SendMultipleEmails.Pages
                 if (latest == null || latest.assets == null || latest.assets.Length < 1) return;
 
                 // 读取配置文件
-                string configDownloadUrl = latest.assets.Where(item => item.name == Store.ConfigManager.AppConfig.versionConfigName).FirstOrDefault().browser_download_url;
+                string configDownloadUrl = latest.assets.Where(item => item.name == Store.ConfigManager.AppConfig.VersionConfigName).FirstOrDefault().browser_download_url;
 
                 // 下载配置文件
                 HttpResponseMessage response2 = await client.GetAsync(configDownloadUrl);
@@ -257,8 +260,10 @@ namespace SendMultipleEmails.Pages
             }
 
             // 如果有多个链接，显示窗体，让用户选择
+            Store.MainWindow.IsMaskVisible = true;
             DownloadedURLsListViewModel downloadVM = new DownloadedURLsListViewModel(Store);
-            _windowManager.ShowWindow(downloadVM);
+            Store.WindowManager.ShowWindow(downloadVM);
+            Store.MainWindow.IsMaskVisible = false;
         }
         #endregion
     }

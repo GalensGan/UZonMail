@@ -12,7 +12,7 @@ namespace SendMultipleEmails.Datas
     {
         public BindingList<FileInfo> TemplateFiles { get; private set; }
 
-        public TemplateManager(Config config) : base(config)
+        public TemplateManager(DefaultConfig config) : base(config)
         {
             // 获取用户模板列表
             FileInfo[] userTemplates = new FileInfo[0];

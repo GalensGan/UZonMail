@@ -16,7 +16,7 @@ namespace SendMultipleEmails.Datas
     public class PersonalDataManager:ManagerBase
     {
         public PersonalData PersonalData { get; set; }
-        public PersonalDataManager(Config config) : base(config) 
+        public PersonalDataManager(DefaultConfig config) : base(config) 
         {
             // 查看是否有数据，如果有，则加载，如果没有，则初始化
             if (File.Exists(config.UserDataDir + "\\" + config.userPersonalDataFileName))

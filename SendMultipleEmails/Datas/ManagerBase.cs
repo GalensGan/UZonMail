@@ -13,8 +13,8 @@ namespace SendMultipleEmails.Datas
 {
     public abstract class ManagerBase
     {
-        public ManagerBase(Config config) { this.Config = config; }
-        protected Config Config { get; set; }
+        public ManagerBase(DefaultConfig config) { this.Config = config; }
+        protected DefaultConfig Config { get; set; }
 
         public bool Save(string path, Object obj)
         {
