@@ -34,26 +34,26 @@ namespace SendMultipleEmails.Datas
 
             // 检查表中的各个字段
             List<string> names = base.GetTableNames(this.HistoryTable);
-            if(!names.Contains(History.SenderName.ToString())) HistoryTable.Columns.Add(History.SenderName.ToString(), typeof(string));
-            if (!names.Contains(History.SenderEmail.ToString())) HistoryTable.Columns.Add(History.SenderEmail.ToString(), typeof(string));
-            if (!names.Contains(History.SenderSMTP.ToString())) HistoryTable.Columns.Add(History.SenderSMTP.ToString(), typeof(string));
-            if (!names.Contains(History.ReceiverName.ToString())) HistoryTable.Columns.Add(History.ReceiverName.ToString(), typeof(string));
-            if (!names.Contains(History.ReceiverEmail.ToString())) HistoryTable.Columns.Add(History.ReceiverEmail.ToString(), typeof(string));
-            if (!names.Contains(History.SendDate.ToString())) HistoryTable.Columns.Add(History.SendDate.ToString(), typeof(DateTime));
-            if (!names.Contains(History.IsSuccess.ToString())) HistoryTable.Columns.Add(History.IsSuccess.ToString(), typeof(bool));
-            if (!names.Contains(History.Message.ToString())) HistoryTable.Columns.Add(History.Message.ToString(), typeof(string));
+            if(!names.Contains(FieldKey.SenderName.ToString())) HistoryTable.Columns.Add(FieldKey.SenderName.ToString(), typeof(string));
+            if (!names.Contains(FieldKey.SenderEmail.ToString())) HistoryTable.Columns.Add(FieldKey.SenderEmail.ToString(), typeof(string));
+            if (!names.Contains(FieldKey.SenderSMTP.ToString())) HistoryTable.Columns.Add(FieldKey.SenderSMTP.ToString(), typeof(string));
+            if (!names.Contains(FieldKey.ReceiverName.ToString())) HistoryTable.Columns.Add(FieldKey.ReceiverName.ToString(), typeof(string));
+            if (!names.Contains(FieldKey.ReceiverEmail.ToString())) HistoryTable.Columns.Add(FieldKey.ReceiverEmail.ToString(), typeof(string));
+            if (!names.Contains(FieldKey.SendDate.ToString())) HistoryTable.Columns.Add(FieldKey.SendDate.ToString(), typeof(DateTime));
+            if (!names.Contains(FieldKey.IsSuccess.ToString())) HistoryTable.Columns.Add(FieldKey.IsSuccess.ToString(), typeof(bool));
+            if (!names.Contains(FieldKey.Message.ToString())) HistoryTable.Columns.Add(FieldKey.Message.ToString(), typeof(string));
             // 一次发送是在一个组
-            if (!names.Contains(History.GroupId.ToString())) HistoryTable.Columns.Add(History.GroupId.ToString(), typeof(int));
-            if (!names.Contains(History.ResendEnabled.ToString())) HistoryTable.Columns.Add(History.ResendEnabled.ToString(), typeof(bool));
-            if (!names.Contains(History.EmailBody.ToString())) HistoryTable.Columns.Add(History.EmailBody.ToString(), typeof(string));
-            if (!names.Contains(History.EmailSubject.ToString())) HistoryTable.Columns.Add(History.EmailSubject.ToString(), typeof(string));
+            if (!names.Contains(FieldKey.GroupId.ToString())) HistoryTable.Columns.Add(FieldKey.GroupId.ToString(), typeof(int));
+            if (!names.Contains(FieldKey.ResendEnabled.ToString())) HistoryTable.Columns.Add(FieldKey.ResendEnabled.ToString(), typeof(bool));
+            if (!names.Contains(FieldKey.EmailBody.ToString())) HistoryTable.Columns.Add(FieldKey.EmailBody.ToString(), typeof(string));
+            if (!names.Contains(FieldKey.EmailSubject.ToString())) HistoryTable.Columns.Add(FieldKey.EmailSubject.ToString(), typeof(string));
 
             // 获取最后的Index
             int count = HistoryTable.Rows.Count;
             if (count == 0) Index = 0;
             else
             {
-                int index = int.Parse(HistoryTable.Rows[HistoryTable.Rows.Count - 1][History.GroupId.ToString()].ToString());
+                int index = int.Parse(HistoryTable.Rows[HistoryTable.Rows.Count - 1][FieldKey.GroupId.ToString()].ToString());
                 Index = index;
             }
         }
@@ -93,18 +93,18 @@ namespace SendMultipleEmails.Datas
             if (groupId < 0) groupId = Index;
 
             DataRow row = HistoryTable.NewRow();
-            row[History.SenderName.ToString()] = senderName;
-            row[History.SenderEmail.ToString()] = senderEmail;
-            row[History.SenderSMTP.ToString()] = senderSMTP;
-            row[History.ReceiverName.ToString()] = receiverName;
-            row[History.ReceiverEmail.ToString()] = receiverEmail;
-            row[History.SendDate.ToString()] = sendDate;
-            row[History.IsSuccess.ToString()] = isSuccess;
-            row[History.Message.ToString()] = message;
-            row[History.GroupId.ToString()] = groupId;
-            row[History.ResendEnabled.ToString()] = true;
-            row[History.EmailBody.ToString()] = emailBody;
-            row[History.EmailSubject.ToString()] = emailSubject;
+            row[FieldKey.SenderName.ToString()] = senderName;
+            row[FieldKey.SenderEmail.ToString()] = senderEmail;
+            row[FieldKey.SenderSMTP.ToString()] = senderSMTP;
+            row[FieldKey.ReceiverName.ToString()] = receiverName;
+            row[FieldKey.ReceiverEmail.ToString()] = receiverEmail;
+            row[FieldKey.SendDate.ToString()] = sendDate;
+            row[FieldKey.IsSuccess.ToString()] = isSuccess;
+            row[FieldKey.Message.ToString()] = message;
+            row[FieldKey.GroupId.ToString()] = groupId;
+            row[FieldKey.ResendEnabled.ToString()] = true;
+            row[FieldKey.EmailBody.ToString()] = emailBody;
+            row[FieldKey.EmailSubject.ToString()] = emailSubject;
 
             HistoryTable.Rows.Add(row);
             return true;

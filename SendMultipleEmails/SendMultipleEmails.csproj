@@ -145,14 +145,15 @@
     <Compile Include="AttchedProperty\BrowserBehavior.cs" />
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="Converter\ReverseBoolVisibility.cs" />
+    <Compile Include="Database\IAccountDb.cs" />
     <Compile Include="Database\IDatabase.cs" />
-    <Compile Include="Database\IAccount.cs" />
+    <Compile Include="Database\ISenderDb.cs" />
     <Compile Include="Database\LiteDbConcrete.cs" />
     <Compile Include="Datas\Accounts.cs" />
     <Compile Include="Datas\ConfigManager.cs" />
     <Compile Include="Datas\HistoryManager.cs" />
     <Compile Include="Enums\DatabaseName.cs" />
-    <Compile Include="Enums\History.cs" />
+    <Compile Include="Enums\FieldKey.cs" />
     <Compile Include="Enums\InvokeID.cs" />
     <Compile Include="Extension\ListExtension.cs" />
     <Compile Include="Helper\NPOIHelper.cs" />
@@ -194,7 +195,6 @@
     <Compile Include="Pages\ScreenChild.cs" />
     <Compile Include="Pages\SendDataViewModel.cs" />
     <Compile Include="Pages\SendersViewModel.cs" />
-    <Compile Include="Pages\SendScreenBase.cs" />
     <Compile Include="Pages\SendSettingsViewModel.cs" />
     <Compile Include="Pages\SendViewModel.cs" />
     <Compile Include="Pages\Send_NewViewModel.cs" />

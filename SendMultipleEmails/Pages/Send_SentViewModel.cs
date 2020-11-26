@@ -38,7 +38,7 @@ namespace SendMultipleEmails.Pages
             // 获取所有的列头
             _names = Store.PersonalDataManager.GetTableNames(Store.HistoryManager.HistoryTable);
             // 设置过滤
-            _filter = string.Format("{0} = {1}", History.GroupId.ToString(), Store.HistoryManager.Index);
+            _filter = string.Format("{0} = {1}", FieldKey.GroupId.ToString(), Store.HistoryManager.Index);
             DataSource.Filter = _filter;
         }
 
@@ -76,7 +76,7 @@ namespace SendMultipleEmails.Pages
 
             // 添加进去
             // 设置 row 的 DeleteEnabled 属性
-            row.Row[History.ResendEnabled.ToString()] = false;
+            row.Row[FieldKey.ResendEnabled.ToString()] = false;
             _resendItems.Enqueue(row);
             // 启动
             _signal.Set();
@@ -98,13 +98,13 @@ namespace SendMultipleEmails.Pages
                     // 获取发送数据
                     Person receiver = new Person()
                     {
-                        Name = rowV.Row[History.ReceiverName.ToString()].ToString(),
-                        Email = rowV.Row[History.ReceiverEmail.ToString()].ToString(),
+                        Name = rowV.Row[FieldKey.ReceiverName.ToString()].ToString(),
+                        Email = rowV.Row[FieldKey.ReceiverEmail.ToString()].ToString(),
                     };
 
                     // 发送内容
-                    string emailBody = rowV.Row[History.EmailBody.ToString()].ToString();
-                    string emailSubject = rowV.Row[History.EmailSubject.ToString()].ToString();
+                    string emailBody = rowV.Row[FieldKey.EmailBody.ToString()].ToString();
+                    string emailSubject = rowV.Row[FieldKey.EmailSubject.ToString()].ToString();
                     int failure = 0;
 
                     // 发送数据
@@ -137,10 +137,10 @@ namespace SendMultipleEmails.Pages
                             client.Send(mailMsg);
 
                             // 说明发送成功了，修改历史记录
-                            rowV.Row[History.SenderName.ToString()] = sender.Name;
-                            rowV.Row[History.SenderEmail.ToString()] = sender.Email;
-                            rowV.Row[History.IsSuccess.ToString()] = true;
-                            rowV.Row[History.Message.ToString()] = "已重发成功";
+                            rowV.Row[FieldKey.SenderName.ToString()] = sender.Name;
+                            rowV.Row[FieldKey.SenderEmail.ToString()] = sender.Email;
+                            rowV.Row[FieldKey.IsSuccess.ToString()] = true;
+                            rowV.Row[FieldKey.Message.ToString()] = "已重发成功";
                             break;
 
                         }
@@ -152,8 +152,8 @@ namespace SendMultipleEmails.Pages
                             else
                             {
                                 // 如果所有邮箱都不成功，就标记失败，消息记录表明没有邮箱可以发件成功
-                                rowV.Row[History.Message.ToString()] = "所有发件人都不能重发该邮件，请检查发件箱是否异常！";
-                                rowV.Row[History.ResendEnabled.ToString()] = true;
+                                rowV.Row[FieldKey.Message.ToString()] = "所有发件人都不能重发该邮件，请检查发件箱是否异常！";
+                                rowV.Row[FieldKey.ResendEnabled.ToString()] = true;
                                 break;
                             }
                         }

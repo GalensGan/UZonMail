@@ -10,8 +10,6 @@ namespace SendMultipleEmails.Datas
 {
     public class Account
     {
-        public int Id { get; set; }
-
         public string UserId { get; set; } = string.Empty;
 
         // password 是加密过的

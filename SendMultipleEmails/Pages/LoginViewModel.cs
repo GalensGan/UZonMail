@@ -17,13 +17,13 @@ namespace SendMultipleEmails.Pages
 {
     public class LoginViewModel : ScreenChild
     {
-        public string UserName { get; set; }
+        public string UserId { get; set; }
         public string Password { get; set; }
 
         public LoginViewModel(Store store) : base(store)
         {
             // 加载上次登陆的用户
-            this.UserName = store.ConfigManager.AppConfig.LastVisitUserId;
+            this.UserId = store.ConfigManager.AppConfig.LastVisitUserId;
         }
 
         public void PasswordChanged(object sender, RoutedEventArgs e)
@@ -34,7 +34,7 @@ namespace SendMultipleEmails.Pages
 
         private bool ValidateAccount()
         {
-            if (string.IsNullOrEmpty(UserName))
+            if (string.IsNullOrEmpty(UserId))
             {
                 MessageBoxX.Show("请输入用户名", "温馨提示");
                 return false;
@@ -52,10 +52,10 @@ namespace SendMultipleEmails.Pages
         {
             if (!ValidateAccount()) return;
 
-            IAccount iAccount = Store.GetAccountDatabase<IAccount>();
+            IAccountDb iAccount = Store.GetAccountDatabase<IAccountDb>();
 
             // 查找是否存在当前用户，如果存在，则不进行注册
-            Account account = iAccount.FindAccount(UserName);
+            Account account = iAccount.FindOneAccount(UserId);
             if (account != null)
             {
                 MessageBoxX.Show("当前用户已经存在，请更换账号注册", "注册失败");
@@ -65,7 +65,7 @@ namespace SendMultipleEmails.Pages
             // 开始注册
             Account newAccount = new Account()
             {
-                UserId = this.UserName,
+                UserId = this.UserId,
                 PassWord = MD5Ex.EncryptString(this.Password),
                 LastVisitTimestamp = TimeHelper.TimestampNow()
             };
@@ -83,7 +83,7 @@ namespace SendMultipleEmails.Pages
             if (!ValidateAccount()) return;
 
             // 查找当前账户
-            Account result = Store.GetAccountDatabase<IAccount>().FindAccount(UserName);
+            Account result = Store.GetAccountDatabase<IAccountDb>().FindOneAccount(UserId);
             if (result == null)
             {
                 MessageBoxX.Show("用户不存在，请重新输入", "验证失败");
@@ -99,7 +99,7 @@ namespace SendMultipleEmails.Pages
 
             // 更改服务器最后访问时间
             result.LastVisitTimestamp = TimeHelper.TimestampNow();
-            Store.GetAccountDatabase<IAccount>().UpdateAccount(result);
+            Store.GetAccountDatabase<IAccountDb>().UpdateAccount(result);
 
             // 加载数据
             Store.LoginAccount(result);

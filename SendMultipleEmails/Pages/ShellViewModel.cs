@@ -71,7 +71,7 @@ namespace SendMultipleEmails.Pages
                 // 自动保存
                 Store.CurrentAccount.IsAutoSave = true;
                 // 更新数据库，保存本地数据
-                Store.GetAccountDatabase<IAccount>().UpdateAccount(Store.CurrentAccount);
+                Store.GetAccountDatabase<IAccountDb>().UpdateAccount(Store.CurrentAccount);
             }
         }
 

@@ -129,7 +129,7 @@ namespace SendMultipleEmails.Datas
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public T GetAccountDatabase<T>() where T:IAccount
+        public T GetAccountDatabase<T>() where T:IAccountDb
         {
             return (T)_accountdatabase;
         }

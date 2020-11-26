@@ -1,5 +1,8 @@
-﻿using Panuon.UI.Silver;
+﻿using GalensSDK.Enumerable;
+using Panuon.UI.Silver;
+using SendMultipleEmails.Database;
 using SendMultipleEmails.Datas;
+using SendMultipleEmails.Enums;
 using Stylet;
 using System;
 using System.Collections.Generic;
@@ -14,7 +17,7 @@ using System.Windows.Forms;
 
 namespace SendMultipleEmails.Pages
 {
-    public class SendersViewModel:ScreenChild
+    public class SendersViewModel : ScreenChild
     {
         public SendersViewModel(Store store) : base(store) { }
 
@@ -23,45 +26,48 @@ namespace SendMultipleEmails.Pages
             base.OnInitialActivate();
 
             SenderList = new BindingSource();
-            SenderList.DataSource = Store.PersonalDataManager.PersonalData.senders;
+
+            // 从数据库中获取数据
+            List<Sender> senders = Store.GetUserDatabase<ISenderDb>().FindAllSenders().ToList();
+            SenderList.DataSource = senders.ConvertToDt();
         }
 
         public string ExcelFullPath { get; set; } = string.Empty;
 
         public BindingSource SenderList { get; set; }
 
-        public bool CanAddSender{ get; set; } = true;
-
         public void AddSender()
         {
-            CanAddSender = false;
-
             AddSenderViewModel vm = new AddSenderViewModel(Store);
-            Store.WindowManager.ShowDialog(vm);
+            bool? result = Store.WindowManager.ShowDialog(vm);
+            if (result == null || !(bool)result) return;
 
-            CanAddSender = true;
+            // 添加完成后，要重新更新
+            SenderList.DataSource = Store.GetUserDatabase<ISenderDb>().FindAllSenders().ToList().ConvertToDt();
         }
 
         public bool CanAddSenders { get; set; } = true;
         public void AddSenders()
         {
-            CanAddSenders = false;
-
             AddSendersViewModel vm = new AddSendersViewModel(Store);
-            Store.WindowManager.ShowDialog(vm);
+            bool? result = Store.WindowManager.ShowDialog(vm);
+            if (result == null || !(bool)result) return;
 
-            CanAddSenders = true;
+            // 添加完成后，要重新更新
+            SenderList.DataSource = Store.GetUserDatabase<ISenderDb>().FindAllSenders().ToList().ConvertToDt();
         }
 
         public Sender SelectedSender { get; set; }
         public void DeleteSender(DataRowView row)
         {
-            MessageBoxResult result = MessageBoxX.Show("是否删除发件人?" , "信息确认", null, MessageBoxButton.OKCancel);
+            Sender sender = row.Row.ConvertToModel<Sender>();
+            MessageBoxResult result = MessageBoxX.Show(string.Format("是否删除发件人:{0}?", sender.Name), "信息确认", null, MessageBoxButton.OKCancel);
             if (result == MessageBoxResult.Cancel) return;
 
             // 删除发件人
             row.Delete();
-            Store.PersonalDataManager.Save();
+            // 删除数据库中数据
+            Store.GetUserDatabase<ISenderDb>().DeleteSender(sender.Name);
         }
 
         public string FilterText { get; set; } = "";

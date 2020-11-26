@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SendMultipleEmails.Enums
 {
-    public enum History
+    public enum FieldKey
     {
         SenderName,
         SenderEmail,
@@ -24,5 +24,14 @@ namespace SendMultipleEmails.Enums
         EmailSubject,
         // 正文内容
         EmailBody,
+
+        #region  数据库
+        /// <summary>
+        /// 名称
+        /// </summary>
+        Name,
+
+        UserId,
+        #endregion
     }
 }

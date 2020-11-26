@@ -25,7 +25,7 @@ namespace SendMultipleEmails.Pages
             SentTotal = Store.HistoryManager.HistoryTable.Rows.Count;
 
             // 计算上一次的发送数量
-            LastSentTotal = Store.HistoryManager.Select(string.Format("{0}={1}", History.GroupId.ToString(), Store.HistoryManager.Index)).Length;
+            LastSentTotal = Store.HistoryManager.Select(string.Format("{0}={1}", FieldKey.GroupId.ToString(), Store.HistoryManager.Index)).Length;
 
             // 填充发件箱类型数量表
             SeriesCollection senderChart = new SeriesCollection();

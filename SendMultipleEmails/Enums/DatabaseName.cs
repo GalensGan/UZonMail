@@ -16,12 +16,12 @@ namespace SendMultipleEmails.Enums
         /// <summary>
         /// 发件人
         /// </summary>
-        Senders,
+        Sender,
 
         /// <summary>
         /// 收件人
         /// </summary>
-        Receivers,
+        Receiver,
 
         /// <summary>
         /// 发送历史

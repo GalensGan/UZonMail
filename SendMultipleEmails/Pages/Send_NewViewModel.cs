@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SendMultipleEmails.Pages
 {
-    class Send_NewViewModel:SendScreenBase
+    class Send_NewViewModel:ScreenChild
     {
         public Send_NewViewModel(Store store) : base(store) { }
 

@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace SendMultipleEmails.Database
 {
-   public interface IAccount
+   public interface IAccountDb
     {
         Account GetLatestVisitAccount();
 
-        Account FindAccount(string userName);
+        Account FindOneAccount(string userName);
 
         bool InsertAccount(Account account);
 

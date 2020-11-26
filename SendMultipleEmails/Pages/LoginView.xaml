@@ -25,7 +25,7 @@
                          pu:TextBoxHelper.FocusedShadowColor="#B5B5B5"
                          pu:TextBoxHelper.IsClearButtonVisible="True"
                          Margin="5" FontSize="16" Height="30"
-                         Text="{Binding UserName}"></TextBox>
+                         Text="{Binding UserId}"></TextBox>
             </DockPanel>
             <DockPanel>
                 <PasswordBox pu:PasswordBoxHelper.Watermark="输入密码"

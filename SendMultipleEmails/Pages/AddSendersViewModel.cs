@@ -5,6 +5,7 @@ using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using Panuon.UI.Silver;
 using Panuon.UI.Silver.Core;
+using SendMultipleEmails.Database;
 using SendMultipleEmails.Datas;
 using System;
 using System.Collections.Generic;
@@ -113,13 +114,19 @@ namespace SendMultipleEmails.Pages
 
                         if (!person.Validate(_logger)) continue;
 
-                        Store.PersonalDataManager.AddSender(person,false);
+                        // 查找，判断是否重复
+                        Sender existSender = Store.GetUserDatabase<ISenderDb>().FindOneSenderByEmail(person.Email);
+                        if (existSender != null)
+                        {
+                            _logger.Info(string.Format("第[{0}]行，[{1}] 导入失败！原因：发件箱已经存在", person.Order, person.Name));
+                            continue;
+                        }
+
+                        // 添加发件人
+                        Store.GetUserDatabase<ISenderDb>().InsertSender(person);
                         successNum++;
                         _logger.Info(string.Format("第[{0}]行，[{1}] 导入成功！", person.Order, person.Name));
                     }
-
-                    // 保存
-                    Store.PersonalDataManager.Save();
 
                     _logger.Info("导入完成。");
                     string info = string.Format("共导入{0}条数据：成功{1}条，失败{2}条。",
