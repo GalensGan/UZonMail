@@ -22,7 +22,7 @@ namespace SendMultipleEmails.Pages
 {
     class AddVariableViewModel : ScreenChild
     {
-        private static readonly ILog _logger = LogManager.GetLogger(typeof(AddSendersViewModel));
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(Senders_ImportViewModel));
         public AddVariableViewModel(Store store) : base(store)
         {
             Sheets = new List<string>();

@@ -14,7 +14,6 @@ namespace SendMultipleEmails.Datas
     {
         public string SMTP { get; set; }        
         public string Password { get; set; }
-        public bool IsAsSender { get; set; }
 
         public override bool Validate(ILog logger)
         {

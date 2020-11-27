@@ -11,9 +11,9 @@ using System.Windows.Controls;
 
 namespace SendMultipleEmails.Pages
 {
-    class AddSenderViewModel:ScreenChild
+    class Senders_AddViewModel:ScreenChild
     {
-        public AddSenderViewModel(Store store) : base(store) 
+        public Senders_AddViewModel(Store store) : base(store) 
         {
             Sender = new Sender();
         }

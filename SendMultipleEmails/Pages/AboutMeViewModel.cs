@@ -17,7 +17,7 @@ namespace SendMultipleEmails.Pages
         protected override void OnInitialActivate()
         {
             // 读取配置文件
-            ReadMeUrl = this.Store.ConfigManager.AppConfig.aboutMePath;
+            ReadMeUrl = this.Store.ConfigManager.AppConfig.AboutMePath;
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using Panuon.UI.Silver;
+﻿using GalensSDK.Enumerable;
+using Panuon.UI.Silver;
+using SendMultipleEmails.Database;
 using SendMultipleEmails.Datas;
 using Stylet;
 using System;
@@ -20,47 +22,51 @@ namespace SendMultipleEmails.Pages
             base.OnInitialActivate();
 
             DataSource = new BindingSource();
-            DataSource.DataSource = Store.PersonalDataManager.PersonalData.receivers;
+
+            // 从数据库中获取数据
+            List<Receiver> senders = Store.GetUserDatabase<IReceiverDb>().FindAllReceivers().ToList();
+            DataSource.DataSource = senders.ConvertToDt();
         }
 
         public string ExcelFullPath { get; set; } = string.Empty;
 
         public BindingSource DataSource { get; set; }
 
-        public bool CanAddReceiver { get; set; } = true;
-
         public void AddReceiver()
         {
-            AddReceiverViewModel vm = new AddReceiverViewModel(Store);
+            Receivers_AddViewModel vm = new Receivers_AddViewModel(Store);
             Store.ShowDialogWithMask(vm);
         }
 
         public bool CanAddReceivers { get; set; } = true;
         public void AddReceivers()
         {
-            AddReceiversViewModel vm = new AddReceiversViewModel(Store);
+            Receivers_ImportViewModel vm = new Receivers_ImportViewModel(Store);
             Store.ShowDialogWithMask(vm);
         }
 
-        public Sender SelectedSender { get; set; }
         public void DeleteReceiver(DataRowView row)
         {
-            MessageBoxResult result = MessageBoxX.Show("是否删除收件人?", "信息确认", null, MessageBoxButton.OKCancel);
+            MessageBoxResult result = MessageBoxX.Show(Store.MainWindow,"是否删除收件人?", "信息确认", MessageBoxButton.OKCancel);
             if (result == MessageBoxResult.Cancel) return;
 
-            // 删除发件人
+            // 删除收件人
             row.Delete();
-            Store.PersonalDataManager.Save();
+
+            Receiver receiver = row.Row.ConvertToModel<Receiver>();
+            // 从数据库中删除
+            Store.GetUserDatabase<IReceiverDb>().DeleteReceiver(receiver.Id);
         }
 
         public void ClearAll()
         {
-            MessageBoxResult result = MessageBoxX.Show("是否清空所有收件人?", "信息确认", null, MessageBoxButton.OKCancel);
+            MessageBoxResult result = MessageBoxX.Show(Store.MainWindow,"是否清空所有收件人?", "信息确认", MessageBoxButton.OKCancel);
             if (result == MessageBoxResult.Cancel) return;
 
             // 删除发件人
-            Store.PersonalDataManager.ClearAllReceiver();
-            Store.PersonalDataManager.Save();
+            // 从数据库中删除
+            bool dResult = Store.GetUserDatabase<IReceiverDb>().DeleteAllReceivers();
+            if (dResult) DataSource.DataSource = null;
         }
 
         public string FilterText { get; set; } = "";

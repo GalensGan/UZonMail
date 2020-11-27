@@ -1,11 +1,12 @@
 ﻿using Panuon.UI.Silver;
+using SendMultipleEmails.Database;
 using SendMultipleEmails.Datas;
 
 namespace SendMultipleEmails.Pages
 {
-    class AddReceiverViewModel:ScreenChild
+    class Receivers_AddViewModel:ScreenChild
     {
-        public AddReceiverViewModel(Store store) : base(store) 
+        public Receivers_AddViewModel(Store store) : base(store) 
         {
             Receiver = new Person();
         }
@@ -16,11 +17,17 @@ namespace SendMultipleEmails.Pages
         {
             if (!Receiver.Validate(null)) return;
 
-            if (!Store.PersonalDataManager.AddReceiver(Receiver, true))
+            // 判断收件人是否重复
+            Receiver existPerson = Store.GetUserDatabase<IReceiverDb>().FindOneReceiverByName(Receiver.Name);
+
+            if (existPerson!=null)
             {
                 MessageBoxX.Show("添加的收件人已经存在，请不要重复添加", "温馨提示");
                 return;
             }
+
+            // 添加到数据库
+            Store.GetUserDatabase<IReceiverDb>().InsertReceiver(existPerson);
 
             this.RequestClose(true);
         }

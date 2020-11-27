@@ -1,4 +1,4 @@
-﻿<Window x:Class="SendMultipleEmails.Pages.AddSendersView"
+﻿<Window x:Class="SendMultipleEmails.Pages.Senders_ImportView"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 

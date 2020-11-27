@@ -11,6 +11,8 @@ namespace SendMultipleEmails.Datas
 {
     public class Person
     {
+        [LiteDB.BsonId]
+        public int Id { get; set; }
         /// <summary>
         /// 用于排序
         /// </summary>

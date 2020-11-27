@@ -38,7 +38,7 @@ namespace SendMultipleEmails.Pages
 
         public void AddSender()
         {
-            AddSenderViewModel vm = new AddSenderViewModel(Store);
+            Senders_AddViewModel vm = new Senders_AddViewModel(Store);
             bool? result = Store.WindowManager.ShowDialog(vm);
             if (result == null || !(bool)result) return;
 
@@ -49,7 +49,7 @@ namespace SendMultipleEmails.Pages
         public bool CanAddSenders { get; set; } = true;
         public void AddSenders()
         {
-            AddSendersViewModel vm = new AddSendersViewModel(Store);
+            Senders_ImportViewModel vm = new Senders_ImportViewModel(Store);
             bool? result = Store.WindowManager.ShowDialog(vm);
             if (result == null || !(bool)result) return;
 
@@ -61,13 +61,13 @@ namespace SendMultipleEmails.Pages
         public void DeleteSender(DataRowView row)
         {
             Sender sender = row.Row.ConvertToModel<Sender>();
-            MessageBoxResult result = MessageBoxX.Show(string.Format("是否删除发件人:{0}?", sender.Name), "信息确认", null, MessageBoxButton.OKCancel);
+            MessageBoxResult result = MessageBoxX.Show(Store.MainWindow,string.Format("是否删除发件人:{0}?", sender.Name), "信息确认", MessageBoxButton.OKCancel);
             if (result == MessageBoxResult.Cancel) return;
 
             // 删除发件人
             row.Delete();
             // 删除数据库中数据
-            Store.GetUserDatabase<ISenderDb>().DeleteSender(sender.Name);
+            Store.GetUserDatabase<ISenderDb>().DeleteSender(sender.Id);
         }
 
         public string FilterText { get; set; } = "";

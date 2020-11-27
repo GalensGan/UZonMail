@@ -9,6 +9,7 @@ using SendMultipleEmails.Database;
 using SendMultipleEmails.Datas;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -20,10 +21,10 @@ using System.Windows;
 
 namespace SendMultipleEmails.Pages
 {
-    class AddSendersViewModel : ScreenChild
+    class Receivers_ImportViewModel : ScreenChild
     {
-        private static readonly ILog _logger = LogManager.GetLogger(typeof(AddSendersViewModel));
-        public AddSendersViewModel(Store store) : base(store)
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(Receivers_ImportViewModel));
+        public Receivers_ImportViewModel(Store store) : base(store)
         {
             Sheets = new List<string>();
         }
@@ -34,7 +35,7 @@ namespace SendMultipleEmails.Pages
 
         public string SelectedSheet { get; set; }
 
-        public void AddSenders()
+        public void AddReceivers()
         {
             // 判断文件是否存在
             if (string.IsNullOrWhiteSpace(ExcelFullPath))
@@ -71,12 +72,12 @@ namespace SendMultipleEmails.Pages
                     int successNum = 0;
 
                     // 设置数据行
-                    _logger.Info("开始导入发件人信息...");
+                    _logger.Info("开始导入收件人信息...");
                     Dictionary<string, List<string>> tableData = new Dictionary<string, List<string>>();
-                    for (int col = firstColumnNum; col <lastColumnNum; col++)
+                    for (int col = firstColumnNum; col < lastColumnNum; col++)
                     {
                         List<string> columnData = new List<string>();
-                        for (int r = firstRowNum; r <=lastRowNum; r++)
+                        for (int r = firstRowNum; r <= lastRowNum; r++)
                         {
                             // 第一行为表头
                             if (r == firstRowNum)
@@ -85,7 +86,7 @@ namespace SendMultipleEmails.Pages
                                 ICell headerCell = header.GetCell(col);
                                 string cellValue = Helper.NPOIHelper.ReadCellValue(headerCell, evaluator);
                                 if (string.IsNullOrEmpty(cellValue)) continue;
-                                if (!tableData.ContainsKey(cellValue))
+                                if (!tableData.ContainsKey(cellValue) && (cellValue == "姓名" || cellValue == "邮箱"))
                                 {
                                     tableData.Add(cellValue, columnData);
                                 }
@@ -101,31 +102,31 @@ namespace SendMultipleEmails.Pages
                     }
 
                     // 对每个数据进行组装
-                    for (int i = 0; i <totalCount; i++)
+                    for (int i = 0; i < totalCount; i++)
                     {
-                        Sender person = new Sender()
+                        Receiver receiver = new Receiver()
                         {
                             Name = ReadDicData(tableData, "姓名", i),
                             Email = ReadDicData(tableData, "邮箱", i),
-                            Password = ReadDicData(tableData, "密码", i),
-                            SMTP = ReadDicData(tableData, "SMTP", i),
-                            Order = i + 1,
+                            Department = ReadDicData(tableData, "部门", i),
+                            Order = i,
                         };
 
-                        if (!person.Validate(_logger)) continue;
+                        if (!receiver.Validate(_logger)) continue;
 
                         // 查找，判断是否重复
-                        Sender existSender = Store.GetUserDatabase<ISenderDb>().FindOneSenderByEmail(person.Email);
-                        if (existSender != null)
+                        Receiver existReciver = Store.GetUserDatabase<IReceiverDb>().FindOneReceiverByEmail(receiver.Email);
+                        if (existReciver != null)
                         {
-                            _logger.Info(string.Format("第[{0}]行，[{1}] 导入失败！原因：发件箱已经存在", person.Order, person.Name));
+                            _logger.Info(string.Format("第[{0}]行，[{1}] 导入失败！原因：发件箱已经存在", existReciver.Order, existReciver.Name));
                             continue;
                         }
 
                         // 添加发件人
-                        Store.GetUserDatabase<ISenderDb>().InsertSender(person);
+                        Store.GetUserDatabase<IReceiverDb>().InsertReceiver(receiver);
+
                         successNum++;
-                        _logger.Info(string.Format("第[{0}]行，[{1}] 导入成功！", person.Order, person.Name));
+                        _logger.Info(string.Format("第[{0}]行，[{1}] 导入成功！", receiver.Order, receiver.Name));
                     }
 
                     _logger.Info("导入完成。");
@@ -139,7 +140,7 @@ namespace SendMultipleEmails.Pages
                     fs.Close();
                     this.RequestClose(true);
 
-                    MessageBoxX.Show(info,"导入完成");                    
+                    MessageBoxX.Show(info, "导入完成");
                 }
             }
             catch (IOException io)
@@ -190,7 +191,7 @@ namespace SendMultipleEmails.Pages
                 {
                     SelectedSheet = "";
                     Sheets.Clear();
-                    using (Stream stream = new FileStream(openFileDialog.FileName,FileMode.Open, FileAccess.Read, FileShare.Read))
+                    using (Stream stream = new FileStream(openFileDialog.FileName, FileMode.Open, FileAccess.Read, FileShare.Read))
                     {
                         XSSFWorkbook workbook = new XSSFWorkbook(stream);
                         for (int i = 0; i < workbook.Count; i++)
@@ -209,7 +210,7 @@ namespace SendMultipleEmails.Pages
                 catch (IOException ex)
                 {
                     _logger.Error(ex.Message, ex);
-                    MessageBoxX.Show(ex.Message, "读取错误", null, MessageBoxButton.OK, new MessageBoxXConfigurations() { MessageBoxIcon = MessageBoxIcon.Error });
+                    MessageBoxX.Show(Store.MainWindow,ex.Message, "读取错误", MessageBoxButton.OK,MessageBoxIcon.Error);
                 }
             }
         }

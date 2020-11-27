@@ -12,7 +12,7 @@ namespace SendMultipleEmails.Database
         bool InsertSender(Sender obj);
         bool InsertSenders(IEnumerable<Sender> objs);
 
-        bool DeleteSender(string id);
+        bool DeleteSender(int id);
 
         Sender FindOneSenderByName(string name);
 
