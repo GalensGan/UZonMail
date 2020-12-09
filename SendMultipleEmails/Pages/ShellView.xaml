@@ -10,7 +10,6 @@
         WindowStartupLocation="CenterScreen"
         xmlns:s="https://github.com/canton7/Stylet"
         pu:WindowXCaption.Height="32"
-        pu:WindowXCaption.HideBasicButtons="True"
         FontFamily="{StaticResource FontAwesome}"        
         d:DataContext="{d:DesignInstance local:ShellViewModel}">
     <pu:WindowXCaption.Background>
@@ -33,7 +32,7 @@
                         BorderBrush="#FD4B41"
                         BorderThickness="1"
                         pu:ButtonHelper.CornerRadius="9"
-                        pu:ButtonHelper.HoverBrush="#FD7A72"
+                        pu:ButtonHelper.HoverBorderBrush="#FD7A72"
                         Margin="5,0,5,0"
                         Click="BtnClose_Click"/>
                 <Button Height="18"
@@ -42,7 +41,7 @@
                         BorderBrush="#FFB610"
                         BorderThickness="1"
                         pu:ButtonHelper.CornerRadius="9"
-                        pu:ButtonHelper.HoverBrush="#FFC746"
+                        pu:ButtonHelper.HoverBackground="#FFC746"
                         Margin="0,0,5,0"
                         Click="BtnMin_Click"/>
                 <Button Height="18"
@@ -51,7 +50,7 @@
                         BorderBrush="#11A62A"
                         BorderThickness="1"
                         pu:ButtonHelper.CornerRadius="9"
-                        pu:ButtonHelper.HoverBrush="#40D14D"
+                        pu:ButtonHelper.HoverBackground="#40D14D"
                         Margin="0,0,0,0"
                         Click="BtnMax_Click"/>
             </StackPanel>
@@ -73,14 +72,14 @@
                 <RowDefinition Height="1*" />
                 <RowDefinition Height="40"/>
             </Grid.RowDefinitions>
-            <TreeView pu:TreeViewHelper.TreeViewStyle="Modern" Grid.Row="0"
-                          pu:TreeViewHelper.SelectedBackground="#E8E8E8"
-                          pu:TreeViewHelper.ItemPadding="3,0,0,0"
+            <TreeView  Grid.Row="0"
+                          pu:TreeViewHelper.ItemsSelectedBackground="#E8E8E8"
+                          pu:TreeViewHelper.ItemsPadding="3,0,0,0"
                           pu:IconHelper.FontFamily="{StaticResource FontAwesome}"
                           BorderBrush="#C62F2F"
                           Background="Transparent"
                           Margin="5,5,0,5" SelectedItemChanged="{s:Action TreeView_SelectedItemChanged}"
-                          pu:TreeViewHelper.ItemHeight="32">
+                          pu:TreeViewHelper.ItemsHeight="32">
                 <TreeViewItem Style="{StaticResource TreeViewItem_NonStyle}"
                                   Header="设置" FontSize="15"                                 
                                   Padding="10,0,0,0"
@@ -151,7 +150,6 @@
                     <pu:Badge Height="14"
                     Margin="-10,-10"
                     IsWaving="False"
-                    Text="{Binding NewVersion,Mode=OneWay}"
                     Background="#FF0000" />
                 </Button>                
             </StackPanel>           

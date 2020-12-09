@@ -15,10 +15,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using SendMultipleEmails.Extension;
+using SendMultipleEmails.Enums;
+using GalensSDK.StyletEx;
 
 namespace SendMultipleEmails.Pages
 {
-    class Send_SendingViewModel : SendScreenBase
+    class Send_SendingViewModel : ScreenChild
     {
         private static readonly ILog _logger = LogManager.GetLogger(typeof(Send_SendingViewModel));
         public Send_SendingViewModel(Store store) : base(store) { }
@@ -34,8 +36,8 @@ namespace SendMultipleEmails.Pages
 
         public int PMax { get; set; } = 100;
         public int PValue { get; set; } = 0;
-        public override void Load()
-        {
+        public override void AfterInvoke(InvokeParameter parameter)
+        {           
             CanResult = false;
             CanPause = true;
             CanCancle = true;
@@ -58,7 +60,7 @@ namespace SendMultipleEmails.Pages
             if (senders.Count < 1)
             {
                 MessageBoxX.Show("可发件人员数为0，退出发件", "发件人数量错误");
-                NextCommand(Enums.SendStatus.New);
+                InvokeTo(new GalensSDK.StyletEx.InvokeParameter() { InvokeId = InvokeID.Send_New.ToString()});
                 return;
             }
 
@@ -241,7 +243,7 @@ namespace SendMultipleEmails.Pages
             string info = string.Format("本次共发送 [{0}] 条信息，成功 [{1}] 条，失败 [{2}] 条。", _sendTotalCount, _success, _failure);
             MessageBoxX.Show(info, "发送结束");
 
-            NextCommand(Enums.SendStatus.Sent);
+            InvokeTo(new GalensSDK.StyletEx.InvokeParameter() { InvokeId = InvokeID.Send_Sent.ToString() });
         }
 
         public string Log { get; set; }
@@ -251,7 +253,7 @@ namespace SendMultipleEmails.Pages
         public void Result()
         {
             Store.HistoryManager.Save();
-            NextCommand(Enums.SendStatus.Sent);
+            InvokeTo(new GalensSDK.StyletEx.InvokeParameter() { InvokeId = InvokeID.Send_Sent.ToString() });
         }
 
         public bool CanPause { get; set; } = true;

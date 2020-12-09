@@ -48,7 +48,7 @@ namespace SendMultipleEmails.Pages
                     // 如果是自己的模板，就保存，如果是全局模板，就另存为
                     if (isUserTemplate)
                     {
-                        MessageBoxResult result = MessageBoxX.Show("模板未保存，是否保存？", "文件更改", null, MessageBoxButton.YesNo);
+                        MessageBoxResult result = MessageBoxX.Show(null,"模板未保存，是否保存？", "文件更改", MessageBoxButton.YesNo);
                         if (result == MessageBoxResult.Yes)
                         {
                             Store.TemplateManager.Save(_selectedItem.FullName, Content);
@@ -57,7 +57,7 @@ namespace SendMultipleEmails.Pages
                     else
                     {
                         // 另存
-                        MessageBoxResult result = MessageBoxX.Show("模板未保存，是否另存为？", "文件更改", null, MessageBoxButton.YesNo);
+                        MessageBoxResult result = MessageBoxX.Show(null,"模板未保存，是否另存为？", "文件更改", MessageBoxButton.YesNo);
                         if (result == MessageBoxResult.Yes)
                         {
                             SaveAs();
@@ -118,10 +118,10 @@ namespace SendMultipleEmails.Pages
             {
                 TemplateName = this.SelectedItem.Name.Replace(this.SelectedItem.Extension, "_copy")
             };
-            bool result = (bool)_windowManager.ShowDialog(save);
+            bool result = (bool)Store.WindowManager.ShowDialog(save);
             if (!result) return;
 
-            string newPath = Store.ConfigManager.AppConfig.templateDir + "\\" + Store.TemplateName + ".html";
+            string newPath = Store.ConfigManager.AppConfig.TemplateDir + "\\" + Store.TemplateName + ".html";
 
             Store.TemplateManager.Save(newPath, Content);
             IsAllowEdit = false;

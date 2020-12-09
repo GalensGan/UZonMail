@@ -1,7 +1,9 @@
-﻿using log4net;
+﻿using GalensSDK.StyletEx;
+using log4net;
 using Newtonsoft.Json.Bson;
 using Panuon.UI.Silver;
 using SendMultipleEmails.Datas;
+using SendMultipleEmails.Enums;
 using SendMultipleEmails.Pages;
 using Stylet;
 using System;
@@ -16,7 +18,7 @@ using System.Threading.Tasks;
 
 namespace SendMultipleEmails.Pages
 {
-    public class Send_PreviewViewModel : SendScreenBase
+    public class Send_PreviewViewModel : ScreenChild
     {
         private static readonly ILog _logger = LogManager.GetLogger(typeof(SendViewModel));
         public Send_PreviewViewModel(Store store) : base(store) { }
@@ -66,7 +68,8 @@ namespace SendMultipleEmails.Pages
 
         private List<string> Contents;
         private Thread _thread;
-        public override void Load()
+
+        public override void AfterInvoke(InvokeParameter parameter)
         {
             Store.QueueReceivers = new ConcurrentQueue<Tuple<Person, string>>();
             Contents = new List<string>();
@@ -142,7 +145,7 @@ namespace SendMultipleEmails.Pages
                 Execute.OnUIThreadSync(new Action(() =>
                 {
                     MessageBoxX.Show("在数据中未找到“Name”或者“姓名”列。", "格式错误");
-                    NextCommand(Enums.SendStatus.New);
+                    InvokeTo(new InvokeParameter() { InvokeId = InvokeID.Send_Preview.ToString() });
                     return;
                 })); 
             }
@@ -202,7 +205,7 @@ namespace SendMultipleEmails.Pages
                 return;
             }
             Store.MainTitle = MailTitle;
-            NextCommand(Enums.SendStatus.Sending);
+            InvokeTo(new InvokeParameter() { InvokeId = InvokeID.Send_Sending.ToString()});
         }
 
         public string CurrentIndex { get; set; }
@@ -238,7 +241,7 @@ namespace SendMultipleEmails.Pages
             Store.QueueReceivers = null;
 
             // 返回
-            NextCommand(Enums.SendStatus.New);
+            InvokeTo(new InvokeParameter() { InvokeId = InvokeID.Send_New.ToString()});
         }
 
         public string MailTitle { get; set; } = string.Empty;

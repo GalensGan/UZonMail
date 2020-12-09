@@ -17,7 +17,7 @@
                  Value="{Binding SendInterval}"
                  Maximum="20"
                  pu:SliderHelper.ThumbSize="17"
-                 pu:SliderHelper.ThemeBrush="#3F3F3F"
+                 pu:SliderHelper.ThumbBorderBrush="#3F3F3F"
                  Background="#1E3F3F3F" />
                 <TextBlock Margin="40,40,0,10" ToolTip="每个邮箱账号发送邮件时，时间间隔的波动值，建议设置成 1.5 秒">间隔波动(s):</TextBlock>
                 <Slider  Width="200"
@@ -25,7 +25,7 @@
                  Value="{Binding SendIntervalRandom}"
                  Maximum="10"
                  pu:SliderHelper.ThumbSize="17"
-                 pu:SliderHelper.ThemeBrush="#3F3F3F"
+                 pu:SliderHelper.ThumbBorderBrush="#3F3F3F"
                  Background="#1E3F3F3F" />
             </StackPanel>
         </GroupBox>

@@ -22,7 +22,7 @@
                          pu:TextBoxHelper.Icon="&#xf02c;"
                          pu:TextBoxHelper.FocusedBorderBrush="#B5B5B5"
                          pu:TextBoxHelper.FocusedShadowColor="#B5B5B5"
-                         pu:TextBoxHelper.IsClearButtonVisible="True"
+                         pu:TextBoxHelper.CanClear="True"
                          Margin="5,5,5,10" FontSize="16" Height="40"
                          Text="{Binding ExcelFullPath,Mode=TwoWay}"
                          MouseDoubleClick="{s:Action SelectFile}"></TextBox>

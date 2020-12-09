@@ -1,4 +1,5 @@
 ﻿using SendMultipleEmails.Datas;
+using SendMultipleEmails.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,12 +42,12 @@ namespace SendMultipleEmails.Pages
         public bool CanNew { get; set; } = false;
         public void New()
         {
-            NextCommand(Enums.SendStatus.Preview);
+            InvokeTo(new GalensSDK.StyletEx.InvokeParameter() { InvokeId = InvokeID.Send_New.ToString() });
         }
 
         public void History()
         {
-            NextCommand(Enums.SendStatus.Sent);
+            InvokeTo(new GalensSDK.StyletEx.InvokeParameter() { InvokeId = InvokeID.Send_Sent.ToString() });
         }
     }
 }

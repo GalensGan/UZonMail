@@ -24,7 +24,7 @@ namespace SendMultipleEmails.Pages
     /// <summary>
     /// 主窗体
     /// </summary>
-    public class ShellViewModel : KeyOneActive<ScreenChild>
+    public class ShellViewModel : KeyOneActive<IInvoke>
     {
         public void TreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
@@ -60,8 +60,7 @@ namespace SendMultipleEmails.Pages
                 return;
             }
             // 保存Store数据
-            System.Windows.MessageBoxResult dialogResult = MessageBoxX.Show("是否保存数据？", "保存", null, MessageBoxButton.YesNoCancel,
-                new MessageBoxXConfigurations() { CancelButton = "自动保存" });
+            System.Windows.MessageBoxResult dialogResult = MessageBoxX.Show(null,"是否保存数据？", "保存",MessageBoxButton.YesNoCancel,MessageBoxIcon.Question,DefaultButton.YesOK);
             if (dialogResult == MessageBoxResult.Yes)
             {
                 Store.Save();
@@ -142,27 +141,6 @@ namespace SendMultipleEmails.Pages
             {
                 DisplayName = SendStatus.New.ToString(),
                 ID = InvokeID.Send_New.ToString(),
-            });
-
-
-            RegisterItem(new Send_PreviewViewModel(Store)
-            {
-                DisplayName = SendStatus.Preview.ToString(),
-                ID = InvokeID.Send_Preview.ToString(),
-            });
-
-
-            RegisterItem(new Send_SendingViewModel(Store)
-            {
-                DisplayName = SendStatus.Sending.ToString(),
-                ID = InvokeID.Send_Sending.ToString(),
-            });
-
-
-            RegisterItem(new Send_SentViewModel(Store)
-            {
-                DisplayName = SendStatus.Sent.ToString(),
-                ID = InvokeID.Send_Sent.ToString(),
             });
             #endregion
 

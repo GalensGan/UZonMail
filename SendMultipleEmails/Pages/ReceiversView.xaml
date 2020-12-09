@@ -20,19 +20,18 @@
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" Margin="10" Grid.Column="0" Grid.Row="0">
             <Button Height="28" Width="40" Content="&#xf067;" ToolTip="添加单个发件人"
-                        pu:ButtonHelper.WaitingContent="{x:Null}"
+                        pu:ButtonHelper.IsWaiting ="True"
                         pu:ButtonHelper.ClickStyle="Sink"
                         FontFamily="{StaticResource FontAwesome}"
                         Background="#C83F3F3F"
-                        pu:ButtonHelper.HoverBrush="#3F3F3F"
+                        pu:ButtonHelper.HoverBackground="#3F3F3F"
                         pu:ButtonHelper.CornerRadius="15"
                         Command="{s:Action AddReceiver}"/>
             <Button Height="28" Width="40" Content="&#xf0ce;" ToolTip="从Excel批量添加" Margin="10,0,0,0"
-                        pu:ButtonHelper.WaitingContent="{x:Null}"
                         pu:ButtonHelper.ClickStyle="Sink"
                         FontFamily="{StaticResource FontAwesome}"
                         Background="#C83F3F3F"
-                        pu:ButtonHelper.HoverBrush="#3F3F3F"
+                        pu:ButtonHelper.HoverBackground="#3F3F3F"
                         pu:ButtonHelper.CornerRadius="15"
                         Command="{s:Action AddReceivers}"/>
         </StackPanel>
@@ -47,8 +46,7 @@
                               CanUserAddRows="False"
                               AutoGenerateColumns="False"
                               SelectionUnit="Cell"
-                              SelectionMode="Single"
-                      pu:DataGridHelper.HeaderMinHeight="32"                      
+                              SelectionMode="Single"                    
                       Margin="10,0,10,10" Grid.ColumnSpan="2">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="姓名" Binding="{Binding Name}" />
@@ -72,12 +70,11 @@
                                     pu:ButtonHelper.ClickStyle="Sink"
                                     pu:ButtonHelper.Icon="&#xf00d;"
                                     FontFamily="{StaticResource FontAwesome}"
-                                    pu:ButtonHelper.ButtonStyle="Link"
                                     BorderBrush="#963F3F3F"
                                     Foreground="#963F3F3F"
                                     pu:ButtonHelper.CornerRadius="2"
                                      Command="{s:Action ClearAll}"
-                                    pu:ButtonHelper.HoverBrush="#3F3F3F" />
+                                    pu:ButtonHelper.HoverBackground="#3F3F3F" />
                         </StackPanel>                       
                     </DataGridTemplateColumn.Header>
                     <DataGridTemplateColumn.CellTemplate>

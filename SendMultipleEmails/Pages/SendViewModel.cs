@@ -1,4 +1,5 @@
-﻿using log4net;
+﻿using GalensSDK.StyletEx;
+using log4net;
 using NPOI.OpenXml4Net.OPC.Internal;
 using SendMultipleEmails.Datas;
 using SendMultipleEmails.Enums;
@@ -21,15 +22,17 @@ using Screen = Stylet.Screen;
 
 namespace SendMultipleEmails.Pages
 {
-    public class SendViewModel : ScreenChild
+    public class SendViewModel : KeyOneActive<ScreenChild>
     {
         private static readonly ILog _logger = LogManager.GetLogger(typeof(SendViewModel));
+
+        private Store _store;
 
         #region 属性
         public Visibility IsShowNew { get; set; } = Visibility.Visible;
 
         public Visibility IsShowView { get; set; } = Visibility.Collapsed;
         #endregion
-        public SendViewModel(Store store) : base(store) { }
+        public SendViewModel(Store store) { _store = store; }
     }
 }

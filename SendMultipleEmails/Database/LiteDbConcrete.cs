@@ -83,6 +83,11 @@ namespace SendMultipleEmails.Database
         {
             return SenderC.Upsert(objs);
         }
+
+        public bool DeleteSender(int id)
+        {
+            throw new NotImplementedException();
+        }
         #endregion
     }
 }

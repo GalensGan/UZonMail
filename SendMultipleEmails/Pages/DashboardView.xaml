@@ -24,8 +24,7 @@
                                                  Width="40"
                                                  HorizontalAlignment="Center"
                                                  Stroke="LightGray"
-                                                 StrokeThickness="1"
-                                                 pu:LayoutHelper.ColumnDefinition="0.5*">
+                                                 StrokeThickness="1">
                         <Ellipse.Fill>
                             <ImageBrush RenderOptions.BitmapScalingMode="HighQuality"
                                                             ImageSource="/Resources/Images/avatar1.jpeg" />
@@ -49,8 +48,7 @@
                                                      Stroke="LightGray"
                                                      VerticalAlignment="Center"
                                                      StrokeThickness="1"
-                                                     HorizontalAlignment="Left"
-                                                     pu:LayoutHelper.ColumnDefinition="0.5*">
+                                                     HorizontalAlignment="Left">
                                         <Ellipse.Fill>
                                             <ImageBrush RenderOptions.BitmapScalingMode="HighQuality"
                                                                 ImageSource="/Resources/Images/avatar1.jpeg" />
@@ -59,8 +57,7 @@
                                 </ControlTemplate>
                             </Button.Template>
                         </Button>
-                        <Button Margin="50,0,0,0" pu:ButtonHelper.ButtonStyle="Link"
-                                                       Content="{Binding UserName,Mode=OneWay}"
+                        <Button Margin="50,0,0,0"      Content="{Binding UserId,Mode=OneWay}"
                                                        Foreground="Gray"
                                                        FontSize="15"
                                                        VerticalAlignment="Center"
@@ -71,14 +68,14 @@
                                                 BorderThickness="0,0,0,1" />
                     <Grid Grid.Row="1"
                                               Margin="15,0">
-                        <Button HorizontalAlignment="Center" pu:ButtonHelper.ButtonStyle="Link" Height="20" Content="&#xf2d3; 注 销" Command="{s:Action Unsubscribe}"/>
+                        <Button HorizontalAlignment="Center" Height="20" Content="&#xf2d3; 注 销" Command="{s:Action Unsubscribe}"/>
                     </Grid>
                     <Border Grid.Row="1"
                                                 VerticalAlignment="Bottom"
                                                 BorderBrush="#EEEEEE"
                                                 BorderThickness="0,0,0,1" />
                     <Grid Grid.Row="2">
-                        <Button pu:ButtonHelper.ButtonStyle="Link" Command="{s:Action Exit}"
+                        <Button  Command="{s:Action Exit}"
                                                     Height="30"
                                                     VerticalAlignment="Center"
                                                     Content="&#xf08b; 退 出" />

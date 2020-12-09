@@ -30,7 +30,7 @@ namespace SendMultipleEmails.Pages
 
         public void Unsubscribe()
         {
-            MessageBoxResult result = MessageBoxX.Show("注销账户将清空账户内产生的所有数据，是否继续？", "注销确认", null, System.Windows.MessageBoxButton.YesNo);
+            MessageBoxResult result = MessageBoxX.Show(null,"注销账户将清空账户内产生的所有数据，是否继续？", "注销确认", MessageBoxButton.YesNo);
             if (result == MessageBoxResult.OK)
             {
                 Directory.Delete(Store.ConfigManager.AppConfig.UserDataDir);
@@ -39,9 +39,9 @@ namespace SendMultipleEmails.Pages
             }
         }
 
-        public string UserName
+        public string UserId
         {
-            get => Store.AccountManager.CurrentAccount.UserName;
+            get => Store.CurrentAccount.UserId;
         }
     }
 }

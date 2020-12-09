@@ -22,7 +22,7 @@
                          pu:TextBoxHelper.Icon="&#xf2be;"
                          pu:TextBoxHelper.FocusedBorderBrush="#B5B5B5"
                          pu:TextBoxHelper.FocusedShadowColor="#B5B5B5"
-                         pu:TextBoxHelper.IsClearButtonVisible="True"
+                         pu:TextBoxHelper.CanClear="True"
                          Margin="5" FontSize="16" Height="30"
                          Text="{Binding Sender.Name}"></TextBox>
             </DockPanel>
@@ -31,7 +31,7 @@
                          pu:TextBoxHelper.Icon="&#xf0e0;"
                          pu:TextBoxHelper.FocusedBorderBrush="#B5B5B5"
                          pu:TextBoxHelper.FocusedShadowColor="#B5B5B5"
-                         pu:TextBoxHelper.IsClearButtonVisible="True"
+                         pu:TextBoxHelper.CanClear="True"
                          Margin="5" FontSize="16" Height="30"
                          Text="{Binding Sender.Email}"></TextBox>
             </DockPanel>
@@ -40,7 +40,7 @@
                          pu:TextBoxHelper.Icon="&#xf233;"
                          pu:TextBoxHelper.FocusedBorderBrush="#B5B5B5"
                          pu:TextBoxHelper.FocusedShadowColor="#B5B5B5"
-                         pu:TextBoxHelper.IsClearButtonVisible="True"
+                         pu:TextBoxHelper.CanClear="True"
                          Margin="5" FontSize="16" Height="30"
                          Text="{Binding Sender.SMTP}"></TextBox>
             </DockPanel>
@@ -49,7 +49,6 @@
                              pu:PasswordBoxHelper.Icon="&#xf11c;"
                              pu:PasswordBoxHelper.FocusedBorderBrush="#B5B5B5"
                              pu:PasswordBoxHelper.FocusedShadowColor="#B5B5B5"
-                             pu:PasswordBoxHelper.IsShowPwdButtonVisible="True"
                              Margin="5" FontSize="16" Height="30" Name="pwd"
                              PasswordChanged="{s:Action PasswordChanged}"></PasswordBox>
             </DockPanel>

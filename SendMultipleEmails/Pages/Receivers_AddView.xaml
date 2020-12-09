@@ -22,7 +22,7 @@
                          pu:TextBoxHelper.Icon="&#xf2be;"
                          pu:TextBoxHelper.FocusedBorderBrush="#B5B5B5"
                          pu:TextBoxHelper.FocusedShadowColor="#B5B5B5"
-                         pu:TextBoxHelper.IsClearButtonVisible="True"
+                         pu:TextBoxHelper.CanClear="True"
                          Margin="5" FontSize="16" Height="30"
                          Text="{Binding Receiver.Name}"></TextBox>
             </DockPanel>
@@ -31,7 +31,7 @@
                          pu:TextBoxHelper.Icon="&#xf0e0;"
                          pu:TextBoxHelper.FocusedBorderBrush="#B5B5B5"
                          pu:TextBoxHelper.FocusedShadowColor="#B5B5B5"
-                         pu:TextBoxHelper.IsClearButtonVisible="True"
+                         pu:TextBoxHelper.CanClear="True"
                          Margin="5" FontSize="16" Height="30"
                          Text="{Binding Receiver.Email}"></TextBox>
             </DockPanel>

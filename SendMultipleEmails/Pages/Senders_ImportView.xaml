@@ -22,14 +22,14 @@
                          pu:TextBoxHelper.Icon="&#xf11c;"
                          pu:TextBoxHelper.FocusedBorderBrush="#B5B5B5"
                          pu:TextBoxHelper.FocusedShadowColor="#B5B5B5"
-                         pu:TextBoxHelper.IsClearButtonVisible="True"
+                         pu:TextBoxHelper.CanClear="True"
                          Margin="5,5,5,10" FontSize="16" Height="40"
                          Text="{Binding ExcelFullPath,Mode=TwoWay}"
                          MouseDoubleClick="{s:Action SelectFile}"></TextBox>
             <ComboBox   pu:ComboBoxHelper.Watermark="选择 Sheet"
                         pu:ComboBoxHelper.Icon="&#xf11c;"
-                        pu:ComboBoxHelper.HoverBackground="#1EB5B5B5"
-                        pu:ComboBoxHelper.SelectedBackground="#32B5B5B5"
+                        pu:ComboBoxHelper.ItemsHoverBackground="#1EB5B5B5"
+                        pu:ComboBoxHelper.ItemsSelectedBackground="#32B5B5B5"
                         Margin="5" FontSize="16" Height="36"
                         ItemsSource="{Binding Sheets}"
                         SelectedItem="{Binding SelectedSheet}"/>

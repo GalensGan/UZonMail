@@ -28,7 +28,6 @@
             <StackPanel Grid.Row="0" Orientation="Horizontal">                
                 <ProgressBar  Height="28" 
                             Width="28"
-                            pu:ProgressBarHelper.ProgressBarStyle="Ring"
                             BorderBrush="#1E3F3F3F"
                             Foreground="#FF3F3F3F"
                             Value="30"
@@ -38,8 +37,6 @@
             <ProgressBar  Height="25" Grid.Row="2"
                         Background="#1E3F3F3F"
                         Foreground="#FF3F3F3F"
-                        pu:ProgressBarHelper.CornerRadius="15"
-                        pu:ProgressBarHelper.IsPercentVisible="True"
                         Maximum="{Binding PMax}" Value="{Binding PValue}" Margin="0,7"/>
         </Grid>
 

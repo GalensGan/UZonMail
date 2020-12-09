@@ -23,7 +23,7 @@
                          pu:TextBoxHelper.Icon="&#xf007;"
                          pu:TextBoxHelper.FocusedBorderBrush="#B5B5B5"
                          pu:TextBoxHelper.FocusedShadowColor="#B5B5B5"
-                         pu:TextBoxHelper.IsClearButtonVisible="True"
+                         pu:TextBoxHelper.CanClear="True"
                          Margin="5" FontSize="16" Height="30"
                          Text="{Binding UserId}"></TextBox>
             </DockPanel>
@@ -32,7 +32,6 @@
                              pu:PasswordBoxHelper.Icon="&#xf023;"
                              pu:PasswordBoxHelper.FocusedBorderBrush="#B5B5B5"
                              pu:PasswordBoxHelper.FocusedShadowColor="#B5B5B5"
-                             pu:PasswordBoxHelper.IsShowPwdButtonVisible="True"
                              Margin="5" FontSize="16" Height="30" Name="pwd"
                              PasswordChanged="{s:Action PasswordChanged}"></PasswordBox>
             </DockPanel>

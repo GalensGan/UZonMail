@@ -15,10 +15,11 @@ using Panuon.UI.Silver;
 using log4net;
 using System.Net.Mail;
 using System.Net;
+using GalensSDK.StyletEx;
 
 namespace SendMultipleEmails.Pages
 {
-    class Send_SentViewModel : SendScreenBase
+    class Send_SentViewModel : ScreenChild
     {
         private static readonly ILog _logger = LogManager.GetLogger(typeof(Send_SentViewModel));
         public Send_SentViewModel(Store store) : base(store) { }
@@ -27,7 +28,7 @@ namespace SendMultipleEmails.Pages
 
         private List<string> _names;
         private string _filter;
-        public override void Load()
+        public override void AfterInvoke(InvokeParameter parameter)
         {
             // 从历史数据库中获取
             DataSource = new BindingSource
@@ -174,7 +175,7 @@ namespace SendMultipleEmails.Pages
 
         public void Back()
         {
-            NextCommand(SendStatus.New);
+            InvokeTo(new GalensSDK.StyletEx.InvokeParameter() { InvokeId = InvokeID.Send_New.ToString() });
         }
 
         public string FilterText { get; set; } = "";

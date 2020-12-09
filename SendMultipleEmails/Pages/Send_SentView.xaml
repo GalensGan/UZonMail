@@ -36,8 +36,7 @@
                               CanUserAddRows="False"
                               AutoGenerateColumns="False"
                               SelectionUnit="Cell"
-                              SelectionMode="Single"
-                      pu:DataGridHelper.HeaderMinHeight="32"                      
+                              SelectionMode="Single"                    
                       Margin="10,0,10,10" Grid.ColumnSpan="2">
             <DataGrid.Columns>
                 <DataGridTextColumn IsReadOnly="True" Header="发件人" Binding="{Binding SenderName}" />
