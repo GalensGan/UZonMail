@@ -17,22 +17,23 @@ namespace SendMultipleEmails.Datas
         /// 用于排序
         /// </summary>
         public int Order { get; set; }
-        public string Name { get; set; }
+        public string UserId { get; set; }
+        public string UserName { get; set; }
         public string Email { get; set; } = string.Empty;
 
         public virtual bool Validate(ILog logger)
         {
-            if (string.IsNullOrEmpty(Name))
+            if (string.IsNullOrEmpty(UserId))
             {
                 if (logger == null) MessageBoxX.Show("姓名不能为空", "温馨提示");
-                else logger.Warn(string.Format("第[{0}]条记录的姓名为空，姓名：{1}，邮箱：{2}", Order, Name, Email));
+                else logger.Warn(string.Format("第[{0}]条记录的姓名为空，姓名：{1}，邮箱：{2}", Order, UserId, Email));
                 return false;
             }
 
             if (string.IsNullOrEmpty(Email))
             {
                 if(logger==null)MessageBoxX.Show("邮箱不能为空", "温馨提示");
-                else logger.Warn(string.Format("第[{0}]条记录的邮箱为空，姓名：{1}，邮箱：{2}", Order, Name, Email));
+                else logger.Warn(string.Format("第[{0}]条记录的邮箱为空，姓名：{1}，邮箱：{2}", Order, UserId, Email));
                 return false;
             }
 
@@ -42,7 +43,7 @@ namespace SendMultipleEmails.Datas
             if (!regex.IsMatch(Email))
             {
                 if(logger==null) MessageBoxX.Show("邮箱格式不正确", "温馨提示");
-                else logger.Warn(string.Format("第[{0}]条记录的邮箱格式错误，姓名：{1}，邮箱：{2}", Order, Name, Email));
+                else logger.Warn(string.Format("第[{0}]条记录的邮箱格式错误，姓名：{1}，邮箱：{2}", Order, UserId, Email));
                 return false;
             }
 

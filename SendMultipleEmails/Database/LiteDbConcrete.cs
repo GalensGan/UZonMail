@@ -56,12 +56,12 @@ namespace SendMultipleEmails.Database
 
         public bool DeleteSender(string senderId)
         {
-            return SenderC.DeleteMany(s => s.Name == senderId) > 0;
+            return SenderC.DeleteMany(s => s.UserId == senderId) > 0;
         }
 
         public Sender FindOneSenderByName(string userId)
         {
-            return SenderC.FindOne(s => s.Name == userId);
+            return SenderC.FindOne(s => s.UserId == userId);
         }
 
         public Sender FindOneSenderByEmail(string email)
@@ -74,9 +74,9 @@ namespace SendMultipleEmails.Database
             return SenderC.FindAll();
         }
 
-        public bool UpdateSender(Sender sender) 
+        public bool UpdateSender(Sender sender)
         {
-            return SenderC.Update(new BsonDocument() { [FieldKey.Name.ToString()]=sender.Name },sender);
+            return SenderC.Update(new BsonDocument() { [FieldKey.Name.ToString()] = sender.UserId }, sender);
         }
 
         public int UpsertSenders(IEnumerable<Sender> objs)
@@ -87,6 +87,13 @@ namespace SendMultipleEmails.Database
         public bool DeleteSender(int id)
         {
             throw new NotImplementedException();
+        }
+        #endregion
+
+        #region IDatabase
+        public ILiteCollection<BsonDocument> GetCollection(string collectionName)
+        {
+            return _liteDb.GetCollection<BsonDocument>(collectionName);
         }
         #endregion
     }

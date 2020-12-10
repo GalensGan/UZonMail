@@ -99,7 +99,7 @@ namespace SendMultipleEmails.Pages
                     // 获取发送数据
                     Person receiver = new Person()
                     {
-                        Name = rowV.Row[FieldKey.ReceiverName.ToString()].ToString(),
+                        UserId = rowV.Row[FieldKey.ReceiverName.ToString()].ToString(),
                         Email = rowV.Row[FieldKey.ReceiverEmail.ToString()].ToString(),
                     };
 
@@ -115,7 +115,7 @@ namespace SendMultipleEmails.Pages
                         {
                             Sender sender = _senders[i%_senders.Count];
                             _logger.Info(string.Format("[name:{0} - email:] 开始向 [name:{1} - email:{2}] 发送邮件",
-                                sender.Name, sender.Email, receiver.Name, receiver.Email));
+                                sender.UserId, sender.Email, receiver.UserId, receiver.Email));
 
                             MailAddress fromAddr = new MailAddress(sender.Email);
                             MailAddress toAddr = new MailAddress(receiver.Email, receiver.Email);
@@ -138,7 +138,7 @@ namespace SendMultipleEmails.Pages
                             client.Send(mailMsg);
 
                             // 说明发送成功了，修改历史记录
-                            rowV.Row[FieldKey.SenderName.ToString()] = sender.Name;
+                            rowV.Row[FieldKey.SenderName.ToString()] = sender.UserId;
                             rowV.Row[FieldKey.SenderEmail.ToString()] = sender.Email;
                             rowV.Row[FieldKey.IsSuccess.ToString()] = true;
                             rowV.Row[FieldKey.Message.ToString()] = "已重发成功";

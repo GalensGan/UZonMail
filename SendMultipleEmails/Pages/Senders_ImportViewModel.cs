@@ -105,7 +105,7 @@ namespace SendMultipleEmails.Pages
                     {
                         Sender person = new Sender()
                         {
-                            Name = ReadDicData(tableData, "姓名", i),
+                            UserId = ReadDicData(tableData, "姓名", i),
                             Email = ReadDicData(tableData, "邮箱", i),
                             Password = ReadDicData(tableData, "密码", i),
                             SMTP = ReadDicData(tableData, "SMTP", i),
@@ -118,14 +118,14 @@ namespace SendMultipleEmails.Pages
                         Sender existSender = Store.GetUserDatabase<ISenderDb>().FindOneSenderByEmail(person.Email);
                         if (existSender != null)
                         {
-                            _logger.Info(string.Format("第[{0}]行，[{1}] 导入失败！原因：发件箱已经存在", person.Order, person.Name));
+                            _logger.Info(string.Format("第[{0}]行，[{1}] 导入失败！原因：发件箱已经存在", person.Order, person.UserId));
                             continue;
                         }
 
                         // 添加发件人
                         Store.GetUserDatabase<ISenderDb>().InsertSender(person);
                         successNum++;
-                        _logger.Info(string.Format("第[{0}]行，[{1}] 导入成功！", person.Order, person.Name));
+                        _logger.Info(string.Format("第[{0}]行，[{1}] 导入成功！", person.Order, person.UserId));
                     }
 
                     _logger.Info("导入完成。");

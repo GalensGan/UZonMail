@@ -25,7 +25,7 @@ namespace SendMultipleEmails.Pages
             if (!Sender.Validate(null)) return;
 
             // 查找是否重复
-            Sender existSender = Store.GetUserDatabase<ISenderDb>().FindOneSenderByName(Sender.Name);
+            Sender existSender = Store.GetUserDatabase<ISenderDb>().FindOneSenderByName(Sender.UserId);
 
             if (existSender==null)
             {

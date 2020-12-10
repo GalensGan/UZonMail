@@ -1,4 +1,5 @@
-﻿using log4net;
+﻿using LiteDB;
+using log4net;
 using Microsoft.Win32;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
@@ -6,6 +7,7 @@ using NPOI.XSSF.UserModel;
 using Panuon.UI.Silver;
 using Panuon.UI.Silver.Core;
 using SendMultipleEmails.Datas;
+using SendMultipleEmails.Enums;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -69,54 +71,79 @@ namespace SendMultipleEmails.Pages
                     int lastColumnNum = header.LastCellNum;
 
                     // 设置数据行
-                    _logger.Info("开始个人基本信息变量...");
-                    DataTable table = new DataTable("variables");
-                    Store.PersonalDataManager.PersonalData.variablesTable = table;
+                    _logger.Info("开始读取个人基本信息变量...");
 
-                    List<int> cols = new List<int>();
+                    Dictionary<int, string> cols = new Dictionary<int, string>();
                     // 读取表头
                     for (int col = firstColumnNum; col < lastColumnNum; col++)
                     {
                         ICell headerCell = header.GetCell(col);
                         string headerCellValue = Helper.NPOIHelper.ReadCellValue(headerCell, evalor);
                         if (string.IsNullOrEmpty(headerCellValue)) continue;
+
+                        // 对表头去重
+                        if (cols.ContainsValue(headerCellValue)) continue;
+
                         // 添加到表头
-                        cols.Add(col);
-                        table.Columns.Add(headerCellValue);
+                        cols.Add(col,headerCellValue);
                     }
 
                     // 判断是否有Name 或者 Name 列，如果没有，报错
-                    List<string> names = Store.PersonalDataManager.GetTableNames(table);
-                    if(!names.Contains("Name") && !names.Contains("姓名"))
+                    if(!cols.ContainsValue("UserId"))
                     {
-                        MessageBoxX.Show("保证数据列中至少有“Name”或者“姓名”列", "格式错误");
+                        _logger.Info("数据格式错误，头部没有【UserId】列");
+                        MessageBoxX.Show(Store.MainWindow,"保证列头部至少有【UserId】列", "格式错误",MessageBoxIcon.Error);
                         fs.Close();
                         return;
                     }
 
+                    List<BsonDocument> docs = new List<BsonDocument>();
                     // 获取其它数据
                     for (int r = firstRowNum + 1; r <= lastRowNum; r++)
                     {
                         IRow dataRow = sheet.GetRow(r);
-                        List<string> rowValue = cols.ConvertAll(col =>
+                        Dictionary<string, string> rowTemp = new Dictionary<string, string>();
+                        foreach(KeyValuePair<int,string> kv in cols)
                         {
-                            ICell cell = dataRow.GetCell(col);
+                            ICell cell = dataRow.GetCell(kv.Key);
                             string value = Helper.NPOIHelper.ReadCellValue(cell, evalor);
-                            return value;
-                        });
+                            rowTemp.Add(kv.Value, value);
+                        }
+
                         // 全为 0 时，不添加
-                        if (rowValue.Where(item => !string.IsNullOrEmpty(item)).Count() == 0) continue;
-                        table.Rows.Add(rowValue.ToArray());
+                        if (rowTemp.Values.Where(item => !string.IsNullOrEmpty(item)).Count() == 0)
+                        {
+                            _logger.InfoFormat("数据行【{0}】全为空，不添加",r);
+                            continue;
+                        }
+
+                        // 生成bsonDoc
+                        BsonDocument doc = new BsonDocument();
+                        foreach(KeyValuePair<string,string> kv in rowTemp)
+                        {
+                            doc[kv.Key] = kv.Value;
+                        }
+
+                        // 添加当前用户的userName用来分组
+                        doc["$owner"] = Store.CurrentAccount.UserId;
+                        // 添加标记为当前值
+                        doc["$group"] = "当前-" + Store.CurrentAccount.UserId;
+{}
+                        docs.Add(doc);
                     }
-                    Store.PersonalDataManager.Save();
+
+                    // 删除原来的数据
+                    Store.GetCollection(DatabaseName.Variable.ToString()).DeleteMany(new BsonExpression())
+
+                    // 保存进数据库
+                    Store.GetCollection(DatabaseName.Variable.ToString()).InsertBulk(docs);
 
                     _logger.Info("导入完成。");
-                    string info = string.Format("共导入{0}条数据",table.Rows.Count);
+                    string info = string.Format("共导入{0}条数据",docs.Count);
                     _logger.Info(info);   
                     fs.Close();
                     this.RequestClose(true);
-
-                    MessageBoxX.Show(info, "导入完成");
+                    MessageBoxX.Show(Store.MainWindow,info, "导入完成",MessageBoxIcon.Success);
                 }
             }
             catch (IOException io)
@@ -188,7 +215,7 @@ namespace SendMultipleEmails.Pages
                 catch (IOException ex)
                 {
                     _logger.Error(ex.Message, ex);
-                    MessageBoxX.Show(ex.Message, "读取错误", null, MessageBoxButton.OK, new MessageBoxXConfigurations() { MessageBoxIcon = MessageBoxIcon.Error });
+                    MessageBoxX.Show(Store.MainWindow,ex.Message, "读取错误", MessageBoxButton.OK,MessageBoxIcon.Error);
                 }
             }
         }

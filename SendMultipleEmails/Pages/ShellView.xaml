@@ -115,8 +115,7 @@
                                   IsSelected="{Binding IsImportData}"
                                   pu:TreeViewHelper.ItemIcon="&#xf122;" />
                 <TreeViewItem Header="模        板" Name="Template"
-                                  Margin="0,2"
-                                  Background="Transparent"                                 
+                                  Margin="0,2" Background="Transparent"                                 
                                   IsSelected="{Binding IsTemplate}"
                                   pu:TreeViewHelper.ItemIcon="&#xf0ea;" />             
                 <TreeViewItem Header="发        送" Name="Send"

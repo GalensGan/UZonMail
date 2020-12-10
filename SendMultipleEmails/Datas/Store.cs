@@ -1,4 +1,5 @@
-﻿using Panuon.UI.Silver;
+﻿using LiteDB;
+using Panuon.UI.Silver;
 using SendMultipleEmails.Database;
 using SendMultipleEmails.ResponseJson;
 using Stylet;
@@ -99,17 +100,6 @@ namespace SendMultipleEmails.Datas
         public TemplateManager TemplateManager { get; private set; }
         #endregion
 
-
-        #region // 其它用户数据
-        public PersonalDataManager PersonalDataManager { get; private set; }
-        #endregion
-
-
-        #region // 历史记录
-        public HistoryManager HistoryManager { get; set; }
-        #endregion
-
-
         #region 临时数据
         public ConcurrentQueue<Tuple<Person, string>> QueueReceivers;
 
@@ -139,6 +129,11 @@ namespace SendMultipleEmails.Datas
         public T GetUserDatabase<T>()
         {
             return (T)_userDatabase;
+        }
+
+        public ILiteCollection<BsonDocument> GetCollection(string collectionName)
+        {
+            return _userDatabase.GetCollection(collectionName);
         }
 
         private IDatabase _userDatabase;

@@ -154,18 +154,18 @@ namespace SendMultipleEmails.Pages
             {
                 Person receiver = new Person()
                 {
-                    Name = receiverRow["Name"].ToString(),
+                    UserId = receiverRow["Name"].ToString(),
                     Email = receiverRow["Email"].ToString(),
                 };
 
                 // 通过名字找到对应收件人数据
 
                 // 按姓名对应，找到发件人
-                DataRow[] receiverDataRows = Store.PersonalDataManager.PersonalData.variablesTable.Select(string.Format("{0}='{1}'", keyColumn, receiver.Name));
+                DataRow[] receiverDataRows = Store.PersonalDataManager.PersonalData.variablesTable.Select(string.Format("{0}='{1}'", keyColumn, receiver.UserId));
                 string result = content;
                 if (receiverDataRows.Length != 1)
                 {
-                    _logger.Info(string.Format("未找到发件人:{0}相对应的参数", receiver.Name));
+                    _logger.Info(string.Format("未找到发件人:{0}相对应的参数", receiver.UserId));
                 }
                 else
                 {

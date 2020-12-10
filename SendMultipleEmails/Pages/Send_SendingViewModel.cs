@@ -89,7 +89,7 @@ namespace SendMultipleEmails.Pages
 
                         Execute.OnUIThreadSync(new Action(() =>
                         {
-                            SendingLogs.Add(string.Format("[name:{0}-email:{1}] 将等待 {2}ms 之后开始准备发送下一封邮件",sender.Name,sender.Email,interval));
+                            SendingLogs.Add(string.Format("[name:{0}-email:{1}] 将等待 {2}ms 之后开始准备发送下一封邮件",sender.UserId,sender.Email,interval));
                         }));
 
                         Thread.Sleep(interval);
@@ -107,7 +107,7 @@ namespace SendMultipleEmails.Pages
             {
                 Person rec = receiver.Item1;
                 string startInfo = string.Format("[name:{0} - email:] 开始向 [name:{1} - email:{2}] 发送邮件",
-                    sender.Name, sender.Email, receiver.Item1.Name, rec.Email);
+                    sender.UserId, sender.Email, receiver.Item1.UserId, rec.Email);
                 _logger.Info(startInfo);
                 Execute.OnUIThreadSync(new Action(() =>
                 {
@@ -140,7 +140,7 @@ namespace SendMultipleEmails.Pages
 
                 // 发送成功
                 _success++;
-                string messageInfo = string.Format("[name:{0}-email:{1}] 发送成功！", receiver.Item1.Name, receiver.Item1.Email);
+                string messageInfo = string.Format("[name:{0}-email:{1}] 发送成功！", receiver.Item1.UserId, receiver.Item1.Email);
                 _logger.Info(messageInfo);
 
                 // 添加到历史记录中
@@ -164,7 +164,7 @@ namespace SendMultipleEmails.Pages
 
                 Execute.OnUIThreadSync(new Action(() =>
                 {
-                    SendingLogs.Add(string.Format("SMTP错误，[name:{0}email:{1}] 发送失败。原因：{2}", sender.Name, sender.Email, smtp.Message));
+                    SendingLogs.Add(string.Format("SMTP错误，[name:{0}email:{1}] 发送失败。原因：{2}", sender.UserId, sender.Email, smtp.Message));
                     PValue = ++_failure + _success;
                     if (PValue == _sendTotalCount)
                     {
@@ -181,7 +181,7 @@ namespace SendMultipleEmails.Pages
 
                 Execute.OnUIThreadSync(new Action(() =>
                 {
-                    SendingLogs.Add(string.Format("SMTP错误，[name:{0}email:{1}] 发送失败。原因：{2}", sender.Name, sender.Email, smtp.Message));
+                    SendingLogs.Add(string.Format("SMTP错误，[name:{0}email:{1}] 发送失败。原因：{2}", sender.UserId, sender.Email, smtp.Message));
                     PValue = ++_failure + _success;
                     if (PValue == _sendTotalCount)
                     {

@@ -18,7 +18,7 @@ namespace SendMultipleEmails.Pages
             if (!Receiver.Validate(null)) return;
 
             // 判断收件人是否重复
-            Receiver existPerson = Store.GetUserDatabase<IReceiverDb>().FindOneReceiverByName(Receiver.Name);
+            Receiver existPerson = Store.GetUserDatabase<IReceiverDb>().FindOneReceiverByName(Receiver.UserId);
 
             if (existPerson!=null)
             {

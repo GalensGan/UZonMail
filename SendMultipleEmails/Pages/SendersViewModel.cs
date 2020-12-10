@@ -61,7 +61,7 @@ namespace SendMultipleEmails.Pages
         public void DeleteSender(DataRowView row)
         {
             Sender sender = row.Row.ConvertToModel<Sender>();
-            MessageBoxResult result = MessageBoxX.Show(Store.MainWindow,string.Format("是否删除发件人:{0}?", sender.Name), "信息确认", MessageBoxButton.OKCancel);
+            MessageBoxResult result = MessageBoxX.Show(Store.MainWindow,string.Format("是否删除发件人:{0}?", sender.UserId), "信息确认", MessageBoxButton.OKCancel);
             if (result == MessageBoxResult.Cancel) return;
 
             // 删除发件人

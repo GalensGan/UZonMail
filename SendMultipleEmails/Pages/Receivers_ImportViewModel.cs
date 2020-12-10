@@ -106,7 +106,7 @@ namespace SendMultipleEmails.Pages
                     {
                         Receiver receiver = new Receiver()
                         {
-                            Name = ReadDicData(tableData, "姓名", i),
+                            UserId = ReadDicData(tableData, "姓名", i),
                             Email = ReadDicData(tableData, "邮箱", i),
                             Department = ReadDicData(tableData, "部门", i),
                             Order = i,
@@ -118,7 +118,7 @@ namespace SendMultipleEmails.Pages
                         Receiver existReciver = Store.GetUserDatabase<IReceiverDb>().FindOneReceiverByEmail(receiver.Email);
                         if (existReciver != null)
                         {
-                            _logger.Info(string.Format("第[{0}]行，[{1}] 导入失败！原因：发件箱已经存在", existReciver.Order, existReciver.Name));
+                            _logger.Info(string.Format("第[{0}]行，[{1}] 导入失败！原因：发件箱已经存在", existReciver.Order, existReciver.UserId));
                             continue;
                         }
 
@@ -126,7 +126,7 @@ namespace SendMultipleEmails.Pages
                         Store.GetUserDatabase<IReceiverDb>().InsertReceiver(receiver);
 
                         successNum++;
-                        _logger.Info(string.Format("第[{0}]行，[{1}] 导入成功！", receiver.Order, receiver.Name));
+                        _logger.Info(string.Format("第[{0}]行，[{1}] 导入成功！", receiver.Order, receiver.UserId));
                     }
 
                     _logger.Info("导入完成。");

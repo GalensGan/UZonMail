@@ -27,5 +27,10 @@ namespace SendMultipleEmails.Enums
         /// 发送历史
         /// </summary>
         SendHistory,
+
+        /// <summary>
+        /// 变量表
+        /// </summary>
+        Variable,
     }
 }
