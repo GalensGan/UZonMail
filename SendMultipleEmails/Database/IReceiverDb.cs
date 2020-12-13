@@ -16,7 +16,7 @@ namespace SendMultipleEmails.Database
 
         bool DeleteAllReceivers();
 
-        Receiver FindOneReceiverByName(string name);
+        Receiver FindOneReceiverByUserId(string userId);
 
         Receiver FindOneReceiverByEmail(string email);
 
@@ -25,5 +25,8 @@ namespace SendMultipleEmails.Database
         bool UpdateReceiver(Receiver obj);
 
         int UpsertReceivers(IEnumerable<Receiver> objs);
+
+        // 按组查找
+        IEnumerable<Receiver> FindReceiversByGroup(int groupId);
     }
 }

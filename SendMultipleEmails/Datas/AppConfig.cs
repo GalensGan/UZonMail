@@ -11,7 +11,7 @@ namespace SendMultipleEmails.Datas
     /// <summary>
     /// 基本数据设置
     /// </summary>
-    public class DefaultConfig
+    public class AppConfig
     {
         public int smtpPort = 25;
 
@@ -72,6 +72,15 @@ namespace SendMultipleEmails.Datas
             get
             {
                 return UserDataDir + "\\data.db";
+            }
+        }
+
+        [JsonIgnore]
+        public string UserSettings
+        {
+            get
+            {
+                return UserDataDir + "setting.json";
             }
         }
         #endregion

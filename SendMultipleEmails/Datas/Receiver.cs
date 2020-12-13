@@ -8,6 +8,9 @@ namespace SendMultipleEmails.Datas
 {
     public class Receiver:Person
     {
-        public string Department { get; set; }
+        public int GroupId { get; set; }
+
+        [LiteDB.BsonIgnore]
+        public string GroupFullName { get; set; }        
     }
 }

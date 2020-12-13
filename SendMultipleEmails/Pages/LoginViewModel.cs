@@ -36,13 +36,13 @@ namespace SendMultipleEmails.Pages
         {
             if (string.IsNullOrEmpty(UserId))
             {
-                MessageBoxX.Show("请输入用户名", "温馨提示");
+                Store.ShowInfo("请输入用户名", "温馨提示");
                 return false;
             }
 
             if (string.IsNullOrEmpty(Password))
             {
-                MessageBoxX.Show("请输入密码", "温馨提示");
+                Store.ShowInfo("请输入密码", "温馨提示");
                 return false;
             }
             return true;
@@ -58,7 +58,7 @@ namespace SendMultipleEmails.Pages
             Account account = iAccount.FindOneAccount(UserId);
             if (account != null)
             {
-                MessageBoxX.Show("当前用户已经存在，请更换账号注册", "注册失败");
+                Store.ShowError("当前用户已经存在，请更换账号注册", "注册失败");
                 return;
             }
 
@@ -71,11 +71,11 @@ namespace SendMultipleEmails.Pages
             };
             if (!iAccount.InsertAccount(newAccount))
             {
-                MessageBoxX.Show("未能添加到数据库", "注册失败");
+                Store.ShowError("未能添加到数据库", "注册失败");
                 return;
             }
 
-            MessageBoxX.Show("注册成功，请登陆", "注册");
+            Store.ShowSuccess("注册成功，请登陆", "注册");
         }
 
         public void Login()
@@ -86,14 +86,14 @@ namespace SendMultipleEmails.Pages
             Account result = Store.GetAccountDatabase<IAccountDb>().FindOneAccount(UserId);
             if (result == null)
             {
-                MessageBoxX.Show("用户不存在，请重新输入", "验证失败");
+                Store.ShowError("用户不存在，请重新输入", "验证失败");
                 return;
             }
 
             // 验证密码
             if (result.PassWord != MD5Ex.EncryptString(this.Password))
             {
-                MessageBoxX.Show("密码错误，请重新输入", "验证失败");
+                Store.ShowError("密码错误，请重新输入", "验证失败");
                 return;
             }
 

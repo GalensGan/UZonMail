@@ -11,6 +11,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace SendMultipleEmails.Datas
 {
@@ -60,6 +61,13 @@ namespace SendMultipleEmails.Datas
 
             // 打开个人数据库
             _userDatabase = new LiteDbConcrete(ConfigManager.AppConfig.UserDatabaseFullName);
+
+            // 读取个人的配置
+            ConfigManager.ReadPersonalConfig(ConfigManager.AppConfig.UserSettings);
+
+            // 加载模块库
+            TemplateManager = new TemplateManager(ConfigManager.AppConfig);
+
         }
         #endregion
 
@@ -137,6 +145,28 @@ namespace SendMultipleEmails.Datas
         }
 
         private IDatabase _userDatabase;
+        #endregion
+
+        #region 提示窗体
+        public MessageBoxResult ShowInfo(string text,string caption)
+        {
+            return MessageBoxX.Show(MainWindow, text, caption, MessageBoxButton.OK, MessageBoxIcon.Info);
+        }
+
+        public MessageBoxResult ShowSuccess(string text, string caption)
+        {
+            return MessageBoxX.Show(MainWindow, text, caption, MessageBoxButton.OK, MessageBoxIcon.Success);
+        }
+
+        public MessageBoxResult ShowError(string text,string caption)
+        {
+            return MessageBoxX.Show(MainWindow, text, caption, MessageBoxButton.OK, MessageBoxIcon.Error);
+        }
+
+        public MessageBoxResult ShowWarning(string text, string caption)
+        {
+            return MessageBoxX.Show(MainWindow, text, caption, MessageBoxButton.OKCancel, MessageBoxIcon.Warning,DefaultButton.CancelNo);
+        }
         #endregion
     }
 }

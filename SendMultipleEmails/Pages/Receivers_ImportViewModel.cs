@@ -18,6 +18,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
+using Group = SendMultipleEmails.Datas.Group;
 
 namespace SendMultipleEmails.Pages
 {
@@ -74,6 +75,7 @@ namespace SendMultipleEmails.Pages
                     // 设置数据行
                     _logger.Info("开始导入收件人信息...");
                     Dictionary<string, List<string>> tableData = new Dictionary<string, List<string>>();
+
                     for (int col = firstColumnNum; col < lastColumnNum; col++)
                     {
                         List<string> columnData = new List<string>();
@@ -86,7 +88,7 @@ namespace SendMultipleEmails.Pages
                                 ICell headerCell = header.GetCell(col);
                                 string cellValue = Helper.NPOIHelper.ReadCellValue(headerCell, evaluator);
                                 if (string.IsNullOrEmpty(cellValue)) continue;
-                                if (!tableData.ContainsKey(cellValue) && (cellValue == "姓名" || cellValue == "邮箱"))
+                                if (!tableData.ContainsKey(cellValue) && (cellValue == "姓名" || cellValue == "邮箱" || cellValue == "组"))
                                 {
                                     tableData.Add(cellValue, columnData);
                                 }
@@ -101,14 +103,20 @@ namespace SendMultipleEmails.Pages
                         }
                     }
 
+                    // 从数据库中读取组的信息
+                    List<Group> groups = Store.GetUserDatabase<IGroup>().GetAllGroups().ToList();
+                    // 获取组的全称
+                    groups.ForEach(item => item.GenerateFullName(groups));
+
                     // 对每个数据进行组装
                     for (int i = 0; i < totalCount; i++)
                     {
+                        // 获取
                         Receiver receiver = new Receiver()
                         {
                             UserId = ReadDicData(tableData, "姓名", i),
                             Email = ReadDicData(tableData, "邮箱", i),
-                            Department = ReadDicData(tableData, "部门", i),
+                            GroupId = Group.GetGroupIdByFullName(groups,Store,ReadDicData(tableData, "组", i)),
                             Order = i,
                         };
 
@@ -140,18 +148,18 @@ namespace SendMultipleEmails.Pages
                     fs.Close();
                     this.RequestClose(true);
 
-                    MessageBoxX.Show(info, "导入完成");
+                    Store.ShowInfo(info, "导入完成");
                 }
             }
             catch (IOException io)
             {
                 _logger.Error(io.Message, io);
-                MessageBoxX.Show(io.Message, "IO异常");
+                Store.ShowError(io.Message, "IO异常");
             }
             catch (Exception ex)
             {
                 _logger.Error(ex.Message, ex);
-                MessageBoxX.Show(ex.Message, "读取文件异常");
+               Store.ShowError(ex.Message, "读取文件异常");
             }
         }
 

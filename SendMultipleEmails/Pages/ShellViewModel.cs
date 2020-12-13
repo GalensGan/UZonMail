@@ -60,7 +60,7 @@ namespace SendMultipleEmails.Pages
                 return;
             }
             // 保存Store数据
-            System.Windows.MessageBoxResult dialogResult = MessageBoxX.Show(null,"是否保存数据？", "保存",MessageBoxButton.YesNoCancel,MessageBoxIcon.Question,DefaultButton.YesOK);
+            System.Windows.MessageBoxResult dialogResult = MessageBoxX.Show(Store.MainWindow,"是否保存数据？", "保存",MessageBoxButton.YesNoCancel,MessageBoxIcon.Question,DefaultButton.YesOK);
             if (dialogResult == MessageBoxResult.Yes)
             {
                 Store.Save();
@@ -80,11 +80,11 @@ namespace SendMultipleEmails.Pages
             Store.WindowManager.ShowDialog(loginVM);
 
             #region 主要界面
-            RegisterItem(new DashboardViewModel(Store)
-            {
-                DisplayName = "个人中心",
-                ID = InvokeID.Dashboard.ToString(),
-            });
+            //RegisterItem(new DashboardViewModel(Store)
+            //{
+            //    DisplayName = "个人中心",
+            //    ID = InvokeID.Dashboard.ToString(),
+            //});
 
             RegisterItem(new SendSettingsViewModel(Store)
             {
@@ -104,7 +104,7 @@ namespace SendMultipleEmails.Pages
                 ID = InvokeID.Receivers.ToString(),
             });
 
-            RegisterItem(new SendDataViewModel(Store)
+            RegisterItem(new VariableViewModel(Store)
             {
                 DisplayName = "导入数据",
                 ID = InvokeID.ImportVariables.ToString(),
@@ -137,11 +137,11 @@ namespace SendMultipleEmails.Pages
 
             #region 发送模块
             // 初始化
-            RegisterItem(new Send_NewViewModel(Store)
-            {
-                DisplayName = SendStatus.New.ToString(),
-                ID = InvokeID.Send_New.ToString(),
-            });
+            //RegisterItem(new Send_NewViewModel(Store)
+            //{
+            //    DisplayName = SendStatus.New.ToString(),
+            //    ID = InvokeID.Send_New.ToString(),
+            //});
             #endregion
 
             // 激活

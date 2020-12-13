@@ -7,39 +7,51 @@
       xmlns:s="https://github.com/canton7/Stylet"
       mc:Ignorable="d"
       WindowStyle="None"
-      FontFamily="{StaticResource FontAwesome}"
       WindowStartupLocation="Manual"      
       Background="Transparent"  
       AllowsTransparency="True"
-      Title="LoginView" Height="230" Width="560">
+      FontFamily="pack://application:,,,/Font/#iconfont"
+      Title="LoginView" Height="255" Width="460">
 
     <Grid>
         <Border BorderThickness="1" BorderBrush="Gray"  CornerRadius="5,5,5,5" Background="White" />
         <StackPanel Margin="20,20,20,10">
             <TextBlock Margin="10,10,10,20" FontSize="24" HorizontalAlignment="Center">添加收件人</TextBlock>
             <DockPanel>
-                <TextBox pu:TextBoxHelper.Watermark="姓名"
-                         pu:TextBoxHelper.Icon="&#xf2be;"
+                <TextBlock ToolTip="输入收件人用户ID" Margin="0,10,0,0" FontSize="20">&#xe73f;</TextBlock>
+                <TextBox pu:TextBoxHelper.Watermark="收件人ID"
                          pu:TextBoxHelper.FocusedBorderBrush="#B5B5B5"
                          pu:TextBoxHelper.FocusedShadowColor="#B5B5B5"
                          pu:TextBoxHelper.CanClear="True"
-                         Margin="5" FontSize="16" Height="30"
-                         Text="{Binding Receiver.Name}"></TextBox>
+                         FontSize="16"
+                         Margin="5" Height="30"
+                         Text="{Binding Receiver.UserId}" />
             </DockPanel>
             <DockPanel>
+                <TextBlock ToolTip="输入收件人邮箱" Margin="0,10,0,0" FontSize="20">&#xe647;</TextBlock>
                 <TextBox pu:TextBoxHelper.Watermark="邮箱"
-                         pu:TextBoxHelper.Icon="&#xf0e0;"
                          pu:TextBoxHelper.FocusedBorderBrush="#B5B5B5"
                          pu:TextBoxHelper.FocusedShadowColor="#B5B5B5"
                          pu:TextBoxHelper.CanClear="True"
                          Margin="5" FontSize="16" Height="30"
                          Text="{Binding Receiver.Email}"></TextBox>
             </DockPanel>
+            <DockPanel>
+                <TextBlock Margin="0,10,0,0" FontSize="20" ToolTip="收件人组，不同层级间用/分隔">&#xebae;</TextBlock>
+                <ComboBox pu:ComboBoxHelper.Watermark="输入或者选择组"
+                        pu:ComboBoxHelper.ItemsHoverBackground="#1EB5B5B5"
+                        pu:ComboBoxHelper.ItemsSelectedBackground="#32B5B5B5"
+                        Margin="5" FontSize="16" Height="30"
+                        IsEditable="True"
+                        ItemsSource="{Binding Groups}"
+                        SelectedItem="{Binding Receiver.GroupFullName}"/>
+            </DockPanel>
             <DockPanel/>
             <DockPanel/>
             <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft" Margin="0,15,5,0">
-                <Button FontSize="16" Width="60" Height="30" Margin="0,0,10,0" Command="{s:Action AddReceiver}" IsDefault="True">确定</Button>
-                <Button FontSize="16" Width="60" Height="30" Command="{s:Action Quite}">退出</Button>
+                <Button FontSize="16" Width="60" Height="30" Margin="0,0,10,0" Command="{s:Action Confirm}" IsDefault="True"
+                        pu:ButtonHelper.CornerRadius="4">确定</Button>
+                <Button FontSize="16" Width="60" Height="30" Command="{s:Action Quite}" pu:ButtonHelper.CornerRadius="4">退出</Button>
             </StackPanel>
         </StackPanel>
     </Grid>

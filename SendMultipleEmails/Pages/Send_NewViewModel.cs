@@ -16,23 +16,24 @@ namespace SendMultipleEmails.Pages
         {
             base.OnActivate();
 
-            // 判断是否有发件人
-            if (Store.PersonalDataManager.GetUsingSenders().Count < 1)
-            {
-                // 不能新建
-                CanNew = false;
-                NewTip = "未找到发件人,先添加发件人";
-                return;
-            }
 
-            // 判断是否可以新建
-            if (Store.PersonalDataManager.GetCurrentReceiverCount() < 1)
-            {
-                // 不能新建
-                CanNew = false;
-                NewTip = "未找到收件人,先添加收件人";
-                return;
-            }
+            //// 判断是否有发件人
+            //if (Store.PersonalDataManager.GetUsingSenders().Count < 1)
+            //{
+            //    // 不能新建
+            //    CanNew = false;
+            //    NewTip = "未找到发件人,先添加发件人";
+            //    return;
+            //}
+
+            //// 判断是否可以新建
+            //if (Store.PersonalDataManager.GetCurrentReceiverCount() < 1)
+            //{
+            //    // 不能新建
+            //    CanNew = false;
+            //    NewTip = "未找到收件人,先添加收件人";
+            //    return;
+            //}
 
             CanNew = true;
         }

@@ -9,24 +9,29 @@
       d:DesignHeight="450" d:DesignWidth="800">
 
     <Grid>
-        <GroupBox pu:GroupBoxHelper.ShadowColor="LightGray" pu:GroupBoxHelper.CornerRadius="4" Width="300" Height="200" HorizontalAlignment="Center"  VerticalAlignment="Center" Margin="0,-100,0,0">
-            <StackPanel Grid.Row="0" Background="White">
-                <TextBlock Margin="40,15,0,10" ToolTip="每个邮箱账号发送邮件的间隔，建议设置成 5 秒">发送间隔(s):</TextBlock>
-                <Slider  Width="200"
-                 Minimum="1"
-                 Value="{Binding SendInterval}"
-                 Maximum="20"
-                 pu:SliderHelper.ThumbSize="17"
-                 pu:SliderHelper.ThumbBorderBrush="#3F3F3F"
-                 Background="#1E3F3F3F" />
-                <TextBlock Margin="40,40,0,10" ToolTip="每个邮箱账号发送邮件时，时间间隔的波动值，建议设置成 1.5 秒">间隔波动(s):</TextBlock>
-                <Slider  Width="200"
-                 Minimum="0"
-                 Value="{Binding SendIntervalRandom}"
-                 Maximum="10"
-                 pu:SliderHelper.ThumbSize="17"
-                 pu:SliderHelper.ThumbBorderBrush="#3F3F3F"
-                 Background="#1E3F3F3F" />
+        <GroupBox pu:GroupBoxHelper.ShadowColor="LightGray" pu:GroupBoxHelper.CornerRadius="4" Width="300" Height="160" HorizontalAlignment="Center"  VerticalAlignment="Center" Margin="0,-100,0,0">
+            <StackPanel>
+                <TextBlock Margin="10" ToolTip="每个邮箱账号发送邮件的间隔，建议设置成 5 秒">发送间隔(s):</TextBlock>
+                <DockPanel Margin="20,10,20,10">
+                    <TextBlock Text="{Binding SendInterval}" Margin="0,0,10,0"></TextBlock>
+                    <Slider Margin="0"
+                         Minimum="1"
+                         Value="{Binding SendInterval}"                 
+                         Maximum="20"
+                         pu:SliderHelper.ThumbSize="15"
+                         pu:SliderHelper.ThumbBorderBrush="#3F3F3F" />
+                </DockPanel>                
+                <TextBlock Margin="10,20,10,10" ToolTip="每个邮箱账号发送邮件时，时间间隔的波动值，建议设置成 1.5 秒">间隔波动(s): </TextBlock>
+                <DockPanel Margin="20,10,20,10">
+                    <TextBlock Text="{Binding SendIntervalRandom}" Margin="0,0,10,0"></TextBlock>
+                    <Slider
+                     Minimum="0"
+                     Value="{Binding SendIntervalRandom}"
+                     Maximum="10"
+                     pu:SliderHelper.ThumbSize="15"
+                     pu:SliderHelper.ThumbBorderBrush="#3F3F3F"
+                     Background="#1E3F3F3F" />
+                </DockPanel>
             </StackPanel>
         </GroupBox>
     </Grid>

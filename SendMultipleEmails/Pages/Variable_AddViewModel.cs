@@ -22,10 +22,10 @@ using System.Windows.Controls;
 
 namespace SendMultipleEmails.Pages
 {
-    class AddVariableViewModel : ScreenChild
+    class Variable_AddViewModel : ScreenChild
     {
         private static readonly ILog _logger = LogManager.GetLogger(typeof(Senders_ImportViewModel));
-        public AddVariableViewModel(Store store) : base(store)
+        public Variable_AddViewModel(Store store) : base(store)
         {
             Sheets = new List<string>();
         }
@@ -85,14 +85,18 @@ namespace SendMultipleEmails.Pages
                         if (cols.ContainsValue(headerCellValue)) continue;
 
                         // 添加到表头
-                        cols.Add(col,headerCellValue);
+                        if (headerCellValue.Contains("姓名"))
+                        {
+                            cols.Add(col, "UserId");
+                        }
+                        else cols.Add(col, headerCellValue);
                     }
 
                     // 判断是否有Name 或者 Name 列，如果没有，报错
-                    if(!cols.ContainsValue("UserId"))
+                    if (!cols.ContainsValue("UserId"))
                     {
-                        _logger.Info("数据格式错误，头部没有【UserId】列");
-                        MessageBoxX.Show(Store.MainWindow,"保证列头部至少有【UserId】列", "格式错误",MessageBoxIcon.Error);
+                        _logger.Info("数据格式错误，头部没有【姓名】或者【UserId】列");
+                        MessageBoxX.Show(Store.MainWindow, "保证列头部至少有【姓名】或者【UserId】列", "格式错误", MessageBoxIcon.Error);
                         fs.Close();
                         return;
                     }
@@ -103,7 +107,7 @@ namespace SendMultipleEmails.Pages
                     {
                         IRow dataRow = sheet.GetRow(r);
                         Dictionary<string, string> rowTemp = new Dictionary<string, string>();
-                        foreach(KeyValuePair<int,string> kv in cols)
+                        foreach (KeyValuePair<int, string> kv in cols)
                         {
                             ICell cell = dataRow.GetCell(kv.Key);
                             string value = Helper.NPOIHelper.ReadCellValue(cell, evalor);
@@ -113,37 +117,36 @@ namespace SendMultipleEmails.Pages
                         // 全为 0 时，不添加
                         if (rowTemp.Values.Where(item => !string.IsNullOrEmpty(item)).Count() == 0)
                         {
-                            _logger.InfoFormat("数据行【{0}】全为空，不添加",r);
+                            _logger.InfoFormat("数据行【{0}】全为空，不添加", r);
                             continue;
                         }
 
                         // 生成bsonDoc
                         BsonDocument doc = new BsonDocument();
-                        foreach(KeyValuePair<string,string> kv in rowTemp)
+                        foreach (KeyValuePair<string, string> kv in rowTemp)
                         {
                             doc[kv.Key] = kv.Value;
                         }
 
-                        // 添加当前用户的userName用来分组
-                        doc["$owner"] = Store.CurrentAccount.UserId;
-                        // 添加标记为当前值
-                        doc["$group"] = "当前-" + Store.CurrentAccount.UserId;
-{}
+                        // 组名
+                        doc["$group"] = "当前";
+
+
                         docs.Add(doc);
                     }
 
                     // 删除原来的数据
-                    Store.GetCollection(DatabaseName.Variable.ToString()).DeleteMany(new BsonExpression())
+                    Store.GetCollection(DatabaseName.Variable.ToString()).DeleteMany(Query.EQ("$group", new BsonValue("当前")));
 
                     // 保存进数据库
                     Store.GetCollection(DatabaseName.Variable.ToString()).InsertBulk(docs);
 
                     _logger.Info("导入完成。");
-                    string info = string.Format("共导入{0}条数据",docs.Count);
-                    _logger.Info(info);   
+                    string info = string.Format("共导入{0}条数据", docs.Count);
+                    _logger.Info(info);
                     fs.Close();
                     this.RequestClose(true);
-                    MessageBoxX.Show(Store.MainWindow,info, "导入完成",MessageBoxIcon.Success);
+                    MessageBoxX.Show(Store.MainWindow, info, "导入完成", MessageBoxIcon.Success);
                 }
             }
             catch (IOException io)
@@ -158,7 +161,7 @@ namespace SendMultipleEmails.Pages
             }
         }
 
-       
+
 
         /// <summary>
         /// 读取临时数据表中的数据
@@ -215,7 +218,7 @@ namespace SendMultipleEmails.Pages
                 catch (IOException ex)
                 {
                     _logger.Error(ex.Message, ex);
-                    MessageBoxX.Show(Store.MainWindow,ex.Message, "读取错误", MessageBoxButton.OK,MessageBoxIcon.Error);
+                    MessageBoxX.Show(Store.MainWindow, ex.Message, "读取错误", MessageBoxButton.OK, MessageBoxIcon.Error);
                 }
             }
         }

@@ -39,13 +39,13 @@ namespace SendMultipleEmails.Pages
             // 判断文件是否存在
             if (string.IsNullOrWhiteSpace(ExcelFullPath))
             {
-                MessageBoxX.Show("请选择需要导入的Excel文件！", "温馨提示");
+                Store.ShowInfo("请选择需要导入的Excel文件！", "温馨提示");
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(SelectedSheet))
             {
-                MessageBoxX.Show("请选择需要导入的页签！", "温馨提示");
+                Store.ShowInfo("请选择需要导入的页签！", "温馨提示");
                 return;
             }
 

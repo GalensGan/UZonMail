@@ -19,54 +19,83 @@
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" Margin="10" Grid.Column="0" Grid.Row="0">
-            <Button Height="28" Width="40" Content="&#xf067;" ToolTip="添加单个发件人"                    
+            <Button Height="28" Width="40" Content="&#xe623;"  FontSize="22" ToolTip="添加单个发件人"                    
                         pu:ButtonHelper.ClickStyle="Sink"
-                        FontFamily="{StaticResource FontAwesome}"
-                        Background="#C83F3F3F"
-                        pu:ButtonHelper.HoverBorderBrush="#3F3F3F"
+                        Background="Transparent"
+                        pu:ButtonHelper.HoverForeground="#3F3F3F"
                         pu:ButtonHelper.CornerRadius="15"
                         Command="{s:Action AddSender}"/>
-            <Button Height="28" Width="40" Content="&#xf0ce;" ToolTip="从Excel批量添加" Margin="10,0,0,0"
+            <Button Height="28" Width="40" Content="&#xe61f;" FontSize="20" ToolTip="从Excel批量添加" Margin="10,0,0,0"
                         pu:ButtonHelper.ClickStyle="Sink"
-                        FontFamily="{StaticResource FontAwesome}"
-                        Background="#C83F3F3F"
-                        pu:ButtonHelper.HoverBorderBrush="#3F3F3F"
+                        Background="Transparent"
+                        pu:ButtonHelper.HoverForeground="#3F3F3F"
                         pu:ButtonHelper.CornerRadius="15"
                         Command="{s:Action AddSenders}"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft" Grid.Row="0" Grid.Column="1">
-            <Button Margin="10,0,0,0" Width="60" Height="28" Command="{s:Action Filter}">搜索</Button>
-            <TextBox FlowDirection="LeftToRight" Margin="10" Width="200" pu:TextBoxHelper.Watermark="输入内容搜索" Text="{Binding FilterText,Mode=TwoWay}"></TextBox>
+            <Button Margin="10,0,0,0" Width="60" Height="28" Command="{s:Action Filter}" pu:ButtonHelper.CornerRadius="4" pu:ButtonHelper.HoverBackground="LightGray"  >搜索</Button>
+            <TextBox FlowDirection="LeftToRight" Margin="10" Width="200" pu:TextBoxHelper.CornerRadius="4" pu:TextBoxHelper.Watermark="输入内容搜索" Text="{Binding FilterText,Mode=TwoWay}"></TextBox>
         </StackPanel>        
         <DataGrid x:Name="DgCustom" Grid.Row="1"
-                              ItemsSource="{Binding SenderList,Mode=TwoWay}"
-                              BorderBrush="LightGray"
-                              BorderThickness="1"
+                              ItemsSource="{Binding SenderList,Mode=TwoWay}"                              
                               CanUserAddRows="False"
                               AutoGenerateColumns="False"
                               SelectionUnit="Cell"
-                              SelectionMode="Single"                     
-                      Margin="10,0,10,10" Grid.ColumnSpan="2">
+                              SelectionMode="Single"   
+                              pu:DataGridHelper.UnitSelectedBackground="Transparent"                                   
+                              Margin="10,0,10,10" Grid.ColumnSpan="2">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="姓名" Binding="{Binding Name}" />
-                <DataGridTextColumn Header="邮箱" Binding="{Binding Email}" />
-                <DataGridTextColumn Header="SMTP服务器" Binding="{Binding SMTP}" />
-                <DataGridTextColumn Header="SMTP密码" Binding="{Binding Password}" />
-                <DataGridTemplateColumn>
-                    <DataGridTemplateColumn.Header>是否作为发件人</DataGridTemplateColumn.Header>
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <CheckBox Padding="10,5,10,5" IsChecked="{Binding IsAsSender,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" />
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <!--<DataGridTextColumn Header="是否发件" Binding="{Binding IsAsSender}" />-->
+                <DataGridTextColumn Header="用户ID" Binding="{Binding UserId}"  IsReadOnly="True">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="邮箱" Binding="{Binding Email}" IsReadOnly="True">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="SMTP服务器" Binding="{Binding SMTP}" IsReadOnly="True" >
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="SMTP密码" Binding="{Binding Password}" IsReadOnly="True" >
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridCheckBoxColumn Header="是否作为发件人" Binding="{Binding IsAsSender}" IsReadOnly="True">
+                    <DataGridCheckBoxColumn.ElementStyle>
+                        <Style TargetType="CheckBox">
+                            <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                            <Setter Property="IsEnabled" Value="False"></Setter>
+                        </Style>
+                    </DataGridCheckBoxColumn.ElementStyle>
+                </DataGridCheckBoxColumn>
+                    <!--<DataGridTextColumn Header="是否发件" Binding="{Binding IsAsSender}" />-->
                 <DataGridTemplateColumn Width="*">
                     <DataGridTemplateColumn.Header>操作</DataGridTemplateColumn.Header>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
-                                <Button Padding="10,5,10,5" Content="删 除"  CommandParameter="{Binding}" Command="{s:Action DeleteSender}" pu:ButtonHelper.CornerRadius="2" />
+                                <Button VerticalAlignment="Center" Padding="5" Content="删除" Margin="0,0,5,0" Foreground="Red" pu:ButtonHelper.HoverBackground="LightGray"  
+                                        CommandParameter="{Binding}" Command="{s:Action Delete}" pu:ButtonHelper.CornerRadius="2" />
+                                <Button VerticalAlignment="Center" Padding="5" Content="修改" Margin="0,0,5,0" pu:ButtonHelper.HoverBackground="Teal"  
+                                        CommandParameter="{Binding}" Command="{s:Action Edit}" pu:ButtonHelper.CornerRadius="2" />
+                                <Button VerticalAlignment="Center" Padding="5" Content="&#xe73c;" Margin="0,0,5,0" pu:ButtonHelper.HoverBackground="Teal"  CommandParameter="{Binding}" 
+                                        Command="{s:Action AsSender}" Visibility="{Binding IsAsSender,Converter={StaticResource ReverseBoolVisibility}}" 
+                                        pu:ButtonHelper.CornerRadius="2" Foreground="Teal" ToolTip="设为发件人"/>
+                                <Button VerticalAlignment="Center" Padding="5" Content="&#xe612;" pu:ButtonHelper.HoverBackground="Orange"  CommandParameter="{Binding}" 
+                                        Command="{s:Action CancleSender}" Visibility="{Binding IsAsSender,Converter={StaticResource BoolVisibility}}" pu:ButtonHelper.CornerRadius="2" ToolTip="取消发件"/>
                             </StackPanel>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>

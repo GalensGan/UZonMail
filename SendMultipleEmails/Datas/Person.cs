@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace SendMultipleEmails.Datas
 {
@@ -21,18 +22,18 @@ namespace SendMultipleEmails.Datas
         public string UserName { get; set; }
         public string Email { get; set; } = string.Empty;
 
-        public virtual bool Validate(ILog logger)
+        public virtual bool Validate(ILog logger,Window window =null)
         {
             if (string.IsNullOrEmpty(UserId))
             {
-                if (logger == null) MessageBoxX.Show("姓名不能为空", "温馨提示");
+                if (logger == null) MessageBoxX.Show(window, "姓名不能为空", "温馨提示", MessageBoxIcon.Info);
                 else logger.Warn(string.Format("第[{0}]条记录的姓名为空，姓名：{1}，邮箱：{2}", Order, UserId, Email));
                 return false;
             }
 
             if (string.IsNullOrEmpty(Email))
             {
-                if(logger==null)MessageBoxX.Show("邮箱不能为空", "温馨提示");
+                if(logger==null)MessageBoxX.Show(window,"邮箱不能为空", "温馨提示",MessageBoxIcon.Info);
                 else logger.Warn(string.Format("第[{0}]条记录的邮箱为空，姓名：{1}，邮箱：{2}", Order, UserId, Email));
                 return false;
             }

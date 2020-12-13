@@ -8,13 +8,14 @@ namespace SendMultipleEmails.Enums
 {
     public enum FieldKey
     {
-        SenderName,
+        SenderId,
         SenderEmail,
         SenderSMTP,
         ReceiverName,
         ReceiverEmail,        
         SendDate,
         IsSuccess,
+        IsAsSender,
         // 当前状态下的消息
         Message,
         // 每次发送的是一个GroupId
@@ -32,6 +33,10 @@ namespace SendMultipleEmails.Enums
         Name,
 
         UserId,
+
+        _id,
+
+        Id,
         #endregion
     }
 }

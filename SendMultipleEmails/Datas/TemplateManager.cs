@@ -12,14 +12,14 @@ namespace SendMultipleEmails.Datas
     {
         public BindingList<FileInfo> TemplateFiles { get; private set; }
 
-        public TemplateManager(DefaultConfig config) : base(config)
+        public TemplateManager(AppConfig config) : base(config)
         {
             // 获取用户模板列表
             FileInfo[] userTemplates = new FileInfo[0];
             if(Directory.Exists(config.UserTemplateDir)) userTemplates = new DirectoryInfo(config.UserTemplateDir).GetFiles("*.html", SearchOption.AllDirectories);
 
             // 获取全局模板列表
-            FileInfo[] globalTemplates = new DirectoryInfo(config.templateDir).GetFiles("*.html", SearchOption.AllDirectories);
+            FileInfo[] globalTemplates = new DirectoryInfo(config.TemplateDir).GetFiles("*.html", SearchOption.AllDirectories);
 
             // 将全局模板过滤
             List<FileInfo> gInfos = globalTemplates.Where(g => userTemplates.Where(ut => ut.Name == g.Name).FirstOrDefault() == null).ToList();

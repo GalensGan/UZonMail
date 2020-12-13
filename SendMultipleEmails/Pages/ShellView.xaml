@@ -10,8 +10,26 @@
         WindowStartupLocation="CenterScreen"
         xmlns:s="https://github.com/canton7/Stylet"
         pu:WindowXCaption.Height="32"
-        FontFamily="{StaticResource FontAwesome}"        
         d:DataContext="{d:DesignInstance local:ShellViewModel}">
+    <Window.Resources>
+        <Style x:Key="TreeViewItem_NonStyle"
+           TargetType="{x:Type TreeViewItem}">
+            <Setter Property="Height"
+                Value="Auto" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type TreeViewItem}">
+                        <Grid Margin="1">
+                            <ContentPresenter x:Name="Presenter"
+                                          ContentSource="Header"
+                                          Grid.Column="1"
+                                          Margin="{TemplateBinding Padding}" />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
     <pu:WindowXCaption.Background>
         <LinearGradientBrush StartPoint="0,0"
                              EndPoint="0,1">
@@ -75,72 +93,61 @@
             <TreeView  Grid.Row="0"
                           pu:TreeViewHelper.ItemsSelectedBackground="#E8E8E8"
                           pu:TreeViewHelper.ItemsPadding="3,0,0,0"
-                          pu:IconHelper.FontFamily="{StaticResource FontAwesome}"
-                          BorderBrush="#C62F2F"
+                          BorderBrush="#C62F2F" FontSize="15"
                           Background="Transparent"
                           Margin="5,5,0,5" SelectedItemChanged="{s:Action TreeView_SelectedItemChanged}"
                           pu:TreeViewHelper.ItemsHeight="32">
                 <TreeViewItem Style="{StaticResource TreeViewItem_NonStyle}"
-                                  Header="设置" FontSize="15"                                 
+                                  Header="设置"                                
                                   Padding="10,0,0,0"
                                   Margin="0,10,0,5" />
-                <TreeViewItem Header="个人中心" Name="Dashboard"
+                <TreeViewItem Header="&#xea90; 个人中心" Name="Dashboard"
                                   Margin="0,2"
                                   IsSelected = "{Binding IsDashboard}"
-                                  Background="Transparent"                               
-                                  pu:TreeViewHelper.ItemIcon="&#xf0e4;" />
-                <TreeViewItem Header="发送设置" Name="Settings"
+                                  Background="Transparent"/>
+                <TreeViewItem Header="&#xe660; 发送设置" Name="Settings"
                                   Margin="0,2"
                                   IsSelected = "{Binding IsSendSettings}"
-                                  Background="Transparent"                               
-                                  pu:TreeViewHelper.ItemIcon="&#xf017;" />
-                <TreeViewItem Header="发  件  人" Name="Senders"
+                                  Background="Transparent" />
+                <TreeViewItem Header="&#xe664; 发  件  人" Name="Senders"
                                   Margin="0,2"
                                   Background="Transparent"
-                                  IsSelected="{Binding IsSenders}"
-                                  pu:TreeViewHelper.ItemIcon="&#xf27a;" />
-                <TreeViewItem Header="收  件  人" Name="Receivers"
+                                  IsSelected="{Binding IsSenders}" />
+                <TreeViewItem Header="&#xec33; 收  件  人" Name="Receivers"
                                   Margin="0,2"
                                   Background="Transparent"
-                                  IsSelected="{Binding IsReceivers}"
-                                  pu:TreeViewHelper.ItemIcon="&#xf0e0;" />
+                                  IsSelected="{Binding IsReceivers}" />
 
                 <TreeViewItem Style="{StaticResource TreeViewItem_NonStyle}"
                                   Padding="10,0,0,0"
                                   Header="邮件"                                  
                                   Margin="0,15,0,5" />
-                <TreeViewItem Header="导入数据" Name="ImportVariables"
+                <TreeViewItem Header="&#xe6cd; 导入变量" Name="ImportVariables"
                                   Margin="0,2"
                                   Background="Transparent"
-                                  IsSelected="{Binding IsImportData}"
-                                  pu:TreeViewHelper.ItemIcon="&#xf122;" />
-                <TreeViewItem Header="模        板" Name="Template"
+                                  IsSelected="{Binding IsImportData}" />
+                <TreeViewItem Header="&#xe64f; 模        板" Name="Template"
                                   Margin="0,2" Background="Transparent"                                 
-                                  IsSelected="{Binding IsTemplate}"
-                                  pu:TreeViewHelper.ItemIcon="&#xf0ea;" />             
-                <TreeViewItem Header="发        送" Name="Send"
+                                  IsSelected="{Binding IsTemplate}" />
+                <TreeViewItem Header="&#xe7f7; 发        送" Name="Send"
                                   Margin="0,2"
                                   Background="Transparent"
-                                  IsSelected="{Binding IsSend}"
-                                  pu:TreeViewHelper.ItemIcon="&#xf1d8;" />
-
+                                  IsSelected="{Binding IsSend}"/>
 
                 <TreeViewItem Style="{StaticResource TreeViewItem_NonStyle}"
                                   Padding="10,0,0,0"
                                   Header="其它"
                                   Margin="0,15,0,5" />
-                <TreeViewItem Header="日志" Name="Log"
+                <TreeViewItem Header="&#xe69a; 日志" Name="Log"
                                   Margin="0,2"
                                   Padding="10,0,0,0"
                                   Background="Transparent"
-                                  IsSelected="{Binding IsLog}"
-                                  pu:TreeViewHelper.ItemIcon="&#xf1ea;" />
-                <TreeViewItem Header="关于" Name="About"
+                                  IsSelected="{Binding IsLog}" />
+                <TreeViewItem Header="&#xe615; 关于" Name="About"
                                   Margin="0,2"
                                   Padding="10,0,0,0"
                                   Background="Transparent"
-                                  IsSelected="{Binding IsAboutMe}"
-                                  pu:TreeViewHelper.ItemIcon="&#xf05a;" />
+                                  IsSelected="{Binding IsAboutMe}"/>
             </TreeView>
 
             <StackPanel Orientation="Horizontal" Grid.Row="1">

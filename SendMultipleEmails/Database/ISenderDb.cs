@@ -14,7 +14,9 @@ namespace SendMultipleEmails.Database
 
         bool DeleteSender(int id);
 
-        Sender FindOneSenderByName(string name);
+        Sender FindById(int id);
+
+        Sender FindOneSenderByUserId(string name);
 
         Sender FindOneSenderByEmail(string email);
 

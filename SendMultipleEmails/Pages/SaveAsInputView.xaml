@@ -7,7 +7,6 @@
       xmlns:s="https://github.com/canton7/Stylet"
       mc:Ignorable="d"
       WindowStyle="None"
-      FontFamily="{StaticResource FontAwesome}"
       WindowStartupLocation="Manual"      
       Background="Transparent"  
       AllowsTransparency="True"

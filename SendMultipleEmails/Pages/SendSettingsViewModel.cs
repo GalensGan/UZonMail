@@ -16,11 +16,12 @@ namespace SendMultipleEmails.Pages
         {
             get
             {
-                return Store.PersonalDataManager.PersonalData.sendInterval;
+                return Store.ConfigManager.PersonalConfig.SendInterval;
             }
             set
             {
-                base.SetAndNotify(ref Store.PersonalDataManager.PersonalData.sendInterval, value);
+                Store.ConfigManager.PersonalConfig.SendInterval = Math.Round(value,1);
+                base.NotifyOfPropertyChange();
             }
         }
 
@@ -28,11 +29,12 @@ namespace SendMultipleEmails.Pages
         {
             get
             {
-                return Store.PersonalDataManager.PersonalData.sendIntervalRandom;
+                return Store.ConfigManager.PersonalConfig.SendIntervalRandom;
             }
             set
             {
-                base.SetAndNotify(ref Store.PersonalDataManager.PersonalData.sendIntervalRandom, value);
+                Store.ConfigManager.PersonalConfig.SendIntervalRandom = Math.Round(value, 1);
+                base.NotifyOfPropertyChange();
             }
         }
     }

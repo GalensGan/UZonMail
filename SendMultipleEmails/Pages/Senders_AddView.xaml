@@ -7,28 +7,30 @@
       xmlns:s="https://github.com/canton7/Stylet"
       mc:Ignorable="d"
       WindowStyle="None"
-      FontFamily="{StaticResource FontAwesome}"
       WindowStartupLocation="Manual"      
       Background="Transparent"  
       AllowsTransparency="True"
-      Title="LoginView" Height="310" Width="560">
+      FontFamily="pack://application:,,,/Font/#iconfont"
+      FontSize="16"
+      Title="LoginView" Height="280" Width="460">
 
     <Grid>
-        <Border BorderThickness="1" BorderBrush="Gray"  CornerRadius="5,5,5,5" Background="White" />
+        <Border BorderThickness="1" BorderBrush="Gray"  CornerRadius="5" Background="White" />
         <StackPanel Margin="20,20,20,10">
-            <TextBlock Margin="10,10,10,20" FontSize="24" HorizontalAlignment="Center">添加发件人</TextBlock>
+            <TextBlock Margin="5" FontSize="24" HorizontalAlignment="Center" Text="{Binding Title}"></TextBlock>
             <DockPanel>
-                <TextBox pu:TextBoxHelper.Watermark="姓名"
-                         pu:TextBoxHelper.Icon="&#xf2be;"
+                <TextBlock ToolTip="输入发件人用户ID" Margin="0,10,0,0" FontSize="20">&#xe73f;</TextBlock>
+                <TextBox pu:TextBoxHelper.Watermark="发件人ID"
                          pu:TextBoxHelper.FocusedBorderBrush="#B5B5B5"
                          pu:TextBoxHelper.FocusedShadowColor="#B5B5B5"
                          pu:TextBoxHelper.CanClear="True"
-                         Margin="5" FontSize="16" Height="30"
-                         Text="{Binding Sender.Name}"></TextBox>
+                         FontSize="16"
+                         Margin="5" Height="30"
+                         Text="{Binding Sender.UserId}" />
             </DockPanel>
             <DockPanel>
+                <TextBlock ToolTip="输入发件人邮箱" Margin="0,10,0,0" FontSize="20">&#xe647;</TextBlock>
                 <TextBox pu:TextBoxHelper.Watermark="邮箱"
-                         pu:TextBoxHelper.Icon="&#xf0e0;"
                          pu:TextBoxHelper.FocusedBorderBrush="#B5B5B5"
                          pu:TextBoxHelper.FocusedShadowColor="#B5B5B5"
                          pu:TextBoxHelper.CanClear="True"
@@ -36,8 +38,8 @@
                          Text="{Binding Sender.Email}"></TextBox>
             </DockPanel>
             <DockPanel>
+                <TextBlock ToolTip="输入SMTP服务器地址，比如163邮箱的是：smtp.163.com"  Margin="0,10,0,0" FontSize="20">&#xe6e7;</TextBlock>
                 <TextBox pu:TextBoxHelper.Watermark="SMTP服务器地址"
-                         pu:TextBoxHelper.Icon="&#xf233;"
                          pu:TextBoxHelper.FocusedBorderBrush="#B5B5B5"
                          pu:TextBoxHelper.FocusedShadowColor="#B5B5B5"
                          pu:TextBoxHelper.CanClear="True"
@@ -45,16 +47,18 @@
                          Text="{Binding Sender.SMTP}"></TextBox>
             </DockPanel>
             <DockPanel>
+                <TextBlock ToolTip="输入SMTP密码，请注意，不是邮箱的登陆密码，需要自己申请" Margin="0,10,0,0" FontSize="20">&#xe624;</TextBlock>
                 <PasswordBox pu:PasswordBoxHelper.Watermark="SMTP密码"
-                             pu:PasswordBoxHelper.Icon="&#xf11c;"
+                             pu:PasswordBoxHelper.CanPlain="True"
                              pu:PasswordBoxHelper.FocusedBorderBrush="#B5B5B5"
                              pu:PasswordBoxHelper.FocusedShadowColor="#B5B5B5"
                              Margin="5" FontSize="16" Height="30" Name="pwd"
                              PasswordChanged="{s:Action PasswordChanged}"></PasswordBox>
             </DockPanel>
             <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft" Margin="0,15,5,0">
-                <Button FontSize="16" Width="60" Height="30" Margin="0,0,10,0" Command="{s:Action AddSender}" IsDefault="True">确定</Button>
-                <Button FontSize="16" Width="60" Height="30" Command="{s:Action Quite}">退出</Button>
+                <Button FontSize="16" Width="60" Height="30" Margin="0,0,10,0" Command="{s:Action Confirm}" IsDefault="True"
+                        pu:ButtonHelper.CornerRadius="4">确定</Button>
+                <Button FontSize="16" Width="60" Height="30" Command="{s:Action Quite}" pu:ButtonHelper.CornerRadius="4">退出</Button>
             </StackPanel>
         </StackPanel>
     </Grid>

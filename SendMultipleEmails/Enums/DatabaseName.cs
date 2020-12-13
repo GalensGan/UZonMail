@@ -32,5 +32,10 @@ namespace SendMultipleEmails.Enums
         /// 变量表
         /// </summary>
         Variable,
+
+        /// <summary>
+        /// 组表
+        /// </summary>
+        Group,
     }
 }

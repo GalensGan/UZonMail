@@ -1,5 +1,9 @@
-﻿using Panuon.UI.Silver;
+﻿using GalensSDK.DatatableEx;
+using GalensSDK.LiteDbEx;
+using LiteDB;
+using Panuon.UI.Silver;
 using SendMultipleEmails.Datas;
+using SendMultipleEmails.Enums;
 using Stylet;
 using System;
 using System.Collections.Generic;
@@ -15,9 +19,9 @@ using Screen = Stylet.Screen;
 
 namespace SendMultipleEmails.Pages
 {
-    class SendDataViewModel:ScreenChild
+    class VariableViewModel : ScreenChild
     {
-        public SendDataViewModel(Store store) : base(store) { }
+        public VariableViewModel(Store store) : base(store) { }
 
         protected override void OnInitialActivate()
         {
@@ -25,7 +29,8 @@ namespace SendMultipleEmails.Pages
 
             Variables = new BindingSource
             {
-                DataSource = Store.PersonalDataManager.PersonalData.variablesTable
+                // 获取绑定的数据
+                DataSource = Store.GetCollection(DatabaseName.Variable.ToString()).FindAll().ToDataTable()
             };
         }
 
@@ -33,38 +38,40 @@ namespace SendMultipleEmails.Pages
         {
             base.OnViewLoaded();
             // 更新功能操作键位置
-            SendDataView sdv = this.View as SendDataView;
-            sdv.OperationRow.DisplayIndex = Store.PersonalDataManager.PersonalData.variablesTable.Columns.Count;
+            VariableView sdv = this.View as VariableView;
+            BsonDocument bdoc = Store.GetCollection(DatabaseName.Variable.ToString()).FindOne(Query.Not(FieldKey._id.ToString(), new BsonValue(string.Empty)));
+            if (bdoc != null) sdv.OperationRow.DisplayIndex = bdoc.Keys.Count;
         }
 
         public BindingSource Variables { get; set; }
 
         public void ReadData()
         {
-            Screen s = new AddVariableViewModel(Store);
-            Store.WindowManager.ShowDialog(s);
-
+            Screen s = new Variable_AddViewModel(Store);
+            bool? reuslt = Store.ShowDialogWithMask(s);
+            if (!(bool)reuslt) return;
 
             // 更新 Data
             Variables = new BindingSource
             {
-                DataSource = Store.PersonalDataManager.PersonalData.variablesTable
+                DataSource = Store.GetCollection(DatabaseName.Variable.ToString()).FindAll().ToDataTable()
             };
             // 更新功能操作键位置
-            SendDataView sdv = this.View as SendDataView;
-            sdv.OperationRow.DisplayIndex = Store.PersonalDataManager.PersonalData.variablesTable.Columns.Count;
+            VariableView sdv = this.View as VariableView;
+            sdv.OperationRow.DisplayIndex = Store.GetCollection(DatabaseName.Variable.ToString()).FindOne(Query.Not(FieldKey._id.ToString(), new BsonValue(string.Empty))).Keys.Count;
         }
 
         public void DeleteData(System.Data.DataRowView drv)
         {
             // 找到姓名或者Name
-            MessageBoxResult result = MessageBoxX.Show("是否删除收件人数据?" , "信息确认", null, MessageBoxButton.OKCancel);
+            MessageBoxResult result = Store.ShowWarning("是否删除收件人数据?", "信息确认");
             if (result == MessageBoxResult.Cancel) return;
+
+            // 删除数据库中的数据
+            Store.GetCollection(DatabaseName.Variable.ToString()).Delete(new BsonValue(drv.Row[FieldKey._id.ToString()]));
 
             // 删除发件人
             drv.Delete();
-            Store.PersonalDataManager.Save();
-            //Store.PersonalDataManager.RemoveVariable(userName);
         }
 
         public string FilterText { get; set; } = "";
@@ -72,9 +79,9 @@ namespace SendMultipleEmails.Pages
         public void Filter()
         {
             // 获取所有的列头
-            List<string> names = Store.PersonalDataManager.GetTableNames(Store.PersonalDataManager.PersonalData.variablesTable);
+            List<string> names = (Variables.DataSource as DataTable).GetColumnNamesOfStringColumn();
             string sql = string.Empty;
-            for(int i = 0; i < names.Count; i++)
+            for (int i = 0; i < names.Count; i++)
             {
                 if (i == 0)
                 {

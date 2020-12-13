@@ -20,20 +20,18 @@
         
         <ComboBox  Grid.Row="0" HorizontalAlignment="Left"
                    pu:ComboBoxHelper.Watermark="选择使用的模板"
-                        pu:ComboBoxHelper.Icon="&#xf11c;"
                         pu:ComboBoxHelper.ItemsHoverBackground="#1EB5B5B5"
                         pu:ComboBoxHelper.ItemsSelectedBackground="#32B5B5B5"
                         Margin="10,5,0,0" FontSize="16" Height="30"
                         DisplayMemberPath="Name"
                         ItemsSource="{Binding Templates}"
                         SelectedItem="{Binding SelectedItem}" Width="200"/>
-        <smith:HtmlEditor Grid.Row="1" x:Name="htmlEditor" BindingContent ="{Binding Content,Mode=TwoWay}" IsEnabled="{Binding IsAllowEdit,Mode=TwoWay}" Margin="2" />
+        <smith:HtmlEditor Grid.Row="1" x:Name="htmlEditor" BindingContent ="{Binding Content,Mode=TwoWay}" Margin="2" />
 
         <StackPanel Grid.Row="2" Orientation="Horizontal" FlowDirection="RightToLeft">            
-            <Button Margin="10" Padding="10,5,10,5" Command="{s:Action Save}">保存</Button>
-            <Button Margin="10" Padding="10,5,10,5" Command="{s:Action SaveAs}">另存为</Button>
-            <Button Margin="10" Padding="10,5,10,5" Command="{s:Action Edit}">编辑</Button>
-            <Button Margin="10" Padding="10,5,10,5" Command="{s:Action Delete}">删除</Button>
+            <Button Margin="10" Padding="10,5,10,5" Command="{s:Action Save}" pu:ButtonHelper.HoverBackground="LightGray">保存</Button>
+            <Button Margin="10" Padding="10,5,10,5" Command="{s:Action SaveAs}" pu:ButtonHelper.HoverBackground="LightGray">另存为</Button>
+            <Button Margin="10" Padding="10,5,10,5" Command="{s:Action Delete}" pu:ButtonHelper.HoverBackground="LightGray">删除</Button>
         </StackPanel>
     </Grid>
 </ContentControl>

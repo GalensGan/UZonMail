@@ -22,9 +22,10 @@ namespace SendMultipleEmails.Pages
             Templates = store.TemplateManager.TemplateFiles;
             if (Templates.Count > 0)
             {
-                string path = store.PersonalDataManager.PersonalData.usedTemplatePath;
+                string path = store.ConfigManager.PersonalConfig.LastTemplatePath;
                 // 如果有上一次的，显示上一次
                 FileInfo showItem = null;
+
                 // 显示查找到的模板
                 showItem = Templates.Where(item => item.FullName == path).FirstOrDefault();
                 if (showItem == null) showItem = Templates[0];                
@@ -73,9 +74,7 @@ namespace SendMultipleEmails.Pages
                 base.SetAndNotify(ref _selectedItem, value);
 
                 // 保存当前选择的模板到数据中心
-                Store.PersonalDataManager.PersonalData.usedTemplatePath = value.FullName;
-
-                IsAllowEdit = false;
+                Store.ConfigManager.PersonalConfig.LastTemplatePath = value.FullName;
 
                 // 如果路径不是个人用户的，不允许删除,也不能保存
                 if (value.FullName.Contains(Store.ConfigManager.AppConfig.UserTemplateDir)) CanDelete = true;
@@ -92,13 +91,9 @@ namespace SendMultipleEmails.Pages
         }
         public string Content { get; set; } = string.Empty;
 
-        public bool IsAllowEdit { get; set; } = false;
-
         public bool CanEdit { get; set; } = true;
         public void Edit()
         {
-            IsAllowEdit = true;
-
             // 如果不属于用户模板，没有保存
             if (SelectedItem.FullName.Contains(Store.ConfigManager.AppConfig.UserTemplateDir)) CanSave = true;
             else CanSave = false;
@@ -108,7 +103,6 @@ namespace SendMultipleEmails.Pages
         public void Save()
         {
             Store.TemplateManager.Save(SelectedItem.FullName, Content);
-            IsAllowEdit = false;
         }
 
         public bool CanSaveAs { get; set; } = true;
@@ -124,13 +118,12 @@ namespace SendMultipleEmails.Pages
             string newPath = Store.ConfigManager.AppConfig.TemplateDir + "\\" + Store.TemplateName + ".html";
 
             Store.TemplateManager.Save(newPath, Content);
-            IsAllowEdit = false;
 
             // 发给 content
             _originContent = Content;
             // 选中当前
             _selectedItem = new FileInfo(newPath);
-            Store.PersonalDataManager.PersonalData.usedTemplatePath = newPath;
+            Store.ConfigManager.PersonalConfig.LastTemplatePath= newPath;
 
             base.NotifyOfPropertyChange("SelectedItem");
         }

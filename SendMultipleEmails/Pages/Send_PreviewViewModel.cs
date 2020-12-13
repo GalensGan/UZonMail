@@ -84,7 +84,7 @@ namespace SendMultipleEmails.Pages
         private void ReadPostData()
         {
             // 读取模板内容
-            string content = Store.TemplateManager.GetTemplate(Store.PersonalDataManager.PersonalData.usedTemplatePath);
+            string content = Store.TemplateManager.GetTemplate(Store.TemplateManager.TemplateFiles);
 
             // 查找模板中有哪些需要替换的数据
             char[] chars = content.ToCharArray();

@@ -13,11 +13,13 @@ namespace SendMultipleEmails.Datas
 {
     public abstract class ManagerBase
     {
-        public ManagerBase(DefaultConfig config) { this.Config = config; }
-        protected DefaultConfig Config { get; set; }
+        public ManagerBase(AppConfig config) { this.Config = config; }
+        protected AppConfig Config { get; set; }
 
         public bool Save(string path, Object obj)
         {
+            if (string.IsNullOrEmpty(path)) return false;
+
             // 检查父目录是否存在
             string dir = Path.GetDirectoryName(path);
             Directory.CreateDirectory(dir);
