@@ -60,7 +60,7 @@ namespace SendMultipleEmails.Pages
                 return;
             }
             // 保存Store数据
-            System.Windows.MessageBoxResult dialogResult = MessageBoxX.Show(Store.MainWindow,"是否保存数据？", "保存",MessageBoxButton.YesNoCancel,MessageBoxIcon.Question,DefaultButton.YesOK);
+            System.Windows.MessageBoxResult dialogResult = MessageBoxX.Show(null,"是否保存数据？", "保存",MessageBoxButton.YesNoCancel,MessageBoxIcon.Question,DefaultButton.YesOK);
             if (dialogResult == MessageBoxResult.Yes)
             {
                 Store.Save();

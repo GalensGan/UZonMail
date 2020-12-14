@@ -18,8 +18,8 @@ namespace SendMultipleEmails.Pages
     class TemplateViewModel : ScreenChild
     {
         public TemplateViewModel(Store store) : base(store)
-       {
-            Templates = store.TemplateManager.TemplateFiles;
+        {
+            Templates = store.TemplateManager.GetTemplateFiles();
             if (Templates.Count > 0)
             {
                 string path = store.ConfigManager.PersonalConfig.LastTemplatePath;
@@ -28,8 +28,8 @@ namespace SendMultipleEmails.Pages
 
                 // 显示查找到的模板
                 showItem = Templates.Where(item => item.FullName == path).FirstOrDefault();
-                if (showItem == null) showItem = Templates[0];                
-                SelectedItem = showItem;                
+                if (showItem == null) showItem = Templates[0];
+                SelectedItem = showItem;
             }
         }
 
@@ -42,15 +42,15 @@ namespace SendMultipleEmails.Pages
         {
             get => _selectedItem;
             set
-            {                
+            {
                 if (_originContent != Content)
                 {
                     bool isUserTemplate = _selectedItem.FullName.Contains(Store.ConfigManager.AppConfig.UserTemplateDir);
                     // 如果是自己的模板，就保存，如果是全局模板，就另存为
                     if (isUserTemplate)
                     {
-                        MessageBoxResult result = MessageBoxX.Show(null,"模板未保存，是否保存？", "文件更改", MessageBoxButton.YesNo);
-                        if (result == MessageBoxResult.Yes)
+                        MessageBoxResult result = Store.ShowWarning("模板未保存，是否保存？", "文件更改");
+                        if (result == MessageBoxResult.OK)
                         {
                             Store.TemplateManager.Save(_selectedItem.FullName, Content);
                         }
@@ -58,8 +58,8 @@ namespace SendMultipleEmails.Pages
                     else
                     {
                         // 另存
-                        MessageBoxResult result = MessageBoxX.Show(null,"模板未保存，是否另存为？", "文件更改", MessageBoxButton.YesNo);
-                        if (result == MessageBoxResult.Yes)
+                        MessageBoxResult result = Store.ShowWarning("模板未保存，是否另存为？", "文件更改");
+                        if (result == MessageBoxResult.OK)
                         {
                             SaveAs();
                             return;
@@ -71,16 +71,17 @@ namespace SendMultipleEmails.Pages
                 string newContent = Store.TemplateManager.GetTemplate(value.FullName);
                 SetContent(newContent);
 
-                base.SetAndNotify(ref _selectedItem, value);
-
                 // 保存当前选择的模板到数据中心
                 Store.ConfigManager.PersonalConfig.LastTemplatePath = value.FullName;
+                Store.ConfigManager.SavePersonalConfig();
 
                 // 如果路径不是个人用户的，不允许删除,也不能保存
                 if (value.FullName.Contains(Store.ConfigManager.AppConfig.UserTemplateDir)) CanDelete = true;
                 else CanDelete = false;
 
                 CanSave = false;
+
+                base.SetAndNotify(ref _selectedItem, value);
             }
         }
 
@@ -88,8 +89,27 @@ namespace SendMultipleEmails.Pages
         {
             _originContent = content;
             Content = content;
+            bool isEqual = _originContent == content;
         }
-        public string Content { get; set; } = string.Empty;
+
+        private string _content = string.Empty;
+        public string Content
+        {
+            get => _content;
+            set
+            {
+                // 如果新值和原始值不一样
+                if (SelectedItem == null)
+                {
+                    base.SetAndNotify(ref _content, value);
+                    return;
+                };
+
+                bool isUserTemplate = SelectedItem.FullName.Contains(Store.ConfigManager.AppConfig.UserTemplateDir);
+                if (_originContent != value && isUserTemplate) this.CanSave = true;
+                base.SetAndNotify(ref _content, value);
+            }
+        }
 
         public bool CanEdit { get; set; } = true;
         public void Edit()
@@ -103,35 +123,61 @@ namespace SendMultipleEmails.Pages
         public void Save()
         {
             Store.TemplateManager.Save(SelectedItem.FullName, Content);
+            _originContent = Content;
+            Store.ShowInfo("保存成功", "操作结果");
+            // 提示
+            CanSave = false;
         }
 
         public bool CanSaveAs { get; set; } = true;
         public void SaveAs()
         {
-            SaveAsInputViewModel save = new SaveAsInputViewModel(Store)
+            // 判断是自己的还是全局的
+            SaveAsInputViewModel save = new SaveAsInputViewModel(Store, Content)
             {
                 TemplateName = this.SelectedItem.Name.Replace(this.SelectedItem.Extension, "_copy")
             };
-            bool result = (bool)Store.WindowManager.ShowDialog(save);
-            if (!result) return;
+            save.InvokeEvent += Save_InvokeEvent;
+            Store.ShowDialogWithMask(save);
+        }
 
-            string newPath = Store.ConfigManager.AppConfig.TemplateDir + "\\" + Store.TemplateName + ".html";
-
-            Store.TemplateManager.Save(newPath, Content);
-
+        private void Save_InvokeEvent(GalensSDK.StyletEx.InvokeParameter obj)
+        {
+            // 保存
+            string newPath = obj.Arg as string;
             // 发给 content
             _originContent = Content;
-            // 选中当前
-            _selectedItem = new FileInfo(newPath);
-            Store.ConfigManager.PersonalConfig.LastTemplatePath= newPath;
 
-            base.NotifyOfPropertyChange("SelectedItem");
+            // 选中当前
+            FileInfo newFileInfo = new FileInfo(newPath);
+
+            Templates.Add(newFileInfo);
+            SelectedItem = newFileInfo;
         }
 
         public bool CanDelete { get; set; }
         public void Delete()
         {
+            // 删除提示
+            MessageBoxResult result = Store.ShowWarning("你即将删除该模板，是否继续？", "删除模板");
+            if (result != MessageBoxResult.OK) return;
 
+            // 删除当前数据
+            int index = Templates.ToList().FindIndex(item => item.FullName == this.SelectedItem.FullName);
+            if (index < 0) return;
+            int nextIndex = index > 0 ? index - 1 : 1;
+
+            // 删除原始数据
+            SelectedItem.Delete();
+
+            this.SelectedItem = Templates[nextIndex];
+            this.Templates.RemoveAt(index);
+        }
+
+        public void ViewInExplorer()
+        {
+            // 在浏览器中查看
+            System.Diagnostics.Process.Start("file:///"+SelectedItem.FullName);
         }
     }
 }

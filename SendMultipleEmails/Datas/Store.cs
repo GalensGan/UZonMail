@@ -113,8 +113,6 @@ namespace SendMultipleEmails.Datas
 
         public string MainTitle { get; set; } = string.Empty;
 
-        public string TemplateName { get; set; } = string.Empty;
-
         /// <summary>
         /// 版本信息
         /// </summary>

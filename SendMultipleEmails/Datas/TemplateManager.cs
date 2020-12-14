@@ -10,24 +10,26 @@ namespace SendMultipleEmails.Datas
 {
     public class TemplateManager : ManagerBase
     {
-        public BindingList<FileInfo> TemplateFiles { get; private set; }
-
-        public TemplateManager(AppConfig config) : base(config)
+        public BindingList<FileInfo> GetTemplateFiles()
         {
             // 获取用户模板列表
             FileInfo[] userTemplates = new FileInfo[0];
-            if(Directory.Exists(config.UserTemplateDir)) userTemplates = new DirectoryInfo(config.UserTemplateDir).GetFiles("*.html", SearchOption.AllDirectories);
+            if (Directory.Exists(Config.UserTemplateDir)) userTemplates = new DirectoryInfo(Config.UserTemplateDir).GetFiles("*.html", SearchOption.AllDirectories);
 
             // 获取全局模板列表
-            FileInfo[] globalTemplates = new DirectoryInfo(config.TemplateDir).GetFiles("*.html", SearchOption.AllDirectories);
+            FileInfo[] globalTemplates = new DirectoryInfo(Config.TemplateDir).GetFiles("*.html", SearchOption.AllDirectories);
 
             // 将全局模板过滤
             List<FileInfo> gInfos = globalTemplates.Where(g => userTemplates.Where(ut => ut.Name == g.Name).FirstOrDefault() == null).ToList();
 
-            TemplateFiles = new BindingList<FileInfo>();
+            BindingList<FileInfo> TemplateFiles = new BindingList<FileInfo>();
             userTemplates.ToList().ForEach(item => TemplateFiles.Add(item));
             gInfos.ForEach(item => TemplateFiles.Add(item));
+
+            return TemplateFiles;
         }
+
+        public TemplateManager(AppConfig config) : base(config) { }
 
         /// <summary>
         /// 获取模板内容
@@ -53,6 +55,9 @@ namespace SendMultipleEmails.Datas
         /// <returns></returns>
         public bool Save(string path, string content)
         {
+            // 创建目录
+            Directory.CreateDirectory(Path.GetDirectoryName(path));
+
             using (FileStream file = File.Open(path, FileMode.Create))
             {
                 using (StreamWriter writer = new StreamWriter(file))
@@ -61,11 +66,6 @@ namespace SendMultipleEmails.Datas
                     writer.Close();
 
                     FileInfo fileInfo = new FileInfo(path);
-
-                    // 找到同名文件并替换,// 如果没有，则直接添加
-                    FileInfo existInfo = TemplateFiles.Where(item => item.Name == fileInfo.Name).FirstOrDefault();
-                    if (existInfo != null) TemplateFiles.Remove(existInfo);
-                    TemplateFiles.Add(fileInfo);
                 };
                 file.Close();
             };
