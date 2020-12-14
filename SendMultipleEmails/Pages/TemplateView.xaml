@@ -28,7 +28,7 @@
                         ItemsSource="{Binding Templates,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
                         SelectedItem="{Binding SelectedItem,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Width="200"/>
         <Button Grid.Row="0" Width="50" HorizontalAlignment="Right" Margin="0,5,10,5" ToolTip="在浏览器中查看效果" 
-                Command="{s:Action ViewInExplorer}" pu:ButtonHelper.CornerRadius="4">打开</Button>
+                Command="{s:Action ViewInExplorer}" pu:ButtonHelper.CornerRadius="4" pu:ButtonHelper.HoverBackground="LightGray">打开</Button>
         
         <smith:HtmlEditor Grid.Row="1" x:Name="htmlEditor" BindingContent ="{Binding Content,Mode=TwoWay}" Margin="2" />
 
