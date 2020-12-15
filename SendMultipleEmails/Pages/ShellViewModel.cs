@@ -135,17 +135,8 @@ namespace SendMultipleEmails.Pages
             });
             #endregion
 
-            #region 发送模块
-            // 初始化
-            //RegisterItem(new Send_NewViewModel(Store)
-            //{
-            //    DisplayName = SendStatus.New.ToString(),
-            //    ID = InvokeID.Send_New.ToString(),
-            //});
-            #endregion
-
             // 激活
-            InvokeTo(new InvokeParameter() { InvokeId = "个人中心" });
+            InvokeTo(new InvokeParameter() { InvokeId = InvokeID.Dashboard.ToString() });
 
             base.OnInitialActivate();
         }

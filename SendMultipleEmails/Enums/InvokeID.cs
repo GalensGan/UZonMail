@@ -54,6 +54,11 @@ namespace SendMultipleEmails.Enums
         About,
 
         /// <summary>
+        /// 发送首页
+        /// </summary>
+        Send_Index,
+
+        /// <summary>
         /// 新建发送
         /// </summary>
         Send_New,

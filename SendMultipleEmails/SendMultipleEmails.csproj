@@ -161,6 +161,8 @@
     <Compile Include="Helper\NPOIHelper.cs" />
     <Compile Include="Pages\DownloadedURLsListViewModel.cs" />
     <Compile Include="Pages\SaveAsInputViewModel.cs" />
+    <Compile Include="Pages\Send_IndexViewModel.cs" />
+    <Compile Include="Pages\Send_NewViewModel.cs" />
     <Compile Include="ResponseJson\Asset.cs" />
     <Compile Include="ResponseJson\DownloadedUrl.cs" />
     <Compile Include="ResponseJson\Latest.cs" />
@@ -252,6 +254,14 @@
     <Page Include="Pages\Senders_AddView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\Send_IndexView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Pages\Send_NewView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Pages\Variable_AddView.xaml">
       <SubType>Designer</SubType>

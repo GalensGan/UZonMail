@@ -27,12 +27,32 @@ namespace SendMultipleEmails.Pages
         private static readonly ILog _logger = LogManager.GetLogger(typeof(SendViewModel));
 
         private Store _store;
+        public SendViewModel(Store store)
+        {
+            _store = store;
+        }
 
-        #region 属性
-        public Visibility IsShowNew { get; set; } = Visibility.Visible;
+        protected override void OnInitialActivate()
+        {
+            // 添加子界面
+            #region 发送模块
+            // 初始化
+            RegisterItem(new Send_IndexViewModel(_store)
+            {
+                DisplayName = SendStatus.New.ToString(),
+                ID = InvokeID.Send_Index.ToString(),
+            });
 
-        public Visibility IsShowView { get; set; } = Visibility.Collapsed;
-        #endregion
-        public SendViewModel(Store store) { _store = store; }
+            RegisterItem(new Send_NewViewModel(_store)
+            {
+                DisplayName = SendStatus.New.ToString(),
+                ID = InvokeID.Send_New.ToString(),
+            });
+
+            InvokeTo(new InvokeParameter() { InvokeId = InvokeID.Send_Index.ToString() });
+            #endregion
+
+            base.OnInitialActivate();
+        }
     }
 }
