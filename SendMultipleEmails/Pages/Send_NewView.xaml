@@ -15,6 +15,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="100"/>
             <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="200"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="36"/>
@@ -23,33 +24,37 @@
             <RowDefinition Height="40"/>
         </Grid.RowDefinitions>
 
-        <DockPanel Grid.Row="0" VerticalAlignment="Center" Grid.ColumnSpan="2" Margin="10,0">
-            <TextBlock Height="30" FontSize="14" Margin="0,0,5,0">&#xeb63;</TextBlock>
-            <TextBox Height="30" FontSize="14" Text="{Binding MailTitle}" pu:TextBoxHelper.Watermark="输入主题" pu:TextBoxHelper.CornerRadius="4"></TextBox>
-        </DockPanel>
+        <TextBlock Grid.Row="0" Grid.Column="0" Height="30" FontSize="14" Margin="0,0,5,0">&#xeb63;</TextBlock>
+        <TextBox  Grid.Row="0" Grid.Column="1" Height="30" FontSize="14" Text="{Binding MailTitle}" pu:TextBoxHelper.Watermark="输入主题" pu:TextBoxHelper.CornerRadius="4"></TextBox>
 
-        <Grid Grid.Row="1" VerticalAlignment="Center" Grid.ColumnSpan="2" Margin="10,0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="20"/>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="60"/>
-            </Grid.ColumnDefinitions>
-            <TextBlock Grid.Column="0" Height="30" FontSize="14" Margin="0,0,5,0" ToolTip="收件人">&#xe91b;</TextBlock>
-            <TextBox Grid.Column="1" Height="30" FontSize="14" Text="{Binding MailTitle}" pu:TextBoxHelper.Watermark="收件人" pu:TextBoxHelper.CornerRadius="4"></TextBox>
-            <Button ToolTip="添加用户组">&#xe6e4;</Button>
-            <Button ToolTip="添加单个用户">&#xe73f;</Button>
-        </Grid>
+        <TextBlock Grid.Row="1" Grid.Column="0" Height="30" FontSize="14" Margin="0,0,5,0" ToolTip="收件人">&#xe91b;</TextBlock>
+        <TextBox Grid.Row="1" Grid.Column="1" Height="30" FontSize="14" Text="{Binding MailTitle}" pu:TextBoxHelper.Watermark="收件人" pu:TextBoxHelper.CornerRadius="4"></TextBox>
 
-        <TextBlock Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" Text="{Binding CurrentIndex,Mode=TwoWay}">第1位/共5位</TextBlock>
+        <TextBlock Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" Text="{Binding CurrentIndex,Mode=TwoWay}">第1位/共5位</TextBlock>
 
         <!--<WindowsFormsHost Grid.Row="1" Grid.ColumnSpan="2" Margin="10,0,10,10">
             <wf:WebBrowser x:Name="Wb" />
         </WindowsFormsHost>-->
 
         <!--<wpf:HtmlPanel Text="{Binding ContentHtml}" Grid.Row="1" Grid.ColumnSpan="2" Margin="10,0,10,10"></wpf:HtmlPanel>-->
-        <wv2:WebView2 Grid.Row="2" Grid.ColumnSpan="2" Margin="10,5" Name="webView" />
+        <wv2:WebView2 Grid.Row="2" Grid.ColumnSpan="2" Margin="10,5,0,5" Name="webView" />
 
-        <StackPanel Grid.Row="3" Orientation="Horizontal" FlowDirection="RightToLeft" Margin="10,0,5,10" Grid.ColumnSpan="2">
+        <GroupBox Grid.Row="0" Grid.RowSpan="3" Margin="5" Grid.Column="2">
+            <StackPanel>
+                <TextBox Height="40" VerticalAlignment="Top" Margin="0,5" pu:TextBoxHelper.CanClear="True"
+                     pu:TextBoxHelper.CornerRadius="4" pu:TextBoxHelper.Watermark="搜索"></TextBox>
+                <TreeView ItemsSource="{Binding TreeNodes}">
+                    <!--https://www.cnblogs.com/larissa-0464/p/10227483.html-->
+                    <TreeView.ItemTemplate>
+                        <HierarchicalDataTemplate DataType="{x:Type local:TreeNode}" ItemsSource="{Binding Path=ChildNodes}">
+                            <TextBlock Text="{Binding NodeName}"/>
+                        </HierarchicalDataTemplate>
+                    </TreeView.ItemTemplate>
+                </TreeView>
+            </StackPanel>          
+        </GroupBox>
+
+        <StackPanel Grid.Row="3" Orientation="Horizontal" FlowDirection="RightToLeft" Margin="10,0,5,10" Grid.ColumnSpan="3">
             <Button Height="28" Width="60"  Command="{s:Action Send}" Margin="5,0" pu:ButtonHelper.CornerRadius="4" Content="发送"/>
             <Button Height="28" Width="60"  Command="{s:Action Next}" Margin="5,0" pu:ButtonHelper.CornerRadius="4" Content="下一个"/>
             <Button Height="28" Width="60"  Command="{s:Action Previous}" Margin="5,0" pu:ButtonHelper.CornerRadius="4" Content="上一个"/>
