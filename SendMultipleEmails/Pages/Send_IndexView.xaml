@@ -1,0 +1,18 @@
+﻿<ContentControl x:Class="SendMultipleEmails.Pages.Send_IndexView"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:pu="clr-namespace:Panuon.UI.Silver;assembly=Panuon.UI.Silver"
+      xmlns:s="https://github.com/canton7/Stylet"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:SendMultipleEmails.Pages"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800">
+
+    <Grid>
+        <Button Height="40" Width="40" pu:ButtonHelper.CornerRadius="20" Command="{s:Action New}"
+                    FontSize="38" pu:ButtonHelper.ClickStyle="Sink" ToolTip="{Binding NewTip}">&#xe619;</Button>
+        <Button Height="24" Width="24" pu:ButtonHelper.CornerRadius="20" Command="{s:Action History}" Margin="10" VerticalAlignment="Bottom" HorizontalAlignment="Right"
+                    FontSize="22" pu:ButtonHelper.ClickStyle="Sink" ToolTip="查看上次发送记录">&#xe68a;</Button>
+    </Grid>
+</ContentControl>
