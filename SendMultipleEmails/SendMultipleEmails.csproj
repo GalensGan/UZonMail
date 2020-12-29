@@ -158,6 +158,7 @@
     <Compile Include="Enums\FieldKey.cs" />
     <Compile Include="Enums\InvokeID.cs" />
     <Compile Include="Extension\ListExtension.cs" />
+    <Compile Include="Extension\TreeNode.cs" />
     <Compile Include="Helper\NPOIHelper.cs" />
     <Compile Include="Pages\DownloadedURLsListViewModel.cs" />
     <Compile Include="Pages\SaveAsInputViewModel.cs" />
@@ -216,7 +217,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="bin\Debug\Resources\avatar1.jpeg" />
     <Resource Include="avatar.ico" />
     <Content Include="Dll\Microsoft.mshtml.dll" />
     <Content Include="Dll\Smith.WPF.HtmlEditor.dll" />

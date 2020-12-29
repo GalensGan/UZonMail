@@ -4,6 +4,7 @@ using Newtonsoft.Json.Bson;
 using Panuon.UI.Silver;
 using SendMultipleEmails.Datas;
 using SendMultipleEmails.Enums;
+using SendMultipleEmails.Extension;
 using SendMultipleEmails.Pages;
 using Stylet;
 using System;
@@ -21,9 +22,30 @@ namespace SendMultipleEmails.Pages
     public class Send_NewViewModel : ScreenChild
     {
         private readonly ILog _logger = LogManager.GetLogger(typeof(SendViewModel));
-        public Send_NewViewModel(Store store) : base(store) { }
+        public Send_NewViewModel(Store store) : base(store)
+        {
 
+            TreeNode = new TreeNode()
+            {
+                NodeName = "1"
+            };
+            TreeNode.ChildNodes = new List<TreeNode>()
+            {
+                new TreeNode(){ParentID=0, NodeID=1, NodeName = "Chapter1" },
+                new TreeNode(){ParentID=0, NodeID=2, NodeName="Chapter2"},
+                new TreeNode(){ParentID=0,NodeID=3, NodeName="Chapter3"},
+                new TreeNode(){ParentID=1, NodeID=4, NodeName="Section1.1"},
+                new TreeNode(){ParentID=1, NodeID=5, NodeName="Section1.2"},
+                new TreeNode(){ParentID=2, NodeID=6, NodeName="Section2.1"},
+                new TreeNode(){ParentID=3, NodeID=7, NodeName="Section3.1"},
+                new TreeNode(){ParentID=6, NodeID=8, NodeName="SubSection2.1.1"},
+                new TreeNode(){ParentID=6, NodeID=9, NodeName="SubSection2.1.2"},
+                new TreeNode(){ParentID=2, NodeID=10,NodeName="Section2.2"},
+                new TreeNode(){ParentID=3, NodeID=11, NodeName="Section3.2"}
+            };
+        }
 
+        public TreeNode TreeNode { get; set; }
 
         private Microsoft.Web.WebView2.Wpf.WebView2 _webView;
         private string _contentHtml = string.Empty;
@@ -130,7 +152,7 @@ namespace SendMultipleEmails.Pages
                 }
             }
 
-            DataRow[] receivers =null;// Store.PersonalDataManager.GetCurrentReceiver();
+            DataRow[] receivers = null;// Store.PersonalDataManager.GetCurrentReceiver();
             // 判断变量中存在的是 Name 还是 姓名
             string keyColumn = string.Empty;
             if (tableNames.Contains("Name"))
@@ -150,7 +172,7 @@ namespace SendMultipleEmails.Pages
                     MessageBoxX.Show("在数据中未找到“Name”或者“姓名”列。", "格式错误");
                     InvokeTo(new InvokeParameter() { InvokeId = InvokeID.Send_Preview.ToString() });
                     return;
-                })); 
+                }));
             }
 
             foreach (DataRow receiverRow in receivers)
@@ -208,7 +230,7 @@ namespace SendMultipleEmails.Pages
                 return;
             }
             Store.MainTitle = MailTitle;
-            InvokeTo(new InvokeParameter() { InvokeId = InvokeID.Send_Sending.ToString()});
+            InvokeTo(new InvokeParameter() { InvokeId = InvokeID.Send_Sending.ToString() });
         }
 
         public string CurrentIndex { get; set; }
@@ -244,7 +266,7 @@ namespace SendMultipleEmails.Pages
             Store.QueueReceivers = null;
 
             // 返回
-            InvokeTo(new InvokeParameter() { InvokeId = InvokeID.Send_New.ToString()});
+            InvokeTo(new InvokeParameter() { InvokeId = InvokeID.Send_New.ToString() });
         }
 
         public string MailTitle { get; set; } = string.Empty;
