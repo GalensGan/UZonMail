@@ -3,7 +3,7 @@
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
 
       <div class="title-container">
-        <h3 class="title">Login Form</h3>
+        <h3 class="title">邮件批量发送</h3>
       </div>
 
       <el-form-item prop="username">
@@ -183,6 +183,11 @@ $light_gray:#eee;
   background-color: $bg;
   overflow: hidden;
 
+  background-image: url("../../../public/images/login.jpg");
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+
   .login-form {
     position: relative;
     width: 520px;
@@ -218,7 +223,7 @@ $light_gray:#eee;
     .title {
       font-size: 26px;
       color: $light_gray;
-      margin: 0px auto 40px auto;
+      margin: 0px auto 20px auto;
       text-align: center;
       font-weight: bold;
     }
