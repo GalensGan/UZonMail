@@ -25,10 +25,12 @@ module.exports = {
    * Detail: https://cli.vuejs.org/config/#publicpath
    */
   publicPath: '/',
+
   outputDir: 'dist',
   assetsDir: 'static',
   lintOnSave: process.env.NODE_ENV === 'development',
   productionSourceMap: false,
+
   devServer: {
     port: port,
     open: true,
@@ -38,6 +40,7 @@ module.exports = {
     },
     before: require('./mock/mock-server.js')
   },
+
   configureWebpack: {
     // provide the app's title in webpack's name field, so that
     // it can be accessed in index.html to inject the correct title.
@@ -48,6 +51,7 @@ module.exports = {
       }
     }
   },
+
   chainWebpack(config) {
     // it can improve the speed of the first screen, it is recommended to turn on preload
     config.plugin('preload').tap(() => [
@@ -119,5 +123,16 @@ module.exports = {
           config.optimization.runtimeChunk('single')
         }
       )
-  }
+  },
+
+  pluginOptions: {
+    quasar: {
+      importStrategy: 'kebab',
+      rtlSupport: true
+    }
+  },
+
+  transpileDependencies: [
+    'quasar'
+  ]
 }
