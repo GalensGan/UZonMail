@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Server.Config
 {
-    class UserConfig
+   public  class UserConfig
     {
         private static UserConfig _instance;
         public static UserConfig Instance
@@ -20,9 +20,17 @@ namespace Server.Config
                 return _instance;
             }
         }
-        private UserConfig()
+
+        public UserConfig()
         {
             // 读取配置文件，如果有的话，会覆盖原来的配置
+
+            // 检查磁盘目录是否存在，不存在要新建
+            string dirPath = Path.GetDirectoryName(LiteDbPath);
+            Directory.CreateDirectory(dirPath);
+
+            dirPath = Path.GetDirectoryName(HttpLogPath);
+            Directory.CreateDirectory(dirPath);
         }
 
 
@@ -47,13 +55,19 @@ namespace Server.Config
             }
         }
 
-        public int HttpPort { get; private set; } = 12345;
+        public int HttpPort { get; private set; } = 22345;
 
-        public int WebsocketPort { get; private set; } = 12346;
-
+        public int WebsocketPort { get; private set; } = 22346;
 
         public string StaticName { get; private set; } = "public";
 
         public string BaseRoute { get; private set; } = "/api/v1";
+
+        public string LiteDbPath { get; private set; } = "datas/litedb.db";
+        public string HttpLogPath { get; set; } = "Log\\httpLog.txt";
+
+        public string TokenSecret { get; set; } = "helloworld001";
+
+        public string DefaultAvatar { get; set; } = "https://i.loli.net/2021/08/13/uOIcVFAlDbYRiCk.png";
     }
 }

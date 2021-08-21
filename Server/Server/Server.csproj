@@ -60,6 +60,18 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Bootstrapper.cs" />
+    <Compile Include="Database\Definitions\EmailInfo.cs" />
+    <Compile Include="Database\Definitions\Group.cs" />
+    <Compile Include="Database\Definitions\ReceiveBox.cs" />
+    <Compile Include="Database\Definitions\SendBox.cs" />
+    <Compile Include="Database\Definitions\User.cs" />
+    <Compile Include="Database\LiteDBManager.cs" />
+    <Compile Include="Http\Helpers\JWTHelper.cs" />
+    <Compile Include="Http\Modules\IoCModule.cs" />
+    <Compile Include="Http\Controller\Ctrler_User.cs" />
+    <Compile Include="Http\Extensions\HttpContextExtensions.cs" />
+    <Compile Include="Http\Extensions\WebServerExtensions.cs" />
+    <Compile Include="SDK\Extension\Ex_Json.cs" />
     <Compile Include="Websocket\Execute\CommandClassName.cs" />
     <Compile Include="Websocket\Execute\CommandTable.cs" />
     <Compile Include="Websocket\Execute\CommandTrigger.cs" />
@@ -74,8 +86,6 @@
     <Compile Include="Config\UserConfig.cs" />
     <Compile Include="Http\Controller\BaseController.cs" />
     <Compile Include="Http\Controller\Home.cs" />
-    <Compile Include="Http\Helper\CachedFile.cs" />
-    <Compile Include="Http\Helper\CachedFileCenter.cs" />
     <Compile Include="Http\HttpServiceMain.cs" />
     <Compile Include="Pages\ShellView.xaml.cs">
       <DependentUpon>ShellView.xaml</DependentUpon>
@@ -116,6 +126,12 @@
   <ItemGroup>
     <PackageReference Include="EmbedIO">
       <Version>3.4.3</Version>
+    </PackageReference>
+    <PackageReference Include="JWT">
+      <Version>8.2.3</Version>
+    </PackageReference>
+    <PackageReference Include="LiteDB">
+      <Version>5.0.11</Version>
     </PackageReference>
     <PackageReference Include="log4net">
       <Version>2.0.12</Version>

@@ -9,24 +9,23 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-
+using StyletIoC;
+using Server.Http.Extensions;
 
 namespace Server.Http
 {
     class HttpServiceMain
     {
         private WebServer _server;
+        private IContainer _container;
        
-        public void Start()
+        public void Start(IContainer container)
         {
-            string logPath = Path.Combine(UserConfig.Instance.RootDir, "Log\\httpLog.txt");
-            // 创建Log目录
-            string logDir = Path.GetDirectoryName(logPath);
-            Directory.CreateDirectory(logDir);
+            _container = container;
 
+            UserConfig userConfig = container.Get<UserConfig>();
             // 注册 swan 的日志库
-            FileLogger logger = new FileLogger(logPath, true);
-
+            FileLogger logger = new FileLogger(userConfig.HttpLogPath, true);
             Logger.RegisterLogger(logger);
 
             var url = $"http://*:{UserConfig.Instance.HttpPort}/";
@@ -50,9 +49,11 @@ namespace Server.Http
                     .WithMode(HttpListenerMode.EmbedIO))
                 // 允许跨域
                 .WithCors()
-
                 // First, we will configure our web server by adding Modules.
                 .WithLocalSessionManager();
+
+            // 添加 Ioc
+            server.WithIoC(_container);
 
             Logger.Info("开始加载 http 路由");
             // 添加路由

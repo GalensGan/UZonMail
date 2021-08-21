@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Server.Http.Helper
+namespace Server.Database.Definitions
 {
-    class CachedFileCenter
+    class ReceiveBox:EmailInfo
     {
     }
 }
