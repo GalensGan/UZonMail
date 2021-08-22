@@ -9,13 +9,17 @@ using System.Threading.Tasks;
 
 namespace Server.Database
 {
-    public class LiteDBManager:LiteRepository
+    public class LiteDBManager : LiteRepository
     {
         private UserConfig _config;
         /// <summary>
         /// 数据库操作
         /// </summary>
-        public LiteDBManager(UserConfig config):base(config.LiteDbPath)
+        public LiteDBManager(UserConfig config) : base(new ConnectionString()
+        {
+            Filename = config.LiteDbPath,
+            Upgrade = true
+        })
         {
             _config = config;
         }

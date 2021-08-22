@@ -4,7 +4,9 @@ using EmbedIO.WebApi;
 using Newtonsoft.Json.Linq;
 using Server.Config;
 using Server.Database;
-using Server.Database.Definitions;
+using Server.Database.Models;
+using Server.Http.Headers;
+using Server.Http.Response;
 using Server.SDK.Extension;
 using System;
 using System.Collections.Generic;
@@ -20,27 +22,28 @@ namespace Server.Http.Controller
         /// <summary>
         /// 用户登陆
         /// 获取参数可以使用 [FormData] NameValueCollection data 传参
+        /// 有 async ，必须要有 task，否则资源会提前释放
         /// </summary>
         /// <returns></returns>
         [Route(HttpVerbs.Post, "/user/login")]
         public async Task UserLogin()
         {
             // 读取jsonData
-            var Body = JObject.Parse(await HttpContext.GetRequestBodyAsStringAsync());
+            var body = JObject.Parse(await HttpContext.GetRequestBodyAsStringAsync());
 
-            string userId = Body.SelectToken("username").ValueOrDefault(string.Empty);
-            string password = Body.SelectToken("password").ValueOrDefault(""); // 由于是客户端，不加密
+            string userId = body.SelectToken("username").ValueOrDefault(string.Empty);
+            string password = body.SelectToken("password").ValueOrDefault(""); // 由于是客户端，不加密
 
             // 判断数据正确性
             if (string.IsNullOrEmpty(userId))
             {
-                await ResponseError("用户名为空");
-                return;
+                ResponseError("用户名为空");
+                
             }
 
             if (string.IsNullOrEmpty(password))
             {
-                await ResponseError("密码为空");
+                ResponseError("密码为空");
                 return;
             }
 
@@ -61,21 +64,15 @@ namespace Server.Http.Controller
                 // 判断密码正确性
                 if (user.password != password)
                 {
-                    await ResponseError("密码错误");
+                    ResponseError("密码错误");
                     return;
                 }
             }
 
             UserConfig uConfig = IoC.Get<UserConfig>();
-            string token = Helpers.JWTHelper.CreateJwtToken(new Dictionary<string, object>()
-            {
-               {
-                "userId",
-                userId
-               }
-            }, uConfig.TokenSecret);
+            JwtToken jwtToken = new JwtToken(uConfig.TokenSecret, userId, JwtToken.DefaultExp());
 
-            await ResponseSuccess(new JObject(new JProperty("token",token)));
+            ResponseSuccess(new JObject(new JProperty("token", jwtToken.Token)));
         }
 
         /// <summary>
@@ -84,30 +81,40 @@ namespace Server.Http.Controller
         /// </summary>
         /// <returns></returns>
         [Route(HttpVerbs.Get, "/user/info")]
-        public async Task UserInfo([QueryField] string token)
+        public void UserInfo([QueryField] string token)
         {
             // 用 token 获取用户信息
             UserConfig uConfig = IoC.Get<UserConfig>();
-            if (!Helpers.JWTHelper.ValidateJwtToken(token,uConfig.TokenSecret,out string result))
+            JwtToken jwtToken = new JwtToken(uConfig.TokenSecret, token);
+            if (jwtToken.TokenValidState!=TokenValidState.Valid)
             {
-                await ResponseError(result);
+                ResponseError("token无效");
                 return;
             }
-            var jobj = JObject.Parse(result);
-
-            string userId = jobj.SelectToken("userId").ValueOrDefault(string.Empty);
+           
 
             // 返回用户信息
-            var user = LiteDb.Query<User>().Where(u => u.userId == userId).FirstOrDefault();
+            var user = LiteDb.Query<User>().Where(u => u.userId == jwtToken.UserId).FirstOrDefault();
             if (user == null)
             {
-                await ResponseError("未找到用户！");
+                ResponseError("未找到用户！");
                 return;
             }
 
             if (string.IsNullOrEmpty(user.avatar)) user.avatar = uConfig.DefaultAvatar;
 
-            await ResponseSuccess(user);
+            ResponseSuccess(user);
+        }
+
+        /// <summary>
+        /// 退出系统
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        [Route(HttpVerbs.Put, "/user/logout")]
+        public void UserLogout()
+        {
+            ResponseSuccess("success");
         }
     }
 }

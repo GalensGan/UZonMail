@@ -2,8 +2,10 @@
 using EmbedIO.WebApi;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Server.Config;
 using Server.Database;
 using Server.Http.Extensions;
+using Server.Http.Headers;
 using StyletIoC;
 using System;
 using System.Collections.Generic;
@@ -20,6 +22,18 @@ namespace Server.Http.Controller
 
         protected LiteDBManager LiteDb { get; private set; }
 
+        protected JwtToken Token { get; private set; }
+
+        private JObject _body;
+        protected JObject Body
+        {
+            get
+            {
+                if (_body == null) _body = GetBody();
+                return _body;
+            }
+        }
+
         /// <summary>
         /// 获取控制数据库操作类
         /// </summary>
@@ -27,6 +41,10 @@ namespace Server.Http.Controller
         {
             IoC = HttpContext.GetIoCScope();
             LiteDb = IoC.Get<LiteDBManager>();
+
+            UserConfig userConfig = IoC.Get<UserConfig>();
+            string token = HttpContext.Request.Headers["X-Token"];
+            Token = new JwtToken(userConfig.TokenSecret, token);
 
             base.OnBeforeHandler();
         }
@@ -36,10 +54,14 @@ namespace Server.Http.Controller
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        protected async Task ResponseSuccess(object data)
+        protected void ResponseSuccess(object data)
         {
-            var jobj = new JObject(new JProperty("code", 20000), new JProperty("data", JObject.FromObject(data)));
-            await SendJObject(jobj);
+            var jobj = new HttpResponse()
+            {
+                data = data,
+            };
+
+            SendJObject(jobj);
         }
 
         /// <summary>
@@ -47,15 +69,39 @@ namespace Server.Http.Controller
         /// </summary>
         /// <param name="errorMsg"></param>
         /// <returns></returns>
-        protected async Task ResponseError(string errorMsg)
+        protected void ResponseError(string errorMsg)
         {
-            var jobj = new JObject(new JProperty("code", 20001), new JProperty("message", errorMsg));
-            await SendJObject(jobj);
+            var jobj = new HttpResponse()
+            {
+                code = 204,
+                message = errorMsg,
+            };
+            SendJObject(jobj);
         }
 
-        private async Task SendJObject(JObject jObject)
+        private JObject GetBody()
         {
-            await HttpContext.SendStringAsync(JsonConvert.SerializeObject(jObject), "application/json", Encoding.UTF8);
+            Task<string> task = HttpContext.GetRequestBodyAsStringAsync();
+            string json = task.Result;
+            if (string.IsNullOrEmpty(json)) return new JObject();
+
+            return JObject.Parse(json);
         }
+
+        private void SendJObject(object obj)
+        {
+            Response.ContentType = MimeType.Json;
+            using (var writer = HttpContext.OpenResponseText(Encoding.UTF8, true))
+            {
+                writer.Write(JsonConvert.SerializeObject(obj));
+            }
+        }
+    }
+
+    class HttpResponse
+    {
+        public int code { get; set; } = 200;
+        public string message { get; set; }
+        public object data { get; set; }
     }
 }

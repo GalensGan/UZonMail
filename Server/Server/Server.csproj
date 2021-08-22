@@ -60,13 +60,19 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Bootstrapper.cs" />
-    <Compile Include="Database\Definitions\EmailInfo.cs" />
-    <Compile Include="Database\Definitions\Group.cs" />
-    <Compile Include="Database\Definitions\ReceiveBox.cs" />
-    <Compile Include="Database\Definitions\SendBox.cs" />
-    <Compile Include="Database\Definitions\User.cs" />
+    <Compile Include="Database\Definitions\UpdateOptions.cs" />
+    <Compile Include="Database\Extensions\Ex_LiteRepository.cs" />
+    <Compile Include="Database\Models\EmailInfo.cs" />
+    <Compile Include="Database\Models\Group.cs" />
+    <Compile Include="Database\Models\ReceiveBox.cs" />
+    <Compile Include="Database\Models\SendBox.cs" />
+    <Compile Include="Database\Models\Setting.cs" />
+    <Compile Include="Database\Models\User.cs" />
     <Compile Include="Database\LiteDBManager.cs" />
-    <Compile Include="Http\Helpers\JWTHelper.cs" />
+    <Compile Include="Http\Controller\Ctrler_Group.cs" />
+    <Compile Include="Http\Controller\Ctrler_Setting.cs" />
+    <Compile Include="Http\Headers\JwtToken.cs" />
+    <Compile Include="Http\Response\HttpResponse.cs" />
     <Compile Include="Http\Modules\IoCModule.cs" />
     <Compile Include="Http\Controller\Ctrler_User.cs" />
     <Compile Include="Http\Extensions\HttpContextExtensions.cs" />

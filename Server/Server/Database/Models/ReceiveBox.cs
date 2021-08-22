@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Server.Database.Definitions
+namespace Server.Database.Models
 {
     class ReceiveBox:EmailInfo
     {
