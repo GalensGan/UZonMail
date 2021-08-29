@@ -194,6 +194,12 @@ export const constantRoutes = [
         name: "ReceiveBox",
         component: () => import("@/views/email/receive"),
         meta: { title: "收件箱", icon: "form" }
+      },
+      {
+        path: "template",
+        name: "Template",
+        component: () => import("@/views/email/template"),
+        meta: { title: "正文模板", icon: "form" }
       }
     ]
   },

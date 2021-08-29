@@ -10,5 +10,8 @@ namespace Server.Database.Models
     {
         public string password { get; set; }
         public string smtp { get; set; }
+
+        // 是否作为发件人
+        public bool asSender { get; set; } = true;
     }
 }

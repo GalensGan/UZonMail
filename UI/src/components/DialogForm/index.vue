@@ -221,6 +221,8 @@ export default {
 
       // 如果成功了，则提示
       if (result.code === 200) {
+        // console.log(`${this.type}Success`, updateData)
+
         // 关闭窗体
         this.$emit(`${this.type}Success`, updateData)
 

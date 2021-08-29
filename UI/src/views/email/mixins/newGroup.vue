@@ -64,7 +64,7 @@ export default {
     showNewGroupDialog(data) {
       // 修改初始化参数
       if (data) {
-        this.$set(this.initNewGroupParams.fields[1], 'default', data.id || '')
+        this.$set(this.initNewGroupParams.fields[1], 'default', data._id || '')
         this.$set(this.initNewGroupParams.fields[2], 'default', data.name || '')
       }
 

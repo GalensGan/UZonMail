@@ -10,12 +10,9 @@ namespace Server.Database.Models
    public class EmailInfo
     {
         [BsonId]
-        public string userId { get; set; }
-
+        public int _id { get; set; }
         public string userName { get; set; }
         public string email { get; set; }
-
-        [BsonRef("Group")]
-        public Group group { get; set; }
+        public int groupId { get; set; }
     }
 }

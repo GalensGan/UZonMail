@@ -53,7 +53,7 @@ module.exports = class LTT {
 
   GetCurentAndSub(id) {
     const targetNode = this.tree.contains(currentNode => {
-      return currentNode.get("id") === id;
+      return currentNode.get("_id") === id;
     });
 
     console.log("GetCurentAndSub:", targetNode);

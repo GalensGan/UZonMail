@@ -13,7 +13,7 @@ export default {
         // type 可接受的值：text/password/textarea/email/search/tel/file/number/url/time/date
         fields: [
           {
-            name: 'id',
+            name: '_id',
             type: 'text',
             label: '组id',
             required: false,
@@ -44,7 +44,7 @@ export default {
         this.$set(
           this.initModifyGroupParams.fields[0],
           'default',
-          data.id || ''
+          data._id || ''
         )
         this.$set(
           this.initModifyGroupParams.fields[1],
@@ -64,7 +64,7 @@ export default {
 
     modifyGroup(data) {
       // 替换原来的数据
-      const index = this.groupsOrigin.findIndex(g => g.id === data.id)
+      const index = this.groupsOrigin.findIndex(g => g._id === data._id)
       if (index > -1) {
         this.groupsOrigin.splice(index, 1, data)
       }

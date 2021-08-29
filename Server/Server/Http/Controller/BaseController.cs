@@ -24,8 +24,8 @@ namespace Server.Http.Controller
 
         protected JwtToken Token { get; private set; }
 
-        private JObject _body;
-        protected JObject Body
+        private JToken _body;
+        protected JToken Body
         {
             get
             {
@@ -79,13 +79,13 @@ namespace Server.Http.Controller
             SendJObject(jobj);
         }
 
-        private JObject GetBody()
+        private JToken GetBody()
         {
             Task<string> task = HttpContext.GetRequestBodyAsStringAsync();
             string json = task.Result;
             if (string.IsNullOrEmpty(json)) return new JObject();
 
-            return JObject.Parse(json);
+            return JToken.Parse(json);
         }
 
         private void SendJObject(object obj)
