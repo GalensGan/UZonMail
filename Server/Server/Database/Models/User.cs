@@ -7,9 +7,8 @@ using System.Threading.Tasks;
 
 namespace Server.Database.Models
 {
-    public  class User
+    public  class User:AutoObjectId
     {
-        [BsonId]
         public string userId { get; set; }
         public string password { get; set; }
         public DateTime createDate { get; set; }

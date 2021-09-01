@@ -7,9 +7,8 @@ using System.Threading.Tasks;
 
 namespace Server.Database.Models
 {
-    public class Setting
+    public class Setting:AutoObjectId
     {
-        [BsonId]
         public string userId { get; set; }
         
         public double sendInterval_max { get; set; }

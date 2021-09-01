@@ -45,3 +45,15 @@ export function getSendingInfo() {
     method: "get"
   });
 }
+
+// 重新发件
+export function resendFail(historyId, sendItemIds) {
+  return request({
+    url: `/resend`,
+    method: "post",
+    data: {
+      historyId,
+      sendItemIds
+    }
+  });
+}

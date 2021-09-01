@@ -55,14 +55,14 @@ namespace Server.Http.Controller
         [Route(HttpVerbs.Delete, "/groups")]
         public void DeleteGroup()
         {
-            List<int> ids = Body["groupIds"].ToObject<List<int>>();
+            List<string> ids = Body["groupIds"].ToObject<List<string>>();
             LiteDb.DeleteMany<Group>(g => ids.Contains(g._id));
             ResponseSuccess(ids);
         }
 
         // 更新group
         [Route(HttpVerbs.Put, "/groups/{id}")]
-        public void UpdateGroup(int id)
+        public void UpdateGroup(string id)
         {
             // 获取所有待更新的key
             List<string> keys = (Body as JObject).Properties().ToList().ConvertAll(p => p.Name);
@@ -73,10 +73,10 @@ namespace Server.Http.Controller
 
         // 新建邮件
         [Route(HttpVerbs.Post, "/groups/{id}/email")]
-        public void NewEmail(int id)
+        public void NewEmail(string id)
         {
             // 根据id获取组
-            var group = LiteDb.SingleOrDefault<Group>($"_id={id}");
+            var group = LiteDb.SingleOrDefault<Group>(g => g._id == id);
             if (group == null)
             {
                 ResponseError($"未通过{id}找到组");
@@ -100,10 +100,10 @@ namespace Server.Http.Controller
 
         // 新建多个邮件
         [Route(HttpVerbs.Post, "/groups/{id}/emails")]
-        public void NewEmails(int id)
+        public void NewEmails(string id)
         {
             // 获取所有待更新的key
-            var group = LiteDb.SingleOrDefault<Group>($"_id={id}");
+            var group = LiteDb.SingleOrDefault<Group>(g => g._id == id);
             if (group == null)
             {
                 ResponseError($"未通过{id}找到组");
@@ -126,11 +126,11 @@ namespace Server.Http.Controller
             }
         }
 
-        // 新建多个邮件
+        // 获取多个邮件
         [Route(HttpVerbs.Get, "/groups/{id}/emails")]
-        public void GetEmails(int id)
+        public void GetEmails(string id)
         {
-            var group = LiteDb.SingleOrDefault<Group>($"_id={id}");
+            var group = LiteDb.SingleOrDefault<Group>(g => g._id == id);
             if (group == null)
             {
                 ResponseError($"未通过{id}找到组");
@@ -183,7 +183,7 @@ namespace Server.Http.Controller
 
         // 修改邮箱
         [Route(HttpVerbs.Put, "/emails/{id}")]
-        public void ModifyEmail(int id)
+        public void ModifyEmail(string id)
         {
             // 根据id判断属于发件还是收件
             var sendbox = LiteDb.FirstOrDefault<SendBox>(s => s._id == id);

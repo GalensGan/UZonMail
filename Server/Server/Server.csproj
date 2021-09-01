@@ -62,6 +62,7 @@
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="Database\Definitions\UpdateOptions.cs" />
     <Compile Include="Database\Extensions\Ex_LiteRepository.cs" />
+    <Compile Include="Database\Models\AutoObjectId.cs" />
     <Compile Include="Database\Models\EmailInfo.cs" />
     <Compile Include="Database\Models\Group.cs" />
     <Compile Include="Database\Models\HistoryGroup.cs" />
@@ -73,15 +74,20 @@
     <Compile Include="Database\Models\User.cs" />
     <Compile Include="Database\LiteDBManager.cs" />
     <Compile Include="Http\Controller\Ctrler_Group.cs" />
+    <Compile Include="Http\Controller\Ctrler_History.cs" />
     <Compile Include="Http\Controller\Ctrler_Send.cs" />
     <Compile Include="Http\Controller\Ctrler_Setting.cs" />
     <Compile Include="Http\Controller\Ctrler_Template.cs" />
     <Compile Include="Http\Headers\JwtToken.cs" />
+    <Compile Include="Http\Modules\SendEmail\SendingInfo.cs" />
+    <Compile Include="Http\Modules\SendEmail\SendTask.cs" />
+    <Compile Include="Http\Modules\Websocket\WsServer.cs" />
     <Compile Include="Http\Response\HttpResponse.cs" />
     <Compile Include="Http\Modules\IoCModule.cs" />
     <Compile Include="Http\Controller\Ctrler_User.cs" />
     <Compile Include="Http\Extensions\HttpContextExtensions.cs" />
     <Compile Include="Http\Extensions\WebServerExtensions.cs" />
+    <Compile Include="Http\Definitions\SendStatus.cs" />
     <Compile Include="SDK\Extension\Ex_Json.cs" />
     <Compile Include="Websocket\Execute\CommandClassName.cs" />
     <Compile Include="Websocket\Execute\CommandTable.cs" />
@@ -146,6 +152,9 @@
     </PackageReference>
     <PackageReference Include="log4net">
       <Version>2.0.12</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Web.WebView2">
+      <Version>1.0.902.49</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>13.0.1</Version>

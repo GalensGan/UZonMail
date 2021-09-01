@@ -69,5 +69,7 @@ namespace Server.Config
         public string TokenSecret { get; set; } = "helloworld001";
 
         public string DefaultAvatar { get; set; } = "https://i.loli.net/2021/08/13/uOIcVFAlDbYRiCk.png";
+
+        public string HttpHost = "http://127.0.0.1";
     }
 }

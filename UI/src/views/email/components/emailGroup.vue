@@ -21,7 +21,7 @@
                 touch-position
                 context-menu
               >
-                <q-list bordered class="rounded-borders text-primary" dense>
+                <q-list bordered class="rounded-borders text-teal" dense>
                   <q-item
                     clickable
                     v-if="!prop.node.parentId"

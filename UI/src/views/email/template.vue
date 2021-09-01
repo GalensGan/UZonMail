@@ -23,11 +23,11 @@
       <q-img class="rounded-borders" :src="temp.imageUrl" />
       <div class="row justify-between q-mt-sm">
         <div>创建时间:{{ temp.createDate | formatDate }}</div>
-        <q-btn          
-          color="negative"
+        <q-btn
+          color="warning"
           class="self-center"
           size="sm"
-          @click="deleteTemplate(temp._id)"          
+          @click="deleteTemplate(temp._id)"
           >删除</q-btn
         >
       </div>
@@ -38,8 +38,8 @@
         <div>{{ selectedFileName }}</div>
         <div id="capture" v-html="templateHtml"></div>
         <div class="row justify-end q-ma-sm q-gutter-sm">
-          <q-btn color="negative" v-close-popup>取消</q-btn>
-          <q-btn color="teal" @click="confirmTemplate">确认</q-btn>
+          <q-btn color="warning" v-close-popup>取消</q-btn>
+          <q-btn color="primary" @click="confirmTemplate">确认</q-btn>
         </div>
       </q-card>
     </q-dialog>

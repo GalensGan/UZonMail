@@ -5,10 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Server.Pages"
         mc:Ignorable="d"
-        Title="Stylet Start Project" Height="450" Width="800"
+        Title="Stylet Start Project" Height="600" Width="1200"
         xmlns:s="https://github.com/canton7/Stylet"
+        xmlns:webview2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
         d:DataContext="{d:DesignInstance local:ShellViewModel}">
-    <TextBlock FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center">
-        Hello Stylet!
-    </TextBlock>
+    <Grid>
+        <webview2:WebView2 Source="{Binding Url}" Name="WebView2"/>
+    </Grid>
 </Window>

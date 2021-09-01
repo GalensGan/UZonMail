@@ -24,6 +24,7 @@ namespace Server.Websocket
         // 线程锁
         private EventWaitHandle _waitHandle = null;
 
+        // ioc 容器
         public SwWebsocketServiceMain()
         {
         }

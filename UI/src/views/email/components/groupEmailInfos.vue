@@ -17,16 +17,16 @@
             label="新增"
             dense
             size="sm"
-            outline
             color="secondary"
+            class="q-pr-xs q-pl-xs"
             @click="openNewEmailDialog"
           ></q-btn>
           <q-btn
             label="从Excel导入"
             dense
             size="sm"
-            outline
             color="orange"
+            class="q-pr-xs q-pl-xs"
             @click="selectExcelFile"
           ></q-btn>
           <span class="text-subtitle1 text-primary">{{ group.name }}</span>
@@ -57,7 +57,7 @@
           <q-btn
             v-if="data.length > 0"
             :size="btn_delete.size"
-            :color="btn_delete.color"
+            color="warning"
             label="清空"
             :dense="btn_delete.dense"
             @click="clearGroup()"
@@ -227,7 +227,7 @@ export default {
         sortBy: 'userName',
         descending: false,
         page: 1,
-        rowsPerPage: 15,
+        rowsPerPage: 0,
         rowsNumber: 0
       },
 

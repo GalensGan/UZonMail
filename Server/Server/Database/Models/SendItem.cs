@@ -8,13 +8,10 @@ using System.Threading.Tasks;
 
 namespace Server.Database.Models
 {
-    public class SendItem
+    public class SendItem:AutoObjectId
     {
-        [BsonId]
-        public int _id { get; set; }
-
         // 历史id
-        public int historyId { get; set; }
+        public string historyId { get; set; }
 
         // 发送者信息
         public string senderName { get; set; }
@@ -38,5 +35,8 @@ namespace Server.Database.Models
 
         // 尝试次数
         public int tryCount { get; set; }
+
+        // 发送时间
+        public DateTime sendDate { get; set; }
     }
 }

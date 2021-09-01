@@ -1,11 +1,11 @@
 <template>
   <div class="column q-pa-lg send-container q-gutter-md">
-    <div class="receive-box">
+    <div class="receive-box row">
       <strong style="height: auto; align-self: center"> 主题：</strong>
-      <input type="text" class="send-input" v-model="subject" />
+      <input type="text" class="send-input col-grow" v-model="subject" />
     </div>
     <div class="receive-box row justify-between">
-      <div class="row">
+      <div class="row col-grow">
         <strong style="height: auto; align-self: center"> 收件人：</strong>
         <q-chip
           v-for="rec in receivers"
@@ -17,7 +17,7 @@
           text-color="white"
           :label="rec.label"
         />
-        <input type="text" class="send-input" />
+        <input type="text" class="send-input col-grow" />
       </div>
       <q-btn
         size="sm"
@@ -82,7 +82,7 @@
 
     <div style="flex: 1" v-html="selectedTemplate.html"></div>
 
-    <div class="row">
+    <div class="row justify-end">
       <q-btn
         label="发送"
         color="primary"
@@ -167,7 +167,7 @@ export default {
   async mounted() {
     // 获取当前状态，可能处理发送中
     const statusRes = await getCurrentStatus()
-    if (statusRes.data > 0) {
+    if (statusRes.data > 1) {
       // 打开发送框
       this.isShowSendingDialog = true
     }
@@ -283,7 +283,7 @@ export default {
       if (!isNewTask) return
 
       // 开始发送
-      // await startSending()
+      await startSending()
 
       this.isShowSendingDialog = true
     },

@@ -7,11 +7,8 @@ using System.Threading.Tasks;
 
 namespace Server.Database.Models
 {
-    public class Group
+    public class Group:AutoObjectId
     {
-        [BsonId]
-        public int _id { get; set; }
-
         public string userId { get; set; }
 
         /// <summary>

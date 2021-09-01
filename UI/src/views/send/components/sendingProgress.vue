@@ -1,7 +1,7 @@
 <template>
   <q-card class="q-ma-md" style="width: 400px">
     <div class="q-pa-sm">
-      正在发送：{{ sendingData.receverEmail }}, {{ sendingData.index }} /
+      已发送：{{ sendingData.receiverEmail }}, {{ sendingData.index }} /
       {{ sendingData.total }}
     </div>
     <q-linear-progress
@@ -23,6 +23,9 @@
 
 <script>
 import { getSendingInfo } from '@/api/send'
+import { getHistoryGroupSendResult } from '@/api/history'
+
+import { notifyError, notifySuccess } from '@/components/iPrompt'
 export default {
   data() {
     return {
@@ -62,9 +65,17 @@ export default {
         if (this.sendingData.index < this.sendingData.total) {
           this.getProgressInfo()
         } else {
+          // 获取发送结果
+          const msgRes = await getHistoryGroupSendResult(
+            this.sendingData.historyId
+          )
+
+          if (msgRes.data.ok) notifySuccess(msgRes.data.message)
+          else notifyError(msgRes.data.message)
+
           this.$emit('close')
         }
-      }, 500)
+      }, 800)
     }
   }
 }

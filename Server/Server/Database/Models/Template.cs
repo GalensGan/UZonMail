@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace Server.Database.Models
 {
-    public class Template
+    public class Template:AutoObjectId
     {
-        public int _id { get; set; }
         public string imageUrl { get; set; }
         public string html { get; set; }
         public string name { get; set; }
