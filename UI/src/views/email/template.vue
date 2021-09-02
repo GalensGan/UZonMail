@@ -11,27 +11,29 @@
       @change="fileSelected"
     />
 
-    <q-card
-      v-for="temp in data"
-      :key="temp._id"
-      flat
-      bordered
-      class="column q-pa-xs"
-      style="width: 400px"
-    >
-      <div class="text-overline">{{ temp.name }}</div>
-      <q-img class="rounded-borders" :src="temp.imageUrl" />
-      <div class="row justify-between q-mt-sm">
-        <div>创建时间:{{ temp.createDate | formatDate }}</div>
-        <q-btn
-          color="warning"
-          class="self-center"
-          size="sm"
-          @click="deleteTemplate(temp._id)"
-          >删除</q-btn
-        >
-      </div>
-    </q-card>
+    <div class="row q-gutter-sm">
+      <q-card
+        v-for="temp in data"
+        :key="temp._id"
+        flat
+        bordered
+        class="column q-pa-xs"
+        style="width: 400px"
+      >
+        <div class="text-overline">{{ temp.name }}</div>
+        <q-img class="rounded-borders" :src="temp.imageUrl" />
+        <div class="row justify-between q-mt-sm">
+          <div>创建时间:{{ temp.createDate | formatDate }}</div>
+          <q-btn
+            color="warning"
+            class="self-center"
+            size="sm"
+            @click="deleteTemplate(temp._id)"
+            >删除</q-btn
+          >
+        </div>
+      </q-card>
+    </div>
 
     <q-dialog v-model="isShowTemplateDialog" persistent>
       <q-card class="column" style="max-width: none">

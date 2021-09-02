@@ -1,5 +1,5 @@
 <template>
-  <div class="column q-pa-lg send-container q-gutter-md">
+  <div class="q-pa-lg send-container q-gutter-md">
     <div class="receive-box row">
       <strong style="height: auto; align-self: center"> 主题：</strong>
       <input type="text" class="send-input col-grow" v-model="subject" />
@@ -80,9 +80,9 @@
       </div>
     </div>
 
-    <div style="flex: 1" v-html="selectedTemplate.html"></div>
+    <div v-html="selectedTemplate.html"></div>
 
-    <div class="row justify-end">
+    <div class="row justify-end preview-row">
       <q-btn
         label="发送"
         color="primary"
@@ -309,6 +309,7 @@ export default {
   right: 0;
   bottom: 0;
   left: 0;
+  overflow-y: auto;
 
   .receive-box {
     border-bottom: 1px solid gray;
@@ -317,6 +318,12 @@ export default {
   .send-input {
     border: none;
     outline: none;
+  }
+
+  .preview-row{
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
   }
 }
 </style>
