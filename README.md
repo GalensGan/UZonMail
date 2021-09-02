@@ -2,7 +2,7 @@
 
 ## 简介
 
-![](https://i.loli.net/2021/09/02/3FZ9QBYqcfrtuV1.png)
+![20210902000641.png](https://i.loli.net/2021/09/02/3FZ9QBYqcfrtuV1.png)
 
 本程序名为“邮件群发助手”，旨在实现邮件发送自动化，批量化和内容可定制化。最简单的应用场景就是财务可以利用它向员工发送每个人对应的工资条。
 
@@ -88,7 +88,7 @@
 
 ### 首页
 
-![](https://i.loli.net/2021/09/02/3FZ9QBYqcfrtuV1.png)
+![20210902000641.png](https://i.loli.net/2021/09/02/3FZ9QBYqcfrtuV1.png)
 
 首页为欢迎页面。在首页中，会加载左下角的 Live2d 模块，如果不需要，可以手动关闭。
 
