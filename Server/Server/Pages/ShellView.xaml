@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Server.Pages"
         mc:Ignorable="d"
-        Title="Stylet Start Project" Height="600" Width="1200"
+        Title="邮件批量发送系统" Height="600" Width="1200"
         xmlns:s="https://github.com/canton7/Stylet"
         xmlns:webview2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
         d:DataContext="{d:DesignInstance local:ShellViewModel}">

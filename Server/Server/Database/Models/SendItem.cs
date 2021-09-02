@@ -21,8 +21,10 @@ namespace Server.Database.Models
         public string receiverName { get; set; }
         public string receiverEmail { get; set; }
 
-        // 邮件内容
+        // 邮件主题
         public string subject { get; set; }
+
+        // 邮件 html 内容
         public string html { get; set; }
 
         // 进度信息

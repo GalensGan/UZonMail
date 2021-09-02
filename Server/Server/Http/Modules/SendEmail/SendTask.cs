@@ -121,22 +121,50 @@ namespace Server.Http.Modules.SendEmail
 
                     var item = new SendItem()
                     {
-                        subject = _subject,
                         receiverName = re.userName,
                         receiverEmail = re.email,
                     };
 
                     // 获取数据
                     List<string> keys = (itemData as JObject).Properties().ToList().ConvertAll(p => p.Name);
-                    // 对所有数据进行替换
                     string sendHtml = _template.html;
+                    // 判断是否有自定义内容，然后判断是否有自定义模板
+                    if (keys.Contains("body"))
+                    {
+                        // 获取 body 值
+                        string body = itemData.Value<string>("body");
+                        if (!string.IsNullOrEmpty(body))
+                        {
+                            sendHtml = body;
+                        }
+                    }
+                    else if (keys.Contains("template"))
+                    {
+                        string customTemplateName = itemData.Value<string>("template");
+                        if (!string.IsNullOrEmpty(customTemplateName))
+                        {
+                            // 获取新模板，如果失败，则跳过，不发送
+                            var customTemplate = _liteDb.SingleOrDefault<Template>(t => t.name == customTemplateName);
+                            if (customTemplate != null)
+                            {
+                                sendHtml = customTemplate.html;
+                            }
+                        }
+                    }
+
+                    // 替换模板内数据
+                    string subjectTemp = _subject;
                     foreach (string key in keys)
                     {
                         var regex = new Regex("{{\\s*" + key + "\\s*}}");
                         sendHtml = regex.Replace(sendHtml, itemData[key].Value<string>());
+
+                        // 同时替换主题数据
+                        subjectTemp = regex.Replace(subjectTemp, itemData[key].Value<string>());
                     }
 
                     item.html = sendHtml;
+                    item.subject = subjectTemp;
 
                     // 添加到保存的集合中
                     _sendItems.Add(item);
@@ -412,7 +440,7 @@ namespace Server.Http.Modules.SendEmail
                                 };
                                 SendingInfo = sendingInfo;
                             }
-                            else if(setting.isAutoResend) // 重新发送时，才重新推入栈中
+                            else if (setting.isAutoResend) // 重新发送时，才重新推入栈中
                             {
                                 // 重新推入栈中
                                 sendItems.Push(sendItem);

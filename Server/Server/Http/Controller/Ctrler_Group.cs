@@ -154,7 +154,7 @@ namespace Server.Http.Controller
 
         // 删除单个邮箱
         [Route(HttpVerbs.Delete, "/emails/{id}")]
-        public void DeleteEmail(int id)
+        public void DeleteEmail(string id)
         {
             // 获取所有待更新的key
             LiteDb.Delete<SendBox>(id);
