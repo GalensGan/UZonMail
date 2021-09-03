@@ -17,11 +17,11 @@
         :key="temp._id"
         flat
         bordered
-        class="column q-pa-xs"
-        style="width: 400px"
+        class="q-pa-xs column"
+        style="width: 400px; max-height: 300px"
       >
         <div class="text-overline">{{ temp.name }}</div>
-        <q-img class="rounded-borders" :src="temp.imageUrl" />
+        <q-img class="rounded-borders" style="flex: 1" :src="temp.imageUrl" />
         <div class="row justify-between q-mt-sm">
           <div>创建时间:{{ temp.createDate | formatDate }}</div>
           <q-btn
@@ -36,13 +36,40 @@
     </div>
 
     <q-dialog v-model="isShowTemplateDialog" persistent>
-      <q-card class="column" style="max-width: none">
-        <div>{{ selectedFileName }}</div>
-        <div id="capture" v-html="templateHtml"></div>
-        <div class="row justify-end q-ma-sm q-gutter-sm">
-          <q-btn color="warning" v-close-popup>取消</q-btn>
-          <q-btn color="primary" @click="confirmTemplate">确认</q-btn>
-        </div>
+      <q-card style="max-width: none">
+        <q-layout
+          view="lHh lpr lFf"
+          container
+          style="height: 400px; width: 600px"
+          class="shadow-2 rounded-borders"
+        >
+          <q-header elevated class="bg-teal">
+            <div class="text-subtitle1 q-pa-sm">{{ selectedFileName }}</div>
+          </q-header>
+
+          <q-footer elevated class="bg-teal">
+            <div class="row justify-end q-ma-sm q-gutter-sm">
+              <q-btn color="warning" size="sm" v-close-popup
+                >取消</q-btn
+              >
+              <q-btn
+                color="primary"
+                size="sm"
+                @click="confirmTemplate"
+                :loading="isSavingTemplate"
+                >确认</q-btn
+              >
+            </div>
+          </q-footer>
+
+          <q-page-container>
+            <div
+              id="capture"
+              v-html="templateHtml"
+              style="background-color: white"
+            ></div>
+          </q-page-container>
+        </q-layout>
       </q-card>
     </q-dialog>
   </div>
@@ -60,7 +87,8 @@ export default {
       templateHtml: '',
       isShowTemplateDialog: false,
       selectedFileName: '',
-      data: []
+      data: [],
+      isSavingTemplate: false
     }
   },
   filters: {
@@ -116,32 +144,37 @@ export default {
 
     // 确认邮件
     async confirmTemplate() {
-      // 生成模板预览图
-      const canvas = await html2canvas(document.getElementById('capture'), {
-        scale: 1, //缩放比例,默认为1
-        allowTaint: false, //是否允许跨域图像污染画布
-        useCORS: true, //是否尝试使用CORS从服务器加载图像
-        //width: '500', //画布的宽度
-        //height: '500', //画布的高度
-        backgroundColor: '#000000' //画布的背景色，默认为透明
+      this.isSavingTemplate = true
+
+      this.$nextTick(async () => {
+        // 生成模板预览图
+        const canvas = await html2canvas(document.getElementById('capture'), {
+          scale: 1, //缩放比例,默认为1
+          allowTaint: false, //是否允许跨域图像污染画布
+          useCORS: true, //是否尝试使用CORS从服务器加载图像
+          //width: '500', //画布的宽度
+          //height: '500', //画布的高度
+          backgroundColor: '#000000' //画布的背景色，默认为透明
+        })
+
+        //将canvas转为base64格式
+        const imageUrl = canvas.toDataURL('image/png')
+
+        // 发送模板
+        const res = await newTemplate(
+          this.selectedFileName,
+          imageUrl,
+          this.templateHtml
+        )
+
+        // 添加到集合
+        this.data.push(res.data)
+
+        notifySuccess('添加成功')
+
+        this.isSavingTemplate = false
+        this.isShowTemplateDialog = false
       })
-
-      //将canvas转为base64格式
-      const imageUrl = canvas.toDataURL('image/png')
-
-      // 发送模板
-      const res = await newTemplate(
-        this.selectedFileName,
-        imageUrl,
-        this.templateHtml
-      )
-
-      // 添加到集合
-      this.data.push(res.data)
-
-      notifySuccess('添加成功')
-
-      this.isShowTemplateDialog = false
     },
 
     // 删除邮件

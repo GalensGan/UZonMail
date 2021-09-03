@@ -33,13 +33,17 @@
     <div class="row justify-between">
       <div class="row content-center">
         <strong style="height: auto; align-self: center"> 模板：</strong>
-        <el-select v-model="selectedTemplate" placeholder="请选择" size="small">
+        <el-select
+          v-model="selectedTemplate"
+          placeholder="请选择"
+          size="small"
+          value-key="_id"
+        >
           <el-tooltip
             v-for="item in options"
             :key="item._id"
             class="item"
             effect="light"
-            content="Right Center 提示文字"
             placement="right"
           >
             <div slot="content">
@@ -98,26 +102,50 @@
     </q-dialog>
 
     <q-dialog v-model="isShowPreviewDialog" persistent>
-      <q-card class="column" style="max-width: none">
-        <div class="q-pa-sm text-subtitle1">
-          发送给：{{ previewData.receiverName }}/{{ previewData.receiverEmail }}
-        </div>
-        <div v-html="previewData.html"></div>
-        <div class="row justify-between q-pa-sm">
-          <div>
-            当前：{{ previewData.index + 1 }} / 合计：{{ previewData.total }}
-          </div>
-          <div class="row justify-end q-gutter-sm">
-            <q-btn
-              label="上一条"
-              color="teal"
-              size="sm"
-              @click="previousItem"
-            />
-            <q-btn label="下一条" color="orange" size="sm" @click="nextItem" />
-            <q-btn label="退出" color="negative" size="sm" v-close-popup />
-          </div>
-        </div>
+      <q-card style="max-width: none">
+        <q-layout
+          view="lHh lpr lFf"
+          container
+          style="height: 400px; width: 600px"
+          class="shadow-2 rounded-borders"
+        >
+          <q-header elevated class="bg-teal">
+            <div class="q-pa-sm text-subtitle1">
+              发送给：{{ previewData.receiverName }}/{{
+                previewData.receiverEmail
+              }}
+            </div>
+          </q-header>
+
+          <q-footer elevated class="bg-teal">
+            <div class="row justify-between q-pa-sm">
+              <div>
+                当前：{{ previewData.index + 1 }} / 合计：{{
+                  previewData.total
+                }}
+              </div>
+              <div class="row justify-end q-gutter-sm">
+                <q-btn
+                  label="上一条"
+                  color="orange"
+                  size="sm"
+                  @click="previousItem"
+                />
+                <q-btn
+                  label="下一条"
+                  color="orange"
+                  size="sm"
+                  @click="nextItem"
+                />
+                <q-btn label="退出" color="negative" size="sm" v-close-popup />
+              </div>
+            </div>
+          </q-footer>
+
+          <q-page-container>
+            <div v-html="previewData.html"></div>
+          </q-page-container>
+        </q-layout>
       </q-card>
     </q-dialog>
 
@@ -320,7 +348,7 @@ export default {
     outline: none;
   }
 
-  .preview-row{
+  .preview-row {
     position: fixed;
     right: 20px;
     bottom: 20px;

@@ -30,6 +30,15 @@
         </q-td>
       </template>
 
+      <template v-slot:body-cell-sendMessage="props">
+        <q-td :props="props">
+          {{ props.value }}
+          <q-tooltip>
+            {{ props.value }}
+          </q-tooltip>
+        </q-td>
+      </template>
+
       <template v-slot:body-cell-operations="props">
         <q-td :props="props" class="row justify-end">
           <q-btn
@@ -45,15 +54,21 @@
     </q-table>
     <div class="row justify-end q-pa-sm">
       <q-btn
-        :label="resendLabel"
+        label="重发"
         color="teal"
         size="sm"
         class="q-mr-sm"
+        :class="resentClass"
         v-if="isShowResent"
         :disable="disableResend"
         :loading="isResending"
         @click="resend"
-      />
+      >
+        <template v-slot:loading>
+          <q-spinner-hourglass class="on-left" />
+          {{ resendLabel }}
+        </template>
+      </q-btn>
 
       <q-btn
         :disable="disableCancle"
@@ -157,7 +172,8 @@ export default {
           label: '原因',
           align: 'left',
           field: 'sendMessage',
-          sortable: true
+          sortable: true,
+          style: 'max-width:200px;text-overflow: ellipsis;overflow: hidden'
         },
         {
           name: 'tryCount',
@@ -186,7 +202,7 @@ export default {
       disableResend: false,
       disableCancle: false,
       isResending: false,
-      resendLabel: '重发'
+      resendLabel: '开始...'
     }
   },
   computed: {
@@ -203,6 +219,11 @@ export default {
     isShowResent() {
       const needResend = this.data.filter(d => !d.isSent)
       return needResend.length > 0
+    },
+
+    resentClass() {
+      if (this.isResending) return 'resend-runing'
+      else return 'resend-normal'
     }
   },
   async mounted() {
@@ -241,9 +262,10 @@ export default {
         return
       }
 
-      // 关闭重发
+      // 关闭重发,关闭取消
       this.disableResend = true
       this.isResending = true
+      this.disableCancle = true
 
       // 开始发送
       await resendFail(this.historyId, ids)
@@ -257,14 +279,18 @@ export default {
         // 获取更新数据
         const res = await getSendingInfo()
         // console.log('getProgressInfo:', res.data)
-        this.sendingInfo = res.data
-        if (this.sendingInfo.index < this.sendingInfo.total) {
+        const sendingInfo = res.data
+
+        // 显示进度
+        this.resendLabel =
+          ((sendingInfo.index * 100) / (sendingInfo.total || 1)).toFixed(1) +
+          ' %'
+
+        if (sendingInfo.index < sendingInfo.total) {
           this.getProgressInfo()
         } else {
           // 获取发送结果
-          const msgRes = await getHistoryGroupSendResult(
-            this.sendingInfo.historyId
-          )
+          const msgRes = await getHistoryGroupSendResult(sendingInfo.historyId)
 
           if (msgRes.data.ok) notifySuccess(msgRes.data.message)
           else notifyError(msgRes.data.message)
@@ -274,10 +300,13 @@ export default {
           this.data = res.data
 
           const needResend = this.data.filter(d => !d.isSent)
-          this.disableResend = needResend.length < 1
 
+          // 打开按钮锁定
+          this.disableResend = needResend.length < 1
           this.disableCancle = false
           this.isResending = false
+          // 恢复重发初始值
+          this.resendLabel = '开始...'
         }
       }, 800)
     },
@@ -290,5 +319,8 @@ export default {
 }
 </script>
 
-<style>
+<style lang='scss'>
+.resend-runing {
+  width: 80px;
+}
 </style>

@@ -38,7 +38,7 @@ namespace Server.Http.Controller
 
         // 删除模板
         [Route(HttpVerbs.Delete, "/template/{id}")]
-        public void DeleteTemplates(int id)
+        public void DeleteTemplates(string id)
         {
             var deleteResult = LiteDb.Delete<Template>(id);
             if (deleteResult) ResponseSuccess(deleteResult);

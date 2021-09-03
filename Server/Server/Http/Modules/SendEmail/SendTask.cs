@@ -449,7 +449,8 @@ namespace Server.Http.Modules.SendEmail
                             // 更新状态                      
                             sendItem.tryCount++;
                             sendItem.isSent = false;
-                            sendItem.sendMessage = ex.InnerException.Message;
+                            if (ex.InnerException == null) sendItem.sendMessage = ex.Message;
+                            else sendItem.sendMessage = ex.InnerException.Message;
                             _liteDb.Upsert(sendItem);
                         }
                         finally
