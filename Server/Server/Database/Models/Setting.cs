@@ -14,6 +14,7 @@ namespace Server.Database.Models
         public double sendInterval_max { get; set; }
         public double sendInterval_min { get; set; }
 
+        // 是否自动发送
         public bool isAutoResend { get; set; }
     }
 }

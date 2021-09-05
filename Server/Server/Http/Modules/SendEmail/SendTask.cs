@@ -20,7 +20,7 @@ namespace Server.Http.Modules.SendEmail
         public static SendTask Instance { get; private set; }
 
         // 新建发送任务
-        public static bool CreateSendTask(string userId, string subject, JArray receivers, JArray data, string templateId, LiteDBManager liteDb, out string message)
+        public static bool CreateSendTask(string historyId, string userId, LiteDBManager liteDb, out string message)
         {
             // 判断原来任务的状态
             if (Instance != null && Instance.SendStatus >= SendStatus.Init)
@@ -29,29 +29,7 @@ namespace Server.Http.Modules.SendEmail
                 return false;
             }
 
-            SendTask temp = new SendTask(userId, subject, receivers, data, templateId, liteDb);
-            // 判断是否符合数据要求
-            if (!temp.Validate(out string validateMsg))
-            {
-                message = validateMsg;
-                return false;
-            }
-
-            Instance = temp;
-            message = "success";
-            return true;
-        }
-
-        public static bool CreateSendTask(string userId, LiteDBManager liteDb, out string message)
-        {
-            // 判断原来任务的状态
-            if (Instance != null && Instance.SendStatus >= SendStatus.Init)
-            {
-                message = "任务正在进行中";
-                return false;
-            }
-
-            SendTask temp = new SendTask(userId, liteDb);
+            SendTask temp = new SendTask(historyId, userId, liteDb);
 
             Instance = temp;
             message = "success";
@@ -59,167 +37,18 @@ namespace Server.Http.Modules.SendEmail
         }
 
         private string _userId;
-        private string _subject;
-        private JArray _receivers;
-        private JArray _data;
-        private Template _template;
+        private string _currentHistoryGroupId;
         private LiteDBManager _liteDb;
-        private List<SendItem> _sendItems;
-        private List<ReceiveBox> _receiveBoxes;
 
         public SendStatus SendStatus { get; private set; }
 
-        // 从发件信息中获取基本信息
-        private SendTask(string userId, string subject, JArray receivers, JArray data, string templateId, LiteDBManager liteDb)
+        private SendTask(string historyId, string userId, LiteDBManager liteDb)
         {
             _userId = userId;
-            _subject = subject;
-            _receivers = receivers;
-            _data = data;
-            _liteDb = liteDb;
-
-            // 获取模板
-            _template = _liteDb.SingleOrDefault<Template>(t => t._id == templateId);
-
-            // 生成发件模板，用异步，否则会阻塞该线程
-            new Task(() =>
-            {
-                // 生成每一项
-                _sendItems = new List<SendItem>();
-                _receiveBoxes = new List<ReceiveBox>();
-                // 获取当前收件人或组下的所有人
-                foreach (JToken jt in _receivers)
-                {
-                    // 判断 type
-                    string type = jt.Value<string>("type");
-                    string id = jt.Value<string>("_id");
-                    if (type == "group")
-                    {
-                        // 找到group下所有的用户
-                        List<ReceiveBox> boxes = liteDb.Fetch<ReceiveBox>(r => r.groupId == id);
-
-                        // 如果没有，才添加
-                        foreach (ReceiveBox box in boxes)
-                        {
-                            if (_receiveBoxes.Find(item => item._id == box._id) == null) _receiveBoxes.Add(box);
-                        }
-                    }
-                    else
-                    {
-                        // 选择了单个用户
-                        var box = liteDb.SingleOrDefault<ReceiveBox>(r => r._id == id);
-                        if (box != null && _receiveBoxes.Find(item => item._id == box._id) == null) _receiveBoxes.Add(box);
-                    }
-                }
-
-                // 开始添加                
-                foreach (var re in _receiveBoxes)
-                {
-                    // 判断有没有数据
-                    var itemData = _data.FirstOrDefault(jt => jt.Value<string>("userName") == re.userName);
-                    if (itemData == null) continue;
-
-                    var item = new SendItem()
-                    {
-                        receiverName = re.userName,
-                        receiverEmail = re.email,
-                    };
-
-                    // 获取数据
-                    List<string> keys = (itemData as JObject).Properties().ToList().ConvertAll(p => p.Name);
-                    string sendHtml = _template.html;
-                    // 判断是否有自定义内容，然后判断是否有自定义模板
-                    if (keys.Contains("body"))
-                    {
-                        // 获取 body 值
-                        string body = itemData.Value<string>("body");
-                        if (!string.IsNullOrEmpty(body))
-                        {
-                            sendHtml = body;
-                        }
-                    }
-                    else if (keys.Contains("template"))
-                    {
-                        string customTemplateName = itemData.Value<string>("template");
-                        if (!string.IsNullOrEmpty(customTemplateName))
-                        {
-                            // 获取新模板，如果失败，则跳过，不发送
-                            var customTemplate = _liteDb.SingleOrDefault<Template>(t => t.name == customTemplateName);
-                            if (customTemplate != null)
-                            {
-                                sendHtml = customTemplate.html;
-                            }
-                        }
-                    }
-
-                    // 替换模板内数据
-                    string subjectTemp = _subject;
-                    foreach (string key in keys)
-                    {
-                        var regex = new Regex("{{\\s*" + key + "\\s*}}");
-                        sendHtml = regex.Replace(sendHtml, itemData[key].Value<string>());
-
-                        // 同时替换主题数据
-                        subjectTemp = regex.Replace(subjectTemp, itemData[key].Value<string>());
-                    }
-
-                    item.html = sendHtml;
-                    item.subject = subjectTemp;
-
-                    // 添加到保存的集合中
-                    _sendItems.Add(item);
-                };
-
-                // 添加序号
-                for (int i = 0; i < _sendItems.Count; i++)
-                {
-                    _sendItems[i].index = i;
-                    _sendItems[i].total = _sendItems.Count;
-                }
-            }).Start();
-        }
-
-        private SendTask(string userId, LiteDBManager liteDb)
-        {
-            _userId = userId;
+            _currentHistoryGroupId = historyId;
             _liteDb = liteDb;
         }
-        private bool Validate(out string message)
-        {
-            message = "success";
-            return true;
-        }
 
-        private int _index;
-
-        // 获取预览内容
-        public SendItem GetPreviewHtml(string directive)
-        {
-            if (_sendItems.Count < 1) return null;
-
-            switch (directive)
-            {
-                case "first":
-                    _index = 0;
-                    return _sendItems.FirstOrDefault();
-                case "next":
-                    _index++;
-                    return _sendItems[CycleInt(_index, _sendItems.Count)];
-                case "previous":
-                    _index--;
-                    return _sendItems[CycleInt(_index, _sendItems.Count)];
-                default:
-                    // 通过名字来搜索
-                    return null;
-            }
-        }
-
-        private int CycleInt(int index, int total)
-        {
-            int result = index % total;
-            if (result >= 0) return result;
-            return total + result;
-        }
 
         private SendingInfo _sendingInfo;
         public SendingInfo SendingInfo
@@ -252,68 +81,35 @@ namespace Server.Http.Modules.SendEmail
         }
 
         private CancellationToken _cancleToken;
-        private string _currentHistoryGroupId;
-        /// <summary>
-        /// 利用预览产生的数据进行发送
-        /// </summary>
-        /// <returns></returns>
-        public string StartSending()
-        {
-            // 添加正在发送的标记
-            this.SendStatus = SendStatus.Sending;
-
-            // 获取发件箱
-            var senders = _liteDb.Database.GetCollection<SendBox>().FindAll().ToList();
-
-            // 添加历史
-            HistoryGroup historyGroup = new HistoryGroup()
-            {
-                userId = _userId,
-                createDate = DateTime.Now,
-                subject = _subject,
-                data = JsonConvert.SerializeObject(_data),
-                receiverIds = _receiveBoxes.ConvertAll(rec => rec._id),
-                templateId = _template._id,
-                templateName = _template.name,
-                senderIds = senders.ConvertAll(s => s._id),
-                sendStatus = SendStatus.Sending,
-            };
-            _liteDb.Database.GetCollection<HistoryGroup>().Insert(historyGroup);
-            _currentHistoryGroupId = historyGroup._id;
-
-            // 将所有的待发信息添加到数据库，然后读取出来批量发送
-            _sendItems.ForEach(item => item.historyId = historyGroup._id);
-            _liteDb.Database.GetCollection<SendItem>().InsertBulk(_sendItems);
-
-            SendItems(_sendItems, historyGroup._id);
-
-            return historyGroup._id;
-        }
 
         /// <summary>
-        /// 重新发送
+        /// 开始发送未发送成功的数据
         /// </summary>
         /// <param name="sendItemIds">传入需要重新发送的id</param>
         /// <returns></returns>
-        public bool Resend(string historyId, List<string> sendItemIds)
+        public bool StartSending(string historyId)
         {
             // 判断是否结束
             if (SendStatus != SendStatus.SendFinish) return false;
 
-            // 修改状态
-            SendStatus = SendStatus.Resending;
-            _currentHistoryGroupId = historyId;
+            var allSendItems = _liteDb.Fetch<SendItem>(item => item.historyId == historyId);
+            var sendItems = allSendItems.FindAll(item => !item.isSent);
+
+
+
+            if (allSendItems.Count == sendItems.Count) SendStatus = SendStatus.Sending;
+            else SendStatus = SendStatus.Resending;
+
+
             // 更改数据库中的状态
             var history = _liteDb.SingleById<HistoryGroup>(historyId);
             if (history == null) return false;
-            history.sendStatus = SendStatus.Resending;
+
+            history.sendStatus = SendStatus;
             _liteDb.Update(history);
 
-            // 找到待发送的项
-            var sendItems = _liteDb.Fetch<SendItem>(item => sendItemIds.Contains(item._id));
-
-            // 判断重发数
-            if (sendItemIds.Count < 1)
+            // 判断需要发送的数量
+            if (allSendItems.Count < 1)
             {
                 history.sendStatus = SendStatus.SendFinish;
                 _liteDb.Update(history);
@@ -331,12 +127,12 @@ namespace Server.Http.Modules.SendEmail
             }
 
             // 开始发件
-            SendItems(sendItems, historyId);
+            SendItems(historyId, sendItems);
 
             return true;
         }
 
-        private void SendItems(List<SendItem> sendItemList, string historyId)
+        private void SendItems(string historyId, List<SendItem> sendItemList)
         {
             var senders = _liteDb.Database.GetCollection<SendBox>().FindAll().ToList();
 

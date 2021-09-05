@@ -1,8 +1,13 @@
 <template>
   <div class="setting-container row justify-center">
-    <div class="column justify-center q-gutter-md" style="width: 400px">
+    <div class="column justify-center q-gutter-md" style="max-width: 600px">
       <div>
-        <div class="text-subtitle1 q-mb-lg">单个发件箱发件间隔范围：</div>
+        <div class="text-subtitle1 q-mb-lg">
+          时间间隔：
+          <q-tooltip>
+            单个发件箱发件连续两封邮件发件时间的间隔范围，在该范围内随机波动
+          </q-tooltip>
+        </div>
         <q-range
           v-model="sendInterval"
           :min="2"
@@ -11,13 +16,30 @@
           :left-label-value="sendInterval.min + '秒'"
           :right-label-value="sendInterval.max + '秒'"
           label-always
+          style="min-width: 300px"
         />
       </div>
+      <!-- <div>
+        <div class="text-subtitle1 q-mb-lg">
+          单次发件数：
+          <q-tooltip> 单个发件箱单次发件总数。0代表无限制 </q-tooltip>
+        </div>
+        <q-slider
+          v-model="singleSendControl"
+          :min="0"
+          :max="100"
+          :step="5"
+          label
+          label-always
+          style="min-width: 300px"
+        />
+      </div> -->
+
       <q-checkbox
         v-model="isAutoResend"
         label="自动重发"
         color="orange"
-        class="self-start"
+        class="self-start q-ml-xs"
       />
     </div>
   </div>
@@ -37,7 +59,12 @@ export default {
         min: 3,
         max: 8
       },
-      isAutoResend: true
+
+      singleSendControl: 0,
+
+      isAutoResend: true,
+
+      isBodyToImage: false
     }
   },
 
@@ -45,6 +72,7 @@ export default {
     async sendInterval(newValue) {
       await updateSendInterval(newValue.min, newValue.max)
     },
+
     async isAutoResend(newValue) {
       await updateIsAutoResend(newValue)
     }
@@ -53,7 +81,11 @@ export default {
   async mounted() {
     const res = await getUserSettings()
     if (!res.data) return
-    const { sendInterval_max, sendInterval_min, isAutoResend } = res.data
+    const {
+      sendInterval_max,
+      sendInterval_min,
+      isAutoResend,
+    } = res.data
     this.sendInterval.min = sendInterval_min || 3
     this.sendInterval.max = sendInterval_max || 8
     this.isAutoResend = isAutoResend

@@ -36,10 +36,9 @@ namespace Server.Http.Controller
             ResponseSuccess(sendStatus);
         }
 
-
-        // 新建发送任务
-        [Route(HttpVerbs.Post, "/send/task")]
-        public void CreateTask()
+        // 新建预览
+        [Route(HttpVerbs.Post, "/send/preview")]
+        public void CreatePreview()
         {
             // 生成
             string subject = Body.Value<string>("subject");
@@ -47,8 +46,12 @@ namespace Server.Http.Controller
             JArray data = Body.Value<JArray>("data");
             string templateId = Body.Value<string>("templateId");
 
-            bool createResult = SendTask.CreateSendTask(Token.UserId, subject, receivers, data, templateId, LiteDb, out string message);
-            if (createResult) ResponseSuccess(createResult);
+            bool createResult = EmailPreview.CreateEmailPreview(subject, receivers, data, templateId, LiteDb, out string message);
+            if (createResult)
+            {
+                EmailPreview.InstancePreview.Generate();
+                ResponseSuccess(createResult);
+            }
             else ResponseError(message);
         }
 
@@ -56,7 +59,7 @@ namespace Server.Http.Controller
         [Route(HttpVerbs.Get, "/send/preview/{key}")]
         public void GetSendPreview(string key)
         {
-            SendItem item = SendTask.Instance.GetPreviewHtml(key);
+            SendItem item = EmailPreview.InstancePreview.GetPreviewHtml(key);
             if (item == null)
             {
                 ResponseError("没有可预览项，请检查收件箱是否为空");
@@ -66,12 +69,41 @@ namespace Server.Http.Controller
             ResponseSuccess(item);
         }
 
-        // 开始发送邮件
-        [Route(HttpVerbs.Post, "/send")]
-        public void StartSending(string key)
+        // 新建发送准备
+        [Route(HttpVerbs.Post, "/send/task")]
+        public void CreateTask()
         {
-            var id = SendTask.Instance.StartSending();
-            ResponseSuccess(id);
+            // 生成
+            string subject = Body.Value<string>("subject");
+            JArray receivers = Body.Value<JArray>("receivers");
+            JArray data = Body.Value<JArray>("data");
+            string templateId = Body.Value<string>("templateId");
+
+            bool createResult = EmailReady.CreateEmailReady(Token.UserId, subject, receivers, data, templateId, LiteDb, out string message);
+            if (!createResult) ResponseError(message);
+
+            var info = EmailReady.InstanceReady.Generate();
+
+            if (info.ok) ResponseSuccess(info);
+            else ResponseError(info.message);
+        }
+
+
+        // 开始发送邮件
+        // 也包括重新发件
+        [Route(HttpVerbs.Post, "/send/tasks/{historyGroupId}")]
+        public void StartSending(string historyGroupId)
+        {
+            // 因为创建 history 的时候，检查了发送模块是否进行，所以此处新建发送模块不会造成冲突
+            if (!SendTask.CreateSendTask(historyGroupId, Token.UserId, LiteDb, out string message))
+            {
+                ResponseError(message);
+                return;
+            }
+
+            SendTask.Instance.StartSending(historyGroupId);
+
+            ResponseSuccess(historyGroupId);
         }
 
         // 获取发件状态
@@ -101,27 +133,6 @@ namespace Server.Http.Controller
                 result = new JObject(new JProperty("message", msg), new JProperty("ok", false));
             }
             ResponseSuccess(result);
-        }
-
-        // 重新发件
-        [Route(HttpVerbs.Post, "/resend")]
-        public void ResendItems()
-        {
-            if (SendTask.Instance == null)
-            {
-                // 需要初始化 Instance
-                if(!SendTask.CreateSendTask(Token.UserId,LiteDb,out string message))
-                {
-                    ResponseError(message);
-                }
-            }
-            string historyId = Body.Value<string>("historyId");
-            List<string> itemIds = Body.Value<JArray>("sendItemIds").ToList().ConvertAll(jt=>jt.ToString());
-
-            // 开始重新发送
-            SendTask.Instance.Resend(historyId, itemIds);
-
-            ResponseSuccess(true);
         }
     }
 }

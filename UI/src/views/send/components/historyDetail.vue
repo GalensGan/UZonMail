@@ -87,7 +87,7 @@ import {
   getHistoryGroupSendResult
 } from '@/api/history'
 
-import { resendFail, getCurrentStatus, getSendingInfo } from '@/api/send'
+import { startSending, getCurrentStatus, getSendingInfo } from '@/api/send'
 
 import { table } from '@/themes/index'
 const { btn_detail } = table
@@ -254,7 +254,7 @@ export default {
       const ids = this.data.filter(d => !d.isSent).map(d => d._id)
 
       // 提示
-      const ok = await okCancle(`是否重发所有失败项?共 ${ids.length} 项。`)
+      const ok = await okCancle(`是否重发所有失败项？共 ${ids.length} 项。`)
       if (!ok) return
 
       if (!ids || ids.length < 1) {
@@ -268,7 +268,7 @@ export default {
       this.disableCancle = true
 
       // 开始发送
-      await resendFail(this.historyId, ids)
+      await startSending(this.historyId)
 
       this.getProgressInfo()
     },

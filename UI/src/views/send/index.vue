@@ -158,9 +158,10 @@
 <script>
 import { getTemplates } from '@/api/template'
 import {
-  newSendTask,
+  newPreview,
   getPreviewData,
   getCurrentStatus,
+  newSendTask,
   startSending
 } from '@/api/send'
 
@@ -251,7 +252,7 @@ export default {
       })
     },
 
-    async newSendTask() {
+    async checkData() {
       if (!this.subject) {
         notifyError('请输入主题')
         return false
@@ -267,22 +268,22 @@ export default {
         return false
       }
 
-      // 新建发件任务
-      await newSendTask(
-        this.subject,
-        this.receivers,
-        this.excelData,
-        this.selectedTemplate._id
-      )
-
       return true
     },
 
     // 预览邮箱
     async previewEmailBody() {
       // 判断数据输入
-      const isNewTask = await this.newSendTask()
+      const isNewTask = await this.checkData()
       if (!isNewTask) return
+
+      // 新建预览
+      await newPreview(
+        this.subject,
+        this.receivers,
+        this.excelData,
+        this.selectedTemplate._id
+      )
 
       // 打开预览窗体
       this.isShowPreviewDialog = true
@@ -303,15 +304,32 @@ export default {
     },
 
     async startSending() {
-      const ok = await okCancle('温馨提示', '即将开始发送邮件，是否继续？')
-      if (!ok) return
-
       // 判断数据输入
-      const isNewTask = await this.newSendTask()
+      const isNewTask = await this.checkData()
       if (!isNewTask) return
 
+      // 新建发件任务
+      const res = await newSendTask(
+        this.subject,
+        this.receivers,
+        this.excelData,
+        this.selectedTemplate._id
+      )
+
+      const { data } = res
+      if (!data.ok) {
+        notifyError(data.message)
+        return
+      }
+
+      const ok = await okCancle(
+        '发件确认',
+        `选择收件人：${data.selectedReceiverCount}位，录入数据：${data.dataReceiverCount}条，实际发件：${data.acctualReceiverCount}位。是否继续？`
+      )
+      if (!ok) return
+
       // 开始发送
-      await startSending()
+      await startSending(data.historyId)
 
       this.isShowSendingDialog = true
     },
