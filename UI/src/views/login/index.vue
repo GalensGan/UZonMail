@@ -64,6 +64,7 @@
 
 <script>
 import { validUsername } from '@/utils/validate'
+import ws from '@/utils/websocket'
 
 export default {
   name: 'Login',
@@ -125,7 +126,13 @@ export default {
           this.loading = true
           this.$store
             .dispatch('user/login', this.loginForm)
-            .then(() => {
+            .then(async () => {              
+              // 登陆成功后，进行websocket 登陆
+              await ws.sendRequest({
+                name: 'Login',
+                command: 'storeSession'
+              })
+
               this.$router.push({ path: this.redirect || '/' })
               this.loading = false
             })

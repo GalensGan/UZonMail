@@ -46,6 +46,7 @@ namespace Server.Protocol
         /// </summary>
         public bool ignoreError { get; set; } = false;
 
+
         public AuthenticationHeaderValue GetToken()
         {
             AuthenticationHeaderValue authentication = new AuthenticationHeaderValue("authorization",token);

@@ -67,5 +67,27 @@ namespace Server.Http.Controller
             // 返回成功
             ResponseSuccess("success");
         }
+
+        /// <summary>
+        /// 自动重发
+        /// </summary>
+        /// <returns></returns>
+        [Route(HttpVerbs.Put, "/setting/send-with-image-html")]
+        public async Task SendWithImageAndHtmlChanged()
+        {
+            var body = JObject.Parse(await HttpContext.GetRequestBodyAsStringAsync());
+
+            bool sendWithImageAndHtml = body.SelectToken("sendWithImageAndHtml").ValueOrDefault(false);
+
+            // 判断是否存在设置项
+            LiteDb.Upsert2(s => s.userId == Token.UserId, new Setting()
+            {
+                userId = Token.UserId,
+                sendWithImageAndHtml = sendWithImageAndHtml,
+            }, new UpdateOptions() { "sendWithImageAndHtml" });
+
+            // 返回成功
+            ResponseSuccess("success");
+        }
     }
 }

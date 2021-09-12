@@ -29,3 +29,14 @@ export function updateIsAutoResend(isAutoResend) {
     }
   });
 }
+
+// 更新图文重发
+export function updateSendWithImageAndHtml(sendWithImageAndHtml) {
+  return request({
+    url: "/setting/send-with-image-html",
+    method: "put",
+    data: {
+      sendWithImageAndHtml
+    }
+  });
+}

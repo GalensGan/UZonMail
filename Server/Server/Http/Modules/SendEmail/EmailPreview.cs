@@ -13,11 +13,10 @@ namespace Server.Http.Modules.SendEmail
 {
     /// <summary>
     /// 邮箱预览
-    /// 要实现单例模式
+    /// 要实现用户级单例模式
     /// </summary>
     class EmailPreview
-    {
-        public static EmailPreview InstancePreview { get; private set; }
+    {     
 
         /// <summary>
         /// 创建预览
@@ -30,10 +29,13 @@ namespace Server.Http.Modules.SendEmail
         /// <param name="liteDb"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        public static bool CreateEmailPreview(string subject, JArray receivers, JArray data, string templateId, LiteDBManager liteDb, out string message)
+        public static bool CreateEmailPreview(string userId,string subject, JArray receivers, JArray data, string templateId, LiteDBManager liteDb, out string message)
         {
             EmailPreview temp = new EmailPreview(subject, receivers, data, templateId, liteDb);
-            InstancePreview = temp;
+
+            // 保存到全局
+            InstanceCenter.EmailPreview.Upsert(userId, temp);
+
             message = "success";
             return true;
         }
@@ -116,10 +118,7 @@ namespace Server.Http.Modules.SendEmail
 
             // 开始添加                
             foreach (var re in receiveBoxes)
-            {
-                // 判断有没有数据
-                var itemData = Data.FirstOrDefault(jt => jt.Value<string>("userName") == re.userName);
-                if (itemData == null) continue;
+            {            
 
                 var item = new SendItem()
                 {
@@ -127,42 +126,53 @@ namespace Server.Http.Modules.SendEmail
                     receiverEmail = re.email,
                 };
 
-                // 获取数据
-                List<string> keys = (itemData as JObject).Properties().ToList().ConvertAll(p => p.Name);
                 string sendHtml = Template.html;
-                // 判断是否有自定义内容，然后判断是否有自定义模板
-                if (keys.Contains("body"))
+                string subjectTemp = Subject;
+
+                // 处理模板数据
+                if (Data != null && Data.Count > 0)
                 {
-                    // 获取 body 值
-                    string body = itemData.Value<string>("body");
-                    if (!string.IsNullOrEmpty(body))
+                    // 判断有没有数据
+                    var itemData = Data.FirstOrDefault(jt => jt.Value<string>("userName") == re.userName);
+                    if (itemData != null)
                     {
-                        sendHtml = body;
-                    }
-                }
-                else if (keys.Contains("template"))
-                {
-                    string customTemplateName = itemData.Value<string>("template");
-                    if (!string.IsNullOrEmpty(customTemplateName))
-                    {
-                        // 获取新模板，如果失败，则跳过，不发送
-                        var customTemplate = LiteDb.SingleOrDefault<Template>(t => t.name == customTemplateName);
-                        if (customTemplate != null)
+                        // 获取数据
+                        List<string> keys = (itemData as JObject).Properties().ToList().ConvertAll(p => p.Name);
+
+                        // 判断是否有自定义内容，然后判断是否有自定义模板
+                        if (keys.Contains("body"))
                         {
-                            sendHtml = customTemplate.html;
+                            // 获取 body 值
+                            string body = itemData.Value<string>("body");
+                            if (!string.IsNullOrEmpty(body))
+                            {
+                                sendHtml = body;
+                            }
+                        }
+                        else if (keys.Contains("template"))
+                        {
+                            string customTemplateName = itemData.Value<string>("template");
+                            if (!string.IsNullOrEmpty(customTemplateName))
+                            {
+                                // 获取新模板，如果失败，则跳过，不发送
+                                var customTemplate = LiteDb.SingleOrDefault<Template>(t => t.name == customTemplateName);
+                                if (customTemplate != null)
+                                {
+                                    sendHtml = customTemplate.html;
+                                }
+                            }
+                        }
+
+                        // 替换模板内数据                    
+                        foreach (string key in keys)
+                        {
+                            var regex = new Regex("{{\\s*" + key + "\\s*}}");
+                            sendHtml = regex.Replace(sendHtml, itemData[key].Value<string>());
+
+                            // 同时替换主题数据
+                            subjectTemp = regex.Replace(subjectTemp, itemData[key].Value<string>());
                         }
                     }
-                }
-
-                // 替换模板内数据
-                string subjectTemp = Subject;
-                foreach (string key in keys)
-                {
-                    var regex = new Regex("{{\\s*" + key + "\\s*}}");
-                    sendHtml = regex.Replace(sendHtml, itemData[key].Value<string>());
-
-                    // 同时替换主题数据
-                    subjectTemp = regex.Replace(subjectTemp, itemData[key].Value<string>());
                 }
 
                 item.html = sendHtml;

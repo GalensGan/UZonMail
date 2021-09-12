@@ -9,8 +9,25 @@ namespace Server.Protocol
 {
    public class ProtocolBase
     {
+        /// <summary>
+        /// 前端 websocket-promise 需要的id
+        /// </summary>
         public string id { get; set; }
-        public string channelName { get; set; }
+
+        /// <summary>
+        /// 后端 Task 需要的 id
+        /// </summary>
+        public string taskId { get; set; }
+
+        /// <summary>
+        /// 前端事件监听名称
+        /// </summary>
+        public string eventName { get; set; }
+
+        /// <summary>
+        /// 进入事件后的command
+        /// </summary>
+        public string command { get; set; }
 
         [Newtonsoft.Json.JsonIgnore]
         public WebSocketSession Session { get; set; }

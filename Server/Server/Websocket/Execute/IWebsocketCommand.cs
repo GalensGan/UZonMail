@@ -12,7 +12,7 @@ namespace Server.Execute
     {
         ILog Logger { get; set; }
 
-        string Name { get; set; }       
+        string Name { get;}       
 
         void ExecuteCommand(ReceivedMessage message);
     }

@@ -7,6 +7,7 @@ using Server.Pages;
 using Server.Database;
 using Server.Config;
 using Server.Http;
+using Server.Websocket.Temp;
 
 namespace Server
 {
@@ -15,6 +16,7 @@ namespace Server
         private readonly ILog _logger = LogManager.GetLogger(typeof(Bootstrapper));
 
         private HttpServiceMain _httpServer;
+        private Websocket.WebsocketServiceMain _websocket;
 
         protected override void ConfigureIoC(IStyletIoCBuilder builder)
         {
@@ -37,6 +39,7 @@ namespace Server
             _httpServer.Start(Container);
 
             // 加载 websocket
+            _websocket = new Websocket.WebsocketServiceMain(Container);
         }
 
         protected override void OnStart()

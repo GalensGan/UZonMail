@@ -123,20 +123,39 @@ export default {
           align: 'left',
           field: row => row,
           format: val => {
-            switch (val.sendStatus) {
-              case 0:
-                return `发送结束，成功：${val.successCount}/${val.receiverIds.length}`
-              case 1:
-                return '已初始化，但未发送'
-              case 2:
-                return '发送中...'
-              case 3:
-                return '重发中...'
-              case 4:
-                return '暂停'
-              default:
-                return '未知状态：' + val.sendStatus
+            const status = []
+
+            if (val.sendStatus & 1) {
+              status.push(
+                `发送结束，成功：${val.successCount}/${val.receiverIds.length}`
+              )
             }
+
+            if (val.sendStatus & 2) {
+              status.push(`已初始化，但未发送`)
+            }
+
+            if (val.sendStatus & 4) {
+              status.push(`发送中...`)
+            }
+
+            if (val.sendStatus & 8) {
+              status.push(`重发中...`)
+            }
+
+            if (val.sendStatus & 16) {
+              status.push(`暂停`)
+            }
+
+            if (val.sendStatus & 32) {
+              status.push(`正在发送图片`)
+            }
+
+            if (val.sendStatus & 32) {
+              status.push(`正在发送html`)
+            }
+
+            return status.join()
           },
           sortable: true
         },

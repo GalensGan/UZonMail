@@ -27,9 +27,9 @@ namespace Server.Protocol
         }
 
         // 传入 channel 名称
-        public Response(string channelName)
+        public Response(string eventName)
         {
-            this.channelName = channelName;
+            this.eventName = eventName;
         }
 
         /// <summary>

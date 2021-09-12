@@ -19,7 +19,11 @@ namespace Server.Http.Modules.Websocket
             IWebSocketContext context,
             byte[] rxBuffer,
             IWebSocketReceiveResult rxResult)
-            => SendToOthersAsync(context, Encoding.GetString(rxBuffer));
+        {
+            SendToOthersAsync(context, Encoding.GetString(rxBuffer));
+
+            return null;
+        }
 
         /// <inheritdoc />
         protected override Task OnClientConnectedAsync(IWebSocketContext context)

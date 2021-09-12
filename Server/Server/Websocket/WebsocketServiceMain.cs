@@ -9,10 +9,11 @@ using log4net.Config;
 using log4net;
 using System.IO;
 using Server.Config;
+using StyletIoC;
 
 namespace Server.Websocket
 {
-    internal class SwWebsocketServiceMain
+    internal class WebsocketServiceMain
     {
         private WebSocketServer _websocketServer;
 
@@ -25,12 +26,14 @@ namespace Server.Websocket
         private EventWaitHandle _waitHandle = null;
 
         // ioc 容器
-        public SwWebsocketServiceMain()
-        {
-        }
+        private IContainer _container;
 
-        public void Start()
+        public  WebsocketServiceMain(IContainer container)
         {
+            _container = container;
+
+            UserConfig userConfig = container.Get<UserConfig>();
+
             _websocketServer = new WebSocketServer();
 
             _websocketServer.NewMessageReceived += Ws_NewMessageReceived;//当有信息传入时
@@ -45,7 +48,7 @@ namespace Server.Websocket
             var serverConfig = new SuperSocket.SocketBase.Config.ServerConfig()
             {
                 Ip = "Any",
-                Port = UserConfig.Instance.WebsocketPort,
+                Port = userConfig.WebsocketPort,
                 MaxRequestLength = 1024000,
             };
 
@@ -79,7 +82,7 @@ namespace Server.Websocket
             while (true)
             {
                 // 等待信号通知
-                 _waitHandle.WaitOne();
+                _waitHandle.WaitOne();
 
                 // 判断是否有内容需要如磁盘 从列队中获取内容，并删除列队中的内容
                 while (Queue.TryDequeue(out ReceivedMessage data))

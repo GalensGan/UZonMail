@@ -92,6 +92,7 @@
         color="primary"
         size="sm"
         class="q-mr-sm"
+        :disable="disableSend"
         @click="startSending"
       />
       <q-btn label="预览" color="orange" size="sm" @click="previewEmailBody" />
@@ -164,9 +165,10 @@ import {
   newSendTask,
   startSending
 } from '@/api/send'
+import { getUserSettings } from '@/api/setting'
 
 import XLSX from 'js-xlsx'
-import { notifyError, okCancle } from '@/components/iPrompt'
+import { notifyError } from '@/components/iPrompt'
 import SelectEmail from './components/selectEmail'
 import SendingProgress from './components/sendingProgress'
 
@@ -190,15 +192,24 @@ export default {
         label: '0.00%'
       },
 
-      isShowSelectEmails: false
+      isShowSelectEmails: false,
+
+      disableSend: false
     }
   },
   async mounted() {
-    // 获取当前状态，可能处理发送中
+    // 获取当前状态，可能处于发送中
     const statusRes = await getCurrentStatus()
-    if (statusRes.data > 1) {
-      // 打开发送框
-      this.isShowSendingDialog = true
+
+    // 没有完成，且发送 html
+    if (!(statusRes.data & 1)) {
+      if (statusRes.data & 32) {
+        // 打开发送框
+        this.isShowSendingDialog = true
+      } else {
+        // 关闭发送按钮
+        this.disableSend = true
+      }
     }
 
     // 获取所有模板
@@ -263,10 +274,10 @@ export default {
         return false
       }
 
-      if (!this.excelData) {
-        notifyError('请选择模板数据')
-        return false
-      }
+      // if (!this.excelData) {
+      //   notifyError('请选择模板数据')
+      //   return false
+      // }
 
       return true
     },
@@ -281,7 +292,7 @@ export default {
       await newPreview(
         this.subject,
         this.receivers,
-        this.excelData,
+        this.excelData || [],
         this.selectedTemplate._id
       )
 
@@ -303,6 +314,7 @@ export default {
       this.previewData = res.data
     },
 
+    // 开始发件，发html内容
     async startSending() {
       // 判断数据输入
       const isNewTask = await this.checkData()
@@ -312,7 +324,7 @@ export default {
       const res = await newSendTask(
         this.subject,
         this.receivers,
-        this.excelData,
+        this.excelData || [],
         this.selectedTemplate._id
       )
 
@@ -322,16 +334,47 @@ export default {
         return
       }
 
-      const ok = await okCancle(
-        '发件确认',
-        `选择收件人：${data.selectedReceiverCount}位，录入数据：${data.dataReceiverCount}条，实际发件：${data.acctualReceiverCount}位。是否继续？`
-      )
+      const ok = await new Promise((resolve, reject) => {
+        this.$q
+          .dialog({
+            title: '发件确认<em>!</em>',
+            message: `<div>选择收件：${data.selectedReceiverCount} 个</div>
+            <div>录入数据：${data.dataReceiverCount} 条</div>
+            <div>实际发件：${data.acctualReceiverCount} 个</div>
+            <div style="font-size: 1.375em; color: crimson;margin-top: 10px;">是否继续？</div>`,
+            html: true,
+            ok: {
+              dense: true,
+              color: 'warning'
+            },
+            cancel: {
+              dense: true,
+              color: 'primary'
+            },
+            persistent: true
+          })
+          .onOk(() => {
+            resolve(true)
+          })
+          .onCancel(() => {
+            reject(false)
+          })
+          .onDismiss(() => {
+            reject(false)
+          })
+      })
       if (!ok) return
+
+      // 获取设置，判断是否是发送图文
+      const settingsRes = await getUserSettings()
 
       // 开始发送
       await startSending(data.historyId)
 
-      this.isShowSendingDialog = true
+      // 如果是图文混发，不打开此处的进度条
+      if (!settingsRes.data.sendWithImageAndHtml) {
+        this.isShowSendingDialog = true
+      }
     },
 
     openSelectReceiversDialog() {

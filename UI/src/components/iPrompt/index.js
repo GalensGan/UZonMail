@@ -1,35 +1,35 @@
-import { Dialog, Notify } from 'quasar'
+import { Dialog, Notify } from "quasar";
 
 function okCancle(title, message, options) {
   let initOptions = {
     title,
     message,
     ok: {
-      push: true,
-      color: 'negative'
+      dense: true,
+      color: "warning"
     },
     cancel: {
-      push: true,
-      color: 'teal'
+      dense: true,
+      color: "primary"
     },
     persistent: true
-  }
+  };
 
   if (options) {
-    Object.assign(initOptions, options)
+    Object.assign(initOptions, options);
   }
 
   const confirm = new Promise((resolve, reject) => {
     Dialog.create(initOptions)
       .onOk(() => {
-        resolve(true)
+        resolve(true);
       })
       .onCancel(() => {
-        resolve(false)
-      })
-  })
+        resolve(false);
+      });
+  });
 
-  return confirm
+  return confirm;
 }
 
 /**
@@ -39,10 +39,10 @@ function okCancle(title, message, options) {
 function notifyError(message) {
   Notify.create({
     message,
-    icon: 'error',
-    color: 'negative',
-    position: 'top'
-  })
+    icon: "error",
+    color: "negative",
+    position: "top"
+  });
 }
 
 /**
@@ -52,10 +52,10 @@ function notifyError(message) {
 function notifySuccess(message) {
   Notify.create({
     message,
-    icon: 'done',
-    color: 'secondary',
-    position: 'top'
-  })
+    icon: "done",
+    color: "secondary",
+    position: "top"
+  });
 }
 
-export { okCancle, notifyError, notifySuccess }
+export { okCancle, notifyError, notifySuccess };

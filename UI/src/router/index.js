@@ -214,6 +214,12 @@ export const constantRoutes = [
         name: "Template",
         component: () => import("@/views/email/template"),
         meta: { title: "正文模板", icon: "form" }
+      },
+      {
+        path: "template-editor",
+        name: "TemplateEditor",
+        component: () => import("@/views/email/templateEditor"),
+        meta: { title: "编辑模板", icon: "form" }
       }
     ]
   },

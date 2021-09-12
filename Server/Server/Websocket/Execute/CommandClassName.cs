@@ -12,5 +12,10 @@ namespace Server.Execute
     public enum CommandClassName
     {
         None,
+
+        /// <summary>
+        /// 登陆模块
+        /// </summary>
+        Login,
     }
 }

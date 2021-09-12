@@ -1138,6 +1138,11 @@
   resolved "https://registry.npm.taobao.org/@soda/get-current-script/download/@soda/get-current-script-1.0.2.tgz#a53515db25d8038374381b73af20bb4f2e508d87"
   integrity sha1-pTUV2yXYA4N0OBtzryC7Ty5QjYc=
 
+"@tinymce/tinymce-vue@3":
+  version "3.2.8"
+  resolved "https://registry.nlark.com/@tinymce/tinymce-vue/download/@tinymce/tinymce-vue-3.2.8.tgz?cache=0&sync_timestamp=1629946678378&other_urls=https%3A%2F%2Fregistry.nlark.com%2F%40tinymce%2Ftinymce-vue%2Fdownload%2F%40tinymce%2Ftinymce-vue-3.2.8.tgz#014571b52ec8fa83665a7fa887bf65140207de71"
+  integrity sha1-AUVxtS7I+oNmWn+oh79lFAIH3nE=
+
 "@types/babel__core@^7.1.0":
   version "7.1.15"
   resolved "https://registry.nlark.com/@types/babel__core/download/@types/babel__core-7.1.15.tgz#2ccfb1ad55a02c83f8e0ad327cbc332f55eb1024"
@@ -2361,12 +2366,12 @@ balanced-match@^1.0.0:
 
 base64-arraybuffer@^0.2.0:
   version "0.2.0"
-  resolved "https://registry.nlark.com/base64-arraybuffer/download/base64-arraybuffer-0.2.0.tgz#4b944fac0191aa5907afe2d8c999ccc57ce80f45"
+  resolved "https://registry.nlark.com/base64-arraybuffer/download/base64-arraybuffer-0.2.0.tgz?cache=0&sync_timestamp=1628588878235&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fbase64-arraybuffer%2Fdownload%2Fbase64-arraybuffer-0.2.0.tgz#4b944fac0191aa5907afe2d8c999ccc57ce80f45"
   integrity sha1-S5RPrAGRqlkHr+LYyZnMxXzoD0U=
 
 base64-arraybuffer@^1.0.1:
   version "1.0.1"
-  resolved "https://registry.nlark.com/base64-arraybuffer/download/base64-arraybuffer-1.0.1.tgz#87bd13525626db4a9838e00a508c2b73efcf348c"
+  resolved "https://registry.nlark.com/base64-arraybuffer/download/base64-arraybuffer-1.0.1.tgz?cache=0&sync_timestamp=1628588878235&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fbase64-arraybuffer%2Fdownload%2Fbase64-arraybuffer-1.0.1.tgz#87bd13525626db4a9838e00a508c2b73efcf348c"
   integrity sha1-h70TUlYm20qYOOAKUIwrc+/PNIw=
 
 base64-js@^1.0.2:
@@ -2910,6 +2915,11 @@ check-types@^8.0.3:
   version "8.0.3"
   resolved "https://registry.nlark.com/check-types/download/check-types-8.0.3.tgz#3356cca19c889544f2d7a95ed49ce508a0ecf552"
   integrity sha1-M1bMoZyIlUTy16le1JzlCKDs9VI=
+
+chnl@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.nlark.com/chnl/download/chnl-1.2.0.tgz#d818c95367767a0880508e7cc0b5b3503f58fd4c"
+  integrity sha1-2BjJU2d2egiAUI58wLWzUD9Y/Uw=
 
 "chokidar@>=2.0.0 <4.0.0", chokidar@^3.4.1:
   version "3.5.2"
@@ -4268,7 +4278,7 @@ error-stack-parser@^2.0.2:
   dependencies:
     stackframe "^1.1.1"
 
-es-abstract@^1.17.2, es-abstract@^1.18.0-next.2, es-abstract@^1.18.2:
+es-abstract@^1.17.0-next.0, es-abstract@^1.17.2, es-abstract@^1.18.0-next.2, es-abstract@^1.18.2:
   version "1.18.5"
   resolved "https://registry.nlark.com/es-abstract/download/es-abstract-1.18.5.tgz?cache=0&sync_timestamp=1627880507290&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fes-abstract%2Fdownload%2Fes-abstract-1.18.5.tgz#9b10de7d4c206a3581fd5b2124233e04db49ae19"
   integrity sha1-mxDefUwgajWB/VshJCM+BNtJrhk=
@@ -5511,6 +5521,11 @@ html-tags@^3.1.0:
   resolved "https://registry.npm.taobao.org/html-tags/download/html-tags-3.1.0.tgz#7b5e6f7e665e9fb41f30007ed9e0d41e97fb2140"
   integrity sha1-e15vfmZen7QfMAB+2eDUHpf7IUA=
 
+html-to-image@^1.7.0:
+  version "1.7.0"
+  resolved "https://registry.nlark.com/html-to-image/download/html-to-image-1.7.0.tgz#4ca93bb90c0b9392edaafbfd5d94e8f0d666e18b"
+  integrity sha1-TKk7uQwLk5Ltqvv9XZTo8NZm4Ys=
+
 html-webpack-plugin@3.2.0, html-webpack-plugin@^3.2.0:
   version "3.2.0"
   resolved "https://registry.nlark.com/html-webpack-plugin/download/html-webpack-plugin-3.2.0.tgz#b01abbd723acaaa7b37b6af4492ebda03d9dd37b"
@@ -5526,7 +5541,7 @@ html-webpack-plugin@3.2.0, html-webpack-plugin@^3.2.0:
 
 html2canvas@^1.3.2:
   version "1.3.2"
-  resolved "https://registry.nlark.com/html2canvas/download/html2canvas-1.3.2.tgz#951cc8388a3ce939fdac02131007ee28124afc27"
+  resolved "https://registry.nlark.com/html2canvas/download/html2canvas-1.3.2.tgz?cache=0&sync_timestamp=1629033907288&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fhtml2canvas%2Fdownload%2Fhtml2canvas-1.3.2.tgz#951cc8388a3ce939fdac02131007ee28124afc27"
   integrity sha1-lRzIOIo86Tn9rAITEAfuKBJK/Cc=
   dependencies:
     css-line-break "2.0.1"
@@ -9006,10 +9021,29 @@ progress@^2.0.0:
   resolved "https://registry.nlark.com/progress/download/progress-2.0.3.tgz#7e8cf8d8f5b8f239c1bc68beb4eb78567d572ef8"
   integrity sha1-foz42PW48jnBvGi+tOt4Vn1XLvg=
 
+promise-controller@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.nlark.com/promise-controller/download/promise-controller-1.0.0.tgz#81ebea71271aa40ac8f3bebccab3d4158dc4cc02"
+  integrity sha1-gevqcScapArI8768yrPUFY3EzAI=
+
 promise-inflight@^1.0.1:
   version "1.0.1"
   resolved "https://registry.npm.taobao.org/promise-inflight/download/promise-inflight-1.0.1.tgz#98472870bf228132fcbdd868129bad12c3c029e3"
   integrity sha1-mEcocL8igTL8vdhoEputEsPAKeM=
+
+promise.prototype.finally@^3.1.2:
+  version "3.1.2"
+  resolved "https://registry.npm.taobao.org/promise.prototype.finally/download/promise.prototype.finally-3.1.2.tgz#b8af89160c9c673cefe3b4c4435b53cfd0287067"
+  integrity sha1-uK+JFgycZzzv47TEQ1tTz9AocGc=
+  dependencies:
+    define-properties "^1.1.3"
+    es-abstract "^1.17.0-next.0"
+    function-bind "^1.1.1"
+
+promised-map@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.nlark.com/promised-map/download/promised-map-1.0.0.tgz#aa3ec59e13724d37b946415f6850273af8e213b5"
+  integrity sha1-qj7FnhNyTTe5RkFfaFAnOvjiE7U=
 
 prompts@^2.0.1:
   version "2.4.1"
@@ -10689,6 +10723,11 @@ throttle-debounce@^1.0.1:
   resolved "https://registry.npm.taobao.org/throttle-debounce/download/throttle-debounce-1.1.0.tgz?cache=0&sync_timestamp=1604313880785&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fthrottle-debounce%2Fdownload%2Fthrottle-debounce-1.1.0.tgz#51853da37be68a155cb6e827b3514a3c422e89cd"
   integrity sha1-UYU9o3vmihVctugns1FKPEIuic0=
 
+throttle-debounce@^2.0.1:
+  version "2.3.0"
+  resolved "https://registry.npm.taobao.org/throttle-debounce/download/throttle-debounce-2.3.0.tgz#fd31865e66502071e411817e241465b3e9c372e2"
+  integrity sha1-/TGGXmZQIHHkEYF+JBRls+nDcuI=
+
 through2@^2.0.0:
   version "2.0.5"
   resolved "https://registry.npm.taobao.org/through2/download/through2-2.0.5.tgz#01c1e39eb31d07cb7d03a96a70823260b23132cd"
@@ -10718,6 +10757,11 @@ timsort@^0.3.0:
   version "0.3.0"
   resolved "https://registry.nlark.com/timsort/download/timsort-0.3.0.tgz#405411a8e7e6339fe64db9a234de11dc31e02bd4"
   integrity sha1-QFQRqOfmM5/mTbmiNN4R3DHgK9Q=
+
+tinymce@^5.9.2:
+  version "5.9.2"
+  resolved "https://registry.nlark.com/tinymce/download/tinymce-5.9.2.tgz?cache=0&sync_timestamp=1631072939925&other_urls=https%3A%2F%2Fregistry.nlark.com%2Ftinymce%2Fdownload%2Ftinymce-5.9.2.tgz#c56a1d7800ac23026fbe6e0fcf444c0f157ccafe"
+  integrity sha1-xWodeACsIwJvvm4Pz0RMDxV8yv4=
 
 tmp@^0.0.33:
   version "0.0.33"
@@ -11159,6 +11203,14 @@ uuid@^3.3.2, uuid@^3.4.0:
   resolved "https://registry.nlark.com/uuid/download/uuid-3.4.0.tgz?cache=0&sync_timestamp=1622213136953&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fuuid%2Fdownload%2Fuuid-3.4.0.tgz#b23e4358afa8a202fe7a100af1f5f883f02007ee"
   integrity sha1-sj5DWK+oogL+ehAK8fX4g/AgB+4=
 
+v-viewer@^1.6.4:
+  version "1.6.4"
+  resolved "https://registry.nlark.com/v-viewer/download/v-viewer-1.6.4.tgz#39e36b534baab34076fb816704c6a734de0dc72f"
+  integrity sha1-OeNrU0uqs0B2+4FnBManNN4Nxy8=
+  dependencies:
+    throttle-debounce "^2.0.1"
+    viewerjs "^1.5.0"
+
 v8-compile-cache@^2.0.3:
   version "2.3.0"
   resolved "https://registry.npm.taobao.org/v8-compile-cache/download/v8-compile-cache-2.3.0.tgz#2de19618c66dc247dcfb6f99338035d8245a2cee"
@@ -11190,6 +11242,11 @@ verror@1.10.0:
     assert-plus "^1.0.0"
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
+
+viewerjs@^1.5.0:
+  version "1.10.1"
+  resolved "https://registry.nlark.com/viewerjs/download/viewerjs-1.10.1.tgz#07499ed043d0a29e3002b90f55c5b228bd1a742c"
+  integrity sha1-B0me0EPQop4wArkPVcWyKL0adCw=
 
 vm-browserify@^1.0.1:
   version "1.1.2"
@@ -11476,6 +11533,16 @@ webpack@^4.0.0:
     terser-webpack-plugin "^1.4.3"
     watchpack "^1.7.4"
     webpack-sources "^1.4.1"
+
+websocket-as-promised@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.nlark.com/websocket-as-promised/download/websocket-as-promised-2.0.1.tgz#d18b7c160bba294585aaf6fa9572f31e05cfb175"
+  integrity sha1-0Yt8Fgu6KUWFqvb6lXLzHgXPsXU=
+  dependencies:
+    chnl "^1.2.0"
+    promise-controller "^1.0.0"
+    promise.prototype.finally "^3.1.2"
+    promised-map "^1.0.0"
 
 websocket-driver@>=0.5.1, websocket-driver@^0.7.4:
   version "0.7.4"

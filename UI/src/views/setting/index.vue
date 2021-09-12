@@ -1,9 +1,9 @@
 <template>
   <div class="setting-container row justify-center">
-    <div class="column justify-center q-gutter-md" style="max-width: 600px">
+    <div class="column justify-center q-gutter-sm" style="max-width: 600px">
       <div>
         <div class="text-subtitle1 q-mb-lg">
-          时间间隔：
+          发件间隔：
           <q-tooltip>
             单个发件箱发件连续两封邮件发件时间的间隔范围，在该范围内随机波动
           </q-tooltip>
@@ -41,6 +41,13 @@
         color="orange"
         class="self-start q-ml-xs"
       />
+
+      <q-checkbox
+        v-model="sendWithImageAndHtml"
+        label="图文混发"
+        color="orange"
+        class="self-start q-ml-xs"
+      />
     </div>
   </div>
 </template>
@@ -49,7 +56,8 @@
 import {
   getUserSettings,
   updateSendInterval,
-  updateIsAutoResend
+  updateIsAutoResend,
+  updateSendWithImageAndHtml
 } from '@/api/setting'
 
 export default {
@@ -64,7 +72,7 @@ export default {
 
       isAutoResend: true,
 
-      isBodyToImage: false
+      sendWithImageAndHtml: false
     }
   },
 
@@ -75,6 +83,10 @@ export default {
 
     async isAutoResend(newValue) {
       await updateIsAutoResend(newValue)
+    },
+
+    async sendWithImageAndHtml(newValue) {
+      await updateSendWithImageAndHtml(newValue)
     }
   },
 
@@ -85,10 +97,12 @@ export default {
       sendInterval_max,
       sendInterval_min,
       isAutoResend,
+      sendWithImageAndHtml
     } = res.data
     this.sendInterval.min = sendInterval_min || 3
     this.sendInterval.max = sendInterval_max || 8
     this.isAutoResend = isAutoResend
+    this.sendWithImageAndHtml = sendWithImageAndHtml
   }
 }
 </script>

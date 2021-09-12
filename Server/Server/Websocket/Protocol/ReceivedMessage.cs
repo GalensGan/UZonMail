@@ -20,8 +20,8 @@ namespace Server.Protocol
         {
             Session = session;
             Logger = session.Logger;
-
             _message = message;
+
             JObject = JsonConvert.DeserializeObject<JObject>(message);
             Body = JsonConvert.DeserializeObject<BodyBase>(message);
             Body.Session = session;
@@ -59,13 +59,13 @@ namespace Server.Protocol
         /// <summary>
         /// 处理完成后回复，此处是回复特定的频道
         /// </summary>
-        /// <param name="channelName"></param>
+        /// <param name="eventName"></param>
         /// <param name="result"></param>
         /// <param name="status"></param>
         /// <param name="statusText"></param>
-        public void Response(string channelName,object result,int status = 200,string statusText = "success")
+        public void Response(string eventName,object result,int status = 200,string statusText = "success")
         {
-            Response response = new Response(channelName)
+            Response response = new Response(eventName)
             {
                 status = status,
                 statusText = statusText,

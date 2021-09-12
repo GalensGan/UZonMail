@@ -11,10 +11,22 @@ namespace Server.Database.Models
     {
         public string userId { get; set; }
         
+        /// <summary>
+        /// 时间间隔最大值
+        /// </summary>
         public double sendInterval_max { get; set; }
+
+        /// <summary>
+        /// 发送时间间隔最小值
+        /// </summary>
         public double sendInterval_min { get; set; }
 
         // 是否自动发送
         public bool isAutoResend { get; set; }
+
+        /// <summary>
+        /// 图文混发
+        /// </summary>
+        public bool sendWithImageAndHtml { get; set; }
     }
 }

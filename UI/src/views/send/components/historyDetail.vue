@@ -239,7 +239,7 @@ export default {
 
     // 获取当前状态，可能处理发送中
     const statusRes = await getCurrentStatus()
-    if (statusRes.data > 1) {
+    if (statusRes.data & 1 && statusRes.data & 8) {
       // 打开发送框
       this.disableResend = true
       this.disableCancle = true
@@ -262,13 +262,13 @@ export default {
         return
       }
 
+      // 开始发送
+      await startSending(this.historyId)
+
       // 关闭重发,关闭取消
       this.disableResend = true
       this.isResending = true
       this.disableCancle = true
-
-      // 开始发送
-      await startSending(this.historyId)
 
       this.getProgressInfo()
     },

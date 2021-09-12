@@ -13,20 +13,19 @@ namespace Server.Http.Modules.SendEmail
 {
     class EmailReady : EmailPreview
     {
-        public static EmailReady InstanceReady { get; private set; }
-
-
         public static bool CreateEmailReady(string userId, string subject, JArray receivers, JArray data, string templateId, LiteDBManager liteDb, out string message)
         {
             // 判断是否有发送任务正在进行
-            if (SendTask.Instance != null && SendTask.Instance.SendStatus >= SendStatus.Init)
+            if (InstanceCenter.SendTasks[userId] != null && !InstanceCenter.SendTasks[userId].SendStatus.HasFlag(SendStatus.SendFinish))
             {
                 message = "有邮件正在发送中";
                 return false;
             }
 
             EmailReady temp = new EmailReady(userId, subject, receivers, data, templateId, liteDb);
-            InstanceReady = temp;
+
+            InstanceCenter.EmailReady.Upsert(userId, temp);
+
             message = "success";
             return true;
         }
@@ -78,7 +77,7 @@ namespace Server.Http.Modules.SendEmail
 
             _info.historyId = historyGroup._id;
             _info.selectedReceiverCount = receiveBoxes.Count;
-            _info.dataReceiverCount = Receivers.Count;
+            _info.dataReceiverCount = Data.Count;
             _info.acctualReceiverCount = sendItems.Count;
             _info.ok = true;
             _info.senderCount = senders.Count;

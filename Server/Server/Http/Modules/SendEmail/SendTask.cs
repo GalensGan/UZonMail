@@ -3,6 +3,8 @@ using Newtonsoft.Json.Linq;
 using Server.Database;
 using Server.Database.Models;
 using Server.Http.Definitions;
+using Server.Protocol;
+using Server.Websocket.Temp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,13 +19,11 @@ namespace Server.Http.Modules.SendEmail
 {
     public class SendTask
     {
-        public static SendTask Instance { get; private set; }
-
         // 新建发送任务
         public static bool CreateSendTask(string historyId, string userId, LiteDBManager liteDb, out string message)
         {
             // 判断原来任务的状态
-            if (Instance != null && Instance.SendStatus >= SendStatus.Init)
+            if (InstanceCenter.SendTasks[userId] != null && !InstanceCenter.SendTasks[userId].SendStatus.HasFlag(SendStatus.SendFinish))
             {
                 message = "任务正在进行中";
                 return false;
@@ -31,7 +31,7 @@ namespace Server.Http.Modules.SendEmail
 
             SendTask temp = new SendTask(historyId, userId, liteDb);
 
-            Instance = temp;
+            InstanceCenter.SendTasks.Upsert(userId, temp);
             message = "success";
             return true;
         }
@@ -40,7 +40,10 @@ namespace Server.Http.Modules.SendEmail
         private string _currentHistoryGroupId;
         private LiteDBManager _liteDb;
 
-        public SendStatus SendStatus { get; private set; }
+        /// <summary>
+        /// 发送状态
+        /// </summary>
+        public SendStatus SendStatus { get; private set; } = SendStatus.SendFinish;
 
         private SendTask(string historyId, string userId, LiteDBManager liteDb)
         {
@@ -64,6 +67,7 @@ namespace Server.Http.Modules.SendEmail
                 if (value.index == value.total)
                 {
                     this.SendStatus = SendStatus.SendFinish;
+
                     // 对于已经完成的，要更新数据的状态
                     var history = _liteDb.SingleById<HistoryGroup>(_currentHistoryGroupId);
                     if (history != null)
@@ -71,12 +75,19 @@ namespace Server.Http.Modules.SendEmail
                         // 更新状态
                         history.sendStatus = SendStatus.SendFinish;
                         _liteDb.Update(history);
-
-                        SendStatus = SendStatus.SendFinish;
                     }
                 }
 
                 _sendingInfo = value;
+
+                // 进度websocket版本
+                // 将进度发给websocket
+                SendCallback.Insance.Send(_userId, new Protocol.Response()
+                {
+                    result = value,
+                    eventName = "sendingInfo",
+                    command = "updatePorgress",
+                });
             }
         }
 
@@ -90,7 +101,7 @@ namespace Server.Http.Modules.SendEmail
         public bool StartSending(string historyId)
         {
             // 判断是否结束
-            if (SendStatus != SendStatus.SendFinish) return false;
+            if (!SendStatus.HasFlag(SendStatus.SendFinish)) return false;
 
             var allSendItems = _liteDb.Fetch<SendItem>(item => item.historyId == historyId);
             var sendItems = allSendItems.FindAll(item => !item.isSent);
@@ -136,9 +147,30 @@ namespace Server.Http.Modules.SendEmail
         {
             var senders = _liteDb.Database.GetCollection<SendBox>().FindAll().ToList();
 
+            // 获取设置
+            Setting setting = _liteDb.SingleOrDefault<Setting>(s => s.userId == _userId);
+
+            // 设置发送的内容            
+            if (setting.sendWithImageAndHtml) SendStatus |= SendStatus.AsImage;
+            else SendStatus |= SendStatus.AsHtml;
+
             // 添加到栈中
             Stack<SendItem> sendItems = new Stack<SendItem>();
-            sendItemList.ForEach(item => sendItems.Push(item));
+
+            // 奇偶混发
+            for (int index = 0; index < sendItemList.Count; index++)
+            {
+                var sendItem = sendItemList[index];
+                // 偶数发图片
+                if (index % 2 == 0 && setting.sendWithImageAndHtml)
+                {
+                    sendItem.sendType = "data-url";
+                }
+
+                // 添加到栈
+                sendItems.Push(sendItem);
+            }
+
 
             // 初始化进度
             var sendingInfo0 = new SendingInfo()
@@ -155,9 +187,8 @@ namespace Server.Http.Modules.SendEmail
             // 一个发件箱对应一个异步
             foreach (SendBox sb in senders)
             {
-                Task.Run(() =>
+                Task.Run(async () =>
                 {
-                    Setting setting = _liteDb.SingleOrDefault<Setting>(s => s.userId == _userId);
                     while (sendItems.Count > 0)
                     {
                         // 开始并行发送
@@ -171,15 +202,26 @@ namespace Server.Http.Modules.SendEmail
 
                         // 获取发件箱
                         var sendItem = sendItems.Pop();
+
+                        // 判断是否需要转成图片
+                        await ConvertToImage(setting, sendItem);
+
                         MailAddress receiveAddress = new MailAddress(sendItem.receiverEmail);
 
                         //构造一个Email的Message对象 内容信息
                         MailMessage mailMessage = new MailMessage(sendAddress, receiveAddress);
                         mailMessage.Subject = sendItem.subject;
                         mailMessage.SubjectEncoding = Encoding.UTF8;
-                        mailMessage.Body = sendItem.html;
+
+                        // 设置发件主体                        
+                        if (sendItem.sendType == "data-url" && !string.IsNullOrEmpty(sendItem.dataUrl)) mailMessage.Body = sendItem.dataUrl;
+                        else mailMessage.Body = sendItem.html;
+
                         mailMessage.BodyEncoding = Encoding.UTF8;
                         mailMessage.IsBodyHtml = true;
+
+                        // 伪装成 outlook 发送
+                        AddCustomHeaders(mailMessage);
 
                         //邮件发送方式  通过网络发送到smtp服务器
                         smtpclient.DeliveryMethod = SmtpDeliveryMethod.Network;
@@ -190,7 +232,6 @@ namespace Server.Http.Modules.SendEmail
                         {
                             //是否使用默认凭据，若为false，则使用自定义的证书，就是下面的networkCredential实例对象
                             smtpclient.UseDefaultCredentials = false;
-
                             //指定邮箱账号和密码,需要注意的是，这个密码是你在QQ邮箱设置里开启服务的时候给你的那个授权码
                             NetworkCredential networkCredential = new NetworkCredential(sb.email, sb.password);
                             smtpclient.Credentials = networkCredential;
@@ -263,6 +304,54 @@ namespace Server.Http.Modules.SendEmail
                     }
                 }, _cancleToken);
             }
+        }
+
+        /// <summary>
+        /// 将发送内容转成图片
+        /// </summary>
+        /// <param name="sendItem"></param>
+        private async Task<bool> ConvertToImage(Setting setting, SendItem sendItem)
+        {
+            if (sendItem.sendType == "data-url" && setting.sendWithImageAndHtml && string.IsNullOrEmpty(sendItem.dataUrl))
+            {
+                // 从前端转存图片
+                ReceivedMessage message = await SendCallback.Insance.SendAsync(_userId, new Protocol.Response()
+                {
+                    eventName = "sendingInfo",
+                    command = "html2image",
+                    result = sendItem,
+                });
+                if (message == null) return false;
+
+                // 将结果添加到sendItem中
+                var dataUrl = message.JObject.SelectToken("result");
+                if (dataUrl == null) return false;
+
+                dataUrl = dataUrl.Value<string>();
+
+                sendItem.dataUrl = $"<img src=\"{dataUrl}\">";
+
+                // 更新保存的数据
+                _liteDb.Update(sendItem);
+            }
+
+            return true;
+        }
+
+        private void AddCustomHeaders(MailMessage mail)
+        {
+            ///以下四个自定义Header是将邮件伪装成OutLook发送的。
+            ///目的是为了防止一些网站的反垃圾邮件功能
+            ///将本系统发送的邮件当做垃圾邮件过滤掉。
+
+            mail.Headers.Add("X-Priority", "3");
+
+            mail.Headers.Add("X-MSMail-Priority", "Normal");
+
+            mail.Headers.Add("X-Mailer", "Microsoft Outlook Express 6.00.2900.2869");
+
+            mail.Headers.Add("X-MimeOLE", "Produced By Microsoft MimeOLE V6.00.2900.2869");
+
         }
     }
 }

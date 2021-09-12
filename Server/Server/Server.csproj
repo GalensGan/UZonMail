@@ -84,9 +84,11 @@
     <Compile Include="Http\Headers\JwtToken.cs" />
     <Compile Include="Http\Modules\SendEmail\EmailPreview.cs" />
     <Compile Include="Http\Modules\SendEmail\GenerateInfo.cs" />
+    <Compile Include="Http\Modules\SendEmail\InstanceCenter.cs" />
     <Compile Include="Http\Modules\SendEmail\SendingInfo.cs" />
     <Compile Include="Http\Modules\SendEmail\EmailReady.cs" />
     <Compile Include="Http\Modules\SendEmail\SendTask.cs" />
+    <Compile Include="Http\Modules\SendEmail\UserInstance.cs" />
     <Compile Include="Http\Modules\Websocket\WsServer.cs" />
     <Compile Include="Http\Response\HttpResponse.cs" />
     <Compile Include="Http\Modules\IoCModule.cs" />
@@ -95,14 +97,18 @@
     <Compile Include="Http\Extensions\WebServerExtensions.cs" />
     <Compile Include="Http\Definitions\SendStatus.cs" />
     <Compile Include="SDK\Extension\Ex_Json.cs" />
+    <Compile Include="Websocket\AsyncWebsocket\CallbackOption.cs" />
+    <Compile Include="Websocket\Commands\Login.cs" />
     <Compile Include="Websocket\Execute\CommandClassName.cs" />
     <Compile Include="Websocket\Execute\CommandTable.cs" />
     <Compile Include="Websocket\Execute\CommandTrigger.cs" />
     <Compile Include="Websocket\Execute\IWebsocketCommand.cs" />
+    <Compile Include="Websocket\AsyncWebsocket\SendCallback.cs" />
     <Compile Include="Websocket\Protocol\BodyBase.cs" />
     <Compile Include="Websocket\Protocol\ProtocolBase.cs" />
     <Compile Include="Websocket\Protocol\ReceivedMessage.cs" />
     <Compile Include="Websocket\Protocol\Response.cs" />
+    <Compile Include="Websocket\AsyncWebsocket\SessionsCenter.cs" />
     <Compile Include="Websocket\WebsocketServiceMain.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -168,12 +174,15 @@
     <PackageReference Include="Stylet.Start">
       <Version>1.3.6</Version>
     </PackageReference>
+    <PackageReference Include="SuperSocket.Engine">
+      <Version>1.6.6.1</Version>
+    </PackageReference>
     <PackageReference Include="SuperSocket.WebSocket">
       <Version>1.6.6.1</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Websocket\Commands\" />
+    <Folder Include="Websocket\Extensions\" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="SendMultipleEmail.ico" />

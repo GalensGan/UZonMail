@@ -5,6 +5,9 @@ using Server.Protocol;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Server.Websocket.Temp;
+using System.Threading.Tasks;
+using Server.Websocket.AsyncWebsocket;
 
 namespace Server.Execute
 {
@@ -51,6 +54,21 @@ namespace Server.Execute
             _logger.Info("开始响应命令: " + message.Body.Command);
             try
             {
+                // 判断是有task需要触发
+                if (!string.IsNullOrEmpty(message.Body.taskId))
+                {
+                    // 从静态配置中查找
+                    if (!SendCallback.Insance.TryGetValue(message.Body.taskId, out CallbackOption<ReceivedMessage> callback)) return;
+
+                    // 雇用回调
+                    callback.TaskCompletion.SetResult(message);
+
+                    // 移除回调
+                    SendCallback.Insance.Remove(message.Body.taskId);
+
+                    return;
+                }
+
                 if (_typeDic.Count == 0)
                 {
                     // 发送错误信息

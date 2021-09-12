@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using Server.Http.Definitions;
 using Newtonsoft.Json;
 using Server.Http.Modules.SendEmail;
+using Microsoft.Web.WebView2.Wpf;
 
 namespace Server.Http.Controller
 {
@@ -27,10 +28,10 @@ namespace Server.Http.Controller
         [Route(HttpVerbs.Get, "/send/status")]
         public void GetSendStatus()
         {
-            SendStatus sendStatus = SendStatus.Init;
-            if (SendTask.Instance != null)
+            SendStatus sendStatus = SendStatus.SendFinish;
+            if (InstanceCenter.SendTasks[Token.UserId] != null)
             {
-                sendStatus = SendTask.Instance.SendStatus;
+                sendStatus = InstanceCenter.SendTasks[Token.UserId].SendStatus;
             }
 
             ResponseSuccess(sendStatus);
@@ -46,10 +47,10 @@ namespace Server.Http.Controller
             JArray data = Body.Value<JArray>("data");
             string templateId = Body.Value<string>("templateId");
 
-            bool createResult = EmailPreview.CreateEmailPreview(subject, receivers, data, templateId, LiteDb, out string message);
+            bool createResult = EmailPreview.CreateEmailPreview(Token.UserId, subject, receivers, data, templateId, LiteDb, out string message);
             if (createResult)
             {
-                EmailPreview.InstancePreview.Generate();
+                InstanceCenter.EmailPreview[Token.UserId].Generate();
                 ResponseSuccess(createResult);
             }
             else ResponseError(message);
@@ -59,7 +60,7 @@ namespace Server.Http.Controller
         [Route(HttpVerbs.Get, "/send/preview/{key}")]
         public void GetSendPreview(string key)
         {
-            SendItem item = EmailPreview.InstancePreview.GetPreviewHtml(key);
+            SendItem item = InstanceCenter.EmailPreview[Token.UserId].GetPreviewHtml(key);
             if (item == null)
             {
                 ResponseError("没有可预览项，请检查收件箱是否为空");
@@ -82,7 +83,7 @@ namespace Server.Http.Controller
             bool createResult = EmailReady.CreateEmailReady(Token.UserId, subject, receivers, data, templateId, LiteDb, out string message);
             if (!createResult) ResponseError(message);
 
-            var info = EmailReady.InstanceReady.Generate();
+            var info = InstanceCenter.EmailReady[Token.UserId].Generate();
 
             if (info.ok) ResponseSuccess(info);
             else ResponseError(info.message);
@@ -101,7 +102,7 @@ namespace Server.Http.Controller
                 return;
             }
 
-            SendTask.Instance.StartSending(historyGroupId);
+            InstanceCenter.SendTasks[Token.UserId].StartSending(historyGroupId);
 
             ResponseSuccess(historyGroupId);
         }
@@ -110,7 +111,7 @@ namespace Server.Http.Controller
         [Route(HttpVerbs.Get, "/send/info")]
         public void GetSendingInfo()
         {
-            ResponseSuccess(SendTask.Instance.SendingInfo);
+            ResponseSuccess(InstanceCenter.SendTasks[Token.UserId] == null ? new SendingInfo() : InstanceCenter.SendTasks[Token.UserId].SendingInfo);
         }
 
         // 获取发件状态
