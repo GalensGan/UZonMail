@@ -218,9 +218,8 @@ GitHub：https://github.com/GalensGan/SendMultipleEmails
 
 ## ToDo
 
-- [ ] 增加单个邮箱单次发件数量限制
-- [ ] 所有配置可覆盖
-- [ ] ~~发送成图片~~
+- [x] 发送成图片
+- [ ] 本地图片上传的支持
 
 ## 支持与赞赏
 
