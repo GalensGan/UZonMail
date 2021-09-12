@@ -372,9 +372,10 @@ export default {
       await startSending(data.historyId)
 
       // 如果是图文混发，不打开此处的进度条
-      if (!settingsRes.data.sendWithImageAndHtml) {
-        this.isShowSendingDialog = true
-      }
+      // 一直不打开进度条，因为全局会响应      
+      // if (!settingsRes.data.sendWithImageAndHtml) {
+      //   this.isShowSendingDialog = true
+      // }
     },
 
     openSelectReceiversDialog() {

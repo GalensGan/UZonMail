@@ -75,7 +75,7 @@ export default {
 
           this.$emit('close')
         }
-      }, 800)
+      }, 2000)
     }
   }
 }

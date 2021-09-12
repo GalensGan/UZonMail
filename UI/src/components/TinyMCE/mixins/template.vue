@@ -1,10 +1,10 @@
 <script>
-import { okCancle } from '@/components/iPrompt'
+import { notifySuccess, okCancle } from '@/components/iPrompt'
 
-import { upsertTemplate, getTemplate } from '@/api/template'
+import { upsertTemplate, getTemplate, newTemplate } from '@/api/template'
 import _ from 'lodash'
 
-import { toPng } from 'html-to-image'
+import toImage from '@/utils/html2image'
 
 export default {
   data() {
@@ -14,8 +14,6 @@ export default {
       }
     }
   },
-
-  async mounted() {},
 
   methods: {
     hasChange() {
@@ -34,12 +32,13 @@ export default {
       const elem = document.createElement('div')
       elem.innerHTML = template.html
       const parent = document.getElementById('html2image')
-      parent.prepend(elem)
-
+      parent.appendChild(elem)
       // 生成缩略图
-      template.imageUrl = await toPng(elem)
+      template.imageUrl = await toImage(elem)
+      // 生成后，删除节点
+      parent.removeChild(elem)
 
-      console.log('generateTemplate:', template.imageUrl)
+      // console.log('generateTemplate:', this.template, template)
       return template
     },
 
@@ -49,9 +48,9 @@ export default {
       if (this.hasChange() && this.template._id) {
         const ok = await okCancle('模板已经被修改，是否保存并继续？')
         if (ok) {
-          const template = this.generateTemplate()
+          const template = await this.generateTemplate()
           // 更新
-          await upsertTemplate(template.id, template)
+          await upsertTemplate(template._id, template)
         }
       }
 
@@ -71,20 +70,100 @@ export default {
         if (!ok) return
 
         // 开始保存
-        const template = this.generateTemplate()
+        const template = await this.generateTemplate()
+
         // 更新
-        await upsertTemplate(template.id, template)
+        const newTempRes = await upsertTemplate(template._id, template)
+        this.template = newTempRes.data
       } else {
         // 打开保存框，让用户输入主题
+        const title = await this.inputTemplateName()
+        if (!title) return
+
+        // 开始保存
+        const template = await this.generateTemplate()
+        // 添加名称
+        template.name = title
+        // 更新
+        const newTempRes = await newTemplate(
+          template.name,
+          template.imageUrl,
+          template.html
+        )
+        this.template = newTempRes.data
       }
+
+      notifySuccess('保存成功！')
+    },
+
+    inputTemplateName() {
+      return new Promise((resolve, reject) => {
+        this.$q
+          .dialog({
+            title: '输入名称',
+            message: '请输入模板的名称：',
+            prompt: {
+              model: '',
+              type: 'text' // optional
+            },
+            cancel: true,
+            persistent: true,
+            ok: {
+              dense: true,
+              color: 'warning'
+            },
+            cancel: {
+              dense: true,
+              color: 'primary'
+            }
+          })
+          .onOk(data => {
+            resolve(data)
+          })
+          .onCancel(() => {
+            reject(false)
+          })
+          .onDismiss(() => {
+            reject(false)
+          })
+      })
     },
 
     // 另存为
+    // 新增保存
+    async saveAsTemplate() {
+      // 直接另存为
+      // 打开保存框，让用户输入主题
+      const title = await this.inputTemplateName()
+      if (!title) return
 
-    async saveAsTemplate() {},
+      // 开始保存
+      const template = await this.generateTemplate()
+      // 添加名称
+      template.name = title
+      // 更新
+      const newTempRes = await newTemplate(
+        template.name,
+        template.imageUrl,
+        template.html
+      )
+      this.template = newTempRes.data
+    },
 
-    // 退出
-    async exitEditor() {},
+    // 退出当前
+    async exitEditor() {
+      // 检查变动
+      if (this.hasChange() && this.template._id) {
+        const ok = await okCancle('模板已经被修改，是否保存再退出？')
+        if (ok) {
+          const template = await this.generateTemplate()
+          // 更新
+          await upsertTemplate(template._id, template)
+        }
+      }
+
+      this.$router.push({ name: 'Template' })
+    },
 
     async getTemplateData() {
       // 界面中查看是否有id

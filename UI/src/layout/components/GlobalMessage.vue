@@ -1,14 +1,14 @@
 <template>
   <q-card class="global-message-container">
     <div class="gm-shade"></div>
-    <SendingProgress @close="closeProgress" />
+    <SendingProgress @close="closeProgress"/>
     <div id="capture" v-html="htmlValue"></div>
   </q-card>
 </template>
 
 <script>
 import ws from '@/utils/websocket'
-import { toPng } from 'html-to-image'
+import toImage from '@/utils/html2image'
 import SendingProgress from '@/views/send/components/sendingProgress.vue'
 
 import _ from 'lodash'
@@ -45,7 +45,7 @@ export default {
           // 转成图片发送回去
           // 生成模板预览图
           // 生成图片
-          const imageUrl = await toPng(document.getElementById('capture'))
+          const imageUrl = await toImage(document.getElementById('capture'))
           const res = _.cloneDeep(newValue)
           res.result = imageUrl
 

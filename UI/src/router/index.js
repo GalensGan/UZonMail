@@ -218,6 +218,7 @@ export const constantRoutes = [
       {
         path: "template-editor",
         name: "TemplateEditor",
+        hidden: true,
         component: () => import("@/views/email/templateEditor"),
         meta: { title: "编辑模板", icon: "form" }
       }

@@ -1,6 +1,6 @@
 <template>
-  <div id="tiny-parent" :class="{ fullscreen: fullscreen }" class="tinymce-container">
-    <div id="html2image">this is image</div>
+  <div :class="{ fullscreen: fullscreen }" class="tinymce-container">
+    <div id="html2image"></div>
     <textarea :id="tinymceId" class="tinymce-textarea" />
     <!-- <div class="editor-custom-btn-container">
       <editorImage color="#1890ff" class="editor-upload-btn" @successCBK="imageSuccessCBK" />
@@ -227,12 +227,11 @@ export default {
   right: 0;
   padding: 10px;
 
-  .html2image {
+  #html2image {
     position: absolute;
     z-index: -2;
-    opacity: 0;
-    width: 400;
-    height: 400;
+    height: 100px;
+    overflow: hidden;
   }
 }
 .tinymce-container >>> .mce-fullscreen {

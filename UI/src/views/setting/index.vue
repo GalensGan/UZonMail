@@ -40,14 +40,20 @@
         label="自动重发"
         color="orange"
         class="self-start q-ml-xs"
-      />
+      >
+        <q-tooltip> 发件失败自动重发，重发最大次数为5。 </q-tooltip>
+      </q-checkbox>
 
       <q-checkbox
         v-model="sendWithImageAndHtml"
         label="图文混发"
         color="orange"
         class="self-start q-ml-xs"
-      />
+      >
+        <q-tooltip>
+          将一半邮件转成图片发送（图片在转换过程中会丢失）
+        </q-tooltip>
+      </q-checkbox>
     </div>
   </div>
 </template>

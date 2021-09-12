@@ -14,7 +14,7 @@ namespace Server.Http.Controller
     /// </summary>
     public class Ctrler_Template : BaseController
     {
-        // 新建模板
+        // 新建或者更新模板
         [Route(HttpVerbs.Put, "/templates/{id}")]
         public void UpsertTemplate(string id)
         {
@@ -26,6 +26,7 @@ namespace Server.Http.Controller
 
             LiteDb.Upsert(template);
 
+            // 返回结果
             ResponseSuccess(template);
         }
 

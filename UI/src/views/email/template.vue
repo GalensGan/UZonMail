@@ -1,6 +1,6 @@
 <template>
   <div class="column q-pa-md template-main">
-    <div class="row">
+    <div class="row q-gutter-sm">
       <q-btn
         dense
         color="primary"
@@ -18,9 +18,9 @@
 
       <q-btn
         dense
-        color="primary"
+        color="warning"
         class="q-mb-sm self-start"
-        @click="jumpToTemplateEditor"
+        @click="jumpToTemplateEditor()"
         >添加模板</q-btn
       >
     </div>
@@ -109,7 +109,8 @@
 </template>
 
 <script>
-import { toPng } from 'html-to-image'
+import toImage from '@/utils/html2image'
+
 import { newTemplate, getTemplates, deleteTemplate } from '@/api/template'
 import moment from 'moment'
 import { notifySuccess, okCancle } from '@/components/iPrompt'
@@ -186,8 +187,7 @@ export default {
       this.isSavingTemplate = true
 
       this.$nextTick(async () => {
-        // 生成模板预览图
-        const imageUrl = await toPng(document.getElementById('capture'))
+        const imageUrl = await toImage(document.getElementById('capture'))
 
         // 发送模板
         const res = await newTemplate(
