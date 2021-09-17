@@ -44,6 +44,16 @@ namespace Server
 
         protected override void OnStart()
         {
+            // 检查 webview2 环境
+            //using (var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate\Clients\{F3C4FE00-EFD5-403B-9569-398A20F1BA4A}"))
+            //{
+            //    if (key == null)
+            //    {
+            //        System.Windows.Forms.MessageBox.Show("环境缺失","本系统需要 webview2 运行环境，请先安装！");
+            //        // 退出程序
+            //    }
+            //}
+
             Stylet.Logging.LogManager.Enabled = true;
 
             // 添加对所有未捕获异常的读取
