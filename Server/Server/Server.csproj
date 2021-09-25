@@ -63,6 +63,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Bootstrapper.cs" />
+    <Compile Include="Config\Fields.cs" />
     <Compile Include="Database\Definitions\UpdateOptions.cs" />
     <Compile Include="Database\Extensions\Ex_LiteRepository.cs" />
     <Compile Include="Database\Models\AutoObjectId.cs" />

@@ -31,8 +31,8 @@ namespace Server.Http.Controller
             // 读取jsonData
             var body = JObject.Parse(await HttpContext.GetRequestBodyAsStringAsync());
 
-            string userId = body.SelectToken("username").ValueOrDefault(string.Empty);
-            string password = body.SelectToken("password").ValueOrDefault(""); // 由于是客户端，不加密
+            string userId = body.SelectToken(Fields.userName).ValueOrDefault(string.Empty);
+            string password = body.SelectToken(Fields.password).ValueOrDefault(string.Empty); // 由于是客户端，不加密
 
             // 判断数据正确性
             if (string.IsNullOrEmpty(userId))
@@ -72,7 +72,7 @@ namespace Server.Http.Controller
             UserConfig uConfig = IoC.Get<UserConfig>();
             JwtToken jwtToken = new JwtToken(uConfig.TokenSecret, userId, JwtToken.DefaultExp());
 
-            ResponseSuccess(new JObject(new JProperty("token", jwtToken.Token)));
+            ResponseSuccess(new JObject(new JProperty(Fields.token, jwtToken.Token)));
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using Server.Config;
 using Server.Database;
 using Server.Database.Models;
 using Server.Http.Definitions;
@@ -16,7 +17,7 @@ namespace Server.Http.Modules.SendEmail
     /// 要实现用户级单例模式
     /// </summary>
     class EmailPreview
-    {     
+    {
 
         /// <summary>
         /// 创建预览
@@ -29,7 +30,7 @@ namespace Server.Http.Modules.SendEmail
         /// <param name="liteDb"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        public static bool CreateEmailPreview(string userId,string subject, JArray receivers, JArray data, string templateId, LiteDBManager liteDb, out string message)
+        public static bool CreateEmailPreview(string userId, string subject, JArray receivers, JArray data, string templateId, LiteDBManager liteDb, out string message)
         {
             EmailPreview temp = new EmailPreview(subject, receivers, data, templateId, liteDb);
 
@@ -91,34 +92,51 @@ namespace Server.Http.Modules.SendEmail
             _sendItems = new List<SendItem>();
             List<ReceiveBox> receiveBoxes = new List<ReceiveBox>();
 
-            // 获取当前收件人或组下的所有人
-            foreach (JToken jt in Receivers)
+            if (Receivers != null && Receivers.Count > 0)
             {
-                // 判断 type
-                string type = jt.Value<string>("type");
-                string id = jt.Value<string>("_id");
-                if (type == "group")
+                // 获取当前收件人或组下的所有人
+                foreach (JToken jt in Receivers)
                 {
-                    // 找到group下所有的用户
-                    List<ReceiveBox> boxes = LiteDb.Fetch<ReceiveBox>(r => r.groupId == id);
-
-                    // 如果没有，才添加
-                    foreach (ReceiveBox box in boxes)
+                    // 判断 type
+                    string type = jt.Value<string>(Fields.type_);
+                    string id = jt.Value<string>(Fields._id);
+                    if (type == Fields.group)
                     {
-                        if (receiveBoxes.Find(item => item._id == box._id) == null) receiveBoxes.Add(box);
+                        // 找到group下所有的用户
+                        List<ReceiveBox> boxes = LiteDb.Fetch<ReceiveBox>(r => r.groupId == id);
+
+                        // 如果没有，才添加
+                        foreach (ReceiveBox box in boxes)
+                        {
+                            if (receiveBoxes.Find(item => item._id == box._id) == null) receiveBoxes.Add(box);
+                        }
+                    }
+                    else
+                    {
+                        // 选择了单个用户
+                        var box = LiteDb.SingleOrDefault<ReceiveBox>(r => r._id == id);
+                        if (box != null && receiveBoxes.Find(item => item._id == box._id) == null) receiveBoxes.Add(box);
                     }
                 }
-                else
+            }
+            else if (Data != null && Data.Count > 0)
+            {
+                // 从数据中获取收件人
+                foreach (JToken jt in Data)
                 {
-                    // 选择了单个用户
-                    var box = LiteDb.SingleOrDefault<ReceiveBox>(r => r._id == id);
-                    if (box != null && receiveBoxes.Find(item => item._id == box._id) == null) receiveBoxes.Add(box);
+                    string userName = jt.Value<string>(Fields.userName);
+                    if (string.IsNullOrEmpty(userName)) continue;
+
+                    // 从数据库中查找
+                    var receiver = LiteDb.FirstOrDefault<ReceiveBox>(r => r.userName == userName);
+                    if (receiver != null) receiveBoxes.Add(receiver);
                 }
             }
 
+
             // 开始添加                
             foreach (var re in receiveBoxes)
-            {            
+            {
 
                 var item = new SendItem()
                 {
@@ -133,46 +151,64 @@ namespace Server.Http.Modules.SendEmail
                 if (Data != null && Data.Count > 0)
                 {
                     // 判断有没有数据
-                    var itemData = Data.FirstOrDefault(jt => jt.Value<string>("userName") == re.userName);
-                    if (itemData != null)
+                    var itemData = Data.FirstOrDefault(jt => jt.Value<string>(Fields.userName) == re.userName);
+
+                    // 如果为空，添加数据
+                    if (itemData == null) itemData = new JObject();
+
+                    // 添加默认数据
+                    var itemObj = itemData as JObject;
+
+                    // 添加默认用户名
+                    if (!itemObj.ContainsKey(Fields.userName))
                     {
-                        // 获取数据
-                        List<string> keys = (itemData as JObject).Properties().ToList().ConvertAll(p => p.Name);
+                        itemObj.Add(new JProperty(Fields.userName, re.userName));
+                    }
 
-                        // 判断是否有自定义内容，然后判断是否有自定义模板
-                        if (keys.Contains("body"))
-                        {
-                            // 获取 body 值
-                            string body = itemData.Value<string>("body");
-                            if (!string.IsNullOrEmpty(body))
-                            {
-                                sendHtml = body;
-                            }
-                        }
-                        else if (keys.Contains("template"))
-                        {
-                            string customTemplateName = itemData.Value<string>("template");
-                            if (!string.IsNullOrEmpty(customTemplateName))
-                            {
-                                // 获取新模板，如果失败，则跳过，不发送
-                                var customTemplate = LiteDb.SingleOrDefault<Template>(t => t.name == customTemplateName);
-                                if (customTemplate != null)
-                                {
-                                    sendHtml = customTemplate.html;
-                                }
-                            }
-                        }
+                    // 添加收件箱
+                    if (!itemObj.ContainsKey(Fields.inbox))
+                    {
+                        itemObj.Add(new JProperty(Fields.inbox, re.email));
+                    }
 
-                        // 替换模板内数据                    
-                        foreach (string key in keys)
-                        {
-                            var regex = new Regex("{{\\s*" + key + "\\s*}}");
-                            sendHtml = regex.Replace(sendHtml, itemData[key].Value<string>());
+                    // 获取数据
+                    List<string> keys = itemObj.Properties().ToList().ConvertAll(p => p.Name);
 
-                            // 同时替换主题数据
-                            subjectTemp = regex.Replace(subjectTemp, itemData[key].Value<string>());
+                    // 判断是否有自定义内容
+                    if (keys.Contains(Fields.body))
+                    {
+                        // 获取 body 值
+                        string body = itemData.Value<string>(Fields.body);
+                        if (!string.IsNullOrEmpty(body))
+                        {
+                            sendHtml = body;
                         }
                     }
+                    // 判断是否有自定义模板
+                    else if (keys.Contains(Fields.template))
+                    {
+                        string customTemplateName = itemData.Value<string>(Fields.template);
+                        if (!string.IsNullOrEmpty(customTemplateName))
+                        {
+                            // 获取新模板，如果失败，则跳过，不发送
+                            var customTemplate = LiteDb.SingleOrDefault<Template>(t => t.name == customTemplateName);
+                            if (customTemplate != null)
+                            {
+                                sendHtml = customTemplate.html;
+                            }
+                        }
+                    }
+
+                    // 替换模板内数据                    
+                    foreach (string key in keys)
+                    {
+                        var regex = new Regex("{{\\s*" + key + "\\s*}}");
+                        sendHtml = regex.Replace(sendHtml, itemData[key].Value<string>());
+
+                        // 同时替换主题数据
+                        subjectTemp = regex.Replace(subjectTemp, itemData[key].Value<string>());
+                    }
+
                 }
 
                 item.html = sendHtml;
