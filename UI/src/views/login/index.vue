@@ -14,15 +14,15 @@
         <h3 class="title">邮件批量发送</h3>
       </div>
 
-      <el-form-item prop="username">
+      <el-form-item prop="userName">
         <span class="svg-container">
           <svg-icon icon-class="user" />
         </span>
         <el-input
-          ref="username"
-          v-model="loginForm.username"
+          ref="userName"
+          v-model="loginForm.userName"
           placeholder="Username"
-          name="username"
+          name="userName"
           type="text"
           tabindex="1"
           auto-complete="on"
@@ -85,11 +85,11 @@ export default {
     }
     return {
       loginForm: {
-        username: 'admin',
+        userName: 'admin',
         password: '111111'
       },
       loginRules: {
-        username: [
+        userName: [
           { required: true, trigger: 'blur', validator: validateUsername }
         ],
         password: [

@@ -75,8 +75,13 @@ namespace Server.Http.Modules.SendEmail
 
             LiteDb.Database.GetCollection<HistoryGroup>().Insert(historyGroup);
 
+            // 反回发件信息
             _info.historyId = historyGroup._id;
-            _info.selectedReceiverCount = receiveBoxes.Count;
+
+            // 如果选择发件人，默认从数据中读取发件人，所以选择的发件人数量为0
+            if (Receivers == null || Receivers.Count < 1) _info.selectedReceiverCount = 0;
+            else _info.selectedReceiverCount = receiveBoxes.Count;
+
             _info.dataReceiverCount = Data.Count;
             _info.acctualReceiverCount = sendItems.Count;
             _info.ok = true;

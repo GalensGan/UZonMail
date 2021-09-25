@@ -269,8 +269,9 @@ export default {
         return false
       }
 
-      if (!this.receivers || this.receivers.length < 1) {
-        notifyError('请选择收件人')
+      // 判断收件人与数据是否至少有一个
+      if ((!this.receivers || this.receivers.length < 1) && !this.excelData) {
+        notifyError('请选择收件人或者录入数据（两者必须有其一）')
         return false
       }
 
@@ -372,7 +373,7 @@ export default {
       await startSending(data.historyId)
 
       // 如果是图文混发，不打开此处的进度条
-      // 一直不打开进度条，因为全局会响应      
+      // 一直不打开进度条，因为全局会响应
       // if (!settingsRes.data.sendWithImageAndHtml) {
       //   this.isShowSendingDialog = true
       // }
