@@ -28,5 +28,8 @@ namespace Server.Database.Models
         /// 图文混发
         /// </summary>
         public bool sendWithImageAndHtml { get; set; }
+
+        // 单日最大发件量
+        public int maxEmailsPerDay { get; set; }
     }
 }

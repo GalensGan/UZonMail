@@ -60,71 +60,89 @@ export default {
     },
 
     columns() {
-      if (this.group.groupType === 'send') {
-        return [
-          {
-            name: 'userName',
-            required: true,
-            label: '姓名',
-            align: 'left',
-            field: row => row.userName,
-            sortable: true
-          },
-          {
-            name: 'email',
-            required: true,
-            label: '邮箱',
-            align: 'left',
-            field: row => row.email,
-            sortable: true
-          },
-          {
-            name: 'smtp',
-            required: true,
-            label: 'SMTP服务器地址',
-            align: 'left',
-            field: row => row.smtp,
-            sortable: true
-          },
-          {
-            name: 'password',
-            required: true,
-            label: 'SMTP密码',
-            align: 'left',
-            field: row => row.password,
-            sortable: true
-          },
-          {
-            name: 'operation',
-            label: '操作',
-            align: 'right'
-          }
-        ]
-      } else {
-        return [
-          {
-            name: 'userName',
-            required: true,
-            label: '姓名',
-            align: 'left',
-            field: row => row.userName,
-            sortable: true
-          },
-          {
-            name: 'email',
-            required: true,
-            label: '邮箱',
-            align: 'left',
-            field: row => row.email,
-            sortable: true
-          },
-          {
-            name: 'operation',
-            label: '操作',
-            align: 'right'
-          }
-        ]
-      }
+      return [
+        {
+          name: 'userName',
+          required: true,
+          label: '姓名',
+          align: 'left',
+          field: row => row.userName,
+          sortable: true
+        },
+        {
+          name: 'email',
+          required: true,
+          label: '邮箱',
+          align: 'left',
+          field: row => row.email,
+          sortable: true
+        }
+      ]
+      // if (this.group.groupType === 'send') {
+      //   return [
+      //     {
+      //       name: 'userName',
+      //       required: true,
+      //       label: '姓名',
+      //       align: 'left',
+      //       field: row => row.userName,
+      //       sortable: true
+      //     },
+      //     {
+      //       name: 'email',
+      //       required: true,
+      //       label: '邮箱',
+      //       align: 'left',
+      //       field: row => row.email,
+      //       sortable: true
+      //     },
+      //     {
+      //       name: 'smtp',
+      //       required: true,
+      //       label: 'SMTP服务器地址',
+      //       align: 'left',
+      //       field: row => row.smtp,
+      //       sortable: true
+      //     },
+      //     {
+      //       name: 'password',
+      //       required: true,
+      //       label: 'SMTP密码',
+      //       align: 'left',
+      //       field: row => row.password,
+      //       sortable: true
+      //     },
+      //     {
+      //       name: 'operation',
+      //       label: '操作',
+      //       align: 'right'
+      //     }
+      //   ]
+      // } else {
+      //   return [
+      //     {
+      //       name: 'userName',
+      //       required: true,
+      //       label: '姓名',
+      //       align: 'left',
+      //       field: row => row.userName,
+      //       sortable: true
+      //     },
+      //     {
+      //       name: 'email',
+      //       required: true,
+      //       label: '邮箱',
+      //       align: 'left',
+      //       field: row => row.email,
+      //       sortable: true
+      //     },
+      //     {
+      //       name: 'operation',
+      //       label: '操作',
+      //       align: 'right'
+      //     }
+      //   ]
+      // }
     }
   },
 

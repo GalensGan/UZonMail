@@ -24,7 +24,7 @@ export default {
 
   btn_detail: {
     size: "sm",
-    color: "secondary",
+    color: "primary",
     label: "详细",
     tooltip: "查看详细信息",
     dense: true
@@ -40,7 +40,7 @@ export default {
 
   btn_delete: {
     size: "sm",
-    color: "warning",
+    color: "negative",
     label: "删除",
     tooltip: "删除",
     dense: true

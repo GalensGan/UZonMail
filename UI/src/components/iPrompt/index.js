@@ -6,11 +6,11 @@ function okCancle(title, message, options) {
     message,
     ok: {
       dense: true,
-      color: "warning"
+      color: "primary"
     },
     cancel: {
       dense: true,
-      color: "primary"
+      color: "negative"
     },
     persistent: true
   };
@@ -53,7 +53,7 @@ function notifySuccess(message) {
   Notify.create({
     message,
     icon: "done",
-    color: "secondary",
+    color: "primary",
     position: "top"
   });
 }

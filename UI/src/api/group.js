@@ -96,3 +96,13 @@ export function modifyEmail(emailId, data) {
     data
   });
 }
+
+// 修改发件箱设置
+export function updateSendEmailSettings(emailId, data) {
+  // console.log("modifyGroup api:", groupId, data);
+  return request({
+    url: `/emails/${emailId}/settings`,
+    method: "put",
+    data
+  });
+}

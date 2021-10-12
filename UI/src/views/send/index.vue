@@ -1,9 +1,36 @@
 <template>
   <div class="q-pa-lg send-container q-gutter-md">
+    <div class="receive-box row justify-between">
+      <div class="row col-grow">
+        <strong style="height: auto; align-self: center"> 发件人：</strong>
+        <q-chip
+          v-for="rec in senders"
+          :key="rec.type + rec._id"
+          removable
+          @remove="removeSender(rec)"
+          :color="rec.type === 'group' ? 'orange' : 'teal'"
+          size="sm"
+          text-color="white"
+          :label="rec.label"
+        />
+        <input type="text" class="send-input col-grow" />
+      </div>
+      <q-btn
+        size="sm"
+        dense
+        class="self-center q-mb-sm"
+        color="secondary"
+        outline
+        @click="openSelectSendersDialog"
+        label="选择发件人"
+      />
+    </div>
+
     <div class="receive-box row">
       <strong style="height: auto; align-self: center"> 主题：</strong>
       <input type="text" class="send-input col-grow" v-model="subject" />
     </div>
+
     <div class="receive-box row justify-between">
       <div class="row col-grow">
         <strong style="height: auto; align-self: center"> 收件人：</strong>
@@ -23,7 +50,7 @@
         size="sm"
         dense
         class="self-center q-mb-sm"
-        color="orange"
+        color="secondary"
         outline
         @click="openSelectReceiversDialog"
         label="选择收件人"
@@ -86,16 +113,31 @@
 
     <div v-html="selectedTemplate.html"></div>
 
-    <div class="row justify-end preview-row">
+    <div class="row justify-end preview-row q-mr-md">
+      <q-btn
+        label="预览"
+        color="secondary"
+        size="sm"
+        @click="previewEmailBody"
+      />
+
       <q-btn
         label="发送"
         color="primary"
         size="sm"
-        class="q-mr-sm"
+        class="q-ml-sm"
         :disable="disableSend"
         @click="startSending"
       />
-      <q-btn label="预览" color="orange" size="sm" @click="previewEmailBody" />
+      <q-btn
+        v-if="false"
+        label="定时"
+        color="primary"
+        class="q-ml-sm"
+        size="sm"
+        :disable="disableSend"
+        @click="startSending"
+      />
     </div>
 
     <q-dialog v-model="isShowSendingDialog" persistent>
@@ -110,7 +152,7 @@
           style="height: 400px; width: 600px"
           class="shadow-2 rounded-borders"
         >
-          <q-header elevated class="bg-teal">
+          <q-header elevated class="bg-primary">
             <div class="q-pa-sm text-subtitle1">
               发送给：{{ previewData.receiverName }}/{{
                 previewData.receiverEmail
@@ -118,7 +160,7 @@
             </div>
           </q-header>
 
-          <q-footer elevated class="bg-teal">
+          <q-footer elevated class="bg-primary">
             <div class="row justify-between q-pa-sm">
               <div>
                 当前：{{ previewData.index + 1 }} / 合计：{{
@@ -153,6 +195,10 @@
     <q-dialog v-model="isShowSelectEmails">
       <SelectEmail groupType="receive" v-model="receivers" />
     </q-dialog>
+
+    <q-dialog v-model="isShowSelectedSenders">
+      <SelectEmail groupType="send" v-model="senders" />
+    </q-dialog>
   </div>
 </template>
 
@@ -172,12 +218,16 @@ import { notifyError } from '@/components/iPrompt'
 import SelectEmail from './components/selectEmail'
 import SendingProgress from './components/sendingProgress'
 
+import SelectSender from './mixins/selectSender.vue'
+import SelectReceiver from './mixins/selectReceiver.vue'
+
 export default {
   components: { SelectEmail, SendingProgress },
+  mixins: [SelectSender, SelectReceiver],
   data() {
     return {
       subject: '',
-      receivers: [],
+
       selectedFileName: '',
       options: [],
       selectedTemplate: {},
@@ -191,8 +241,6 @@ export default {
         progress: 0,
         label: '0.00%'
       },
-
-      isShowSelectEmails: false,
 
       disableSend: false
     }
@@ -275,11 +323,6 @@ export default {
         return false
       }
 
-      // if (!this.excelData) {
-      //   notifyError('请选择模板数据')
-      //   return false
-      // }
-
       return true
     },
 
@@ -323,6 +366,7 @@ export default {
 
       // 新建发件任务
       const res = await newSendTask(
+        this.senders || [],
         this.subject,
         this.receivers,
         this.excelData || [],
@@ -346,11 +390,11 @@ export default {
             html: true,
             ok: {
               dense: true,
-              color: 'warning'
+              color: 'primary'
             },
             cancel: {
               dense: true,
-              color: 'primary'
+              color: 'negative'
             },
             persistent: true
           })
@@ -366,12 +410,11 @@ export default {
       })
       if (!ok) return
 
-      // 获取设置，判断是否是发送图文
-      const settingsRes = await getUserSettings()
-
       // 开始发送
       await startSending(data.historyId)
 
+      // 获取设置，判断是否是发送图文
+      // const settingsRes = await getUserSettings()
       // 如果是图文混发，不打开此处的进度条
       // 一直不打开进度条，因为全局会响应
       // if (!settingsRes.data.sendWithImageAndHtml) {
@@ -379,16 +422,8 @@ export default {
       // }
     },
 
-    openSelectReceiversDialog() {
-      this.isShowSelectEmails = true
-    },
-
-    removeReceiver(receiver) {
-      const index = this.receivers.findIndex(
-        re => re.type === receiver.type && re._id === receiver._id
-      )
-      if (index > -1) this.receivers.splice(index, 1)
-    }
+    // 定时发件
+    async scheduleSend() {}
   }
 }
 </script>

@@ -209,8 +209,16 @@ export default {
     dataToShow() {
       if (!this.filter) return this.data
 
+      const regex = new RegExp(this.filter, 'i')
       return this.data.filter(d => {
-        if (d.subject && d.subject.indexOf(this.filter) > -1) return true
+        if (
+          regex.test(d.receiverEmail) ||
+          regex.test(d.receiverName) ||
+          regex.test(d.senderEmail) ||
+          regex.test(d.senderName) ||
+          regex.test(d.subject)
+        )
+          return true
         return false
       })
     },

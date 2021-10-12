@@ -86,9 +86,12 @@
     <Compile Include="Http\Modules\SendEmail\EmailPreview.cs" />
     <Compile Include="Http\Modules\SendEmail\GenerateInfo.cs" />
     <Compile Include="Http\Modules\SendEmail\InstanceCenter.cs" />
-    <Compile Include="Http\Modules\SendEmail\SendingInfo.cs" />
+    <Compile Include="Http\Modules\SendEmail\ScheduleSending.cs" />
+    <Compile Include="Http\Modules\SendEmail\SendingProgressInfo.cs" />
     <Compile Include="Http\Modules\SendEmail\EmailReady.cs" />
+    <Compile Include="Http\Modules\SendEmail\SendResult.cs" />
     <Compile Include="Http\Modules\SendEmail\SendTask.cs" />
+    <Compile Include="Http\Modules\SendEmail\SendThread.cs" />
     <Compile Include="Http\Modules\SendEmail\UserInstance.cs" />
     <Compile Include="Http\Modules\Websocket\WsServer.cs" />
     <Compile Include="Http\Response\HttpResponse.cs" />
@@ -98,6 +101,7 @@
     <Compile Include="Http\Extensions\WebServerExtensions.cs" />
     <Compile Include="Http\Definitions\SendStatus.cs" />
     <Compile Include="SDK\Extension\Ex_Json.cs" />
+    <Compile Include="SDK\Extension\Ex_Object.cs" />
     <Compile Include="Websocket\AsyncWebsocket\CallbackOption.cs" />
     <Compile Include="Websocket\Commands\Login.cs" />
     <Compile Include="Websocket\Execute\CommandClassName.cs" />

@@ -33,10 +33,10 @@ namespace Server.Http.Controller
         [Route(HttpVerbs.Post, "/group")]
         public void NewGroup()
         {
-            int parentId = Body.Value<int>("parentId");
-            string name = Body.Value<string>("name");
-            string groupType = Body.Value<string>("groupType");
-            string description = Body.Value<string>("description");
+            var parentId = Body.Value<string>("parentId");
+            var name = Body.Value<string>("name");
+            var groupType = Body.Value<string>("groupType");
+            var description = Body.Value<string>("description");
 
             var newGroup = new Group()
             {
@@ -167,7 +167,7 @@ namespace Server.Http.Controller
         [Route(HttpVerbs.Delete, "/groups/{id}/emails")]
         public void DeleteEmails(string id)
         {
-            var group = LiteDb.SingleOrDefault<Group>($"_id={id}");
+            var group = LiteDb.SingleOrDefault<Group>($"_id='{id}'");
             if (group == null)
             {
                 ResponseError($"未通过{id}找到组");
@@ -175,8 +175,8 @@ namespace Server.Http.Controller
             }
 
             // 删除组id对应的所有邮箱
-            LiteDb.DeleteMany<SendBox>($"groupId={id}");
-            LiteDb.DeleteMany<ReceiveBox>($"groupId={id}");
+            LiteDb.DeleteMany<SendBox>($"groupId='{id}'");
+            LiteDb.DeleteMany<ReceiveBox>($"groupId='{id}'");
 
             ResponseSuccess("success");
         }
@@ -207,6 +207,28 @@ namespace Server.Http.Controller
             // 更新
             var result2 = LiteDb.Upsert2(e => e._id == id, updateData2, new UpdateOptions(true) { "_id", "groupId" });
             ResponseSuccess(result2);
+        }
+
+        // 修改发件箱设置
+        [Route(HttpVerbs.Put, "/emails/{id}/settings")]
+        public void UpdateSendEmailSettings(string id)
+        {
+            // 根据id判断属于发件还是收件
+            var sendbox = LiteDb.FirstOrDefault<SendBox>(s => s._id == id);
+            if (sendbox != null)
+            {
+                if (sendbox.settings == null)
+                {
+                    sendbox.settings = new SendBoxSetting();
+                }
+
+                sendbox.settings.UpdateObject(Body as JObject);
+                LiteDb.Update(sendbox);                
+                ResponseSuccess(sendbox);
+                return;
+            }
+
+            ResponseError($"未找到发件箱:{id}");
         }
     }
 }

@@ -14,7 +14,7 @@ namespace Server.Database.Models
         /// <summary>
         /// 父组
         /// </summary>
-        public int parentId { get; set; }
+        public string parentId { get; set; }
 
         public string name { get; set; }
         public string description { get; set; }

@@ -15,6 +15,7 @@ namespace Server.Database.Models
         public string userId { get; set; }
 
         public List<string> senderIds { get; set; }
+
         public List<string> receiverIds { get; set; }
 
         public DateTime createDate { get; set; }
@@ -22,6 +23,7 @@ namespace Server.Database.Models
         public string subject { get; set; }
         public string templateId { get; set; }
         public string templateName { get; set; }
+
         // json 格式的数据
         public string data { get; set; }
 

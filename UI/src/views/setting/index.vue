@@ -19,26 +19,28 @@
           style="min-width: 300px"
         />
       </div>
-      <!-- <div>
+
+      <div>
         <div class="text-subtitle1 q-mb-lg">
-          单次发件数：
-          <q-tooltip> 单个发件箱单次发件总数。0代表无限制 </q-tooltip>
+          单邮箱每日发件总数：
+          <q-tooltip> 单个发件箱每日发件限制数。0代表无限制 </q-tooltip>
         </div>
         <q-slider
-          v-model="singleSendControl"
+          v-model="maxEmailsPerDay"
           :min="0"
-          :max="100"
-          :step="5"
+          :max="500"
+          :step="10"
           label
           label-always
+          :label-value="maxEmailsPerDay ? maxEmailsPerDay : '无限制'"
           style="min-width: 300px"
         />
-      </div> -->
+      </div>
 
       <q-checkbox
         v-model="isAutoResend"
         label="自动重发"
-        color="orange"
+        color="secondary"
         class="self-start q-ml-xs"
       >
         <q-tooltip> 发件失败自动重发，重发最大次数为5。 </q-tooltip>
@@ -47,7 +49,7 @@
       <q-checkbox
         v-model="sendWithImageAndHtml"
         label="图文混发"
-        color="orange"
+        color="secondary"
         class="self-start q-ml-xs"
       >
         <q-tooltip>
@@ -63,7 +65,8 @@ import {
   getUserSettings,
   updateSendInterval,
   updateIsAutoResend,
-  updateSendWithImageAndHtml
+  updateSendWithImageAndHtml,
+  updateMaxEmailsPerDay
 } from '@/api/setting'
 
 export default {
@@ -74,7 +77,8 @@ export default {
         max: 8
       },
 
-      singleSendControl: 0,
+      // 每日最大发件量
+      maxEmailsPerDay: 0,
 
       isAutoResend: true,
 
@@ -93,6 +97,11 @@ export default {
 
     async sendWithImageAndHtml(newValue) {
       await updateSendWithImageAndHtml(newValue)
+    },
+
+    // 每日最大发件量
+    async maxEmailsPerDay(newValue) {
+      await updateMaxEmailsPerDay(newValue)
     }
   },
 
@@ -103,12 +112,16 @@ export default {
       sendInterval_max,
       sendInterval_min,
       isAutoResend,
-      sendWithImageAndHtml
+      sendWithImageAndHtml,
+
+      maxEmailsPerDay
     } = res.data
+
     this.sendInterval.min = sendInterval_min || 3
     this.sendInterval.max = sendInterval_max || 8
     this.isAutoResend = isAutoResend
     this.sendWithImageAndHtml = sendWithImageAndHtml
+    this.maxEmailsPerDay = maxEmailsPerDay || 0
   }
 }
 </script>

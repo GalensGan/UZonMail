@@ -1,64 +1,69 @@
 <template>
-  <div class="login-container">
-    <div id="snowMask"></div>
-
-    <el-form
-      ref="loginForm"
-      :model="loginForm"
-      :rules="loginRules"
-      class="login-form"
-      auto-complete="on"
-      label-position="left"
+  <div class="login-container column justify-center">
+    <div
+      class="row justify-center"
+      style="font-size: 2em; font-family: cursive; margin-bottom: 100px"
     >
-      <div class="title-container">
-        <h3 class="title">邮件批量发送</h3>
-      </div>
+      众里寻他千百度，无件可发凭风孤
+    </div>
+    <div class="row justify-center">
+      <embed src="resources/images/login-logo.svg" class="svg-style" />
 
-      <el-form-item prop="userName">
-        <span class="svg-container">
-          <svg-icon icon-class="user" />
-        </span>
-        <el-input
-          ref="userName"
-          v-model="loginForm.userName"
-          placeholder="Username"
-          name="userName"
-          type="text"
-          tabindex="1"
-          auto-complete="on"
-        />
-      </el-form-item>
-
-      <el-form-item prop="password">
-        <span class="svg-container">
-          <svg-icon icon-class="password" />
-        </span>
-        <el-input
-          :key="passwordType"
-          ref="password"
-          v-model="loginForm.password"
-          :type="passwordType"
-          placeholder="Password"
-          name="password"
-          tabindex="2"
-          auto-complete="on"
-          @keyup.enter.native="handleLogin"
-        />
-        <span class="show-pwd" @click="showPwd">
-          <svg-icon
-            :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'"
-          />
-        </span>
-      </el-form-item>
-
-      <el-button
-        :loading="loading"
-        type="primary"
-        style="width: 100%; margin-bottom: 30px"
-        @click.native.prevent="handleLogin"
-        >Login</el-button
+      <el-form
+        ref="loginForm"
+        :model="loginForm"
+        :rules="loginRules"
+        class="login-form"
+        auto-complete="on"
+        label-position="left"
       >
-    </el-form>
+        <el-form-item prop="userName">
+          <span class="svg-container">
+            <svg-icon icon-class="user" />
+          </span>
+          <el-input
+            ref="userName"
+            v-model="loginForm.userName"
+            placeholder="Username"
+            name="userName"
+            type="text"
+            tabindex="1"
+            auto-complete="on"
+          />
+        </el-form-item>
+
+        <el-form-item prop="password">
+          <span class="svg-container">
+            <svg-icon icon-class="password" />
+          </span>
+          <el-input
+            :key="passwordType"
+            ref="password"
+            v-model="loginForm.password"
+            :type="passwordType"
+            placeholder="Password"
+            name="password"
+            tabindex="2"
+            auto-complete="on"
+            @keyup.enter.native="handleLogin"
+          />
+          <span class="show-pwd" @click="showPwd">
+            <svg-icon
+              :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'"
+            />
+          </span>
+        </el-form-item>
+
+        <el-button
+          :loading="loading"
+          type="primary"
+          style="width: 100%"
+          class="bg-primary"
+          @click.native.prevent="handleLogin"
+          >登陆/注册</el-button
+        >
+      </el-form>
+    </div>
   </div>
 </template>
 
@@ -66,8 +71,11 @@
 import { validUsername } from '@/utils/validate'
 import ws from '@/utils/websocket'
 
+import Live2d from './mixins/live2d.vue'
+
 export default {
   name: 'Login',
+  // mixins: [Live2d],
   data() {
     const validateUsername = (rule, value, callback) => {
       if (!validUsername(value)) {
@@ -126,7 +134,7 @@ export default {
           this.loading = true
           this.$store
             .dispatch('user/login', this.loginForm)
-            .then(async () => {              
+            .then(async () => {
               // 登陆成功后，进行websocket 登陆
               await ws.sendRequest({
                 name: 'Login',
@@ -154,8 +162,8 @@ export default {
 /* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */
 
 $bg: #283443;
-$light_gray: #fff;
-$cursor: #fff;
+$light_gray: #283443;
+$cursor: #283443;
 
 @supports (-webkit-mask: none) and (not (cater-color: $cursor)) {
   .login-container .el-input input {
@@ -204,15 +212,22 @@ $light_gray: #eee;
 .login-container {
   min-height: 100%;
   width: 100%;
-  background-color: $bg;
   overflow: hidden;
 
+  .svg-style {
+    height: 200px;
+    margin-right: 50px;
+  }
+
+  // 设置背景图片
+  // background-image: url('https://media0.giphy.com/media/opTBRh0Ydo2o15Mztf/giphy.webp?cid=ecf05e47kifiij155kqc0pp3ssgvb4wz4dc3tppjhei7j3nx&rid=giphy.webp&ct=g');
+  // background-repeat: no-repeat;
+  // background-size: cover;
+
   .login-form {
-    position: relative;
-    width: 520px;
-    max-width: 100%;
-    padding: 160px 35px 0;
-    margin: 0 auto;
+    height: 100%;
+    width: 400px;
+    margin-right: 70px;
     overflow: hidden;
   }
 
@@ -256,38 +271,6 @@ $light_gray: #eee;
     color: $dark_gray;
     cursor: pointer;
     user-select: none;
-  }
-
-  @-webkit-keyframes snow {
-    0% {
-      background-position: 0 0, 0 0;
-    }
-    100% {
-      background-position: 500px 500px, 1000px 500px;
-    }
-  }
-  @keyframes snow {
-    0% {
-      background-position: 0 0, 0 0;
-    }
-    100% {
-      background-position: 500px 500px, 1000px 500px;
-    }
-  }
-  .container {
-    box-shadow: 0 0 4px 3px rgba(0, 0, 0, 0.05);
-  }
-  #snowMask {
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background: url('/public/snow1.png'), url('/public/snow2.png');
-    -webkit-animation: 10s snow linear infinite;
-    animation: 10s snow linear infinite;
-    pointer-events: none;
-    z-index: 9999;
   }
 }
 </style>

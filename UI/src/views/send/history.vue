@@ -185,8 +185,12 @@ export default {
     dataToShow() {
       if (!this.filter) return this.data
 
+      // 使用正则匹配，可以忽略大小写
+      const regex = new RegExp(this.filter, 'i')
       return this.data.filter(d => {
-        if (d.subject && d.subject.indexOf(this.filter) > -1) return true
+        if (d.subject && regex.test(d.subject)) return true
+
+        if (d.templateName && regex.test(d.templateName)) return true
         return false
       })
     }

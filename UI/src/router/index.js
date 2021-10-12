@@ -186,7 +186,7 @@ export const constantRoutes = [
         path: "index",
         name: "Setting",
         component: () => import("@/views/setting/index"),
-        meta: { title: "系统设置", icon: "form" }
+        meta: { title: "系统设置", icon: "setting" }
       }
     ]
   },
@@ -194,26 +194,26 @@ export const constantRoutes = [
   {
     path: "/email",
     component: Layout,
-    meta: { title: "邮箱管理", icon: "form" },
+    meta: { title: "邮箱管理", icon: "data" },
     redirect: "/email/send-box",
     children: [
       {
         path: "send-box",
         name: "SendBox",
         component: () => import("@/views/email/send"),
-        meta: { title: "发件箱", icon: "form" }
+        meta: { title: "发件箱", icon: "outbox" }
       },
       {
         path: "receive-box",
         name: "ReceiveBox",
         component: () => import("@/views/email/receive"),
-        meta: { title: "收件箱", icon: "form" }
+        meta: { title: "收件箱", icon: "inbox" }
       },
       {
         path: "template",
         name: "Template",
         component: () => import("@/views/email/template"),
-        meta: { title: "正文模板", icon: "form" }
+        meta: { title: "正文模板", icon: "template-f" }
       },
       {
         path: "template-editor",
@@ -228,20 +228,20 @@ export const constantRoutes = [
   {
     path: "/send",
     component: Layout,
-    meta: { title: "发件管理", icon: "form" },
+    meta: { title: "发件管理", icon: "send" },
     redirect: "/send/index",
     children: [
       {
         path: "index",
         name: "SendIndex",
         component: () => import("@/views/send/index"),
-        meta: { title: "新建发件", icon: "form" }
+        meta: { title: "新建发件", icon: "add" }
       },
       {
         path: "history",
         name: "SendHistory",
         component: () => import("@/views/send/history"),
-        meta: { title: "发件历史", icon: "form" }
+        meta: { title: "发件历史", icon: "history" }
       }
     ]
   },
@@ -252,7 +252,7 @@ export const constantRoutes = [
     children: [
       {
         path: "https://galensgan.github.io/2020/1VWTGBN.html",
-        meta: { title: "使用说明", icon: "link" }
+        meta: { title: "使用说明", icon: "book" }
       }
     ]
   },

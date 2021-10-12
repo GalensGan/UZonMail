@@ -32,11 +32,12 @@ export function getCurrentStatus() {
 
 // 新建发送，只有在没有发送过时，才调用
 // 重新发送只需要调用startSending
-export function newSendTask(subject, receivers, data, templateId) {
+export function newSendTask(senders, subject, receivers, data, templateId) {
   return request({
     url: "/send/task",
     method: "post",
     data: {
+      senders,
       subject,
       receivers,
       data,
@@ -44,7 +45,6 @@ export function newSendTask(subject, receivers, data, templateId) {
     }
   });
 }
-
 
 // 开始发送
 export function startSending(historyId) {

@@ -41,12 +41,30 @@ namespace Server.Database.Models
         // 发送时间
         public DateTime sendDate { get; set; }
 
-        // 发送格式："html","data-url"
-        public string sendType { get; set; }
+        // 发送格式
+        public SendItemType sendItemType { get; set; }
 
         /// <summary>
         /// 内容 url
         /// </summary>
         public string dataUrl { get; set; }
+    }
+
+    public enum SendItemType
+    {
+        /// <summary>
+        /// 无
+        /// </summary>
+        none,
+
+        /// <summary>
+        /// html格式
+        /// </summary>
+        html,
+
+        /// <summary>
+        /// 数据 URL
+        /// </summary>
+        dataUrl,
     }
 }

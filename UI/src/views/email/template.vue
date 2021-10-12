@@ -4,9 +4,17 @@
       <q-btn
         dense
         color="primary"
-        class="q-mb-sm self-start"
+        class="q-mb-md self-center q-pl-sm q-pr-sm"
+        @click="jumpToTemplateEditor()"
+        >新增</q-btn
+      >
+
+      <q-btn
+        dense
+        color="primary"
+        class="q-mb-md self-center q-pl-sm q-pr-sm"
         @click="selectFile"
-        >导入模板</q-btn
+        >导入</q-btn
       >
       <input
         type="file"
@@ -15,14 +23,6 @@
         accept="text/html"
         @change="fileSelected"
       />
-
-      <q-btn
-        dense
-        color="warning"
-        class="q-mb-sm self-start"
-        @click="jumpToTemplateEditor()"
-        >添加模板</q-btn
-      >
     </div>
 
     <div class="row q-gutter-sm">
@@ -58,7 +58,7 @@
               >查看</q-btn
             >
             <q-btn
-              color="warning"
+              color="negative"
               class="self-center"
               size="sm"
               dense

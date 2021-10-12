@@ -89,5 +89,27 @@ namespace Server.Http.Controller
             // 返回成功
             ResponseSuccess("success");
         }
+
+        /// <summary>
+        /// 单邮箱每是最大发件量
+        /// </summary>
+        /// <returns></returns>
+        [Route(HttpVerbs.Put, "/setting/max-emails-per-day")]
+        public async Task MaxEmailsPerDay()
+        {
+            var body = JObject.Parse(await HttpContext.GetRequestBodyAsStringAsync());
+
+            var value = body.SelectToken("maxCount").ValueOrDefault(0);
+
+            // 判断是否存在设置项
+            LiteDb.Upsert2(s => s.userId == Token.UserId, new Setting()
+            {
+                userId = Token.UserId,
+                maxEmailsPerDay = value,
+            }, new UpdateOptions() { "maxEmailsPerDay" });
+
+            // 返回成功
+            ResponseSuccess("success");
+        }
     }
 }

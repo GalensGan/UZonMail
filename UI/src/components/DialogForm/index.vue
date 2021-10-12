@@ -18,10 +18,10 @@
 
       <div class="row justify-end q-gutter-sm">
         <q-btn
-          :size="btn_cancle.size"
-          :color="btn_cancle.color"
-          :label="btn_cancle.label"
-          :dense="btn_cancle.dense"
+          :size="btn_cancel.size"
+          :color="btn_cancel.color"
+          :label="btn_cancel.label"
+          :dense="btn_cancel.dense"
           v-close-popup
         />
 
@@ -45,7 +45,7 @@
 
 import { button } from '@/themes/index'
 import { notifyError } from '@/components/iPrompt'
-const { btn_confirm, btn_cancle } = button
+const { btn_confirm, btn_cancel } = button
 
 import _ from 'lodash'
 
@@ -70,7 +70,7 @@ export default {
   data() {
     return {
       btn_confirm,
-      btn_cancle,
+      btn_cancel,
       data: {}
     }
   },
@@ -224,7 +224,7 @@ export default {
         // console.log(`${this.type}Success`, updateData)
 
         // 关闭窗体
-        this.$emit(`${this.type}Success`, updateData)
+        this.$emit(`${this.type}Success`, updateData, result.data)
 
         // 添加完成后，清空数据
         this.data = {}

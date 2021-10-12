@@ -43,5 +43,10 @@ namespace Server.Http.Definitions
         /// html 发送
         /// </summary>
         AsHtml = 1 << 6,
+
+        /// <summary>
+        /// 定时发件
+        /// </summary>
+        Schedule = 1 << 7
     }
 }

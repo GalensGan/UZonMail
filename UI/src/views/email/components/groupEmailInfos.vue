@@ -17,7 +17,7 @@
             label="新增"
             dense
             size="sm"
-            color="secondary"
+            color="primary"
             class="q-pr-xs q-pl-xs"
             @click="openNewEmailDialog"
           ></q-btn>
@@ -25,7 +25,7 @@
             label="从Excel导入"
             dense
             size="sm"
-            color="orange"
+            color="primary"
             class="q-pr-xs q-pl-xs"
             @click="selectExcelFile"
           ></q-btn>
@@ -57,7 +57,7 @@
           <q-btn
             v-if="data.length > 0"
             :size="btn_delete.size"
-            color="warning"
+            color="secondary"
             label="清空"
             :dense="btn_delete.dense"
             @click="clearGroup()"
@@ -79,6 +79,17 @@
           </q-btn>
 
           <q-btn
+            v-if="columns.length > 3"
+            :size="btn_modify.size"
+            :color="btn_modify.color"
+            label="设置"
+            :dense="btn_modify.dense"
+            @click="showUpdateSettings(props.row)"
+            class="q-mr-sm"
+          >
+          </q-btn>
+
+          <q-btn
             :size="btn_delete.size"
             :color="btn_delete.color"
             :label="btn_delete.label"
@@ -90,7 +101,7 @@
       </template>
     </q-table>
 
-    <q-dialog v-model="isShowNewEmailDialog">
+    <q-dialog v-model="isShowNewEmailDialog" persistent>
       <DialogForm
         type="create"
         @createSuccess="addedNewEmail"
@@ -98,11 +109,19 @@
       />
     </q-dialog>
 
-    <q-dialog v-model="isShowModifyEmailDialog">
+    <q-dialog v-model="isShowModifyEmailDialog" persistent>
       <DialogForm
         type="update"
         @updateSuccess="modifiedEmail"
         :initParams="initModifyEmailParams"
+      />
+    </q-dialog>
+
+    <q-dialog v-model="isShowUpdateSettings" persistent>
+      <DialogForm
+        type="update"
+        @updateSuccess="updatedSettings"
+        :initParams="initSettingParams"
       />
     </q-dialog>
   </div>
@@ -110,9 +129,11 @@
 
 <script>
 import DialogForm from '@/components/DialogForm'
+
 import NewEmail from '../mixins/newEmail.vue'
 import NewEmails from '../mixins/newEmails.vue'
 import ModifyEmail from '../mixins/modifyEmail.vue'
+import UpdateSettings from '../mixins/updateSettings.vue'
 
 import { getEmails, deleteEmail, deleteEmails } from '@/api/group'
 
@@ -121,7 +142,7 @@ import { notifySuccess, okCancle } from '@/components/iPrompt'
 const { btn_modify, btn_delete } = table
 
 export default {
-  mixins: [NewEmail, ModifyEmail, NewEmails],
+  mixins: [NewEmail, ModifyEmail, NewEmails, UpdateSettings],
   components: { DialogForm },
   props: {
     group: {
@@ -179,6 +200,18 @@ export default {
             label: 'SMTP密码',
             align: 'left',
             field: row => row.password,
+            sortable: true
+          },
+          {
+            name: 'maxEmailsPerDay',
+            label: '单日最大发件',
+            align: 'left',
+            field: 'settings',
+            format: val => {
+              if (!val) return ''
+
+              return val.maxEmailsPerDay
+            },
             sortable: true
           },
           {

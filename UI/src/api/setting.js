@@ -40,3 +40,14 @@ export function updateSendWithImageAndHtml(sendWithImageAndHtml) {
     }
   });
 }
+
+// 更新每日最大发件量
+export function updateMaxEmailsPerDay(maxCount) {
+  return request({
+    url: "/setting/max-emails-per-day",
+    method: "put",
+    data: {
+      maxCount
+    }
+  });
+}

@@ -14,9 +14,15 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Group = Server.Database.Models.Group;
 
 namespace Server.Http.Modules.SendEmail
 {
+    /// <summary>
+    /// 发件中心
+    /// 每个用户每次只能有一个任务在运行
+    /// 对于定时任务，只能注册一个事件来回调
+    /// </summary>
     public class SendTask
     {
         // 新建发送任务
@@ -40,10 +46,12 @@ namespace Server.Http.Modules.SendEmail
         private string _currentHistoryGroupId;
         private LiteDBManager _liteDb;
 
+
         /// <summary>
         /// 发送状态
         /// </summary>
         public SendStatus SendStatus { get; private set; } = SendStatus.SendFinish;
+
 
         private SendTask(string historyId, string userId, LiteDBManager liteDb)
         {
@@ -53,31 +61,16 @@ namespace Server.Http.Modules.SendEmail
         }
 
 
-        private SendingInfo _sendingInfo;
-        public SendingInfo SendingInfo
+        private SendingProgressInfo _sendingInfo;
+        public SendingProgressInfo SendingProgressInfo
         {
             get
             {
-                if (_sendingInfo == null) _sendingInfo = new SendingInfo();
+                if (_sendingInfo == null) _sendingInfo = new SendingProgressInfo();
                 return _sendingInfo;
             }
             set
             {
-                // 判断是否已经完成
-                if (value.index == value.total)
-                {
-                    this.SendStatus = SendStatus.SendFinish;
-
-                    // 对于已经完成的，要更新数据的状态
-                    var history = _liteDb.SingleById<HistoryGroup>(_currentHistoryGroupId);
-                    if (history != null)
-                    {
-                        // 更新状态
-                        history.sendStatus = SendStatus.SendFinish;
-                        _liteDb.Update(history);
-                    }
-                }
-
                 _sendingInfo = value;
 
                 // 进度websocket版本
@@ -91,33 +84,51 @@ namespace Server.Http.Modules.SendEmail
             }
         }
 
-        private CancellationToken _cancleToken;
 
         /// <summary>
         /// 开始发送未发送成功的数据
         /// </summary>
         /// <param name="sendItemIds">传入需要重新发送的id</param>
         /// <returns></returns>
-        public bool StartSending(string historyId)
+        public bool StartSending()
         {
             // 判断是否结束
             if (!SendStatus.HasFlag(SendStatus.SendFinish)) return false;
 
-            var allSendItems = _liteDb.Fetch<SendItem>(item => item.historyId == historyId);
+            var allSendItems = _liteDb.Fetch<SendItem>(item => item.historyId == _currentHistoryGroupId);
             var sendItems = allSendItems.FindAll(item => !item.isSent);
+            // 判断数量
+            if (sendItems.Count < 1)
+            {
+                // 发送完成的进度条
+                SendingProgressInfo = new SendingProgressInfo()
+                {
+                    total = 1,
+                    index = 1,
+                };
+                return true;
+            }
+            else
+            {
+                // 更改进度
+                SendingProgressInfo = new SendingProgressInfo()
+                {
+                    total = sendItems.Count,
+                    index = 0,
+                };
+            }
 
-
-
+            // 判断是发送还是重发
             if (allSendItems.Count == sendItems.Count) SendStatus = SendStatus.Sending;
             else SendStatus = SendStatus.Resending;
 
-
             // 更改数据库中的状态
-            var history = _liteDb.SingleById<HistoryGroup>(historyId);
+            var history = _liteDb.SingleById<HistoryGroup>(_currentHistoryGroupId);
             if (history == null) return false;
 
             history.sendStatus = SendStatus;
             _liteDb.Update(history);
+
 
             // 判断需要发送的数量
             if (allSendItems.Count < 1)
@@ -126,232 +137,137 @@ namespace Server.Http.Modules.SendEmail
                 _liteDb.Update(history);
 
                 // 获取重发完成的信息
-                var sendingInfo = new SendingInfo()
+                var sendingInfo = new SendingProgressInfo()
                 {
-                    historyId = historyId,
+                    historyId = _currentHistoryGroupId,
                     index = 1,
                     total = 1,
                 };
-                SendingInfo = sendingInfo;
+                SendingProgressInfo = sendingInfo;
 
                 return false;
             }
 
+            // 处理每条邮件
+            PreHandleSendItems(sendItems);
+
             // 开始发件
-            SendItems(historyId, sendItems);
+            SendItems(sendItems);
 
             return true;
         }
 
-        private void SendItems(string historyId, List<SendItem> sendItemList)
+        /// <summary>
+        /// 对发件进行预处理
+        /// </summary>
+        /// <param name="sendItems"></param>
+        private void PreHandleSendItems(List<SendItem> sendItems)
         {
-            var senders = _liteDb.Database.GetCollection<SendBox>().FindAll().ToList();
+            if (sendItems.Count < 1) return;
 
             // 获取设置
             Setting setting = _liteDb.SingleOrDefault<Setting>(s => s.userId == _userId);
 
-            // 设置发送的内容            
+            // 设置发送的内容           
             if (setting.sendWithImageAndHtml) SendStatus |= SendStatus.AsImage;
             else SendStatus |= SendStatus.AsHtml;
 
-            // 添加到栈中
-            Stack<SendItem> sendItems = new Stack<SendItem>();
-
             // 奇偶混发
-            for (int index = 0; index < sendItemList.Count; index++)
+            for (int index = 0; index < sendItems.Count; index++)
             {
-                var sendItem = sendItemList[index];
+                var sendItem = sendItems[index];
                 // 偶数发图片
-                if (index % 2 == 0 && setting.sendWithImageAndHtml)
+                // 如果被设置了发送类型，就按设置的发送类型进行发送
+                if (index % 2 == 0 && setting.sendWithImageAndHtml && sendItem.sendItemType == SendItemType.none)
                 {
-                    sendItem.sendType = "data-url";
+                    sendItem.sendItemType = SendItemType.dataUrl;
                 }
-
-                // 添加到栈
-                sendItems.Push(sendItem);
             }
-
 
             // 初始化进度
-            var sendingInfo0 = new SendingInfo()
+            var sendingInfo0 = new SendingProgressInfo()
             {
-                historyId = historyId,
+                historyId = _currentHistoryGroupId,
                 index = 0,
-                total = sendItemList.Count,
+                total = sendItems.Count,
             };
-            SendingInfo = sendingInfo0;
 
-            _cancleToken = new CancellationToken();
-            int sentIndex = 0;
-            // 开始发送邮件，采用异步进行发送
-            // 一个发件箱对应一个异步
-            foreach (SendBox sb in senders)
-            {
-                Task.Run(async () =>
-                {
-                    while (sendItems.Count > 0)
-                    {
-                        // 开始并行发送
-                        //确定smtp服务器地址 实例化一个Smtp客户端
-                        SmtpClient smtpclient = new SmtpClient();
-                        smtpclient.Host = sb.smtp;
-                        //smtpClient.Port = "";//qq邮箱可以不用端口
-
-                        //确定发件地址与收件地址
-                        MailAddress sendAddress = new MailAddress(sb.email);
-
-                        // 获取发件箱
-                        var sendItem = sendItems.Pop();
-
-                        // 判断是否需要转成图片
-                        await ConvertToImage(setting, sendItem);
-
-                        MailAddress receiveAddress = new MailAddress(sendItem.receiverEmail);
-
-                        //构造一个Email的Message对象 内容信息
-                        MailMessage mailMessage = new MailMessage(sendAddress, receiveAddress);
-                        mailMessage.Subject = sendItem.subject;
-                        mailMessage.SubjectEncoding = Encoding.UTF8;
-
-                        // 设置发件主体                        
-                        if (sendItem.sendType == "data-url" && !string.IsNullOrEmpty(sendItem.dataUrl)) mailMessage.Body = sendItem.dataUrl;
-                        else mailMessage.Body = sendItem.html;
-
-                        mailMessage.BodyEncoding = Encoding.UTF8;
-                        mailMessage.IsBodyHtml = true;
-
-                        // 伪装成 outlook 发送
-                        AddCustomHeaders(mailMessage);
-
-                        //邮件发送方式  通过网络发送到smtp服务器
-                        smtpclient.DeliveryMethod = SmtpDeliveryMethod.Network;
-
-                        //如果服务器支持安全连接，则将安全连接设为true
-                        smtpclient.EnableSsl = true;
-                        try
-                        {
-                            //是否使用默认凭据，若为false，则使用自定义的证书，就是下面的networkCredential实例对象
-                            smtpclient.UseDefaultCredentials = false;
-                            //指定邮箱账号和密码,需要注意的是，这个密码是你在QQ邮箱设置里开启服务的时候给你的那个授权码
-                            NetworkCredential networkCredential = new NetworkCredential(sb.email, sb.password);
-                            smtpclient.Credentials = networkCredential;
-
-                            //发送邮件
-                            smtpclient.Send(mailMessage);
-                            // 发送成功后，更新数据，更新到数据库
-                            sendItem.senderEmail = sb.email;
-                            sendItem.senderName = sb.userName;
-                            sendItem.isSent = true;
-                            sendItem.sendMessage = "邮件送达";
-                            sendItem.sendDate = DateTime.Now;
-                            _liteDb.Upsert(sendItem);
-
-                            // 更新到当前进度中
-                            var sendingInfo = new SendingInfo()
-                            {
-                                historyId = historyId,
-                                index = ++sentIndex,
-                                total = sendItemList.Count,
-                                receiverEmail = sendItem.receiverEmail,
-                                receiverName = sendItem.receiverName,
-                                SenderEmail = sendItem.senderEmail,
-                                SenderName = sendItem.senderName,
-                            };
-                            SendingInfo = sendingInfo;
-                        }
-                        catch (Exception ex)
-                        {
-                            // 超过最大尝试次数就退出
-                            if (sendItem.tryCount > 5)
-                            {
-                                // 此时也要更新进度
-                                var sendingInfo = new SendingInfo()
-                                {
-                                    historyId = historyId,
-                                    index = ++sentIndex,
-                                    total = sendItemList.Count,
-                                    receiverEmail = sendItem.receiverEmail,
-                                    receiverName = sendItem.receiverName,
-                                    SenderEmail = sendItem.senderEmail,
-                                    SenderName = sendItem.senderName,
-                                };
-                                SendingInfo = sendingInfo;
-                            }
-                            else if (setting.isAutoResend) // 重新发送时，才重新推入栈中
-                            {
-                                // 重新推入栈中
-                                sendItems.Push(sendItem);
-                            }
-
-                            // 更新状态                      
-                            sendItem.tryCount++;
-                            sendItem.isSent = false;
-                            if (ex.InnerException == null) sendItem.sendMessage = ex.Message;
-                            else sendItem.sendMessage = ex.InnerException.Message;
-                            _liteDb.Upsert(sendItem);
-                        }
-                        finally
-                        {
-                            // 每次发送完成，要等待一会儿再发送
-                            double sleep = new Random().NextDouble() * 3 + 2;
-                            if (setting != null)
-                            {
-                                sleep = setting.sendInterval_min + new Random().NextDouble() * (setting.sendInterval_max - setting.sendInterval_min);
-                            }
-
-                            Thread.Sleep((int)(sleep * 1000));
-                        }
-                    }
-                }, _cancleToken);
-            }
+            SendingProgressInfo = sendingInfo0;
         }
+
 
         /// <summary>
-        /// 将发送内容转成图片
+        /// 邮件发送结束
         /// </summary>
-        /// <param name="sendItem"></param>
-        private async Task<bool> ConvertToImage(Setting setting, SendItem sendItem)
+        public event Action SendCompleted;
+
+        private void SendItems(List<SendItem> sendItemList)
         {
-            if (sendItem.sendType == "data-url" && setting.sendWithImageAndHtml && string.IsNullOrEmpty(sendItem.dataUrl))
+            if (sendItemList.Count < 0) return;
+
+            var historyGroup = _liteDb.Database.GetCollection<HistoryGroup>().FindById(_currentHistoryGroupId);
+
+            // 添加到栈中
+            Stack<SendItem> sendItemStack = new Stack<SendItem>();
+
+            // 栈是先进后出，所以要倒转一下
+            sendItemList.Reverse();
+            sendItemList.ForEach(item => sendItemStack.Push(item));
+
+            // 获取发件人
+            List<SendBox> senders = _liteDb.Fetch<SendBox>(sb => historyGroup.senderIds.Contains(sb._id));
+
+            // 开始发送邮件，采用异步进行发送
+            // 一个发件箱对应一个异步
+            List<SendThread> sendThreads = senders.ConvertAll(sender =>
             {
-                // 从前端转存图片
-                ReceivedMessage message = await SendCallback.Insance.SendAsync(_userId, new Protocol.Response()
+                var sendThread = new SendThread(_userId, sender, _liteDb);
+                sendThread.SendCompleted += SendThread_SendCompleted;
+                return sendThread;
+            });
+
+            // 开始运行
+            Task.WhenAll(sendThreads.ConvertAll(st => st.Run(sendItemStack))).ContinueWith((task) =>
+            {
+                // 执行回调
+                // 发送关闭命令
+                SendStatus = SendStatus.SendFinish;
+
+                // 对于已经完成的，要更新数据的状态
+                var history = _liteDb.SingleById<HistoryGroup>(_currentHistoryGroupId);
+                if (history != null)
                 {
-                    eventName = "sendingInfo",
-                    command = "html2image",
-                    result = sendItem,
-                });
-                if (message == null) return false;
+                    // 更新状态
+                    history.sendStatus = SendStatus.SendFinish;
+                    _liteDb.Update(history);
+                }
 
-                // 将结果添加到sendItem中
-                var dataUrl = message.JObject.SelectToken("result");
-                if (dataUrl == null) return false;
+                // 发送完成数据
+                SendingProgressInfo = new SendingProgressInfo()
+                {
+                    historyId = _currentHistoryGroupId,
+                    index = sendItemList.Count,
+                    total = sendItemList.Count,
+                };
 
-                dataUrl = dataUrl.Value<string>();
-
-                sendItem.dataUrl = $"<img src=\"{dataUrl}\">";
-
-                // 更新保存的数据
-                _liteDb.Update(sendItem);
-            }
-
-            return true;
+                SendCompleted?.Invoke();
+            });
         }
 
-        private void AddCustomHeaders(MailMessage mail)
+        private void SendThread_SendCompleted(SendResult obj)
         {
-            ///以下四个自定义Header是将邮件伪装成OutLook发送的。
-            ///目的是为了防止一些网站的反垃圾邮件功能
-            ///将本系统发送的邮件当做垃圾邮件过滤掉。
-
-            mail.Headers.Add("X-Priority", "3");
-
-            mail.Headers.Add("X-MSMail-Priority", "Normal");
-
-            mail.Headers.Add("X-Mailer", "Microsoft Outlook Express 6.00.2900.2869");
-
-            mail.Headers.Add("X-MimeOLE", "Produced By Microsoft MimeOLE V6.00.2900.2869");
-
+            // 单个发送结束后的事件
+            // 发送进度条
+            SendingProgressInfo = new SendingProgressInfo()
+            {
+                total = SendingProgressInfo.total,
+                index = SendingProgressInfo.index + 1,
+                historyId = _currentHistoryGroupId,
+                receiverEmail = obj.SendItem.receiverEmail,
+                receiverName = obj.SendItem.receiverName,
+                SenderEmail = obj.SendBox.email,
+                SenderName = obj.SendBox.userName
+            };
         }
     }
 }

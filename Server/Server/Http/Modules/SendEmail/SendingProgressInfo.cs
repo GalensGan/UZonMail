@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Server.Http.Modules.SendEmail
 {
-    public class SendingInfo
+    public class SendingProgressInfo
     {
         public string historyId { get; set; }
         public int index { get; set; } = 0;

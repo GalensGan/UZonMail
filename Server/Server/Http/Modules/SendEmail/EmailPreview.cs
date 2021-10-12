@@ -30,9 +30,9 @@ namespace Server.Http.Modules.SendEmail
         /// <param name="liteDb"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        public static bool CreateEmailPreview(string userId, string subject, JArray receivers, JArray data, string templateId, LiteDBManager liteDb, out string message)
+        public static bool CreateEmailPreview(string userId, JArray senders, string subject, JArray receivers, JArray data, string templateId, LiteDBManager liteDb, out string message)
         {
-            EmailPreview temp = new EmailPreview(subject, receivers, data, templateId, liteDb);
+            EmailPreview temp = new EmailPreview(senders, subject, receivers, data, templateId, liteDb);
 
             // 保存到全局
             InstanceCenter.EmailPreview.Upsert(userId, temp);
@@ -41,7 +41,8 @@ namespace Server.Http.Modules.SendEmail
             return true;
         }
 
-
+        // 发件人
+        public JArray Senders { get; set; }
         protected string Subject { get; private set; }
         protected JArray Receivers { get; private set; }
         protected JArray Data { get; private set; }
@@ -58,8 +59,9 @@ namespace Server.Http.Modules.SendEmail
         /// <param name="data"></param>
         /// <param name="templateId"></param>
         /// <param name="liteDb"></param>
-        protected EmailPreview(string subject, JArray receivers, JArray data, string templateId, LiteDBManager liteDb)
+        protected EmailPreview(JArray senders, string subject, JArray receivers, JArray data, string templateId, LiteDBManager liteDb)
         {
+            Senders = senders;
             Subject = subject;
             Receivers = receivers;
             Data = data;

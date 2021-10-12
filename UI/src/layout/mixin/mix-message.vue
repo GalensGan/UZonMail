@@ -32,8 +32,13 @@ export default {
 
   methods: {
     onGlobalMessage(message) {
-      this.isShowGlobalMessage = true
       this.websocketMsg = message
+
+      if(message.result.index===message.result.total){
+        this.isShowGlobalMessage = false;
+        return;
+      }
+      else this.isShowGlobalMessage = true      
     }
   }
 }
