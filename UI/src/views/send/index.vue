@@ -111,7 +111,33 @@
       </div>
     </div>
 
-    <div v-html="selectedTemplate.html"></div>
+    <div class="receive-box row justify-between">
+      <div class="row col-grow">
+        <strong style="height: auto; align-self: center"> 附件：</strong>
+        <q-chip
+          v-for="att in attachments"
+          :key="att"
+          removable
+          @remove="removeAttachment(att)"
+          color="orange"
+          size="sm"
+          text-color="white"
+          :label="getFileBaseName(att)"
+        />
+        <input type="text" class="send-input col-grow" />
+      </div>
+      <q-btn
+        size="sm"
+        dense
+        class="self-center q-mb-sm"
+        color="secondary"
+        outline
+        @click="sendSignToSelectAttachment"
+        label="选择附件"
+      />
+    </div>
+
+    <div v-html="selectedTemplate.html" class="q-ma-md"></div>
 
     <div class="row justify-end preview-row q-mr-md">
       <q-btn
@@ -211,7 +237,6 @@ import {
   newSendTask,
   startSending
 } from '@/api/send'
-import { getUserSettings } from '@/api/setting'
 
 import XLSX from 'js-xlsx'
 import { notifyError } from '@/components/iPrompt'
@@ -220,10 +245,11 @@ import SendingProgress from './components/sendingProgress'
 
 import SelectSender from './mixins/selectSender.vue'
 import SelectReceiver from './mixins/selectReceiver.vue'
+import SelectAttachment from './mixins/selectAttachment.vue'
 
 export default {
   components: { SelectEmail, SendingProgress },
-  mixins: [SelectSender, SelectReceiver],
+  mixins: [SelectSender, SelectReceiver, SelectAttachment],
   data() {
     return {
       subject: '',
@@ -337,7 +363,8 @@ export default {
         this.subject,
         this.receivers,
         this.excelData || [],
-        this.selectedTemplate._id
+        this.selectedTemplate._id,
+        this.attachments
       )
 
       // 打开预览窗体
@@ -370,7 +397,8 @@ export default {
         this.subject,
         this.receivers,
         this.excelData || [],
-        this.selectedTemplate._id
+        this.selectedTemplate._id,
+        this.attachments
       )
 
       const { data } = res

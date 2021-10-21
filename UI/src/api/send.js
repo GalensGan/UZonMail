@@ -1,7 +1,7 @@
 import request from "@/utils/request";
 
 // 新建预览
-export function newPreview(subject, receivers, data, templateId) {
+export function newPreview(subject, receivers, data, templateId, attachments) {
   return request({
     url: "/send/preview",
     method: "post",
@@ -9,7 +9,8 @@ export function newPreview(subject, receivers, data, templateId) {
       subject,
       receivers,
       data,
-      templateId
+      templateId,
+      attachments
     }
   });
 }
@@ -32,7 +33,7 @@ export function getCurrentStatus() {
 
 // 新建发送，只有在没有发送过时，才调用
 // 重新发送只需要调用startSending
-export function newSendTask(senders, subject, receivers, data, templateId) {
+export function newSendTask(senders, subject, receivers, data, templateId,attachments) {
   return request({
     url: "/send/task",
     method: "post",
@@ -41,7 +42,8 @@ export function newSendTask(senders, subject, receivers, data, templateId) {
       subject,
       receivers,
       data,
-      templateId
+      templateId,
+      attachments
     }
   });
 }
