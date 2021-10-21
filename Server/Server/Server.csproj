@@ -40,6 +40,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -66,6 +67,7 @@
     <Compile Include="Config\Fields.cs" />
     <Compile Include="Database\Definitions\UpdateOptions.cs" />
     <Compile Include="Database\Extensions\Ex_LiteRepository.cs" />
+    <Compile Include="Database\Models\EmailAttachment.cs" />
     <Compile Include="Database\Models\AutoObjectId.cs" />
     <Compile Include="Database\Models\EmailInfo.cs" />
     <Compile Include="Database\Models\Group.cs" />
@@ -104,6 +106,7 @@
     <Compile Include="SDK\Extension\Ex_Object.cs" />
     <Compile Include="Websocket\AsyncWebsocket\CallbackOption.cs" />
     <Compile Include="Websocket\Commands\Login.cs" />
+    <Compile Include="Websocket\Commands\SelectFiles.cs" />
     <Compile Include="Websocket\Execute\CommandClassName.cs" />
     <Compile Include="Websocket\Execute\CommandTable.cs" />
     <Compile Include="Websocket\Execute\CommandTrigger.cs" />

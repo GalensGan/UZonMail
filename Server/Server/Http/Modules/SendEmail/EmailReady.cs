@@ -13,7 +13,7 @@ namespace Server.Http.Modules.SendEmail
 {
     class EmailReady : EmailPreview
     {
-        public static bool CreateEmailReady(string userId,JArray senders, string subject, JArray receivers, JArray data, string templateId, LiteDBManager liteDb, out string message)
+        public static bool CreateEmailReady(string userId,JToken data, LiteDBManager liteDb, out string message)
         {
             // 判断是否有发送任务正在进行
             if (InstanceCenter.SendTasks[userId] != null && !InstanceCenter.SendTasks[userId].SendStatus.HasFlag(SendStatus.SendFinish))
@@ -22,7 +22,7 @@ namespace Server.Http.Modules.SendEmail
                 return false;
             }
 
-            EmailReady temp = new EmailReady(userId,senders, subject, receivers, data, templateId, liteDb);
+            EmailReady temp = new EmailReady(userId,data, liteDb);
 
             InstanceCenter.EmailReady.Upsert(userId, temp);
 
@@ -31,7 +31,7 @@ namespace Server.Http.Modules.SendEmail
         }
 
         private string _userId;
-        public EmailReady(string userId,JArray senders, string subject, JArray receivers, JArray data, string templateId, LiteDBManager liteDb) : base(senders,subject, receivers, data, templateId, liteDb)
+        public EmailReady(string userId,JToken data, LiteDBManager liteDb) : base(data, liteDb)
         {
             _userId = userId;
         }

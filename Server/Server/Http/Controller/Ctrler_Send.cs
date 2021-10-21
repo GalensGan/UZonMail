@@ -41,14 +41,7 @@ namespace Server.Http.Controller
         [Route(HttpVerbs.Post, "/send/preview")]
         public void CreatePreview()
         {
-            // 生成
-            JArray senders = Body.Value<JArray>("senders");
-            string subject = Body.Value<string>("subject");
-            JArray receivers = Body.Value<JArray>("receivers");
-            JArray data = Body.Value<JArray>("data");
-            string templateId = Body.Value<string>("templateId");
-
-            bool createResult = EmailPreview.CreateEmailPreview(Token.UserId, senders, subject, receivers, data, templateId, LiteDb, out string message);
+            bool createResult = EmailPreview.CreateEmailPreview(Token.UserId,Body, LiteDb, out string message);
             if (createResult)
             {
                 InstanceCenter.EmailPreview[Token.UserId].Generate();
@@ -75,14 +68,7 @@ namespace Server.Http.Controller
         [Route(HttpVerbs.Post, "/send/task")]
         public void CreateTask()
         {
-            // 生成
-            JArray senders = Body.Value<JArray>("senders");
-            string subject = Body.Value<string>("subject");
-            JArray receivers = Body.Value<JArray>("receivers");
-            JArray data = Body.Value<JArray>("data");
-            string templateId = Body.Value<string>("templateId");
-
-            bool createResult = EmailReady.CreateEmailReady(Token.UserId, senders, subject, receivers, data, templateId, LiteDb, out string message);
+            bool createResult = EmailReady.CreateEmailReady(Token.UserId,Body, LiteDb, out string message);
             if (!createResult) ResponseError(message);
 
             var info = InstanceCenter.EmailReady[Token.UserId].Generate();

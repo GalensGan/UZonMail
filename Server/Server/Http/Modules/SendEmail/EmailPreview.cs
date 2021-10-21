@@ -3,6 +3,7 @@ using Server.Config;
 using Server.Database;
 using Server.Database.Models;
 using Server.Http.Definitions;
+using Server.SDK.Extension;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,9 +31,9 @@ namespace Server.Http.Modules.SendEmail
         /// <param name="liteDb"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        public static bool CreateEmailPreview(string userId, JArray senders, string subject, JArray receivers, JArray data, string templateId, LiteDBManager liteDb, out string message)
+        public static bool CreateEmailPreview(string userId, JToken data, LiteDBManager liteDb, out string message)
         {
-            EmailPreview temp = new EmailPreview(senders, subject, receivers, data, templateId, liteDb);
+            EmailPreview temp = new EmailPreview(data, liteDb);
 
             // 保存到全局
             InstanceCenter.EmailPreview.Upsert(userId, temp);
@@ -48,6 +49,7 @@ namespace Server.Http.Modules.SendEmail
         protected JArray Data { get; private set; }
         protected Template Template { get; private set; }
         protected LiteDBManager LiteDb { get; private set; }
+        protected List<EmailAttachment> Attachments { get; private set; }
 
         private List<SendItem> _sendItems;
 
@@ -59,14 +61,17 @@ namespace Server.Http.Modules.SendEmail
         /// <param name="data"></param>
         /// <param name="templateId"></param>
         /// <param name="liteDb"></param>
-        protected EmailPreview(JArray senders, string subject, JArray receivers, JArray data, string templateId, LiteDBManager liteDb)
+        protected EmailPreview(JToken data, LiteDBManager liteDb)
         {
-            Senders = senders;
-            Subject = subject;
-            Receivers = receivers;
-            Data = data;
+            // 生成
+            Senders = data.SelectToken(Fields.senders).ValueOrDefault(new JArray());
+            Subject = data.SelectToken(Fields.subject).ValueOrDefault(Fields.default_);
+            Receivers = data.SelectToken(Fields.receivers).ValueOrDefault(new JArray());
+            Data = data.SelectToken(Fields.data).ValueOrDefault(new JArray());
             LiteDb = liteDb;
+            Attachments = data.SelectToken(Fields.attachments).ValueOrDefault(new JArray()).ToList().ConvertAll(item => new EmailAttachment() { fullName = item.ToString() });
 
+            string templateId = data.Value<string>(Fields.templateId);
             // 获取模板
             Template = LiteDb.SingleOrDefault<Template>(t => t._id == templateId);
         }
@@ -152,9 +157,8 @@ namespace Server.Http.Modules.SendEmail
                 // 处理模板数据
 
                 // 判断有没有数据
-                JObject itemObj = null;
-                if (Data == null || Data.Count < 1) itemObj = new JObject();
-                else
+                JObject itemObj = new JObject();
+                if (Data != null && Data.Count > 0)
                 {
                     if (Data.FirstOrDefault(jt => jt.Value<string>(Fields.userName) == re.userName) is JObject itemDataTemp) itemObj = itemDataTemp;
                 }
@@ -199,6 +203,26 @@ namespace Server.Http.Modules.SendEmail
                     }
                 }
 
+                // 判断是否有自定义附件
+                item.attachments = Attachments;
+                if (keys.Contains(Fields.attachments))
+                {
+                    // 中间用分号分隔，然后将 \\ 转成 /
+                    string attStr = itemObj.Value<string>(Fields.attachments);
+                    if (!string.IsNullOrEmpty(attStr))
+                    {
+                        var attStrArr = attStr.Split(';');
+                        item.attachments = attStrArr.ToList().ConvertAll(att =>
+                        {
+
+                            var fullName = att.Replace('\\', '/').Trim();
+                            return new EmailAttachment() { fullName = fullName };
+
+                        });
+                    }
+                }
+
+
                 // 替换模板内数据                    
                 foreach (string key in keys)
                 {
@@ -208,7 +232,6 @@ namespace Server.Http.Modules.SendEmail
                     // 同时替换主题数据
                     subjectTemp = regex.Replace(subjectTemp, itemObj[key].Value<string>());
                 }
-
 
 
                 item.html = sendHtml;

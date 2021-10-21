@@ -17,5 +17,10 @@ namespace Server.Execute
         /// 登陆模块
         /// </summary>
         Login,
+
+        /// <summary>
+        /// 选择文件
+        /// </summary>
+        SelectFiles,
     }
 }

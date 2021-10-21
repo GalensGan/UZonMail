@@ -48,6 +48,9 @@ namespace Server.Database.Models
         /// 内容 url
         /// </summary>
         public string dataUrl { get; set; }
+
+        // 待发附件
+        public List<EmailAttachment> attachments { get; set; }
     }
 
     public enum SendItemType

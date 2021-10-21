@@ -17,5 +17,12 @@ namespace Server.Config
         public const string _id = "_id";
         public const string group = "group";
         public const string type_ = "type";
+        public const string senders = "senders";
+        public const string subject = "subject";
+        public const string receivers = "receivers";
+        public const string data = "data";
+        public const string attachments = "attachments";
+        public const string templateId = "templateId";
+        public const string default_ = "default";
     }
 }

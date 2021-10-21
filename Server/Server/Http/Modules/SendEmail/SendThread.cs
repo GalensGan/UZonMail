@@ -5,9 +5,11 @@ using Server.Protocol;
 using Server.Websocket.Temp;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
+using System.Net.Mime;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -97,6 +99,9 @@ namespace Server.Http.Modules.SendEmail
 
                     // 伪装成 outlook 发送
                     AddCustomHeaders(mailMessage);
+
+                    // 添加附件
+                    AddAttachmenets(mailMessage,sendItem);
 
                     //邮件发送方式  通过网络发送到smtp服务器
                     smtpclient.DeliveryMethod = SmtpDeliveryMethod.Network;
@@ -234,6 +239,36 @@ namespace Server.Http.Modules.SendEmail
             mail.Headers.Add("X-MimeOLE", "Produced By Microsoft MimeOLE V6.00.2900.2869");
 
         }
+
+        // 添加附件
+        private void AddAttachmenets(MailMessage mail, SendItem sendItem)
+        {
+            if (sendItem.attachments == null || sendItem.attachments.Count < 1) return;
+
+            for (int i = 0; i < sendItem.attachments.Count; i++)
+            {
+                string pathFileName = sendItem.attachments[i].fullName.Replace('/','\\');
+                var fileInfo = new FileInfo(pathFileName);
+
+                if (!fileInfo.Exists)
+                {
+                    sendItem.attachments[i].isSent = false;
+                    sendItem.attachments[i].reason = "文件不存在";
+                    continue;
+                }
+
+                var attachment = new Attachment(pathFileName);
+                //设置附件的MIME信息
+                ContentDisposition cd = attachment.ContentDisposition;                
+                cd.CreationDate = fileInfo.CreationTime;//设置附件的创建时间
+                cd.ModificationDate = fileInfo.LastWriteTime;//设置附件的修改时间
+                cd.ReadDate = fileInfo.LastAccessTime;//设置附件的访问时间
+                mail.Attachments.Add(attachment);//将附件添加到mailmessage对象
+
+                sendItem.attachments[i].isSent = true;
+            }
+        }
+
 
         // 增加失败次数
         private void IncreaseFailure()
