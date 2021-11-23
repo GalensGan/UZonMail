@@ -1,0 +1,1007 @@
+{
+  "version": 3,
+  "targets": {
+    ".NETFramework,Version=v4.6.2": {
+      "Fody/6.2.4": {
+        "type": "package",
+        "build": {
+          "build/Fody.targets": {}
+        }
+      },
+      "LiteDB/5.0.9": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "System",
+          "System.Runtime"
+        ],
+        "compile": {
+          "lib/net45/LiteDB.dll": {}
+        },
+        "runtime": {
+          "lib/net45/LiteDB.dll": {}
+        }
+      },
+      "LiveCharts/0.9.7": {
+        "type": "package",
+        "compile": {
+          "lib/net45/LiveCharts.dll": {}
+        },
+        "runtime": {
+          "lib/net45/LiveCharts.dll": {}
+        }
+      },
+      "LiveCharts.Wpf/0.9.7": {
+        "type": "package",
+        "dependencies": {
+          "LiveCharts": "0.9.7"
+        },
+        "compile": {
+          "lib/net45/LiveCharts.Wpf.dll": {}
+        },
+        "runtime": {
+          "lib/net45/LiveCharts.Wpf.dll": {}
+        }
+      },
+      "log4net/2.0.11": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "System.Configuration",
+          "System.Web"
+        ],
+        "compile": {
+          "lib/net45/log4net.dll": {}
+        },
+        "runtime": {
+          "lib/net45/log4net.dll": {}
+        }
+      },
+      "MD5/2.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/MD5.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/MD5.dll": {}
+        }
+      },
+      "Microsoft.Web.WebView2/1.0.664.37": {
+        "type": "package",
+        "compile": {
+          "lib/net462/Microsoft.Web.WebView2.Core.dll": {},
+          "lib/net462/Microsoft.Web.WebView2.WinForms.dll": {},
+          "lib/net462/Microsoft.Web.WebView2.Wpf.dll": {}
+        },
+        "runtime": {
+          "lib/net462/Microsoft.Web.WebView2.Core.dll": {},
+          "lib/net462/Microsoft.Web.WebView2.WinForms.dll": {},
+          "lib/net462/Microsoft.Web.WebView2.Wpf.dll": {}
+        },
+        "build": {
+          "build/Microsoft.Web.WebView2.targets": {}
+        },
+        "runtimeTargets": {
+          "runtimes/win-arm/native/WebView2Loader.dll": {
+            "assetType": "native",
+            "rid": "win-arm"
+          },
+          "runtimes/win-x64/native/WebView2Loader.dll": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x86/native/WebView2Loader.dll": {
+            "assetType": "native",
+            "rid": "win-x86"
+          }
+        }
+      },
+      "Newtonsoft.Json/12.0.3": {
+        "type": "package",
+        "compile": {
+          "lib/net45/Newtonsoft.Json.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Newtonsoft.Json.dll": {}
+        }
+      },
+      "NPOI.Excel/2.1.1": {
+        "type": "package",
+        "compile": {
+          "lib/ICSharpCode.SharpZipLib.dll": {},
+          "lib/NPOI.OOXML.dll": {},
+          "lib/NPOI.OpenXml4Net.dll": {},
+          "lib/NPOI.OpenXmlFormats.dll": {},
+          "lib/NPOI.dll": {}
+        },
+        "runtime": {
+          "lib/ICSharpCode.SharpZipLib.dll": {},
+          "lib/NPOI.OOXML.dll": {},
+          "lib/NPOI.OpenXml4Net.dll": {},
+          "lib/NPOI.OpenXmlFormats.dll": {},
+          "lib/NPOI.dll": {}
+        }
+      },
+      "Panuon.UI.Silver/1.1.3": {
+        "type": "package",
+        "compile": {
+          "lib/net45/Panuon.UI.Silver.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Panuon.UI.Silver.dll": {}
+        }
+      },
+      "PropertyChanged.Fody/3.2.9": {
+        "type": "package",
+        "dependencies": {
+          "Fody": "6.2.4"
+        },
+        "compile": {
+          "lib/net40/PropertyChanged.dll": {}
+        },
+        "runtime": {
+          "lib/net40/PropertyChanged.dll": {}
+        },
+        "build": {
+          "build/PropertyChanged.Fody.props": {}
+        }
+      },
+      "Stylet/1.3.4": {
+        "type": "package",
+        "compile": {
+          "lib/net45/Stylet.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Stylet.dll": {}
+        }
+      },
+      "Stylet.Start/1.3.4": {
+        "type": "package",
+        "dependencies": {
+          "Stylet": "[1.3.4]"
+        }
+      }
+    },
+    ".NETFramework,Version=v4.6.2/win": {
+      "Fody/6.2.4": {
+        "type": "package",
+        "build": {
+          "build/Fody.targets": {}
+        }
+      },
+      "LiteDB/5.0.9": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "System",
+          "System.Runtime"
+        ],
+        "compile": {
+          "lib/net45/LiteDB.dll": {}
+        },
+        "runtime": {
+          "lib/net45/LiteDB.dll": {}
+        }
+      },
+      "LiveCharts/0.9.7": {
+        "type": "package",
+        "compile": {
+          "lib/net45/LiveCharts.dll": {}
+        },
+        "runtime": {
+          "lib/net45/LiveCharts.dll": {}
+        }
+      },
+      "LiveCharts.Wpf/0.9.7": {
+        "type": "package",
+        "dependencies": {
+          "LiveCharts": "0.9.7"
+        },
+        "compile": {
+          "lib/net45/LiveCharts.Wpf.dll": {}
+        },
+        "runtime": {
+          "lib/net45/LiveCharts.Wpf.dll": {}
+        }
+      },
+      "log4net/2.0.11": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "System.Configuration",
+          "System.Web"
+        ],
+        "compile": {
+          "lib/net45/log4net.dll": {}
+        },
+        "runtime": {
+          "lib/net45/log4net.dll": {}
+        }
+      },
+      "MD5/2.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/MD5.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/MD5.dll": {}
+        }
+      },
+      "Microsoft.Web.WebView2/1.0.664.37": {
+        "type": "package",
+        "compile": {
+          "lib/net462/Microsoft.Web.WebView2.Core.dll": {},
+          "lib/net462/Microsoft.Web.WebView2.WinForms.dll": {},
+          "lib/net462/Microsoft.Web.WebView2.Wpf.dll": {}
+        },
+        "runtime": {
+          "lib/net462/Microsoft.Web.WebView2.Core.dll": {},
+          "lib/net462/Microsoft.Web.WebView2.WinForms.dll": {},
+          "lib/net462/Microsoft.Web.WebView2.Wpf.dll": {}
+        },
+        "build": {
+          "build/Microsoft.Web.WebView2.targets": {}
+        }
+      },
+      "Newtonsoft.Json/12.0.3": {
+        "type": "package",
+        "compile": {
+          "lib/net45/Newtonsoft.Json.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Newtonsoft.Json.dll": {}
+        }
+      },
+      "NPOI.Excel/2.1.1": {
+        "type": "package",
+        "compile": {
+          "lib/ICSharpCode.SharpZipLib.dll": {},
+          "lib/NPOI.OOXML.dll": {},
+          "lib/NPOI.OpenXml4Net.dll": {},
+          "lib/NPOI.OpenXmlFormats.dll": {},
+          "lib/NPOI.dll": {}
+        },
+        "runtime": {
+          "lib/ICSharpCode.SharpZipLib.dll": {},
+          "lib/NPOI.OOXML.dll": {},
+          "lib/NPOI.OpenXml4Net.dll": {},
+          "lib/NPOI.OpenXmlFormats.dll": {},
+          "lib/NPOI.dll": {}
+        }
+      },
+      "Panuon.UI.Silver/1.1.3": {
+        "type": "package",
+        "compile": {
+          "lib/net45/Panuon.UI.Silver.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Panuon.UI.Silver.dll": {}
+        }
+      },
+      "PropertyChanged.Fody/3.2.9": {
+        "type": "package",
+        "dependencies": {
+          "Fody": "6.2.4"
+        },
+        "compile": {
+          "lib/net40/PropertyChanged.dll": {}
+        },
+        "runtime": {
+          "lib/net40/PropertyChanged.dll": {}
+        },
+        "build": {
+          "build/PropertyChanged.Fody.props": {}
+        }
+      },
+      "Stylet/1.3.4": {
+        "type": "package",
+        "compile": {
+          "lib/net45/Stylet.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Stylet.dll": {}
+        }
+      },
+      "Stylet.Start/1.3.4": {
+        "type": "package",
+        "dependencies": {
+          "Stylet": "[1.3.4]"
+        }
+      }
+    },
+    ".NETFramework,Version=v4.6.2/win-x64": {
+      "Fody/6.2.4": {
+        "type": "package",
+        "build": {
+          "build/Fody.targets": {}
+        }
+      },
+      "LiteDB/5.0.9": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "System",
+          "System.Runtime"
+        ],
+        "compile": {
+          "lib/net45/LiteDB.dll": {}
+        },
+        "runtime": {
+          "lib/net45/LiteDB.dll": {}
+        }
+      },
+      "LiveCharts/0.9.7": {
+        "type": "package",
+        "compile": {
+          "lib/net45/LiveCharts.dll": {}
+        },
+        "runtime": {
+          "lib/net45/LiveCharts.dll": {}
+        }
+      },
+      "LiveCharts.Wpf/0.9.7": {
+        "type": "package",
+        "dependencies": {
+          "LiveCharts": "0.9.7"
+        },
+        "compile": {
+          "lib/net45/LiveCharts.Wpf.dll": {}
+        },
+        "runtime": {
+          "lib/net45/LiveCharts.Wpf.dll": {}
+        }
+      },
+      "log4net/2.0.11": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "System.Configuration",
+          "System.Web"
+        ],
+        "compile": {
+          "lib/net45/log4net.dll": {}
+        },
+        "runtime": {
+          "lib/net45/log4net.dll": {}
+        }
+      },
+      "MD5/2.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/MD5.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/MD5.dll": {}
+        }
+      },
+      "Microsoft.Web.WebView2/1.0.664.37": {
+        "type": "package",
+        "compile": {
+          "lib/net462/Microsoft.Web.WebView2.Core.dll": {},
+          "lib/net462/Microsoft.Web.WebView2.WinForms.dll": {},
+          "lib/net462/Microsoft.Web.WebView2.Wpf.dll": {}
+        },
+        "runtime": {
+          "lib/net462/Microsoft.Web.WebView2.Core.dll": {},
+          "lib/net462/Microsoft.Web.WebView2.WinForms.dll": {},
+          "lib/net462/Microsoft.Web.WebView2.Wpf.dll": {}
+        },
+        "native": {
+          "runtimes/win-x64/native/WebView2Loader.dll": {}
+        },
+        "build": {
+          "build/Microsoft.Web.WebView2.targets": {}
+        }
+      },
+      "Newtonsoft.Json/12.0.3": {
+        "type": "package",
+        "compile": {
+          "lib/net45/Newtonsoft.Json.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Newtonsoft.Json.dll": {}
+        }
+      },
+      "NPOI.Excel/2.1.1": {
+        "type": "package",
+        "compile": {
+          "lib/ICSharpCode.SharpZipLib.dll": {},
+          "lib/NPOI.OOXML.dll": {},
+          "lib/NPOI.OpenXml4Net.dll": {},
+          "lib/NPOI.OpenXmlFormats.dll": {},
+          "lib/NPOI.dll": {}
+        },
+        "runtime": {
+          "lib/ICSharpCode.SharpZipLib.dll": {},
+          "lib/NPOI.OOXML.dll": {},
+          "lib/NPOI.OpenXml4Net.dll": {},
+          "lib/NPOI.OpenXmlFormats.dll": {},
+          "lib/NPOI.dll": {}
+        }
+      },
+      "Panuon.UI.Silver/1.1.3": {
+        "type": "package",
+        "compile": {
+          "lib/net45/Panuon.UI.Silver.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Panuon.UI.Silver.dll": {}
+        }
+      },
+      "PropertyChanged.Fody/3.2.9": {
+        "type": "package",
+        "dependencies": {
+          "Fody": "6.2.4"
+        },
+        "compile": {
+          "lib/net40/PropertyChanged.dll": {}
+        },
+        "runtime": {
+          "lib/net40/PropertyChanged.dll": {}
+        },
+        "build": {
+          "build/PropertyChanged.Fody.props": {}
+        }
+      },
+      "Stylet/1.3.4": {
+        "type": "package",
+        "compile": {
+          "lib/net45/Stylet.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Stylet.dll": {}
+        }
+      },
+      "Stylet.Start/1.3.4": {
+        "type": "package",
+        "dependencies": {
+          "Stylet": "[1.3.4]"
+        }
+      }
+    },
+    ".NETFramework,Version=v4.6.2/win-x86": {
+      "Fody/6.2.4": {
+        "type": "package",
+        "build": {
+          "build/Fody.targets": {}
+        }
+      },
+      "LiteDB/5.0.9": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "System",
+          "System.Runtime"
+        ],
+        "compile": {
+          "lib/net45/LiteDB.dll": {}
+        },
+        "runtime": {
+          "lib/net45/LiteDB.dll": {}
+        }
+      },
+      "LiveCharts/0.9.7": {
+        "type": "package",
+        "compile": {
+          "lib/net45/LiveCharts.dll": {}
+        },
+        "runtime": {
+          "lib/net45/LiveCharts.dll": {}
+        }
+      },
+      "LiveCharts.Wpf/0.9.7": {
+        "type": "package",
+        "dependencies": {
+          "LiveCharts": "0.9.7"
+        },
+        "compile": {
+          "lib/net45/LiveCharts.Wpf.dll": {}
+        },
+        "runtime": {
+          "lib/net45/LiveCharts.Wpf.dll": {}
+        }
+      },
+      "log4net/2.0.11": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "System.Configuration",
+          "System.Web"
+        ],
+        "compile": {
+          "lib/net45/log4net.dll": {}
+        },
+        "runtime": {
+          "lib/net45/log4net.dll": {}
+        }
+      },
+      "MD5/2.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/MD5.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/MD5.dll": {}
+        }
+      },
+      "Microsoft.Web.WebView2/1.0.664.37": {
+        "type": "package",
+        "compile": {
+          "lib/net462/Microsoft.Web.WebView2.Core.dll": {},
+          "lib/net462/Microsoft.Web.WebView2.WinForms.dll": {},
+          "lib/net462/Microsoft.Web.WebView2.Wpf.dll": {}
+        },
+        "runtime": {
+          "lib/net462/Microsoft.Web.WebView2.Core.dll": {},
+          "lib/net462/Microsoft.Web.WebView2.WinForms.dll": {},
+          "lib/net462/Microsoft.Web.WebView2.Wpf.dll": {}
+        },
+        "native": {
+          "runtimes/win-x86/native/WebView2Loader.dll": {}
+        },
+        "build": {
+          "build/Microsoft.Web.WebView2.targets": {}
+        }
+      },
+      "Newtonsoft.Json/12.0.3": {
+        "type": "package",
+        "compile": {
+          "lib/net45/Newtonsoft.Json.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Newtonsoft.Json.dll": {}
+        }
+      },
+      "NPOI.Excel/2.1.1": {
+        "type": "package",
+        "compile": {
+          "lib/ICSharpCode.SharpZipLib.dll": {},
+          "lib/NPOI.OOXML.dll": {},
+          "lib/NPOI.OpenXml4Net.dll": {},
+          "lib/NPOI.OpenXmlFormats.dll": {},
+          "lib/NPOI.dll": {}
+        },
+        "runtime": {
+          "lib/ICSharpCode.SharpZipLib.dll": {},
+          "lib/NPOI.OOXML.dll": {},
+          "lib/NPOI.OpenXml4Net.dll": {},
+          "lib/NPOI.OpenXmlFormats.dll": {},
+          "lib/NPOI.dll": {}
+        }
+      },
+      "Panuon.UI.Silver/1.1.3": {
+        "type": "package",
+        "compile": {
+          "lib/net45/Panuon.UI.Silver.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Panuon.UI.Silver.dll": {}
+        }
+      },
+      "PropertyChanged.Fody/3.2.9": {
+        "type": "package",
+        "dependencies": {
+          "Fody": "6.2.4"
+        },
+        "compile": {
+          "lib/net40/PropertyChanged.dll": {}
+        },
+        "runtime": {
+          "lib/net40/PropertyChanged.dll": {}
+        },
+        "build": {
+          "build/PropertyChanged.Fody.props": {}
+        }
+      },
+      "Stylet/1.3.4": {
+        "type": "package",
+        "compile": {
+          "lib/net45/Stylet.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Stylet.dll": {}
+        }
+      },
+      "Stylet.Start/1.3.4": {
+        "type": "package",
+        "dependencies": {
+          "Stylet": "[1.3.4]"
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Fody/6.2.4": {
+      "sha512": "IHt3dR3i9NjFqqhFzUAwoFbDkOJiarDkZBSrQA3tjAquARMvhamYvnB10/slNLNr4UMc2zY/uHX21aP6mLGaQg==",
+      "type": "package",
+      "path": "fody/6.2.4",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "License.txt",
+        "build/Fody.targets",
+        "fody.6.2.4.nupkg.sha512",
+        "fody.nuspec",
+        "netclassictask/Fody.dll",
+        "netclassictask/FodyCommon.dll",
+        "netclassictask/FodyHelpers.dll",
+        "netclassictask/FodyIsolated.dll",
+        "netclassictask/Mono.Cecil.Pdb.dll",
+        "netclassictask/Mono.Cecil.Pdb.pdb",
+        "netclassictask/Mono.Cecil.Rocks.dll",
+        "netclassictask/Mono.Cecil.Rocks.pdb",
+        "netclassictask/Mono.Cecil.dll",
+        "netclassictask/Mono.Cecil.pdb",
+        "netstandardtask/Fody.dll",
+        "netstandardtask/FodyCommon.dll",
+        "netstandardtask/FodyHelpers.dll",
+        "netstandardtask/FodyIsolated.dll",
+        "netstandardtask/Mono.Cecil.Pdb.dll",
+        "netstandardtask/Mono.Cecil.Pdb.pdb",
+        "netstandardtask/Mono.Cecil.Rocks.dll",
+        "netstandardtask/Mono.Cecil.Rocks.pdb",
+        "netstandardtask/Mono.Cecil.dll",
+        "netstandardtask/Mono.Cecil.pdb"
+      ]
+    },
+    "LiteDB/5.0.9": {
+      "sha512": "cWnNWXL+qaP/qrkUCYZHBUJcv+IsfJfofa+Ed4EyT0zs/gkXqfKvjTbS3uSMBfcd9I7Yf+q9YPmCpmVFrVGQtw==",
+      "type": "package",
+      "path": "litedb/5.0.9",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "AppVeyorSettings.json",
+        "LICENSE",
+        "icon_64x64.png",
+        "lib/net45/LiteDB.dll",
+        "lib/net45/LiteDB.xml",
+        "lib/netstandard1.3/LiteDB.dll",
+        "lib/netstandard1.3/LiteDB.xml",
+        "lib/netstandard2.0/LiteDB.dll",
+        "lib/netstandard2.0/LiteDB.xml",
+        "litedb.5.0.9.nupkg.sha512",
+        "litedb.nuspec"
+      ]
+    },
+    "LiveCharts/0.9.7": {
+      "sha512": "p4xyBrUaNNfkWZSNsIle0r51cyVyFg0Yi0uBRZM5GQtdFiA/7guZHlffFyNUILIdux10Ch2hUaJpcZENVU9aaQ==",
+      "type": "package",
+      "path": "livecharts/0.9.7",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net40/LiveCharts.dll",
+        "lib/net40/LiveCharts.pdb",
+        "lib/net40/LiveCharts.xml",
+        "lib/net45/LiveCharts.dll",
+        "lib/net45/LiveCharts.pdb",
+        "lib/net45/LiveCharts.xml",
+        "lib/portable-net45+win8+wp8/LiveCharts.XML",
+        "lib/portable-net45+win8+wp8/LiveCharts.dll",
+        "lib/portable-net45+win8+wp8/LiveCharts.pdb",
+        "livecharts.0.9.7.nupkg.sha512",
+        "livecharts.nuspec",
+        "readme.txt"
+      ]
+    },
+    "LiveCharts.Wpf/0.9.7": {
+      "sha512": "lv6YZoK0B4yWykMq5b9grZXtIbTj+OWu4sVN9GDpdgV6zffu64m4d5CW8KSjfSl9rB8VU649x1NZvhoU67hCDg==",
+      "type": "package",
+      "path": "livecharts.wpf/0.9.7",
+      "hasTools": true,
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net40/LiveCharts.Wpf.XML",
+        "lib/net40/LiveCharts.Wpf.dll",
+        "lib/net40/LiveCharts.Wpf.pdb",
+        "lib/net45/LiveCharts.Wpf.XML",
+        "lib/net45/LiveCharts.Wpf.dll",
+        "lib/net45/LiveCharts.Wpf.pdb",
+        "livecharts.wpf.0.9.7.nupkg.sha512",
+        "livecharts.wpf.nuspec",
+        "tools/install.ps1"
+      ]
+    },
+    "log4net/2.0.11": {
+      "sha512": "4MEfp6dSN/Cl4XHRqBo8eOkhlH9AOt/ydmPRaj/FHuKHTNoPuKjbaT97aACmePpkW5QHQ+YudhYYvVStabOZmQ==",
+      "type": "package",
+      "path": "log4net/2.0.11",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net20/log4net.dll",
+        "lib/net20/log4net.xml",
+        "lib/net35-client/log4net.dll",
+        "lib/net35-client/log4net.xml",
+        "lib/net35/log4net.dll",
+        "lib/net35/log4net.xml",
+        "lib/net40-client/log4net.dll",
+        "lib/net40-client/log4net.xml",
+        "lib/net40/log4net.dll",
+        "lib/net40/log4net.xml",
+        "lib/net45/log4net.dll",
+        "lib/net45/log4net.xml",
+        "lib/netstandard1.3/log4net.dll",
+        "lib/netstandard1.3/log4net.xml",
+        "lib/netstandard2.0/log4net.dll",
+        "lib/netstandard2.0/log4net.xml",
+        "log4net.2.0.11.nupkg.sha512",
+        "log4net.nuspec",
+        "package-icon.png"
+      ]
+    },
+    "MD5/2.0.0": {
+      "sha512": "zqGWlcmMXAqDxsMU16kJ8S8FYLl4aNfYzbtA/BdttpuqBDSz3+4DJHl5/bv4fr+Zn8+tuacBFYpqYDPToiErpw==",
+      "type": "package",
+      "path": "md5/2.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Imagem1.png",
+        "lib/netstandard2.0/MD5.dll",
+        "license.txt",
+        "md5.2.0.0.nupkg.sha512",
+        "md5.nuspec"
+      ]
+    },
+    "Microsoft.Web.WebView2/1.0.664.37": {
+      "sha512": "kAwRKd4oc3DBoCjTcwpwEKWJE/b8ZRKBgWAy+UlqwbbIhMYkV2uTAwS/ahaa77bOK1FOXu0Oy9pb4F8nY83KJw==",
+      "type": "package",
+      "path": "microsoft.web.webview2/1.0.664.37",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.txt",
+        "WebView2.idl",
+        "WebView2.tlb",
+        "build/Microsoft.Web.WebView2.targets",
+        "build/arm64/WebView2Loader.dll",
+        "build/native/Microsoft.Web.WebView2.targets",
+        "build/native/arm64/WebView2Guid.lib",
+        "build/native/arm64/WebView2Loader.dll",
+        "build/native/arm64/WebView2Loader.dll.lib",
+        "build/native/arm64/WebView2LoaderStatic.lib",
+        "build/native/include/WebView2.h",
+        "build/native/include/WebView2EnvironmentOptions.h",
+        "build/native/x64/WebView2Guid.lib",
+        "build/native/x64/WebView2Loader.dll",
+        "build/native/x64/WebView2Loader.dll.lib",
+        "build/native/x64/WebView2LoaderStatic.lib",
+        "build/native/x86/WebView2Guid.lib",
+        "build/native/x86/WebView2Loader.dll",
+        "build/native/x86/WebView2Loader.dll.lib",
+        "build/native/x86/WebView2LoaderStatic.lib",
+        "build/x64/WebView2Loader.dll",
+        "build/x86/WebView2Loader.dll",
+        "lib/net462/Microsoft.Web.WebView2.Core.dll",
+        "lib/net462/Microsoft.Web.WebView2.Core.xml",
+        "lib/net462/Microsoft.Web.WebView2.WinForms.dll",
+        "lib/net462/Microsoft.Web.WebView2.WinForms.xml",
+        "lib/net462/Microsoft.Web.WebView2.Wpf.dll",
+        "lib/net462/Microsoft.Web.WebView2.Wpf.xml",
+        "lib/netcoreapp3.0/Microsoft.Web.WebView2.Core.dll",
+        "lib/netcoreapp3.0/Microsoft.Web.WebView2.Core.xml",
+        "lib/netcoreapp3.0/Microsoft.Web.WebView2.WinForms.dll",
+        "lib/netcoreapp3.0/Microsoft.Web.WebView2.WinForms.xml",
+        "lib/netcoreapp3.0/Microsoft.Web.WebView2.Wpf.dll",
+        "lib/netcoreapp3.0/Microsoft.Web.WebView2.Wpf.xml",
+        "microsoft.web.webview2.1.0.664.37.nupkg.sha512",
+        "microsoft.web.webview2.nuspec",
+        "runtimes/win-arm/native/WebView2Loader.dll",
+        "runtimes/win-x64/native/WebView2Loader.dll",
+        "runtimes/win-x86/native/WebView2Loader.dll"
+      ]
+    },
+    "Newtonsoft.Json/12.0.3": {
+      "sha512": "6mgjfnRB4jKMlzHSl+VD+oUc1IebOZabkbyWj2RiTgWwYPPuaK1H97G1sHqGwPlS5npiF5Q0OrxN1wni2n5QWg==",
+      "type": "package",
+      "path": "newtonsoft.json/12.0.3",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.md",
+        "lib/net20/Newtonsoft.Json.dll",
+        "lib/net20/Newtonsoft.Json.xml",
+        "lib/net35/Newtonsoft.Json.dll",
+        "lib/net35/Newtonsoft.Json.xml",
+        "lib/net40/Newtonsoft.Json.dll",
+        "lib/net40/Newtonsoft.Json.xml",
+        "lib/net45/Newtonsoft.Json.dll",
+        "lib/net45/Newtonsoft.Json.xml",
+        "lib/netstandard1.0/Newtonsoft.Json.dll",
+        "lib/netstandard1.0/Newtonsoft.Json.xml",
+        "lib/netstandard1.3/Newtonsoft.Json.dll",
+        "lib/netstandard1.3/Newtonsoft.Json.xml",
+        "lib/netstandard2.0/Newtonsoft.Json.dll",
+        "lib/netstandard2.0/Newtonsoft.Json.xml",
+        "lib/portable-net40+sl5+win8+wp8+wpa81/Newtonsoft.Json.dll",
+        "lib/portable-net40+sl5+win8+wp8+wpa81/Newtonsoft.Json.xml",
+        "lib/portable-net45+win8+wp8+wpa81/Newtonsoft.Json.dll",
+        "lib/portable-net45+win8+wp8+wpa81/Newtonsoft.Json.xml",
+        "newtonsoft.json.12.0.3.nupkg.sha512",
+        "newtonsoft.json.nuspec",
+        "packageIcon.png"
+      ]
+    },
+    "NPOI.Excel/2.1.1": {
+      "sha512": "y4ZReDg95dyAcMruT9itlS7iIgUSBuoax3OzUiPUgWzQpVMb0s97PFfHknUDSBusWcD5RBdgMx+9zIidau45+Q==",
+      "type": "package",
+      "path": "npoi.excel/2.1.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/ICSharpCode.SharpZipLib.dll",
+        "lib/NPOI.OOXML.dll",
+        "lib/NPOI.OpenXml4Net.dll",
+        "lib/NPOI.OpenXmlFormats.dll",
+        "lib/NPOI.dll",
+        "npoi.excel.2.1.1.nupkg.sha512",
+        "npoi.excel.nuspec"
+      ]
+    },
+    "Panuon.UI.Silver/1.1.3": {
+      "sha512": "8SbdLfcE9pzpkemoO29khZakyxKpFAAASFp2CxwDsdR60qeVhkgSA6Uoe2so3nPMHbaxwWJJuAU3jObmZBsWkA==",
+      "type": "package",
+      "path": "panuon.ui.silver/1.1.3",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net40/Panuon.UI.Silver.dll",
+        "lib/net45/Panuon.UI.Silver.dll",
+        "panuon.ui.silver.1.1.3.nupkg.sha512",
+        "panuon.ui.silver.nuspec"
+      ]
+    },
+    "PropertyChanged.Fody/3.2.9": {
+      "sha512": "HA88YFp467IF8GHPENg+wBGo2RPHnInxVOZNwjnHXkumieFSY0XMIF3etneME8oLZeXHOjfPBe7TxDL3Pc5YSw==",
+      "type": "package",
+      "path": "propertychanged.fody/3.2.9",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "build/PropertyChanged.Fody.props",
+        "lib/net40/PropertyChanged.dll",
+        "lib/net40/PropertyChanged.xml",
+        "lib/netstandard1.0/PropertyChanged.dll",
+        "lib/netstandard1.0/PropertyChanged.xml",
+        "propertychanged.fody.3.2.9.nupkg.sha512",
+        "propertychanged.fody.nuspec",
+        "weaver/PropertyChanged.Fody.dll",
+        "weaver/PropertyChanged.Fody.xcf"
+      ]
+    },
+    "Stylet/1.3.4": {
+      "sha512": "bCEdA+AIi+TM9SQQGLYMsFRIfzZcDUDg2Mznyr72kOkcC/cdBj01/jel4/v2aoKwbFcxVjiqmpgnbsFgMEZ4zQ==",
+      "type": "package",
+      "path": "stylet/1.3.4",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "StyletIcon.png",
+        "lib/net45/Stylet.dll",
+        "lib/net45/Stylet.xml",
+        "lib/netcoreapp3.0/Stylet.dll",
+        "lib/netcoreapp3.0/Stylet.xml",
+        "readme.txt",
+        "stylet.1.3.4.nupkg.sha512",
+        "stylet.nuspec"
+      ]
+    },
+    "Stylet.Start/1.3.4": {
+      "sha512": "mrR4X4bLgkrNjBCqHs38U5JqMsdLG3fRZQpYahgaZ/7aSD4hB76CY/K/MD8tvstmgERLPn4Uqoh3masg19/EcA==",
+      "type": "package",
+      "path": "stylet.start/1.3.4",
+      "hasTools": true,
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "StyletIcon.png",
+        "readme.txt",
+        "stylet.start.1.3.4.nupkg.sha512",
+        "stylet.start.nuspec",
+        "tools/install.ps1"
+      ]
+    }
+  },
+  "projectFileDependencyGroups": {
+    ".NETFramework,Version=v4.6.2": [
+      "LiteDB >= 5.0.9",
+      "LiveCharts.Wpf >= 0.9.7",
+      "MD5 >= 2.0.0",
+      "Microsoft.Web.WebView2 >= 1.0.664.37",
+      "NPOI.Excel >= 2.1.1",
+      "Newtonsoft.Json >= 12.0.3",
+      "Panuon.UI.Silver >= 1.1.3",
+      "PropertyChanged.Fody >= 3.2.9",
+      "Stylet >= 1.3.4",
+      "Stylet.Start >= 1.3.4",
+      "log4net >= 2.0.11"
+    ]
+  },
+  "packageFolders": {
+    "C:\\Users\\Lenovo\\.nuget\\packages\\": {}
+  },
+  "project": {
+    "version": "1.0.0",
+    "restore": {
+      "projectUniqueName": "E:\\galensShare\\Personal\\Attempt\\SendMultipleEmails\\SendMultipleEmails\\SendMultipleEmails.csproj",
+      "projectName": "SendMultipleEmails",
+      "projectPath": "E:\\galensShare\\Personal\\Attempt\\SendMultipleEmails\\SendMultipleEmails\\SendMultipleEmails.csproj",
+      "packagesPath": "C:\\Users\\Lenovo\\.nuget\\packages\\",
+      "outputPath": "E:\\galensShare\\Personal\\Attempt\\SendMultipleEmails\\SendMultipleEmails\\obj\\",
+      "projectStyle": "PackageReference",
+      "skipContentFileWrite": true,
+      "configFilePaths": [
+        "C:\\Users\\Lenovo\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+      ],
+      "originalTargetFrameworks": [
+        "net462"
+      ],
+      "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "https://api.nuget.org/v3/index.json": {}
+      },
+      "frameworks": {
+        "net462": {
+          "projectReferences": {}
+        }
+      }
+    },
+    "frameworks": {
+      "net462": {
+        "dependencies": {
+          "LiteDB": {
+            "target": "Package",
+            "version": "[5.0.9, )"
+          },
+          "LiveCharts.Wpf": {
+            "target": "Package",
+            "version": "[0.9.7, )"
+          },
+          "MD5": {
+            "target": "Package",
+            "version": "[2.0.0, )"
+          },
+          "Microsoft.Web.WebView2": {
+            "target": "Package",
+            "version": "[1.0.664.37, )"
+          },
+          "NPOI.Excel": {
+            "target": "Package",
+            "version": "[2.1.1, )"
+          },
+          "Newtonsoft.Json": {
+            "target": "Package",
+            "version": "[12.0.3, )"
+          },
+          "Panuon.UI.Silver": {
+            "target": "Package",
+            "version": "[1.1.3, )"
+          },
+          "PropertyChanged.Fody": {
+            "target": "Package",
+            "version": "[3.2.9, )"
+          },
+          "Stylet": {
+            "target": "Package",
+            "version": "[1.3.4, )"
+          },
+          "Stylet.Start": {
+            "target": "Package",
+            "version": "[1.3.4, )"
+          },
+          "log4net": {
+            "target": "Package",
+            "version": "[2.0.11, )"
+          }
+        }
+      }
+    },
+    "runtimes": {
+      "win": {
+        "#import": []
+      },
+      "win-x64": {
+        "#import": []
+      },
+      "win-x86": {
+        "#import": []
+      }
+    }
+  }
+}

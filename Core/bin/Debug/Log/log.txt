@@ -1,0 +1,50 @@
+2020-10-29 17:49:22,529 [1] INFO  开始个人基本信息变量... - [:0]
+2020-10-29 17:49:22,787 [1] INFO  导入完成。 - [:0]
+2020-10-29 17:49:22,787 [1] INFO  共导入1条数据 - [:0]
+2020-10-29 17:49:35,049 [17] INFO  模板中定义的变量:[年奖金]没有找到，不进行替换 - [:0]
+2020-10-29 17:57:15,677 [15] INFO  模板中定义的变量:[年奖金]没有找到，不进行替换 - [:0]
+2020-10-29 17:57:32,211 [14] INFO  模板中定义的变量:[年奖金]没有找到，不进行替换 - [:0]
+2020-10-29 17:58:04,825 [11] INFO  [name:甘明昔 - email:] 开始向 [name:gmx_galens@163.com - email:甘明昔] 发送邮件 - [:0]
+2020-10-29 17:58:05,688 [11] INFO  [name:甘明昔-email:260827400@qq.com] 发送成功！ - [:0]
+2020-10-29 18:16:30,743 [23] INFO  模板中定义的变量:[年奖金]没有找到，不进行替换 - [E:\galensShare\Personal\Attempt\SendMultipleEmails\SendMultipleEmails\Pages\Send_PreviewViewModel.cs:122]
+2020-10-29 18:17:46,378 [20] INFO  模板中定义的变量:[年奖金]没有找到，不进行替换 - [E:\galensShare\Personal\Attempt\SendMultipleEmails\SendMultipleEmails\Pages\Send_PreviewViewModel.cs:122]
+2020-10-29 18:18:02,917 [13] INFO  模板中定义的变量:[年奖金]没有找到，不进行替换 - [E:\galensShare\Personal\Attempt\SendMultipleEmails\SendMultipleEmails\Pages\Send_PreviewViewModel.cs:122]
+2020-10-29 18:19:06,723 [21] INFO  模板中定义的变量:[年奖金]没有找到，不进行替换 - [E:\galensShare\Personal\Attempt\SendMultipleEmails\SendMultipleEmails\Pages\Send_PreviewViewModel.cs:122]
+2020-10-29 18:25:38,886 [20] INFO  模板中定义的变量:[年奖金]没有找到，不进行替换 - [E:\galensShare\Personal\Attempt\SendMultipleEmails\SendMultipleEmails\Pages\Send_PreviewViewModel.cs:122]
+2020-10-29 18:27:00,342 [19] INFO  模板中定义的变量:[年奖金]没有找到，不进行替换 - [E:\galensShare\Personal\Attempt\SendMultipleEmails\SendMultipleEmails\Pages\Send_PreviewViewModel.cs:123]
+2020-10-29 18:29:03,856 [19] INFO  模板中定义的变量:[年奖金]没有找到，不进行替换 - [E:\galensShare\Personal\Attempt\SendMultipleEmails\SendMultipleEmails\Pages\Send_PreviewViewModel.cs:122]
+2020-10-29 18:30:09,137 [20] INFO  模板中定义的变量:[年奖金]没有找到，不进行替换 - [E:\galensShare\Personal\Attempt\SendMultipleEmails\SendMultipleEmails\Pages\Send_PreviewViewModel.cs:122]
+2020-10-30 17:22:09,228 [13] INFO  模板中定义的变量:[年奖金]没有找到，不进行替换 - [E:\galensShare\Personal\Attempt\SendMultipleEmails\SendMultipleEmails\Pages\Send_PreviewViewModel.cs:122]
+2020-10-30 17:26:47,928 [13] ERROR 未捕获异常:System.Reflection.TargetInvocationException: An error occurred while dispatching a call to the UI Thread ---> System.InvalidOperationException: Attempted to use WebView2 functionality which requires its CoreWebView2 prior to the CoreWebView2 being initialized.  Call EnsureCoreWebView2Async or set the Source property first.
+   在 Microsoft.Web.WebView2.Wpf.WebView2.VerifyCoreWebView2()
+   在 Microsoft.Web.WebView2.Wpf.WebView2.NavigateToString(String htmlContent)
+   在 SendMultipleEmails.Pages.Send_PreviewViewModel.<>c__DisplayClass6_0.<set_ContentHtml>b__0() 位置 E:\galensShare\Personal\Attempt\SendMultipleEmails\SendMultipleEmails\Pages\Send_PreviewViewModel.cs:行号 39
+   在 Stylet.Execute.<>c__DisplayClass13_0.<OnUIThreadSync>b__0()
+   --- 内部异常堆栈跟踪的结尾 ---
+   在 Stylet.Execute.OnUIThreadSync(Action action)
+   在 SendMultipleEmails.Pages.Send_PreviewViewModel.set_ContentHtml(String value) 位置 E:\galensShare\Personal\Attempt\SendMultipleEmails\SendMultipleEmails\Pages\Send_PreviewViewModel.cs:行号 37
+   在 SendMultipleEmails.Pages.Send_PreviewViewModel.ReadPostData() 位置 E:\galensShare\Personal\Attempt\SendMultipleEmails\SendMultipleEmails\Pages\Send_PreviewViewModel.cs:行号 186
+   在 System.Threading.ThreadHelper.ThreadStart_Context(Object state)
+   在 System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   在 System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   在 System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state)
+   在 System.Threading.ThreadHelper.ThreadStart() - [E:\galensShare\Personal\Attempt\SendMultipleEmails\SendMultipleEmails\Bootstrapper.cs:33]
+2020-11-06 12:28:59,184 [6] INFO  模板中定义的变量:[年奖金]没有找到，不进行替换 - [E:\galensShare\Personal\Attempt\SendMultipleEmails\SendMultipleEmails\Pages\Send_PreviewViewModel.cs:122]
+2020-11-06 12:31:27,512 [6] ERROR 未捕获异常:System.Reflection.TargetInvocationException: An error occurred while dispatching a call to the UI Thread ---> System.InvalidOperationException: Attempted to use WebView2 functionality which requires its CoreWebView2 prior to the CoreWebView2 being initialized.  Call EnsureCoreWebView2Async or set the Source property first.
+   在 Microsoft.Web.WebView2.Wpf.WebView2.VerifyCoreWebView2()
+   在 Microsoft.Web.WebView2.Wpf.WebView2.NavigateToString(String htmlContent)
+   在 SendMultipleEmails.Pages.Send_PreviewViewModel.<>c__DisplayClass6_0.<set_ContentHtml>b__0() 位置 E:\galensShare\Personal\Attempt\SendMultipleEmails\SendMultipleEmails\Pages\Send_PreviewViewModel.cs:行号 39
+   在 Stylet.Execute.<>c__DisplayClass13_0.<OnUIThreadSync>b__0()
+   --- 内部异常堆栈跟踪的结尾 ---
+   在 Stylet.Execute.OnUIThreadSync(Action action)
+   在 SendMultipleEmails.Pages.Send_PreviewViewModel.set_ContentHtml(String value) 位置 E:\galensShare\Personal\Attempt\SendMultipleEmails\SendMultipleEmails\Pages\Send_PreviewViewModel.cs:行号 37
+   在 SendMultipleEmails.Pages.Send_PreviewViewModel.ReadPostData() 位置 E:\galensShare\Personal\Attempt\SendMultipleEmails\SendMultipleEmails\Pages\Send_PreviewViewModel.cs:行号 186
+   在 System.Threading.ThreadHelper.ThreadStart_Context(Object state)
+   在 System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   在 System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   在 System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state)
+   在 System.Threading.ThreadHelper.ThreadStart() - [E:\galensShare\Personal\Attempt\SendMultipleEmails\SendMultipleEmails\Bootstrapper.cs:33]
+2020-11-25 12:52:51,242 [21] INFO  模板中定义的变量:[年奖金]没有找到，不进行替换 - [E:\galensShare\Personal\Attempt\SendMultipleEmails\SendMultipleEmails\Pages\Send_PreviewViewModel.cs:122]
+2020-11-25 12:54:53,789 [13] INFO  模板中定义的变量:[年奖金]没有找到，不进行替换 - [E:\galensShare\Personal\Attempt\SendMultipleEmails\SendMultipleEmails\Pages\Send_PreviewViewModel.cs:122]
+2020-11-25 12:54:55,885 [18] INFO  模板中定义的变量:[年奖金]没有找到，不进行替换 - [E:\galensShare\Personal\Attempt\SendMultipleEmails\SendMultipleEmails\Pages\Send_PreviewViewModel.cs:122]
+2020-12-29 10:22:24,866 [16] INFO  模板中定义的变量:[年奖金]没有找到，不进行替换 - [E:\galensShare\Personal\Attempt\SendMultipleEmails\SendMultipleEmails\Pages\Send_PreviewViewModel.cs:122]
