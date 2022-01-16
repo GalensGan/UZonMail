@@ -21,6 +21,9 @@ namespace Server.Database.Models
         public string receiverName { get; set; }
         public string receiverEmail { get; set; }
 
+        // 抄送人邮箱
+        public List<string> copyToEmails { get; set; }
+
         // 邮件主题
         public string subject { get; set; }
 

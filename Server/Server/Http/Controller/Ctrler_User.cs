@@ -4,6 +4,8 @@ using EmbedIO.WebApi;
 using Newtonsoft.Json.Linq;
 using Server.Config;
 using Server.Database;
+using Server.Database.Definitions;
+using Server.Database.Extensions;
 using Server.Database.Models;
 using Server.Http.Headers;
 using Server.Http.Response;
@@ -38,7 +40,7 @@ namespace Server.Http.Controller
             if (string.IsNullOrEmpty(userId))
             {
                 ResponseError("用户名为空");
-                
+
             }
 
             if (string.IsNullOrEmpty(password))
@@ -86,12 +88,12 @@ namespace Server.Http.Controller
             // 用 token 获取用户信息
             UserConfig uConfig = IoC.Get<UserConfig>();
             JwtToken jwtToken = new JwtToken(uConfig.TokenSecret, token);
-            if (jwtToken.TokenValidState!=TokenValidState.Valid)
+            if (jwtToken.TokenValidState != TokenValidState.Valid)
             {
                 ResponseError("token无效");
                 return;
             }
-           
+
 
             // 返回用户信息
             var user = LiteDb.Query<User>().Where(u => u.userId == jwtToken.UserId).FirstOrDefault();
@@ -114,6 +116,45 @@ namespace Server.Http.Controller
         [Route(HttpVerbs.Put, "/user/logout")]
         public void UserLogout()
         {
+            ResponseSuccess("success");
+        }
+
+
+        /// <summary>
+        /// 更新用户的头像
+        /// </summary>
+        [Route(HttpVerbs.Put, "/user/avatar")]
+        public void UpdateUserAvatar()
+        {
+            // 获取 body 传输的 url
+            var avatarUrl = Body.SelectToken(Fields.avatar).ValueOrDefault(string.Empty);
+            var userId = Body.SelectToken(Fields.userId).ValueOrDefault(string.Empty);
+
+            if (string.IsNullOrEmpty(avatarUrl))
+            {
+                ResponseError("请在 data 中传入 avatarUrl");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                ResponseError("请在 data 中传入 userName");
+                return;
+            }
+
+            var user = LiteDb.Fetch<User>(u => u.userId == userId).FirstOrDefault();
+            if (user == null)
+            {
+                ResponseError("用户不存在");
+                return;
+            }
+
+            // 更新头像
+            LiteDb.Upsert2(s => s.userId == Token.UserId, new User()
+            {
+                avatar = avatarUrl,
+            }, new UpdateOptions() { Fields.avatar });
+
             ResponseSuccess("success");
         }
     }

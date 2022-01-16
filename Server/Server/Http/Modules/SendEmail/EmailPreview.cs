@@ -44,12 +44,26 @@ namespace Server.Http.Modules.SendEmail
 
         // 发件人
         public JArray Senders { get; set; }
+
+        // 主题
         protected string Subject { get; private set; }
+
+        // 收件人，用户选择的
         protected JArray Receivers { get; private set; }
+
+        // 抄送人
+        protected JArray CopyTo { get; private set; }
+
+        // 发件数据，从 excel 表导入的
         protected JArray Data { get; private set; }
+
+        // 模板数据，选择和
         protected Template Template { get; private set; }
-        protected LiteDBManager LiteDb { get; private set; }
+
+        // 附件，选择的
         protected List<EmailAttachment> Attachments { get; private set; }
+
+        protected LiteDBManager LiteDb { get; private set; }
 
         private List<SendItem> _sendItems;
 
@@ -63,13 +77,15 @@ namespace Server.Http.Modules.SendEmail
         /// <param name="liteDb"></param>
         protected EmailPreview(JToken data, LiteDBManager liteDb)
         {
+            LiteDb = liteDb;
+
             // 生成
             Senders = data.SelectToken(Fields.senders).ValueOrDefault(new JArray());
             Subject = data.SelectToken(Fields.subject).ValueOrDefault(Fields.default_);
             Receivers = data.SelectToken(Fields.receivers).ValueOrDefault(new JArray());
-            Data = data.SelectToken(Fields.data).ValueOrDefault(new JArray());
-            LiteDb = liteDb;
+            Data = data.SelectToken(Fields.data).ValueOrDefault(new JArray());            
             Attachments = data.SelectToken(Fields.attachments).ValueOrDefault(new JArray()).ToList().ConvertAll(item => new EmailAttachment() { fullName = item.ToString() });
+            CopyTo = data.SelectToken(Fields.copyToEmails).ValueOrDefault(new JArray());
 
             string templateId = data.Value<string>(Fields.templateId);
             // 获取模板
@@ -78,6 +94,7 @@ namespace Server.Http.Modules.SendEmail
 
         /// <summary>
         /// 生成数据
+        /// excel表读取的数据会覆盖用户选择的数据
         /// </summary>
         public virtual GenerateInfo Generate()
         {
@@ -99,32 +116,10 @@ namespace Server.Http.Modules.SendEmail
             _sendItems = new List<SendItem>();
             List<ReceiveBox> receiveBoxes = new List<ReceiveBox>();
 
+            // 先从选择中获取收件人，如果没有选择，再从excel表中获取收件人
             if (Receivers != null && Receivers.Count > 0)
             {
-                // 获取当前收件人或组下的所有人
-                foreach (JToken jt in Receivers)
-                {
-                    // 判断 type
-                    string type = jt.Value<string>(Fields.type_);
-                    string id = jt.Value<string>(Fields._id);
-                    if (type == Fields.group)
-                    {
-                        // 找到group下所有的用户
-                        List<ReceiveBox> boxes = LiteDb.Fetch<ReceiveBox>(r => r.groupId == id);
-
-                        // 如果没有，才添加
-                        foreach (ReceiveBox box in boxes)
-                        {
-                            if (receiveBoxes.Find(item => item._id == box._id) == null) receiveBoxes.Add(box);
-                        }
-                    }
-                    else
-                    {
-                        // 选择了单个用户
-                        var box = LiteDb.SingleOrDefault<ReceiveBox>(r => r._id == id);
-                        if (box != null && receiveBoxes.Find(item => item._id == box._id) == null) receiveBoxes.Add(box);
-                    }
-                }
+                receiveBoxes = TraverseReciveBoxes(Receivers);                
             }
             else if (Data != null && Data.Count > 0)
             {
@@ -140,6 +135,9 @@ namespace Server.Http.Modules.SendEmail
                 }
             }
 
+            // 获取全局的抄送人
+            List<ReceiveBox> copyToBoxes = TraverseReciveBoxes(CopyTo);
+            var copyToEmails = copyToBoxes.ConvertAll(cb => cb.email);
 
             // 开始添加                
             foreach (var re in receiveBoxes)
@@ -155,7 +153,6 @@ namespace Server.Http.Modules.SendEmail
                 string subjectTemp = Subject;
 
                 // 处理模板数据
-
                 // 判断有没有数据
                 JObject itemObj = new JObject();
                 if (Data != null && Data.Count > 0)
@@ -178,6 +175,7 @@ namespace Server.Http.Modules.SendEmail
                 // 获取数据
                 List<string> keys = itemObj.Properties().ToList().ConvertAll(p => p.Name);
 
+                // 自定义内容优先于自定义模板
                 // 判断是否有自定义内容
                 if (keys.Contains(Fields.body))
                 {
@@ -188,6 +186,8 @@ namespace Server.Http.Modules.SendEmail
                         sendHtml = body;
                     }
                 }
+
+                // 添加自定义模板
                 // 判断是否有自定义模板
                 else if (keys.Contains(Fields.template))
                 {
@@ -203,6 +203,7 @@ namespace Server.Http.Modules.SendEmail
                     }
                 }
 
+                // 添加附件
                 // 判断是否有自定义附件
                 item.attachments = Attachments;
                 if (keys.Contains(Fields.attachments))
@@ -222,6 +223,25 @@ namespace Server.Http.Modules.SendEmail
                     }
                 }
 
+                // 添加抄送人
+                // 判断是否有自定义抄送人
+                item.copyToEmails = copyToEmails;
+                if (keys.Contains(Fields.copyToEmails))
+                {
+                    // 中间用分号分隔
+                    string attStr = itemObj.Value<string>(Fields.copyToEmails);
+                    // 判断是否是邮箱的正则表达式
+                    var regex = new Regex(@"^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$");
+
+                    if (!string.IsNullOrEmpty(attStr))
+                    {
+                        var attStrArr = attStr.Split(';');
+                        item.copyToEmails = attStrArr.ToList().ConvertAll(att => att.Trim()).FindAll(att =>
+                          {
+                              return regex.IsMatch(att);
+                          });
+                    }
+                }
 
                 // 替换模板内数据                    
                 foreach (string key in keys)
@@ -284,6 +304,42 @@ namespace Server.Http.Modules.SendEmail
             int result = index % total;
             if (result >= 0) return result;
             return total + result;
+        }
+
+        /// <summary>
+        /// 通过_id来获取收件人
+        /// </summary>
+        /// <param name="receiverIds"></param>
+        /// <returns></returns>
+        private List<ReceiveBox> TraverseReciveBoxes(JArray receiverIds)
+        {
+            List<ReceiveBox> receiveBoxes = new List<ReceiveBox>();
+            // 获取当前收件人或组下的所有人
+            foreach (JToken jt in receiverIds)
+            {
+                // 判断 type
+                string type = jt.Value<string>(Fields.type_);
+                string id = jt.Value<string>(Fields._id);
+                if (type == Fields.group)
+                {
+                    // 找到group下所有的用户
+                    List<ReceiveBox> boxes = LiteDb.Fetch<ReceiveBox>(r => r.groupId == id);
+
+                    // 如果没有，才添加
+                    foreach (ReceiveBox box in boxes)
+                    {
+                        if (receiveBoxes.Find(item => item._id == box._id) == null) receiveBoxes.Add(box);
+                    }
+                }
+                else
+                {
+                    // 选择了单个用户
+                    var box = LiteDb.SingleOrDefault<ReceiveBox>(r => r._id == id);
+                    if (box != null && receiveBoxes.Find(item => item._id == box._id) == null) receiveBoxes.Add(box);
+                }
+            }
+
+            return receiveBoxes;
         }
     }
 }

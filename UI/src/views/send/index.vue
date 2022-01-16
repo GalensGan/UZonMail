@@ -1,14 +1,29 @@
 <template>
   <div class="q-pa-lg send-container q-gutter-md">
+    <div class="receive-box row">
+      <strong style="height: auto; align-self: center">
+        主题：
+        <q-tooltip anchor="center right" self="center left">
+          发件主题，不能为空
+        </q-tooltip>
+      </strong>
+      <input type="text" class="send-input col-grow" v-model="subject" />
+    </div>
+
     <div class="receive-box row justify-between">
       <div class="row col-grow">
-        <strong style="height: auto; align-self: center"> 发件人：</strong>
+        <strong style="height: auto; align-self: center">
+          发件人：
+          <q-tooltip anchor="center right" self="center left">
+            <div>如果发件人为空，则会使用随机发件箱进行发件</div>
+          </q-tooltip>
+        </strong>
         <q-chip
           v-for="rec in senders"
           :key="rec.type + rec._id"
           removable
           @remove="removeSender(rec)"
-          :color="rec.type === 'group' ? 'orange' : 'teal'"
+          :color="rec.type === 'group' ? 'orange' : 'primary'"
           size="sm"
           text-color="white"
           :label="rec.label"
@@ -26,23 +41,23 @@
       />
     </div>
 
-    <div class="receive-box row">
-      <strong style="height: auto; align-self: center"> 主题：</strong>
-      <input type="text" class="send-input col-grow" v-model="subject" />
-    </div>
-
     <div class="receive-box row justify-between">
       <div class="row col-grow">
-        <strong style="height: auto; align-self: center"> 收件人：</strong>
+        <strong style="height: auto; align-self: center">
+          收件人：
+          <q-tooltip anchor="center right" self="center left">
+            如果按数据中定义的收件人来发件，则收件人栏必须为空
+          </q-tooltip>
+        </strong>
         <q-chip
           v-for="rec in receivers"
           :key="rec.type + rec._id"
           removable
-          @remove="removeReceiver(rec)"
-          :color="rec.type === 'group' ? 'orange' : 'teal'"
+          :color="rec.type === 'group' ? 'orange' : 'primary'"
           size="sm"
           text-color="white"
           :label="rec.label"
+          @remove="removeReceiver(rec)"
         />
         <input type="text" class="send-input col-grow" />
       </div>
@@ -52,14 +67,45 @@
         class="self-center q-mb-sm"
         color="secondary"
         outline
-        @click="openSelectReceiversDialog"
         label="选择收件人"
+        @click="openSelectReceiversDialog"
+      />
+    </div>
+
+    <div class="receive-box row justify-between">
+      <div class="row col-grow">
+        <strong style="height: auto; align-self: center">
+          抄送人：
+          <q-tooltip anchor="center right" self="center left">
+            抄送人为空时，会从数据中读取 copyToEmails 中的用户名作为抄送对象
+          </q-tooltip>
+        </strong>
+        <q-chip
+          v-for="rec in copyToEmails"
+          :key="rec.type + rec._id"
+          removable
+          :color="rec.type === 'group' ? 'orange' : 'primary'"
+          size="sm"
+          text-color="white"
+          :label="rec.label"
+          @remove="removeCopyTo(rec)"
+        />
+        <input type="text" class="send-input col-grow" />
+      </div>
+      <q-btn
+        size="sm"
+        dense
+        class="self-center q-mb-sm"
+        color="secondary"
+        outline
+        label="选择抄送人"
+        @click="openSelectCopyToDialog"
       />
     </div>
 
     <div class="row justify-between">
       <div class="row content-center">
-        <strong style="height: auto; align-self: center"> 模板：</strong>
+        <strong style="height: auto; align-self: center">模板：</strong>
         <el-select
           v-model="selectedTemplate"
           placeholder="请选择"
@@ -80,7 +126,7 @@
                 width="300px"
               />
             </div>
-            <el-option :label="item.name" :value="item"> </el-option>
+            <el-option :label="item.name" :value="item"></el-option>
           </el-tooltip>
         </el-select>
       </div>
@@ -89,12 +135,12 @@
         style="flex: 1"
       >
         <div>
-          <strong style="height: auto; align-self: center"> 数据：</strong
-          >{{ selectedFileName }}
+          <strong style="height: auto; align-self: center">数据：</strong>
+          {{ selectedFileName }}
         </div>
         <input
-          type="file"
           id="fileInput"
+          type="file"
           style="display: none"
           accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
           @change="fileSelected"
@@ -113,7 +159,7 @@
 
     <div class="receive-box row justify-between">
       <div class="row col-grow">
-        <strong style="height: auto; align-self: center"> 附件：</strong>
+        <strong style="height: auto; align-self: center">附件：</strong>
         <q-chip
           v-for="att in attachments"
           :key="att"
@@ -217,14 +263,6 @@
         </q-layout>
       </q-card>
     </q-dialog>
-
-    <q-dialog v-model="isShowSelectEmails">
-      <SelectEmail groupType="receive" v-model="receivers" />
-    </q-dialog>
-
-    <q-dialog v-model="isShowSelectedSenders">
-      <SelectEmail groupType="send" v-model="senders" />
-    </q-dialog>
   </div>
 </template>
 
@@ -240,16 +278,17 @@ import {
 
 import XLSX from 'js-xlsx'
 import { notifyError } from '@/components/iPrompt'
-import SelectEmail from './components/selectEmail'
 import SendingProgress from './components/sendingProgress'
 
 import SelectSender from './mixins/selectSender.vue'
 import SelectReceiver from './mixins/selectReceiver.vue'
+import SelectCopyTo from './mixins/selectCopyTo.vue'
+
 import SelectAttachment from './mixins/selectAttachment.vue'
 
 export default {
-  components: { SelectEmail, SendingProgress },
-  mixins: [SelectSender, SelectReceiver, SelectAttachment],
+  components: { SendingProgress },
+  mixins: [SelectSender, SelectReceiver, SelectCopyTo, SelectAttachment],
   data() {
     return {
       subject: '',
@@ -364,7 +403,8 @@ export default {
         this.receivers,
         this.excelData || [],
         this.selectedTemplate._id,
-        this.attachments
+        this.attachments,
+        this.copyToEmails
       )
 
       // 打开预览窗体
@@ -398,7 +438,8 @@ export default {
         this.receivers,
         this.excelData || [],
         this.selectedTemplate._id,
-        this.attachments
+        this.attachments,
+        this.copyToEmails
       )
 
       const { data } = res

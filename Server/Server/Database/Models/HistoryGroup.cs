@@ -14,9 +14,14 @@ namespace Server.Database.Models
     {
         public string userId { get; set; }
 
+        // 发送人的id
         public List<string> senderIds { get; set; }
 
+        // 收件人的id
         public List<string> receiverIds { get; set; }
+
+        // 通用的抄送人id
+        public List<string> copyToUserIds { get; set; }
 
         public DateTime createDate { get; set; }
 

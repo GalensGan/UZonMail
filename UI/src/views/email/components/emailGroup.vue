@@ -10,6 +10,7 @@
             label-key="name"
             :selected.sync="selectedNode"
             no-connectors
+            no-nodes-label="单击此处右键添加分组"
           >
             <template v-slot:default-header="prop">
               <div>

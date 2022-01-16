@@ -60,8 +60,9 @@
           style="width: 100%"
           class="bg-primary"
           @click.native.prevent="handleLogin"
-          >登陆/注册</el-button
         >
+          登陆/注册
+        </el-button>
       </el-form>
     </div>
   </div>
@@ -71,11 +72,8 @@
 import { validUsername } from '@/utils/validate'
 import ws from '@/utils/websocket'
 
-import Live2d from './mixins/live2d.vue'
-
 export default {
   name: 'Login',
-  // mixins: [Live2d],
   data() {
     const validateUsername = (rule, value, callback) => {
       if (!validUsername(value)) {
@@ -111,7 +109,7 @@ export default {
   },
   watch: {
     $route: {
-      handler: function (route) {
+      handler(route) {
         this.redirect = route.query && route.query.redirect
       },
       immediate: true

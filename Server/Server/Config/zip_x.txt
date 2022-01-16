@@ -1,0 +1,4 @@
+datas
+Log
+邮件批量发送.exe.WebView2
+邮件批量发送.pdb

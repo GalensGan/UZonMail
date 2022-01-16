@@ -5,15 +5,16 @@ import SelectEmail from '../components/selectEmail'
 export default {
   data() {
     return {
-      // 收件箱
-      receivers: []
+      // 发件箱
+      copyToEmails: []
     }
   },
 
   methods: {
-    async openSelectReceiversDialog() {
+    // 打开发件人选择框
+    async openSelectCopyToDialog() {
       // 打开
-      const res = await okCancle('选择收件人', '', {
+      const res = await okCancle('选择抄送人', '', {
         component: SelectEmail,
 
         // 如果要访问自定义组件中的
@@ -27,21 +28,22 @@ export default {
 
         // 传递给组件的属性
         // （上述“component”和“parent”属性除外）：
-        value: this.receivers,
+        value: this.copyToEmails,
 
         groupType: 'receive'
       })
 
       if (!res) return
 
-      this.receivers = res.data
+      this.copyToEmails = res.data
     },
 
-    removeReceiver(receiver) {
-      const index = this.receivers.findIndex(
-        re => re.type === receiver.type && re._id === receiver._id
+    // 移除发件人
+    removeCopyTo(user) {
+      const index = this.copyToEmails.findIndex(
+        re => re.type === user.type && re._id === user._id
       )
-      if (index > -1) this.receivers.splice(index, 1)
+      if (index > -1) this.copyToEmails.splice(index, 1)
     }
   }
 }

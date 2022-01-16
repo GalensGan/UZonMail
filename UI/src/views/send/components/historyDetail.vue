@@ -47,8 +47,7 @@
             :label="btn_detail.label"
             :dense="btn_detail.dense"
             @click="openShowDetailDialog(props.row._id)"
-          >
-          </q-btn>
+          ></q-btn>
         </q-td>
       </template>
     </q-table>

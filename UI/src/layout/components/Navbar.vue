@@ -11,19 +11,24 @@
     <div class="right-menu">
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
-          <img :src="avatar + '?imageView2/1/w/80/h/80'" class="user-avatar" />
+          <img :src="avatar" class="user-avatar" />
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown">
           <router-link to="/">
-            <el-dropdown-item> 首页 </el-dropdown-item>
+            <el-dropdown-item>首页</el-dropdown-item>
           </router-link>
           <a
             target="_blank"
-            href="https://panjiachen.github.io/vue-element-admin-site/#/"
+            href="https://galensgan.github.io/2020/2QMK677.html"
           >
             <el-dropdown-item>使用说明</el-dropdown-item>
           </a>
+
+          <router-link to="/profile/index">
+            <el-dropdown-item>我的资料</el-dropdown-item>
+          </router-link>
+
           <el-dropdown-item divided @click.native="logout">
             <span style="display: block">退出登陆</span>
           </el-dropdown-item>
@@ -50,14 +55,20 @@ import MixMessage from '../mixin/mix-message'
 import GlobalMesssage from './GlobalMessage.vue'
 
 export default {
-  mixins: [MixMessage],
   components: {
     Breadcrumb,
     Hamburger,
     GlobalMesssage
   },
+
+  mixins: [MixMessage],
+
   computed: {
     ...mapGetters(['sidebar', 'avatar'])
+
+    // avatarx(){
+    //   return "avatar + 'imageView2/1/w/80/h/80'"
+    // }
   },
   methods: {
     toggleSideBar() {

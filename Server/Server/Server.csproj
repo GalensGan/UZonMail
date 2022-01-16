@@ -81,6 +81,8 @@
     <Compile Include="Database\LiteDBManager.cs" />
     <Compile Include="Http\Controller\Ctrler_Group.cs" />
     <Compile Include="Http\Controller\Ctrler_History.cs" />
+    <Compile Include="Http\Controller\Ctrler_File.cs" />
+    <Compile Include="Http\Controller\Ctrler_Report.cs" />
     <Compile Include="Http\Controller\Ctrler_Send.cs" />
     <Compile Include="Http\Controller\Ctrler_Setting.cs" />
     <Compile Include="Http\Controller\Ctrler_Template.cs" />
@@ -145,7 +147,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="Config\log4net.config" />
+    <None Include="Config\log4net.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -163,6 +167,9 @@
   <ItemGroup>
     <PackageReference Include="EmbedIO">
       <Version>3.4.3</Version>
+    </PackageReference>
+    <PackageReference Include="HttpMultipartParser">
+      <Version>5.0.1</Version>
     </PackageReference>
     <PackageReference Include="JWT">
       <Version>8.2.3</Version>
@@ -194,6 +201,11 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="SendMultipleEmail.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Config\zip_x.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

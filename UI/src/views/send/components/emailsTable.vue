@@ -12,11 +12,11 @@
     <template v-slot:top>
       <q-space />
       <q-input
+        v-model="filter"
         dense
         debounce="300"
         placeholder="搜索"
         color="primary"
-        v-model="filter"
       >
         <template v-slot:append>
           <q-icon name="search" />
@@ -46,6 +46,14 @@ export default {
       }
     }
   },
+  data() {
+    return {
+      filter: '',
+      data: [],
+      selected: this.value
+    }
+  },
+
   computed: {
     dataToShow() {
       if (!this.filter) return this.data
@@ -143,14 +151,6 @@ export default {
       //     }
       //   ]
       // }
-    }
-  },
-
-  data() {
-    return {
-      filter: '',
-      data: [],
-      selected: this.value
     }
   },
 

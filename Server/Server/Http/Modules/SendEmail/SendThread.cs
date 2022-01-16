@@ -73,41 +73,14 @@ namespace Server.Http.Modules.SendEmail
                     SmtpClient smtpclient = new SmtpClient();
                     smtpclient.Host = _sendBox.smtp;
                     //smtpClient.Port = "";//qq邮箱可以不用端口
-
-                    //确定发件地址与收件地址
-                    MailAddress sendAddress = new MailAddress(_sendBox.email);
+                    //邮件发送方式  通过网络发送到smtp服务器
+                    smtpclient.DeliveryMethod = SmtpDeliveryMethod.Network;
+                    //如果服务器支持安全连接，则将安全连接设为true
+                    smtpclient.EnableSsl = true;
 
                     // 获取发件箱
                     var sendItem = sendItems.Pop();
-
-                    // 判断是否需要转成图片
-                    await ConvertToImage(_setting, sendItem);
-
-                    MailAddress receiveAddress = new MailAddress(sendItem.receiverEmail);
-
-                    //构造一个Email的Message对象 内容信息
-                    MailMessage mailMessage = new MailMessage(sendAddress, receiveAddress);
-                    mailMessage.Subject = sendItem.subject;
-                    mailMessage.SubjectEncoding = Encoding.UTF8;
-
-                    // 设置发件主体                        
-                    if (sendItem.sendItemType == SendItemType.dataUrl && !string.IsNullOrEmpty(sendItem.dataUrl)) mailMessage.Body = sendItem.dataUrl;
-                    else mailMessage.Body = sendItem.html;
-
-                    mailMessage.BodyEncoding = Encoding.UTF8;
-                    mailMessage.IsBodyHtml = true;
-
-                    // 伪装成 outlook 发送
-                    AddCustomHeaders(mailMessage);
-
-                    // 添加附件
-                    AddAttachmenets(mailMessage,sendItem);
-
-                    //邮件发送方式  通过网络发送到smtp服务器
-                    smtpclient.DeliveryMethod = SmtpDeliveryMethod.Network;
-
-                    //如果服务器支持安全连接，则将安全连接设为true
-                    smtpclient.EnableSsl = true;
+                    var mailMessage = await GenerateMailMessage(sendItem);
                     try
                     {
                         //是否使用默认凭据，若为false，则使用自定义的证书，就是下面的networkCredential实例对象
@@ -247,7 +220,7 @@ namespace Server.Http.Modules.SendEmail
 
             for (int i = 0; i < sendItem.attachments.Count; i++)
             {
-                string pathFileName = sendItem.attachments[i].fullName.Replace('/','\\');
+                string pathFileName = sendItem.attachments[i].fullName.Replace('/', '\\');
                 var fileInfo = new FileInfo(pathFileName);
 
                 if (!fileInfo.Exists)
@@ -259,7 +232,7 @@ namespace Server.Http.Modules.SendEmail
 
                 var attachment = new Attachment(pathFileName);
                 //设置附件的MIME信息
-                ContentDisposition cd = attachment.ContentDisposition;                
+                ContentDisposition cd = attachment.ContentDisposition;
                 cd.CreationDate = fileInfo.CreationTime;//设置附件的创建时间
                 cd.ModificationDate = fileInfo.LastWriteTime;//设置附件的修改时间
                 cd.ReadDate = fileInfo.LastAccessTime;//设置附件的访问时间
@@ -269,6 +242,14 @@ namespace Server.Http.Modules.SendEmail
             }
         }
 
+        // 添加抄送
+        private void AddCopyToEmails(MailMessage mail, SendItem sendItem)
+        {
+            foreach (var email in sendItem.copyToEmails)
+            {
+                mail.CC.Add(email);
+            }
+        }
 
         // 增加失败次数
         private void IncreaseFailure()
@@ -279,6 +260,45 @@ namespace Server.Http.Modules.SendEmail
                 // 取消 task
                 _cancellationTokenSource.Cancel();
             }
+        }
+
+        // 生成发送消息的消息体
+        private async Task<MailMessage> GenerateMailMessage(SendItem sendItem)
+        {
+            //确定发件地址与收件地址
+            MailAddress sendAddress = new MailAddress(_sendBox.email);
+
+            // 判断是否需要转成图片
+            await ConvertToImage(_setting, sendItem);
+
+            MailAddress receiveAddress = new MailAddress(sendItem.receiverEmail);
+
+            //构造一个Email的Message对象 内容信息
+            MailMessage mailMessage = new MailMessage(sendAddress, receiveAddress)
+            {
+                Subject = sendItem.subject,
+                SubjectEncoding = Encoding.UTF8
+            };
+
+            // 设置发件主体                        
+            if (sendItem.sendItemType == SendItemType.dataUrl && !string.IsNullOrEmpty(sendItem.dataUrl)) mailMessage.Body = sendItem.dataUrl;
+            else mailMessage.Body = sendItem.html;
+
+            // 发件编码
+            mailMessage.BodyEncoding = Encoding.UTF8;
+            mailMessage.IsBodyHtml = true;
+
+            // 伪装成 outlook 发送
+            AddCustomHeaders(mailMessage);
+
+            // 添加附件
+            AddAttachmenets(mailMessage, sendItem);
+
+            // 添加抄送
+            AddCopyToEmails(mailMessage, sendItem);
+
+
+            return mailMessage;
         }
     }
 }

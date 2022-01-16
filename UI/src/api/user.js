@@ -22,3 +22,15 @@ export function logout() {
     method: 'put'
   })
 }
+
+// 更新用户的头像
+export function updateUserAvatar(avatar, userId) {
+  return request({
+    url: '/user/avatar',
+    method: 'put',
+    data: {
+      avatar,
+      userId
+    }
+  })
+}
