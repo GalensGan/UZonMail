@@ -13,11 +13,11 @@ namespace Server.Http.Controller
     /// <summary>
     /// 发件历史
     /// </summary>
-    public class Ctrler_History : BaseController
+    public class Ctrler_History : BaseControllerAsync
     {
         // 获取发件历史
         [Route(HttpVerbs.Get, "/histories")]
-        public void GetHistories()
+        public async Task GetHistories()
         {
             var histories = LiteDb.Fetch<HistoryGroup>(h => h.userId == Token.UserId).OrderByDescending(item => item._id);
 
@@ -28,12 +28,12 @@ namespace Server.Http.Controller
             }
 
             // 获取状态
-            ResponseSuccess(histories);
+            await ResponseSuccessAsync(histories);
         }
 
         // 获取发件历史
         [Route(HttpVerbs.Get, "/histories/{historyId}")]
-        public void GetHistory(string historyId)
+        public async Task GetHistory(string historyId)
         {
             var history = LiteDb.SingleById<HistoryGroup>(historyId);
 
@@ -42,21 +42,21 @@ namespace Server.Http.Controller
 
 
             // 获取状态
-            ResponseSuccess(history);
+            await ResponseSuccessAsync(history);
         }
 
         // 获取发件历史
         [Route(HttpVerbs.Get, "/histories/{historyId}/items")]
-        public void GetSendItems(string historyId)
+        public async Task GetSendItems(string historyId)
         {
             var results = LiteDb.Fetch<SendItem>(s => s.historyId == historyId);
             // 获取状态
-            ResponseSuccess(results);
+            await ResponseSuccessAsync(results);
         }
 
         // 删除发件历史 
         [Route(HttpVerbs.Delete, "/histories/{historyId}")]
-        public void DeleteHistoryGroup(string historyId)
+        public async Task DeleteHistoryGroup(string historyId)
         {
             // 删除发送记录
             LiteDb.DeleteMany<SendItem>(item => item.historyId == historyId);
@@ -65,7 +65,7 @@ namespace Server.Http.Controller
             LiteDb.Delete<HistoryGroup>(historyId);
 
             // 获取状态
-            ResponseSuccess(true);
+            await ResponseSuccessAsync(true);
         }
     }
 }

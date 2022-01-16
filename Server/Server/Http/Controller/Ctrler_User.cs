@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 
 namespace Server.Http.Controller
 {
-    public class Ctrler_User : BaseController
+    public class Ctrler_User : BaseControllerAsync
     {
         /// <summary>
         /// 用户登陆
@@ -39,13 +39,12 @@ namespace Server.Http.Controller
             // 判断数据正确性
             if (string.IsNullOrEmpty(userId))
             {
-                ResponseError("用户名为空");
-
+                await ResponseErrorAsync("用户名为空");
             }
 
             if (string.IsNullOrEmpty(password))
             {
-                ResponseError("密码为空");
+                await ResponseErrorAsync("密码为空");
                 return;
             }
 
@@ -66,7 +65,7 @@ namespace Server.Http.Controller
                 // 判断密码正确性
                 if (user.password != password)
                 {
-                    ResponseError("密码错误");
+                    await ResponseErrorAsync("密码错误");
                     return;
                 }
             }
@@ -74,7 +73,7 @@ namespace Server.Http.Controller
             UserConfig uConfig = IoC.Get<UserConfig>();
             JwtToken jwtToken = new JwtToken(uConfig.TokenSecret, userId, JwtToken.DefaultExp());
 
-            ResponseSuccess(new JObject(new JProperty(Fields.token, jwtToken.Token)));
+            await ResponseSuccessAsync(new JObject(new JProperty(Fields.token, jwtToken.Token)));
         }
 
         /// <summary>
@@ -83,14 +82,14 @@ namespace Server.Http.Controller
         /// </summary>
         /// <returns></returns>
         [Route(HttpVerbs.Get, "/user/info")]
-        public void UserInfo([QueryField] string token)
+        public async Task UserInfo([QueryField] string token)
         {
             // 用 token 获取用户信息
             UserConfig uConfig = IoC.Get<UserConfig>();
             JwtToken jwtToken = new JwtToken(uConfig.TokenSecret, token);
             if (jwtToken.TokenValidState != TokenValidState.Valid)
             {
-                ResponseError("token无效");
+                await ResponseErrorAsync("token无效");
                 return;
             }
 
@@ -99,13 +98,13 @@ namespace Server.Http.Controller
             var user = LiteDb.Query<User>().Where(u => u.userId == jwtToken.UserId).FirstOrDefault();
             if (user == null)
             {
-                ResponseError("未找到用户！");
+                await ResponseErrorAsync("未找到用户！");
                 return;
             }
 
             if (string.IsNullOrEmpty(user.avatar)) user.avatar = uConfig.DefaultAvatar;
 
-            ResponseSuccess(user);
+            await ResponseSuccessAsync(user);
         }
 
         /// <summary>
@@ -114,9 +113,9 @@ namespace Server.Http.Controller
         /// <param name="token"></param>
         /// <returns></returns>
         [Route(HttpVerbs.Put, "/user/logout")]
-        public void UserLogout()
+        public async Task UserLogout()
         {
-            ResponseSuccess("success");
+            await ResponseSuccessAsync("success");
         }
 
 
@@ -124,7 +123,7 @@ namespace Server.Http.Controller
         /// 更新用户的头像
         /// </summary>
         [Route(HttpVerbs.Put, "/user/avatar")]
-        public void UpdateUserAvatar()
+        public async Task UpdateUserAvatar()
         {
             // 获取 body 传输的 url
             var avatarUrl = Body.SelectToken(Fields.avatar).ValueOrDefault(string.Empty);
@@ -132,20 +131,20 @@ namespace Server.Http.Controller
 
             if (string.IsNullOrEmpty(avatarUrl))
             {
-                ResponseError("请在 data 中传入 avatarUrl");
+                await ResponseErrorAsync("请在 data 中传入 avatarUrl");
                 return;
             }
 
             if (string.IsNullOrEmpty(userId))
             {
-                ResponseError("请在 data 中传入 userName");
+                await ResponseErrorAsync("请在 data 中传入 userName");
                 return;
             }
 
             var user = LiteDb.Fetch<User>(u => u.userId == userId).FirstOrDefault();
             if (user == null)
             {
-                ResponseError("用户不存在");
+                await ResponseErrorAsync("用户不存在");
                 return;
             }
 
@@ -155,7 +154,7 @@ namespace Server.Http.Controller
                 avatar = avatarUrl,
             }, new UpdateOptions() { Fields.avatar });
 
-            ResponseSuccess("success");
+            await ResponseSuccessAsync("success");
         }
     }
 }

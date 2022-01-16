@@ -15,23 +15,23 @@ using System.Threading.Tasks;
 
 namespace Server.Http.Controller
 {
-    public class Ctrler_Group : BaseController
+    public class Ctrler_Group : BaseControllerAsync
     {
 
         [Route(HttpVerbs.Get, "/group")]
-        public void GetGroups([QueryField] string groupType)
+        public async Task GetGroups([QueryField] string groupType)
         {
             if (string.IsNullOrEmpty(groupType))
             {
-                ResponseError("请传递组的类型:[send,receive]");
+                await ResponseErrorAsync("请传递组的类型:[send,receive]");
             };
 
             var results = LiteDb.Fetch<Group>(g => g.groupType == groupType).ToList();
-            ResponseSuccess(results);
+            await ResponseSuccessAsync(results);
         }
 
         [Route(HttpVerbs.Post, "/group")]
-        public void NewGroup()
+        public async Task NewGroup()
         {
             var parentId = Body.Value<string>("parentId");
             var name = Body.Value<string>("name");
@@ -49,37 +49,37 @@ namespace Server.Http.Controller
 
             LiteDb.Insert(newGroup);
 
-            ResponseSuccess(newGroup);
+            await ResponseSuccessAsync(newGroup);
         }
 
         [Route(HttpVerbs.Delete, "/groups")]
-        public void DeleteGroup()
+        public async Task DeleteGroup()
         {
             List<string> ids = Body["groupIds"].ToObject<List<string>>();
             LiteDb.DeleteMany<Group>(g => ids.Contains(g._id));
-            ResponseSuccess(ids);
+            await ResponseSuccessAsync(ids);
         }
 
         // 更新group
         [Route(HttpVerbs.Put, "/groups/{id}")]
-        public void UpdateGroup(string id)
+        public async Task UpdateGroup(string id)
         {
             // 获取所有待更新的key
             List<string> keys = (Body as JObject).Properties().ToList().ConvertAll(p => p.Name);
             Group group = Body.ToObject<Group>();
             var res = LiteDb.Upsert2(g => g._id == id, group, new Database.Definitions.UpdateOptions(keys));
-            ResponseSuccess(res);
+            await ResponseSuccessAsync(res);
         }
 
         // 新建邮件
         [Route(HttpVerbs.Post, "/groups/{id}/email")]
-        public void NewEmail(string id)
+        public async Task NewEmail(string id)
         {
             // 根据id获取组
             var group = LiteDb.SingleOrDefault<Group>(g => g._id == id);
             if (group == null)
             {
-                ResponseError($"未通过{id}找到组");
+                await ResponseErrorAsync($"未通过{id}找到组");
                 return;
             }
             // 根据key来进行实例化
@@ -95,18 +95,18 @@ namespace Server.Http.Controller
                 res = LiteDb.Upsert2(g => g.email == emailInfo.email, emailInfo);
             }
 
-            ResponseSuccess(res);
+            await ResponseSuccessAsync(res);
         }
 
         // 新建多个邮件
         [Route(HttpVerbs.Post, "/groups/{id}/emails")]
-        public void NewEmails(string id)
+        public async Task NewEmails(string id)
         {
             // 获取所有待更新的key
             var group = LiteDb.SingleOrDefault<Group>(g => g._id == id);
             if (group == null)
             {
-                ResponseError($"未通过{id}找到组");
+                await ResponseErrorAsync($"未通过{id}找到组");
                 return;
             }
             // 根据key来进行实例化
@@ -115,25 +115,25 @@ namespace Server.Http.Controller
                 var emailInfos = Body.ToObject<List<SendBox>>();
                 emailInfos.ForEach(e => e.groupId = id);
                 LiteDb.Database.GetCollection<SendBox>().InsertBulk(emailInfos);
-                ResponseSuccess(emailInfos);
+                await ResponseSuccessAsync(emailInfos);
             }
             else
             {
                 var emailInfos = Body.ToObject<List<ReceiveBox>>();
                 emailInfos.ForEach(e => e.groupId = id);
                 LiteDb.Database.GetCollection<ReceiveBox>().InsertBulk(emailInfos);
-                ResponseSuccess(emailInfos);
+                await ResponseSuccessAsync(emailInfos);
             }
         }
 
         // 获取多个邮件
         [Route(HttpVerbs.Get, "/groups/{id}/emails")]
-        public void GetEmails(string id)
+        public async Task GetEmails(string id)
         {
             var group = LiteDb.SingleOrDefault<Group>(g => g._id == id);
             if (group == null)
             {
-                ResponseError($"未通过{id}找到组");
+                await ResponseErrorAsync($"未通过{id}找到组");
                 return;
             }
 
@@ -149,28 +149,28 @@ namespace Server.Http.Controller
                 results.AddRange(emails);
             }
 
-            ResponseSuccess(results);
+            await ResponseSuccessAsync(results);
         }
 
         // 删除单个邮箱
         [Route(HttpVerbs.Delete, "/emails/{id}")]
-        public void DeleteEmail(string id)
+        public async Task DeleteEmail(string id)
         {
             // 获取所有待更新的key
             LiteDb.Delete<SendBox>(id);
             LiteDb.Delete<ReceiveBox>(id);
 
-            ResponseSuccess("success");
+            await ResponseSuccessAsync("success");
         }
 
         // 删除多个邮箱
         [Route(HttpVerbs.Delete, "/groups/{id}/emails")]
-        public void DeleteEmails(string id)
+        public async Task DeleteEmails(string id)
         {
             var group = LiteDb.SingleOrDefault<Group>($"_id='{id}'");
             if (group == null)
             {
-                ResponseError($"未通过{id}找到组");
+                await ResponseErrorAsync($"未通过{id}找到组");
                 return;
             }
 
@@ -178,12 +178,12 @@ namespace Server.Http.Controller
             LiteDb.DeleteMany<SendBox>($"groupId='{id}'");
             LiteDb.DeleteMany<ReceiveBox>($"groupId='{id}'");
 
-            ResponseSuccess("success");
+            await ResponseSuccessAsync("success");
         }
 
         // 修改邮箱
         [Route(HttpVerbs.Put, "/emails/{id}")]
-        public void ModifyEmail(string id)
+        public async Task ModifyEmail(string id)
         {
             // 根据id判断属于发件还是收件
             var sendbox = LiteDb.FirstOrDefault<SendBox>(s => s._id == id);
@@ -191,7 +191,7 @@ namespace Server.Http.Controller
             {
                 var updateData1 = Body.ToObject<SendBox>();
                 var result1 = LiteDb.Upsert2(e => e._id == id, updateData1, new UpdateOptions(true) { "_id", "groupId" });
-                ResponseSuccess(result1);
+                await ResponseSuccessAsync(result1);
                 return;
             }
 
@@ -199,19 +199,19 @@ namespace Server.Http.Controller
             var receiveBox = LiteDb.FirstOrDefault<ReceiveBox>(r => r._id == id);
             if (receiveBox == null)
             {
-                ResponseError($"未找到id:{id}对应的邮箱");
+                await ResponseErrorAsync($"未找到id:{id}对应的邮箱");
                 return;
             }
 
             var updateData2 = Body.ToObject<ReceiveBox>();
             // 更新
             var result2 = LiteDb.Upsert2(e => e._id == id, updateData2, new UpdateOptions(true) { "_id", "groupId" });
-            ResponseSuccess(result2);
+            ResponseSuccessAsync(result2);
         }
 
         // 修改发件箱设置
         [Route(HttpVerbs.Put, "/emails/{id}/settings")]
-        public void UpdateSendEmailSettings(string id)
+        public async Task UpdateSendEmailSettings(string id)
         {
             // 根据id判断属于发件还是收件
             var sendbox = LiteDb.FirstOrDefault<SendBox>(s => s._id == id);
@@ -223,12 +223,12 @@ namespace Server.Http.Controller
                 }
 
                 sendbox.settings.UpdateObject(Body as JObject);
-                LiteDb.Update(sendbox);                
-                ResponseSuccess(sendbox);
+                LiteDb.Update(sendbox);
+                await ResponseSuccessAsync(sendbox);
                 return;
             }
 
-            ResponseError($"未找到发件箱:{id}");
+            await ResponseErrorAsync($"未找到发件箱:{id}");
         }
     }
 }

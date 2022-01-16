@@ -79,6 +79,7 @@
     <Compile Include="Database\Models\Template.cs" />
     <Compile Include="Database\Models\User.cs" />
     <Compile Include="Database\LiteDBManager.cs" />
+    <Compile Include="Http\Controller\BaseControllerAsync.cs" />
     <Compile Include="Http\Controller\Ctrler_Group.cs" />
     <Compile Include="Http\Controller\Ctrler_History.cs" />
     <Compile Include="Http\Controller\Ctrler_File.cs" />

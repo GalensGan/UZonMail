@@ -17,13 +17,13 @@ namespace Server.Http.Controller
     /// <summary>
     /// 统计报表相关的接口
     /// </summary>
-    class Ctrler_Report : BaseController
+    class Ctrler_Report : BaseControllerAsync
     {
         /// <summary>
         /// 邮件总体到达率
         /// </summary>
         [Route(HttpVerbs.Get, "/report/success-rate")]
-        public void GetAllSuccessRate()
+        public async Task GetAllSuccessRate()
         {
             // 找到当前的用户名
             var userId = Token.UserId;
@@ -33,7 +33,7 @@ namespace Server.Http.Controller
             if (historyGroups.Count < 1)
             {
                 // 返回1
-                ResponseSuccess(1);
+                await ResponseSuccessAsync(1);
                 return;
             };
 
@@ -43,20 +43,20 @@ namespace Server.Http.Controller
             if (sendItems.Count < 1)
             {
                 // 返回1
-                ResponseSuccess(1);
+                await ResponseSuccessAsync(1);
                 return;
             }
 
             // 计算比例
             var successItems = sendItems.FindAll(item => item.isSent);
-            ResponseSuccess(successItems.Count * 1.0 / sendItems.Count);
+            await ResponseSuccessAsync(successItems.Count * 1.0 / sendItems.Count);
         }
 
         /// <summary>
         /// 收件箱种类和数量
         /// </summary>
         [Route(HttpVerbs.Get, "/report/inbox-type-count")]
-        public void GetINboxTypeAndCount()
+        public async Task GetINboxTypeAndCount()
         {
             // 找到当前的用户名
             var userId = Token.UserId;
@@ -66,7 +66,7 @@ namespace Server.Http.Controller
             if (historyGroups.Count < 1)
             {
                 // 返回默认值
-                ResponseSuccess(JObject.Parse(defaultValueString));
+                await ResponseSuccessAsync(JObject.Parse(defaultValueString));
                 return;
             };
 
@@ -76,14 +76,14 @@ namespace Server.Http.Controller
             if (sendItems.Count < 1)
             {
                 // 返回1
-                ResponseSuccess(JObject.Parse(defaultValueString));
+                await ResponseSuccessAsync(JObject.Parse(defaultValueString));
                 return;
             }
 
             // 计算每个邮箱对应的值
             Dictionary<string, int> resultDic = new Dictionary<string, int>();
             var regex = new Regex(@"@\w+([-.]\w+)*\.\w+([-.]\w+)*$");
-            foreach(var sendItem in sendItems)
+            foreach (var sendItem in sendItems)
             {
 
                 var emailType = regex.Match(sendItem.receiverEmail);
@@ -99,8 +99,9 @@ namespace Server.Http.Controller
                     resultDic.Add(typeKey, 1);
                 }
             }
-            
-            ResponseSuccess(resultDic.ToList().ConvertAll(item=> {
+
+            await ResponseSuccessAsync(resultDic.ToList().ConvertAll(item =>
+            {
                 return new JObject(new JProperty(Fields.name, item.Key), new JProperty(Fields.value, item.Value));
             }));
         }

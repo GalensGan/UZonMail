@@ -12,11 +12,11 @@ namespace Server.Http.Controller
     /// <summary>
     /// 模板api
     /// </summary>
-    public class Ctrler_Template : BaseController
+    public class Ctrler_Template : BaseControllerAsync
     {
         // 新建或者更新模板
         [Route(HttpVerbs.Put, "/templates/{id}")]
-        public void UpsertTemplate(string id)
+        public async Task UpsertTemplate(string id)
         {
             // 获取用户名
             var template = Body.ToObject<Template>();
@@ -27,12 +27,12 @@ namespace Server.Http.Controller
             LiteDb.Upsert(template);
 
             // 返回结果
-            ResponseSuccess(template);
+            await ResponseSuccessAsync(template);
         }
 
         // 新建模板
         [Route(HttpVerbs.Post, "/template")]
-        public void UploadTemplate()
+        public async Task UploadTemplate()
         {
             // 获取用户名
             var template = Body.ToObject<Template>();
@@ -40,34 +40,34 @@ namespace Server.Http.Controller
             template.createDate = DateTime.Now;
 
             LiteDb.Insert(template);
-            ResponseSuccess(template);
+            await ResponseSuccessAsync(template);
         }
 
         // 获取所有模板
         [Route(HttpVerbs.Get, "/templates")]
-        public void GetTemplates()
+        public async Task GetTemplates()
         {
             // 获取用户名
             List<Template> results = LiteDb.Fetch<Template>(t => t.userId == Token.UserId);
-            ResponseSuccess(results);
+            await ResponseSuccessAsync(results);
         }
 
         // 获取某一个模板
         [Route(HttpVerbs.Get, "/templates/{id}")]
-        public void GetTemplates(string id)
+        public async Task GetTemplates(string id)
         {
             // 获取用户名
             var result = LiteDb.SingleOrDefault<Template>(t => t.userId == Token.UserId && t._id == id);
-            ResponseSuccess(result);
+            await ResponseSuccessAsync(result);
         }
 
         // 删除模板
         [Route(HttpVerbs.Delete, "/template/{id}")]
-        public void DeleteTemplates(string id)
+        public async Task DeleteTemplates(string id)
         {
             var deleteResult = LiteDb.Delete<Template>(id);
-            if (deleteResult) ResponseSuccess(deleteResult);
-            else ResponseError("删除失败");
+            if (deleteResult) await ResponseSuccessAsync(deleteResult);
+            else await ResponseErrorAsync("删除失败");
         }
     }
 }

@@ -14,13 +14,13 @@ using System.Threading.Tasks;
 
 namespace Server.Http.Controller
 {
-    public class Ctrler_Setting : BaseController
+    public class Ctrler_Setting : BaseControllerAsync
     {
         [Route(HttpVerbs.Get, "/setting")]
-        public void GetUserSettings()
+        public async Task GetUserSettings()
         {
             Setting setting = LiteDb.SingleOrDefault<Setting>(s => s.userId == Token.UserId);
-            ResponseSuccess(setting);
+            await ResponseSuccessAsync(setting);
         }
 
         /// <summary>
@@ -40,10 +40,10 @@ namespace Server.Http.Controller
                 userId = Token.UserId,
                 sendInterval_max = max,
                 sendInterval_min = min,
-            }, new UpdateOptions() {"sendInterval_max", "sendInterval_min" });
+            }, new UpdateOptions() { "sendInterval_max", "sendInterval_min" });
 
             // 返回成功
-            ResponseSuccess("success");
+            await ResponseSuccessAsync("success");
         }
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace Server.Http.Controller
             }, new UpdateOptions() { "isAutoResend" });
 
             // 返回成功
-            ResponseSuccess("success");
+            await ResponseSuccessAsync("success");
         }
 
         /// <summary>
@@ -87,7 +87,7 @@ namespace Server.Http.Controller
             }, new UpdateOptions() { "sendWithImageAndHtml" });
 
             // 返回成功
-            ResponseSuccess("success");
+            await ResponseSuccessAsync("success");
         }
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace Server.Http.Controller
             }, new UpdateOptions() { "maxEmailsPerDay" });
 
             // 返回成功
-            ResponseSuccess("success");
+            await ResponseSuccessAsync("success");
         }
     }
 }

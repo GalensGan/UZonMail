@@ -15,20 +15,20 @@ namespace Server.Http.Controller
     /// <summary>
     /// 文件接口
     /// </summary>
-    class Ctrler_File : BaseController
+    class Ctrler_File : BaseControllerAsync
     {
         /// <summary>
         /// 新增文件
         /// </summary>
         [Route(HttpVerbs.Post, "/file")]
-        public void UploadFile()
+        public async Task UploadFile()
         {
             // 找到当前的用户名
             var userId = Token.UserId;
 
             if (string.IsNullOrEmpty(userId))
             {
-                ResponseError("需要登陆才能上传");
+                await ResponseErrorAsync("需要登陆才能上传");
                 return;
             }
 
@@ -59,15 +59,15 @@ namespace Server.Http.Controller
             }
 
             // 返回id
-            ResponseSuccess(fileIds);
+            await ResponseSuccessAsync(fileIds);
         }
 
         [Route(HttpVerbs.Get, "/file")]
-        public void DownloadFile([QueryField] string fileId)
+        public async Task DownloadFile([QueryField] string fileId)
         {
             if (string.IsNullOrEmpty(fileId))
             {
-                ResponseError("fileId 为空");
+                await ResponseErrorAsync("fileId 为空");
                 return;
             }
 
@@ -80,7 +80,7 @@ namespace Server.Http.Controller
                 HttpContext.Response.ContentType = "arraybuffer";
                 file.CopyTo(stream);
             }
-                
+
         }
     }
 }
