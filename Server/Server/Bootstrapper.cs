@@ -25,7 +25,11 @@ namespace Server
             // 注册 IoC
             var userConfig = new UserConfig();
             builder.Bind<UserConfig>().ToInstance(userConfig);
-            builder.Bind<LiteDBManager>().ToInstance(new LiteDBManager(userConfig));
+            var liteDb = new LiteDBManager(userConfig);
+            builder.Bind<LiteDBManager>().ToInstance(liteDb);
+
+            // 进行系统层面的初始化
+            // 暂无
 
             base.ConfigureIoC(builder);
         }

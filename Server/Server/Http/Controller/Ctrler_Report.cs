@@ -62,11 +62,21 @@ namespace Server.Http.Controller
             var userId = Token.UserId;
             // 获取用户发送的历史组
             var historyGroups = LiteDb.Fetch<HistoryGroup>(g => g.userId == userId).ToList();
-            var defaultValueString = "[{'name':'未发件','value':0}]";
+            var defaultResults = new JArray()
+                {
+                   new JObject(){ { "name","未发件"},{ "value",0} }
+                };
             if (historyGroups.Count < 1)
             {
                 // 返回默认值
-                await ResponseSuccessAsync(JObject.Parse(defaultValueString));
+                try
+                {
+                    await ResponseSuccessAsync(defaultResults);
+                }
+                catch (Exception e)
+                {
+                    ;
+                }
                 return;
             };
 
@@ -76,7 +86,7 @@ namespace Server.Http.Controller
             if (sendItems.Count < 1)
             {
                 // 返回1
-                await ResponseSuccessAsync(JObject.Parse(defaultValueString));
+                await ResponseSuccessAsync(defaultResults);
                 return;
             }
 

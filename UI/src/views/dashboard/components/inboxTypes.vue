@@ -6,7 +6,6 @@
 import 'echarts-liquidfill'
 import * as echarts from 'echarts'
 import resize from '@/components/Echarts/mixins/resize'
-import _ from 'lodash'
 import { getInboxCountOfTyes } from '@/api/report'
 
 export default {

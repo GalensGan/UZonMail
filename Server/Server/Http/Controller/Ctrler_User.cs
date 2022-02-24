@@ -59,6 +59,9 @@ namespace Server.Http.Controller
                     password = password,
                     createDate = DateTime.Now
                 });
+
+                // 新建用户后，同时给用户建立默认配置
+                LiteDb.Insert(Setting.DefaultSetting(userId));
             }
             else
             {

@@ -11,7 +11,7 @@ namespace Server.Http.Controller
     /// <summary>
     /// 具有异步的 controller 基类
     /// </summary>
-    public class BaseControllerAsync : BaseController
+    public abstract class BaseControllerAsync : BaseController
     {
         // 异步发送数据
         private async Task SendJObjectAsync(object obj)

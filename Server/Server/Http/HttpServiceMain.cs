@@ -63,7 +63,7 @@ namespace Server.Http
             Type baseType = typeof(BaseController);
             List<Type> controllers = types.Where(t =>
             {
-                return baseType == t.BaseType;
+                return !t.IsAbstract && baseType.IsAssignableFrom(t);                
             }).ToList();
             string baseRout = UserConfig.Instance.BaseRoute;
             server.WithWebApi(baseRout, m => {

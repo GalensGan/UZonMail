@@ -14,13 +14,13 @@ namespace Server.Database.Models
         /// <summary>
         /// 发件箱设置
         /// </summary>
-        public SendBoxSetting settings { get; set; }
+        public SendBoxSetting settings { get; set; } = new SendBoxSetting();
 
         /// <summary>
         /// 递增发件量
         /// </summary>
         /// <returns>true:可以继续发件；false:发件已达到最大数量</returns>
-        public bool IncreaseSentCount(LiteDBManager liteDb,Setting globalSetting)
+        public bool IncreaseSentCount(LiteDBManager liteDb, Setting globalSetting)
         {
             // 判断日期是否是今天，如果不是，则将当天发件数置 0
             string date = DateTime.Now.ToString("yyyy-MM-dd");
@@ -53,7 +53,7 @@ namespace Server.Database.Models
         public bool asSender { get; set; } = true;
 
         // 单日最大发件量
-        public int maxEmailsPerDay { get; set; }
+        public int maxEmailsPerDay { get; set; } = 40;
 
         // 总发件量
         // 系统自动增加
