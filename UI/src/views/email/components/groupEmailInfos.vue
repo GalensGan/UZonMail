@@ -20,7 +20,7 @@
             color="primary"
             class="q-pr-xs q-pl-xs"
             @click="openNewEmailDialog"
-          ></q-btn>
+          />
           <q-btn
             label="从Excel导入"
             dense
@@ -28,11 +28,11 @@
             color="primary"
             class="q-pr-xs q-pl-xs"
             @click="selectExcelFile"
-          ></q-btn>
+          />
           <span class="text-subtitle1 text-primary">{{ group.name }}</span>
           <input
-            type="file"
             id="fileInput"
+            type="file"
             style="display: none"
             accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             @change="fileSelected"
@@ -40,11 +40,11 @@
         </div>
         <q-space />
         <q-input
+          v-model="filter"
           dense
           debounce="300"
           placeholder="搜索"
           color="primary"
-          v-model="filter"
         >
           <template v-slot:append>
             <q-icon name="search" />
@@ -61,8 +61,7 @@
             label="清空"
             :dense="btn_delete.dense"
             @click="clearGroup()"
-          >
-          </q-btn>
+          />
         </q-th>
       </template>
 
@@ -73,10 +72,9 @@
             :color="btn_modify.color"
             :label="btn_modify.label"
             :dense="btn_modify.dense"
-            @click="showModifyEmailDialog(props.row)"
             class="q-mr-sm"
-          >
-          </q-btn>
+            @click="showModifyEmailDialog(props.row)"
+          />
 
           <q-btn
             v-if="columns.length > 3"
@@ -84,10 +82,9 @@
             :color="btn_modify.color"
             label="设置"
             :dense="btn_modify.dense"
-            @click="showUpdateSettings(props.row)"
             class="q-mr-sm"
-          >
-          </q-btn>
+            @click="showUpdateSettings(props.row)"
+          />
 
           <q-btn
             :size="btn_delete.size"
@@ -95,8 +92,7 @@
             :label="btn_delete.label"
             :dense="btn_delete.dense"
             @click="deleteEmailInfo(props.row._id)"
-          >
-          </q-btn>
+          />
         </q-td>
       </template>
     </q-table>
@@ -104,24 +100,24 @@
     <q-dialog v-model="isShowNewEmailDialog" persistent>
       <DialogForm
         type="create"
+        :init-params="initNewEmailParams"
         @createSuccess="addedNewEmail"
-        :initParams="initNewEmailParams"
       />
     </q-dialog>
 
     <q-dialog v-model="isShowModifyEmailDialog" persistent>
       <DialogForm
+        :init-params="initModifyEmailParams"
         type="update"
         @updateSuccess="modifiedEmail"
-        :initParams="initModifyEmailParams"
       />
     </q-dialog>
 
     <q-dialog v-model="isShowUpdateSettings" persistent>
       <DialogForm
+        :init-params="initSettingParams"
         type="update"
         @updateSuccess="updatedSettings"
-        :initParams="initSettingParams"
       />
     </q-dialog>
   </div>
@@ -142,8 +138,9 @@ import { notifySuccess, okCancle } from '@/components/iPrompt'
 const { btn_modify, btn_delete } = table
 
 export default {
-  mixins: [NewEmail, ModifyEmail, NewEmails, UpdateSettings],
   components: { DialogForm },
+  mixins: [NewEmail, ModifyEmail, NewEmails, UpdateSettings],
+
   props: {
     group: {
       type: Object,
@@ -152,6 +149,26 @@ export default {
           groupType: 'send'
         }
       }
+    }
+  },
+
+  data() {
+    return {
+      btn_modify,
+      btn_delete,
+
+      filter: '',
+      loading: false,
+      // 分页数据
+      pagination: {
+        sortBy: 'userName',
+        descending: false,
+        page: 1,
+        rowsPerPage: 0,
+        rowsNumber: 0
+      },
+
+      data: []
     }
   },
 
@@ -245,26 +262,6 @@ export default {
           }
         ]
       }
-    }
-  },
-
-  data() {
-    return {
-      btn_modify,
-      btn_delete,
-
-      filter: '',
-      loading: false,
-      // 分页数据
-      pagination: {
-        sortBy: 'userName',
-        descending: false,
-        page: 1,
-        rowsPerPage: 0,
-        rowsNumber: 0
-      },
-
-      data: []
     }
   },
 

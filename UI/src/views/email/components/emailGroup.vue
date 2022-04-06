@@ -24,38 +24,38 @@
               >
                 <q-list bordered class="rounded-borders text-teal" dense>
                   <q-item
-                    clickable
                     v-if="!prop.node.parentId"
                     v-close-popup="2"
-                    @click="showNewGroupDialog(null)"
+                    clickable
                     dense
+                    @click="showNewGroupDialog(null)"
                   >
                     <q-item-section>添加组</q-item-section>
                   </q-item>
 
                   <q-item
-                    clickable
                     v-close-popup="2"
-                    @click="showNewGroupDialog(prop.node)"
+                    clickable
                     dense
+                    @click="showNewGroupDialog(prop.node)"
                   >
                     <q-item-section>添加子组</q-item-section>
                   </q-item>
 
                   <q-item
-                    clickable
                     v-close-popup
-                    @click="showModifyGroupDialog(prop.node)"
+                    clickable
                     dense
+                    @click="showModifyGroupDialog(prop.node)"
                   >
                     <q-item-section>修改</q-item-section>
                   </q-item>
 
                   <q-item
-                    clickable
                     v-close-popup
-                    @click="deleteNode(prop.node)"
+                    clickable
                     dense
+                    @click="deleteNode(prop.node)"
                   >
                     <q-item-section>删除</q-item-section>
                   </q-item>
@@ -107,7 +107,7 @@
     <q-dialog v-model="isShowNewGroupDialog">
       <DialogForm
         type="create"
-        :initParams="initNewGroupParams"
+        :init-params="initNewGroupParams"
         @createSuccess="addNewGroup"
       />
     </q-dialog>
@@ -115,7 +115,7 @@
     <q-dialog v-model="isShowModifyGroupDialog">
       <DialogForm
         type="update"
-        :initParams="initModifyGroupParams"
+        :init-params="initModifyGroupParams"
         @updateSuccess="modifyGroup"
       />
     </q-dialog>
@@ -135,12 +135,21 @@ import LTT from '@/utils/list2tree'
 import { notifySuccess, okCancle } from '@/components/iPrompt'
 
 export default {
-  mixins: [mixinNewGroup, mixinModifyGroup],
   components: { DialogForm, GroupEmailInfos },
+  mixins: [mixinNewGroup, mixinModifyGroup],
 
-  watch: {
-    filterTreeText(val) {
-      this.$refs.groupTree.filter(val)
+  props: {
+    groupType: {
+      type: String,
+      default: 'send'
+    }
+  },
+  data() {
+    return {
+      splitterModel: 20,
+      groupsOrigin: [],
+
+      selectedNode: ''
     }
   },
 
@@ -160,18 +169,9 @@ export default {
     }
   },
 
-  props: {
-    groupType: {
-      type: String,
-      default: 'send'
-    }
-  },
-  data() {
-    return {
-      splitterModel: 20,
-      groupsOrigin: [],
-
-      selectedNode: ''
+  watch: {
+    filterTreeText(val) {
+      this.$refs.groupTree.filter(val)
     }
   },
 
