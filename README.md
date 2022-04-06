@@ -54,5 +54,5 @@
 
 ## 🍇使用说明
 
-详细文档已迁移至：https://galens.uamazing.cn/2020/2QMK677.html
+详细文档已迁移至：https://galens.uamazing.cn/posts/2020/2QMK677.html
 
