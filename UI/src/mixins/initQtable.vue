@@ -10,7 +10,7 @@ export default {
       filter: '',
       loading: false,
       pagination: {
-        sortBy: 'order',
+        sortBy: '_id',
         descending: true,
         page: 1,
         rowsPerPage: 15,

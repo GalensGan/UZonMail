@@ -1,22 +1,26 @@
 <template>
   <q-card class="column" style="max-width: none; height: 60%">
     <q-table
-      :data="dataToShow"
-      :columns="columns"
       row-key="_id"
-      binary-state-sort
+      :data="data"
+      :columns="columns"
       :pagination.sync="pagination"
+      :loading="loading"
+      :filter="filter"
       dense
-      style="flex: 1"
+      binary-state-sort
+      virtual-scroll
+      class="col-grow"
+      @request="initQuasarTable_onRequest"
     >
       <template v-slot:top>
         <q-space />
         <q-input
+          v-model="filter"
           dense
           debounce="300"
           placeholder="搜索"
           color="primary"
-          v-model="filter"
         >
           <template v-slot:append>
             <q-icon name="search" />
@@ -41,24 +45,24 @@
 
       <template v-slot:body-cell-operations="props">
         <q-td :props="props" class="row justify-end">
-          <q-btn
+          <!-- <q-btn
             :size="btn_detail.size"
             :color="btn_detail.color"
             :label="btn_detail.label"
             :dense="btn_detail.dense"
             @click="openShowDetailDialog(props.row._id)"
-          ></q-btn>
+          /> -->
         </q-td>
       </template>
     </q-table>
     <div class="row justify-end q-pa-sm">
       <q-btn
+        v-if="isShowResent"
         label="重发"
         color="teal"
         size="sm"
         class="q-mr-sm"
         :class="resentClass"
-        v-if="isShowResent"
         :disable="disableResend"
         :loading="isResending"
         @click="resend"
@@ -82,10 +86,10 @@
 
 <script>
 import {
-  getSendItemsByHistoryId,
+  getSendItemsCountByHistoryId,
+  getSendItemsListByHistoryId,
   getHistoryGroupSendResult
 } from '@/api/history'
-
 import { startSending, getCurrentStatus, getSendingInfo } from '@/api/send'
 
 import { table } from '@/themes/index'
@@ -94,7 +98,11 @@ const { btn_detail } = table
 import moment from 'moment'
 import { notifyError, notifySuccess, okCancle } from '@/components/iPrompt'
 
+import mixin_initQTable from '@/mixins/initQtable.vue'
+
 export default {
+  mixins: [mixin_initQTable],
+
   props: {
     historyId: {
       type: String,
@@ -105,8 +113,6 @@ export default {
     return {
       btn_detail,
 
-      filter: '',
-      data: [],
       columns: [
         {
           name: 'index',
@@ -129,6 +135,7 @@ export default {
           label: '发件人',
           align: 'left',
           field: 'senderName',
+          format: val => val || '-',
           sortable: true
         },
         {
@@ -137,6 +144,7 @@ export default {
           label: '发件箱',
           align: 'left',
           field: 'senderEmail',
+          format: val => val || '-',
           sortable: true
         },
         {
@@ -181,22 +189,14 @@ export default {
           align: 'left',
           field: 'tryCount',
           sortable: true
-        },
-        {
-          name: 'operations',
-          required: true,
-          label: '操作',
-          align: 'right'
         }
+        // {
+        //   name: 'operations',
+        //   required: true,
+        //   label: '操作',
+        //   align: 'right'
+        // }
       ],
-      // 分页数据
-      pagination: {
-        sortBy: '_id',
-        descending: false,
-        page: 1,
-        rowsPerPage: 0,
-        rowsNumber: 0
-      },
 
       disableResend: false,
       disableCancle: false,
@@ -205,23 +205,6 @@ export default {
     }
   },
   computed: {
-    dataToShow() {
-      if (!this.filter) return this.data
-
-      const regex = new RegExp(this.filter, 'i')
-      return this.data.filter(d => {
-        if (
-          regex.test(d.receiverEmail) ||
-          regex.test(d.receiverName) ||
-          regex.test(d.senderEmail) ||
-          regex.test(d.senderName) ||
-          regex.test(d.subject)
-        )
-          return true
-        return false
-      })
-    },
-
     // 是否显示重新发送功能
     isShowResent() {
       const needResend = this.data.filter(d => !d.isSent)
@@ -230,21 +213,22 @@ export default {
 
     resentClass() {
       if (this.isResending) return 'resend-runing'
-      else return 'resend-normal'
+
+      return 'resend-normal'
     }
   },
+
+  watch: {
+    data(val) {
+      this.disableResend = val.some(d => !d.isSent)
+    }
+  },
+
   async mounted() {
     // 获取数据
     if (!this.historyId) return
 
-    const res = await getSendItemsByHistoryId(this.historyId)
-    this.data = res.data
-
-    // 查看是否可以重新发送
-    const needResend = this.data.filter(d => !d.isSent)
-    this.disableResend = needResend.length < 1
-
-    // 获取当前状态，可能处理发送中
+    // 获取当前状态，可能处于发送中
     const statusRes = await getCurrentStatus()
     if (statusRes.data & 1 && statusRes.data & 8) {
       // 打开发送框
@@ -257,6 +241,24 @@ export default {
   },
 
   methods: {
+    // 获取筛选的数量
+    // 重载 mixin 中的方法
+    async initQuasarTable_getFilterCount(filterObj) {
+      const res = await getSendItemsCountByHistoryId(this.historyId, filterObj)
+      return res.data || 0
+    },
+
+    // 重载 mixin 中的方法
+    // 获取筛选结果
+    async initQuasarTable_getFilterList(filterObj, pagination) {
+      const res = await getSendItemsListByHistoryId(
+        this.historyId,
+        filterObj,
+        pagination
+      )
+      return res.data || []
+    },
+
     async resend() {
       const ids = this.data.filter(d => !d.isSent).map(d => d._id)
 
@@ -302,11 +304,8 @@ export default {
           if (msgRes.data.ok) notifySuccess(msgRes.data.message)
           else notifyError(msgRes.data.message)
 
-          // 更新数据
-          const res = await getSendItemsByHistoryId(this.historyId)
-          this.data = res.data
-
-          const needResend = this.data.filter(d => !d.isSent)
+          // 重新更新数据
+          this.initQuasarTable_onRequest()
 
           // 打开按钮锁定
           this.disableResend = needResend.length < 1

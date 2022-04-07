@@ -15,7 +15,7 @@
               label-key="name"
               :selected.sync="selectedNode"
               no-connectors
-              tick-strategy="leaf"
+              tick-strategy="strict"
               :ticked.sync="tickedNodes"
             />
           </div>

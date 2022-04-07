@@ -252,7 +252,7 @@
                   size="sm"
                   @click="nextItem"
                 />
-                <q-btn label="退出" color="negative" size="sm" v-close-popup />
+                <q-btn v-close-popup label="退出" color="negative" size="sm" />
               </div>
             </div>
           </q-footer>

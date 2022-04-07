@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Server.Database.Models
 {
-    public class SendItem:AutoObjectId
+    public class SendItem : AutoObjectId
     {
         // 历史id
         public string historyId { get; set; }
@@ -54,6 +54,11 @@ namespace Server.Database.Models
 
         // 待发附件
         public List<EmailAttachment> attachments { get; set; }
+
+        public override string GetFilterString()
+        {
+            return base.GetFilterString() + senderName + senderEmail + receiverEmail + receiverEmail + subject + sendMessage;
+        }
     }
 
     public enum SendItemType

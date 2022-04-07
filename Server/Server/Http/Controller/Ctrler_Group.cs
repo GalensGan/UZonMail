@@ -184,6 +184,9 @@ namespace Server.Http.Controller
                 {
                     emails = emails.OrderBy(item => item.GetValue(data.pagination.sortBy));
                 }
+
+                emails = emails.Skip(data.pagination.skip).Take(data.pagination.limit);
+
                 results.AddRange(emails);
             }
             else
@@ -198,6 +201,9 @@ namespace Server.Http.Controller
                 {
                     emails = emails.OrderBy(item => item.GetValue(data.pagination.sortBy));
                 }
+
+                emails = emails.Skip(data.pagination.skip).Take(data.pagination.limit);
+
                 results.AddRange(emails);
             }
 

@@ -1,22 +1,26 @@
 <template>
   <div class="history-container">
     <q-table
-      :data="dataToShow"
+      row-key="_id"
+      :data="data"
       :columns="columns"
       :pagination.sync="pagination"
-      row-key="_id"
-      binary-state-sort
+      :loading="loading"
+      :filter="filter"
       dense
-      style="height: 100%"
+      binary-state-sort
+      virtual-scroll
+      class="full-height"
+      @request="initQuasarTable_onRequest"
     >
       <template v-slot:top>
         <q-space />
         <q-input
+          v-model="filter"
           dense
           debounce="300"
           placeholder="搜索"
           color="primary"
-          v-model="filter"
         >
           <template v-slot:append>
             <q-icon name="search" />
@@ -31,30 +35,33 @@
             :color="btn_detail.color"
             :label="btn_detail.label"
             :dense="btn_detail.dense"
-            @click="openShowDetailDialog(props.row._id)"
             class="q-mr-sm"
-          >
-          </q-btn>
+            @click="openShowDetailDialog(props.row._id)"
+          />
           <q-btn
             :size="btn_delete.size"
             :color="btn_delete.color"
             :label="btn_delete.label"
             :dense="btn_delete.dense"
             @click="deleteHistoryGroup(props.row._id)"
-          >
-          </q-btn>
+          />
         </q-td>
       </template>
     </q-table>
 
     <q-dialog v-model="isShowDetailDialog" persistent>
-      <HistoryDetail :historyId="toShowId" @close="closeHistoryDetail" />
+      <HistoryDetail :history-id="toShowId" @close="closeHistoryDetail" />
     </q-dialog>
   </div>
 </template>
 
 <script>
-import { getHistories, deleteHistoryGroup, getHistory } from '@/api/history'
+import {
+  getHistoriesCount,
+  getHistoriesList,
+  deleteHistoryGroup,
+  getHistoryById
+} from '@/api/history'
 import moment from 'moment'
 
 import { table } from '@/themes/index'
@@ -63,14 +70,16 @@ const { btn_detail, btn_delete } = table
 import HistoryDetail from './components/historyDetail.vue'
 import { notifyError, notifySuccess, okCancle } from '@/components/iPrompt'
 
+import mixin_initQTable from '@/mixins/initQtable.vue'
+
 export default {
   components: { HistoryDetail },
+  mixins: [mixin_initQTable],
   data() {
     return {
       btn_detail,
       btn_delete,
 
-      data: [],
       columns: [
         {
           name: 'createDate',
@@ -104,7 +113,7 @@ export default {
           align: 'left',
           field: 'senderIds',
           format: val => val.length,
-          sortable: true
+          sortable: false
         },
         {
           name: 'receiverIdsLength',
@@ -113,7 +122,7 @@ export default {
           align: 'left',
           field: 'receiverIds',
           format: val => val.length,
-          sortable: true
+          sortable: false
         },
         // 状态
         {
@@ -122,42 +131,8 @@ export default {
           label: '状态',
           align: 'left',
           field: row => row,
-          format: val => {
-            const status = []
-
-            if (val.sendStatus & 1) {
-              status.push(
-                `发送结束，成功：${val.successCount}/${val.receiverIds.length}`
-              )
-            }
-
-            if (val.sendStatus & 2) {
-              status.push(`已初始化，但未发送`)
-            }
-
-            if (val.sendStatus & 4) {
-              status.push(`发送中...`)
-            }
-
-            if (val.sendStatus & 8) {
-              status.push(`重发中...`)
-            }
-
-            if (val.sendStatus & 16) {
-              status.push(`暂停`)
-            }
-
-            if (val.sendStatus & 32) {
-              status.push(`正在发送图片`)
-            }
-
-            if (val.sendStatus & 32) {
-              status.push(`正在发送html`)
-            }
-
-            return status.join()
-          },
-          sortable: true
+          format: this.formatStatus,
+          sortable: false
         },
         {
           name: 'operations',
@@ -166,43 +141,64 @@ export default {
           align: 'right'
         }
       ],
-      // 分页数据
-      pagination: {
-        sortBy: '_id',
-        descending: false,
-        page: 1,
-        rowsPerPage: 25,
-        rowsNumber: 0
-      },
-      filter: '',
 
       toShowId: '',
       isShowDetailDialog: false
     }
   },
 
-  computed: {
-    dataToShow() {
-      if (!this.filter) return this.data
-
-      // 使用正则匹配，可以忽略大小写
-      const regex = new RegExp(this.filter, 'i')
-      return this.data.filter(d => {
-        if (d.subject && regex.test(d.subject)) return true
-
-        if (d.templateName && regex.test(d.templateName)) return true
-        return false
-      })
-    }
-  },
-
-  async mounted() {
-    // 从服务器获取历史数据
-    const res = await getHistories()
-    this.data = res.data
-  },
-
   methods: {
+    // 获取筛选的数量
+    // 重载 mixin 中的方法
+    async initQuasarTable_getFilterCount(filterObj) {
+      const res = await getHistoriesCount(filterObj)
+      return res.data || 0
+    },
+
+    // 重载 mixin 中的方法
+    // 获取筛选结果
+    async initQuasarTable_getFilterList(filterObj, pagination) {
+      const res = await getHistoriesList(filterObj, pagination)
+      return res.data || []
+    },
+
+    // 格式化状态
+    formatStatus(val) {
+      const status = []
+
+      if (val.sendStatus & 1) {
+        status.push(
+          `发送结束，成功：${val.successCount}/${val.receiverIds.length}`
+        )
+      }
+
+      if (val.sendStatus & 2) {
+        status.push(`已初始化，但未发送`)
+      }
+
+      if (val.sendStatus & 4) {
+        status.push(`发送中...`)
+      }
+
+      if (val.sendStatus & 8) {
+        status.push(`重发中...`)
+      }
+
+      if (val.sendStatus & 16) {
+        status.push(`暂停`)
+      }
+
+      if (val.sendStatus & 32) {
+        status.push(`正在发送图片`)
+      }
+
+      if (val.sendStatus & 32) {
+        status.push(`正在发送html`)
+      }
+
+      return status.join()
+    },
+
     openShowDetailDialog(id) {
       this.toShowId = id
       this.isShowDetailDialog = true
@@ -230,7 +226,7 @@ export default {
     // 关闭详细面板
     async closeHistoryDetail(historyId) {
       // 从服务器拉取该条数据
-      const res = await getHistory(historyId)
+      const res = await getHistoryById(historyId)
       if (!res.data) {
         this.isShowDetailDialog = false
         notifyError('更新历史记录失败')

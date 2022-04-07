@@ -36,5 +36,10 @@ namespace Server.Database.Models
 
         // 临时数据:发送成功的数量
         public int successCount { get; set; }
+
+        public override string GetFilterString()
+        {
+            return base.GetFilterString() + subject + templateName + senderIds.Count + receiverIds.Count;
+        }
     }
 }

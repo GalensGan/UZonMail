@@ -1,13 +1,18 @@
 <template>
   <q-table
-    :data="dataToShow"
-    :columns="columns"
     row-key="_id"
-    binary-state-sort
+    :data="data"
+    :columns="columns"
+    :pagination.sync="pagination"
+    :loading="loading"
+    :filter="filter"
     dense
+    binary-state-sort
+    virtual-scroll
+    class="full-heigth"
     selection="multiple"
     :selected.sync="selected"
-    style="height: 100%"
+    @request="initQuasarTable_onRequest"
   >
     <template v-slot:top>
       <q-space />
@@ -27,9 +32,12 @@
 </template>
 
 <script>
-import { getEmails } from '@/api/group'
+import { getEmailsCount, getEmails } from '@/api/group'
+import mixin_initQTable from '@/mixins/initQtable.vue'
 
 export default {
+  mixins: [mixin_initQTable],
+
   props: {
     group: {
       type: Object,
@@ -39,6 +47,7 @@ export default {
         }
       }
     },
+
     value: {
       type: Array,
       default() {
@@ -55,18 +64,6 @@ export default {
   },
 
   computed: {
-    dataToShow() {
-      if (!this.filter) return this.data
-
-      return this.data.filter(d => {
-        if (d.userName && d.userName.indexOf(this.filter) > -1) return true
-        if (d.email && d.email.indexOf(this.filter) > -1) return true
-        if (d.smtp && d.smtp.indexOf(this.filter) > -1) return true
-        if (d.password && d.password.indexOf(this.filter) > -1) return true
-        return false
-      })
-    },
-
     columns() {
       return [
         {
@@ -86,71 +83,6 @@ export default {
           sortable: true
         }
       ]
-      // if (this.group.groupType === 'send') {
-      //   return [
-      //     {
-      //       name: 'userName',
-      //       required: true,
-      //       label: '姓名',
-      //       align: 'left',
-      //       field: row => row.userName,
-      //       sortable: true
-      //     },
-      //     {
-      //       name: 'email',
-      //       required: true,
-      //       label: '邮箱',
-      //       align: 'left',
-      //       field: row => row.email,
-      //       sortable: true
-      //     },
-      //     {
-      //       name: 'smtp',
-      //       required: true,
-      //       label: 'SMTP服务器地址',
-      //       align: 'left',
-      //       field: row => row.smtp,
-      //       sortable: true
-      //     },
-      //     {
-      //       name: 'password',
-      //       required: true,
-      //       label: 'SMTP密码',
-      //       align: 'left',
-      //       field: row => row.password,
-      //       sortable: true
-      //     },
-      //     {
-      //       name: 'operation',
-      //       label: '操作',
-      //       align: 'right'
-      //     }
-      //   ]
-      // } else {
-      //   return [
-      //     {
-      //       name: 'userName',
-      //       required: true,
-      //       label: '姓名',
-      //       align: 'left',
-      //       field: row => row.userName,
-      //       sortable: true
-      //     },
-      //     {
-      //       name: 'email',
-      //       required: true,
-      //       label: '邮箱',
-      //       align: 'left',
-      //       field: row => row.email,
-      //       sortable: true
-      //     },
-      //     {
-      //       name: 'operation',
-      //       label: '操作',
-      //       align: 'right'
-      //     }
-      //   ]
-      // }
     }
   },
 
@@ -168,14 +100,30 @@ export default {
     }
   },
 
-  async mounted() {
-    const { data } = await getEmails(this.group._id)
-    this.data = data || []
+  // async mounted() {
+  //   const { data } = await getEmails(this.group._id)
+  //   this.data = data || []
 
-    // 修改选择的数据
-    this.selected = this.data.filter(
-      d => this.selected.findIndex(s => s._id === d._id) > -1
-    )
+  //   // 修改选择的数据
+  //   this.selected = this.data.filter(
+  //     d => this.selected.findIndex(s => s._id === d._id) > -1
+  //   )
+  // },
+
+  methods: {
+    // 获取筛选的数量
+    // 重载 mixin 中的方法
+    async initQuasarTable_getFilterCount(filterObj) {
+      const res = await getEmailsCount(this.group._id, filterObj)
+      return res.data || 0
+    },
+
+    // 重载 mixin 中的方法
+    // 获取筛选结果
+    async initQuasarTable_getFilterList(filterObj, pagination) {
+      const res = await getEmails(this.group._id, filterObj, pagination)
+      return res.data || []
+    }
   }
 }
 </script>

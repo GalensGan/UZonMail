@@ -67,6 +67,7 @@
     <Compile Include="Config\Fields.cs" />
     <Compile Include="Database\Definitions\UpdateOptions.cs" />
     <Compile Include="Database\Extensions\Ex_LiteRepository.cs" />
+    <Compile Include="Database\Extensions\Ex_Query.cs" />
     <Compile Include="Database\Models\EmailAttachment.cs" />
     <Compile Include="Database\Models\AutoObjectId.cs" />
     <Compile Include="Database\Models\EmailInfo.cs" />

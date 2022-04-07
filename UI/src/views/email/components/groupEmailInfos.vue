@@ -11,6 +11,7 @@
       binary-state-sort
       virtual-scroll
       class="full-height"
+      @request="initQuasarTable_onRequest"
     >
       <template v-slot:top>
         <div class="row justify-center q-gutter-sm">
