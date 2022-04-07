@@ -35,6 +35,7 @@
     "tinymce": "^5.9.2",
     "v-viewer": "^1.6.4",
     "vue": "2.6.10",
+    "vue-async-computed": "^3.9.0",
     "vue-avatar-cropper": "^5.0.2",
     "vue-router": "3.0.6",
     "vuex": "3.1.0",

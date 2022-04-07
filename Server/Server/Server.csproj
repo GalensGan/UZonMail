@@ -87,6 +87,7 @@
     <Compile Include="Http\Controller\Ctrler_Send.cs" />
     <Compile Include="Http\Controller\Ctrler_Setting.cs" />
     <Compile Include="Http\Controller\Ctrler_Template.cs" />
+    <Compile Include="Http\Definitions\PageQuery.cs" />
     <Compile Include="Http\Headers\JwtToken.cs" />
     <Compile Include="Http\Modules\SendEmail\EmailPreview.cs" />
     <Compile Include="Http\Modules\SendEmail\GenerateInfo.cs" />

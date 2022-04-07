@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace Server.Database.Models
 {
-    class ReceiveBox:EmailInfo
+    /// <summary>
+    /// 收件箱
+    /// </summary>
+    public class ReceiveBox:EmailInfo
     {
     }
 }

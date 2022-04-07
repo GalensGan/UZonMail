@@ -1,15 +1,16 @@
 <template>
   <div class="emails-table">
     <q-table
-      :data="dataToShow"
-      :columns="columns"
       row-key="_id"
+      :data="data"
+      :columns="columns"
       :pagination.sync="pagination"
       :loading="loading"
       :filter="filter"
-      binary-state-sort
       dense
-      style="height: 100%"
+      binary-state-sort
+      virtual-scroll
+      class="full-height"
     >
       <template v-slot:top>
         <div class="row justify-center q-gutter-sm">
@@ -130,8 +131,14 @@ import NewEmail from '../mixins/newEmail.vue'
 import NewEmails from '../mixins/newEmails.vue'
 import ModifyEmail from '../mixins/modifyEmail.vue'
 import UpdateSettings from '../mixins/updateSettings.vue'
+import mixin_initQTable from '@/mixins/initQtable.vue'
 
-import { getEmails, deleteEmail, deleteEmails } from '@/api/group'
+import {
+  getEmailsCount,
+  getEmails,
+  deleteEmail,
+  deleteEmails
+} from '@/api/group'
 
 import { table } from '@/themes/index'
 import { notifySuccess, okCancle } from '@/components/iPrompt'
@@ -139,7 +146,7 @@ const { btn_modify, btn_delete } = table
 
 export default {
   components: { DialogForm },
-  mixins: [NewEmail, ModifyEmail, NewEmails, UpdateSettings],
+  mixins: [NewEmail, ModifyEmail, NewEmails, UpdateSettings, mixin_initQTable],
 
   props: {
     group: {
@@ -155,35 +162,12 @@ export default {
   data() {
     return {
       btn_modify,
-      btn_delete,
-
-      filter: '',
-      loading: false,
-      // 分页数据
-      pagination: {
-        sortBy: 'userName',
-        descending: false,
-        page: 1,
-        rowsPerPage: 0,
-        rowsNumber: 0
-      },
-
-      data: []
+      btn_delete
     }
   },
 
   computed: {
-    dataToShow() {
-      if (!this.filter) return this.data
-
-      return this.data.filter(d => {
-        if (d.userName && d.userName.indexOf(this.filter) > -1) return true
-        if (d.email && d.email.indexOf(this.filter) > -1) return true
-        if (d.smtp && d.smtp.indexOf(this.filter) > -1) return true
-        if (d.password && d.password.indexOf(this.filter) > -1) return true
-        return false
-      })
-    },
+    // 列定义
     columns() {
       if (this.group.groupType === 'send') {
         return [
@@ -265,12 +249,21 @@ export default {
     }
   },
 
-  async mounted() {
-    const { data } = await getEmails(this.group._id)
-    this.data = data || []
-  },
-
   methods: {
+    // 获取筛选的数量
+    // 重载 mixin 中的方法
+    async initQuasarTable_getFilterCount(filterObj) {
+      const res = await getEmailsCount(this.group._id, filterObj)
+      return res.data || 0
+    },
+
+    // 重载 mixin 中的方法
+    // 获取筛选结果
+    async initQuasarTable_getFilterList(filterObj, pagination) {
+      const res = await getEmails(this.group._id, filterObj, pagination)
+      return res.data || []
+    },
+
     // 删除邮箱
     async deleteEmailInfo(emailInfoId) {
       const ok = await okCancle('是否删除该条邮箱信息?')

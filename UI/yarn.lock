@@ -11286,6 +11286,11 @@ voc@:
   resolved "https://registry.npm.taobao.org/voc/download/voc-1.2.0.tgz#c459024531d71067c09e2c0c2bda6c2b13af32d8"
   integrity sha1-xFkCRTHXEGfAniwMK9psKxOvMtg=
 
+vue-async-computed@^3.9.0:
+  version "3.9.0"
+  resolved "https://registry.yarnpkg.com/vue-async-computed/-/vue-async-computed-3.9.0.tgz#af3181c25168bfe9d86d8ffbc7033bf9e484fe84"
+  integrity sha512-ac6m/9zxHHNGGKNOU1en8qNk+fAmEbJLuWL7qyQTFuH3vjv3V4urv//QHcVzCobROM6btnaDG2b+XYMncF/ETA==
+
 vue-avatar-cropper@^5.0.2:
   version "5.0.2"
   resolved "https://registry.yarnpkg.com/vue-avatar-cropper/-/vue-avatar-cropper-5.0.2.tgz#6b536fbc873a633a80ad341dddc17a82a5e45d3c"

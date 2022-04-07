@@ -6,6 +6,7 @@ using Newtonsoft.Json.Linq;
 using Server.Database.Definitions;
 using Server.Database.Extensions;
 using Server.Database.Models;
+using Server.Http.Definitions;
 using Server.SDK.Extension;
 using System;
 using System.Collections.Generic;
@@ -126,8 +127,38 @@ namespace Server.Http.Controller
             }
         }
 
+        /// <summary>
+        /// 获取邮件的数量
+        /// </summary>
+        /// <returns></returns>
+        [Route(HttpVerbs.Post, "/groups/{id}/emails/count")]
+        public async Task GetEmailsCount(string id)
+        {
+            var group = LiteDb.SingleOrDefault<Group>(g => g._id == id);
+            if (group == null)
+            {
+                await ResponseErrorAsync($"未通过{id}找到组");
+                return;
+            }
+
+            var data = Body.ToObject<PageQuery>();
+
+            int count = 0;
+            var regex = new System.Text.RegularExpressions.Regex(data.filter.filter);
+            if (group.groupType == "send")
+            {
+                count = LiteDb.Fetch<SendBox>(e => e.groupId == id).Where(item => regex.IsMatch(item.GetFilterString())).Count();
+            }
+            else
+            {
+                count = LiteDb.Fetch<ReceiveBox>(e => e.groupId == id).Where(item => regex.IsMatch(item.GetFilterString())).Count();
+            }
+
+            await ResponseSuccessAsync(count);
+        }
+
         // 获取多个邮件
-        [Route(HttpVerbs.Get, "/groups/{id}/emails")]
+        [Route(HttpVerbs.Post, "/groups/{id}/emails/list")]
         public async Task GetEmails(string id)
         {
             var group = LiteDb.SingleOrDefault<Group>(g => g._id == id);
@@ -138,14 +169,35 @@ namespace Server.Http.Controller
             }
 
             List<EmailInfo> results = new List<EmailInfo>();
+            var data = Body.ToObject<PageQuery>();
+            var regex = new System.Text.RegularExpressions.Regex(data.filter.filter);
+
             if (group.groupType == "send")
             {
-                var emails = LiteDb.Fetch<SendBox>(e => e.groupId == id).ToList();
+                var emails = LiteDb.Fetch<SendBox>(e => e.groupId == id)
+                    .Where(item => regex.IsMatch(item.GetFilterString()));
+                if (data.pagination.descending)
+                {
+                    emails = emails.OrderByDescending(item => item.GetValue(data.pagination.sortBy));
+                }
+                else
+                {
+                    emails = emails.OrderBy(item => item.GetValue(data.pagination.sortBy));
+                }
                 results.AddRange(emails);
             }
             else
             {
-                var emails = LiteDb.Fetch<ReceiveBox>(e => e.groupId == id).ToList();
+                var emails = LiteDb.Fetch<ReceiveBox>(e => e.groupId == id)
+                    .Where(item => regex.IsMatch(item.GetFilterString()));
+                if (data.pagination.descending)
+                {
+                    emails = emails.OrderByDescending(item => item.GetValue(data.pagination.sortBy));
+                }
+                else
+                {
+                    emails = emails.OrderBy(item => item.GetValue(data.pagination.sortBy));
+                }
                 results.AddRange(emails);
             }
 

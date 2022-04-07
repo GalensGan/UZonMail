@@ -173,6 +173,7 @@ export const constantRoutes = [
         path: 'dashboard',
         name: 'Dashboard',
         component: () => import('@/views/dashboard/index'),
+        // component: () => import('@/components/IQTable/test'),
         meta: { title: '首页', icon: 'dashboard' }
       }
     ]
@@ -216,13 +217,13 @@ export const constantRoutes = [
         path: 'send-box',
         name: 'SendBox',
         component: () => import('@/views/email/send'),
-        meta: { title: '发件箱', icon: 'outbox' }
+        meta: { title: '发件箱', icon: 'outbox', noCache: false }
       },
       {
         path: 'receive-box',
         name: 'ReceiveBox',
         component: () => import('@/views/email/receive'),
-        meta: { title: '收件箱', icon: 'inbox' }
+        meta: { title: '收件箱', icon: 'inbox', noCache: false }
       },
       {
         path: 'template',

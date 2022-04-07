@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Server.Database.Models
 {
-    public class SendBox : EmailInfo
+    public class SendBox : ReceiveBox
     {
         public string password { get; set; }
         public string smtp { get; set; }
@@ -41,6 +41,11 @@ namespace Server.Database.Models
             if (maxEmails < 1) return true;
 
             return settings.sendCountTotal <= maxEmails;
+        }
+
+        public override string GetFilterString()
+        {
+            return $"{base.GetFilterString()}{smtp}";
         }
     }
 
