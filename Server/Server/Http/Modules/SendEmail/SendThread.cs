@@ -60,13 +60,18 @@ namespace Server.Http.Modules.SendEmail
         }
 
 
-        // 开始发件
-        public Task Run(Stack<SendItem> sendItems)
+        /// <summary>
+        /// 开始发件
+        /// </summary>
+        /// <param name="sendItems">不同进程共享的栈</param>
+        /// <param name="sendItemsList">原始发件数据，只有成功后才移除，当数量为 0 时，所有的进程退出</param>
+        /// <returns></returns>
+        public Task Run(Stack<SendItem> sendItems, List<SendItem> sendItemsList)
         {
             // 创建线程
             Task task = Task.Run(async () =>
             {
-                while (sendItems.Count > 0)
+                while (sendItemsList.Count > 0)
                 {
                     // 开始并行发送
                     //确定smtp服务器地址 实例化一个Smtp客户端
@@ -91,6 +96,10 @@ namespace Server.Http.Modules.SendEmail
 
                         //发送邮件
                         smtpclient.Send(mailMessage);
+
+                        // 发送成功后，马上从原始数据中移除
+                        var index = sendItemsList.FindIndex(item => item._id == sendItem._id);
+                        if (index > -1) sendItemsList.RemoveAt(index);
 
                         // 发送成功后，更新数据，更新到数据库
                         sendItem.senderEmail = _sendBox.email;

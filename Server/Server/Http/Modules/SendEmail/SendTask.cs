@@ -227,7 +227,7 @@ namespace Server.Http.Modules.SendEmail
             });
 
             // 开始运行
-            Task.WhenAll(sendThreads.ConvertAll(st => st.Run(sendItemStack))).ContinueWith((task) =>
+            Task.WhenAll(sendThreads.ConvertAll(st => st.Run(sendItemStack,sendItemList))).ContinueWith((task) =>
             {
                 // 执行回调
                 // 发送关闭命令

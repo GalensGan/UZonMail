@@ -207,8 +207,9 @@ export default {
   computed: {
     // 是否显示重新发送功能
     isShowResent() {
-      const needResend = this.data.filter(d => !d.isSent)
-      return needResend.length > 0
+      const result = this.data.some(d => !d.isSent)
+      console.log('isShowResent:', result)
+      return result
     },
 
     resentClass() {
@@ -220,7 +221,7 @@ export default {
 
   watch: {
     data(val) {
-      this.disableResend = val.some(d => !d.isSent)
+      this.disableResend = val.every(d => d.isSent)
     }
   },
 
@@ -276,7 +277,6 @@ export default {
 
       // 关闭重发,关闭取消
       this.disableResend = true
-      this.isResending = true
       this.disableCancle = true
 
       this.getProgressInfo()
@@ -308,7 +308,6 @@ export default {
           this.initQuasarTable_onRequest()
 
           // 打开按钮锁定
-          this.disableResend = needResend.length < 1
           this.disableCancle = false
           this.isResending = false
           // 恢复重发初始值
