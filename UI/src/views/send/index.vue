@@ -146,14 +146,14 @@
           @change="fileSelected"
         />
         <q-btn
-          label="选择文件"
+          label="选择Excel"
           dense
           size="sm"
           outline
-          color="orange"
+          color="secondary"
           class="q-mb-sm"
           @click="selectExcelFile"
-        ></q-btn>
+        />
       </div>
     </div>
 
@@ -232,7 +232,7 @@
             </div>
           </q-header>
 
-          <q-footer elevated class="bg-primary">
+          <q-footer elevated class="bg-secondary">
             <div class="row justify-between q-pa-sm">
               <div>
                 当前：{{ previewData.index + 1 }} / 合计：{{
@@ -258,7 +258,7 @@
           </q-footer>
 
           <q-page-container>
-            <div v-html="previewData.html"></div>
+            <div v-html="previewData.html" />
           </q-page-container>
         </q-layout>
       </q-card>

@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Server.Config;
 using Server.Database;
 using Server.Database.Models;
 using Server.Http.Definitions;
@@ -13,7 +14,7 @@ namespace Server.Http.Modules.SendEmail
 {
     class EmailReady : EmailPreview
     {
-        public static bool CreateEmailReady(string userId,JToken data, LiteDBManager liteDb, out string message)
+        public static bool CreateEmailReady(string userId, JToken data, LiteDBManager liteDb, out string message)
         {
             // 判断是否有发送任务正在进行
             if (InstanceCenter.SendTasks[userId] != null && !InstanceCenter.SendTasks[userId].SendStatus.HasFlag(SendStatus.SendFinish))
@@ -22,7 +23,7 @@ namespace Server.Http.Modules.SendEmail
                 return false;
             }
 
-            EmailReady temp = new EmailReady(userId,data, liteDb);
+            EmailReady temp = new EmailReady(userId, data, liteDb);
 
             InstanceCenter.EmailReady.Upsert(userId, temp);
 
@@ -31,7 +32,7 @@ namespace Server.Http.Modules.SendEmail
         }
 
         private string _userId;
-        public EmailReady(string userId,JToken data, LiteDBManager liteDb) : base(data, liteDb)
+        public EmailReady(string userId, JToken data, LiteDBManager liteDb) : base(data, liteDb)
         {
             _userId = userId;
         }
@@ -55,21 +56,7 @@ namespace Server.Http.Modules.SendEmail
         /// <param name="receiveBoxes"></param>
         protected override void PreviewItemCreated(List<SendItem> sendItems, List<ReceiveBox> receiveBoxes)
         {
-            // 生成发送的组
-            // 获取发件箱
-
-            // 判断数据中是否有发件人
-            var senderIds = new List<string>();
-            List<SendBox> senders = null;
-            if (senderIds.Count > 0)
-            {
-                // 使用选择发件人发件
-                senders = LiteDb.Fetch<SendBox>(sd => senderIds.Contains(sd._id));
-            }
-            else
-            {
-                senders = LiteDb.Database.GetCollection<SendBox>().FindAll().ToList();
-            }
+            List<SendBox> senders = TraverseSendBoxes(Senders);
 
             // 添加历史
             HistoryGroup historyGroup = new HistoryGroup()
@@ -102,6 +89,42 @@ namespace Server.Http.Modules.SendEmail
             // 将所有的待发信息添加到数据库
             sendItems.ForEach(item => item.historyId = historyGroup._id);
             LiteDb.Database.GetCollection<SendItem>().InsertBulk(sendItems);
+        }
+
+        /// <summary>
+        /// 通过_id来获取发件人
+        /// </summary>
+        /// <param name="senderIds"></param>
+        /// <returns></returns>
+        private List<SendBox> TraverseSendBoxes(JArray senderIds)
+        {
+            List<SendBox> sendBoxes = new List<SendBox>();
+            // 获取当前收件人或组下的所有人
+            foreach (JToken jt in senderIds)
+            {
+                // 判断 type
+                string type = jt.Value<string>(Fields.type_);
+                string id = jt.Value<string>(Fields._id);
+                if (type == Fields.group)
+                {
+                    // 找到group下所有的用户
+                    var boxes = LiteDb.Fetch<SendBox>(r => r.groupId == id);
+
+                    // 如果没有，才添加
+                    foreach (var box in boxes)
+                    {
+                        if (sendBoxes.Find(item => item._id == box._id) == null) sendBoxes.Add(box);
+                    }
+                }
+                else
+                {
+                    // 选择了单个用户
+                    var box = LiteDb.SingleOrDefault<SendBox>(r => r._id == id);
+                    if (box != null && sendBoxes.Find(item => item._id == box._id) == null) sendBoxes.Add(box);
+                }
+            }
+
+            return sendBoxes;
         }
     }
 }
