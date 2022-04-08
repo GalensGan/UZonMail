@@ -267,7 +267,7 @@ export const constantRoutes = [
     component: Layout,
     children: [
       {
-        path: 'https://galensgan.github.io/2020/2QMK677.html',
+        path: 'https://galensgan.github.io/posts/2020/2QMK677.html',
         meta: { title: '使用说明', icon: 'book' }
       }
     ]
