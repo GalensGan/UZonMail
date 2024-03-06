@@ -1,8 +1,14 @@
+// 设置参考：https://code.visualstudio.com/docs/getstarted/settings#_default-settings
 {
   "editor.bracketPairColorization.enabled": true,
   "editor.guides.bracketPairs": true,
+  // 关闭VSCode在Save时候自动格式化，因为VSCode自带的格式化和ESlint规范并不兼容
   "editor.formatOnSave": false,
   "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+  // 函数名后添加空格
+  "typescript.format.insertSpaceBeforeFunctionParenthesis": true,
+  "javascript.format.insertSpaceBeforeFunctionParenthesis": true,
+  // 代码保存时，自动执行ESlint格式化代码
   "editor.codeActionsOnSave": ["source.fixAll.eslint"],
   "eslint.validate": ["javascript", "javascriptreact", "typescript", "vue"],
   "typescript.tsdk": "node_modules/typescript/lib",
