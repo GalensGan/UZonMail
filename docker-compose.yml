@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  uzon-mail:
+    container_name: 'uzon-mail'
+    image: node:lts-bullseye
+    volumes:
+      - ${SRC}:/app/uzon-mail
+    working_dir: /app/uzon-mail
+    ports:
+      - 9000:9000
+    #command: ["sh","-c","npm run dev"]
+
+    # 为容器启动一个轻量级的 init 系统，可以处理孤儿进程并转发信号，解决 stop 速度慢的问题
+    init: true
+    command: [ "sh", "-c", "exec sleep infinity" ]
