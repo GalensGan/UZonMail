@@ -12,6 +12,16 @@
 // to match your app's branding.
 // Tip: Use the "Theme Builder" on Quasar's documentation website.
 
+// about more: https://quasar.dev/style/sass-scss-variables#customizing
+// 下列代表可以扩展 css 变量
+// @use "quasar/src/css/variables" as q;
+// @use "sass:map";
+// $space-xxl: (x: 64px, y: 64px);
+// $new-spaces: (
+//   xxl: $space-xxl,
+// );
+// $spaces: map.merge(q.$spaces, $new-spaces);
+
 $primary   : #1976D2;
 $secondary : #26A69A;
 $accent    : #9C27B0;

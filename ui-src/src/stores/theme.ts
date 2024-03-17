@@ -3,8 +3,19 @@ import { defineStore } from 'pinia'
 // 用户样式定义
 export const useThemeStore = defineStore('theme', {
   state: () => ({
-    showBreadcrumbs: false
-  })
+    showBreadcrumbs: true,
+    showTagsView: true
+  }),
+
+  actions: {
+    toggleBreadcrumbs () {
+      this.showBreadcrumbs = !this.showBreadcrumbs
+    },
+
+    toggleTagsView () {
+      this.showTagsView = !this.showTagsView
+    }
+  }
 })
 
 /**

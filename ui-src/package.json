@@ -13,28 +13,34 @@
     "build": "quasar build"
   },
   "dependencies": {
-    "axios": "^1.2.1",
-    "vue-i18n": "^9.2.2",
-    "pinia": "^2.0.11",
     "@quasar/extras": "^1.16.4",
+    "axios": "^1.2.1",
+    "element-plus": "^2.6.1",
+    "path-browserify": "^1.0.1",
+    "pinia": "^2.0.11",
     "quasar": "^2.6.0",
     "vue": "^3.4.18",
+    "vue-i18n": "^9.2.2",
     "vue-router": "^4.0.12"
   },
   "devDependencies": {
+    "@intlify/unplugin-vue-i18n": "^2.0.0",
+    "@quasar/app-vite": "^2.0.0-beta.1",
+    "@types/node": "^20.5.9",
     "@typescript-eslint/eslint-plugin": "^6.6.0",
     "@typescript-eslint/parser": "^6.6.0",
+    "autoprefixer": "^10.4.2",
     "eslint": "^8.11.0",
-    "eslint-plugin-vue": "^9.0.0",
     "eslint-config-standard": "^17.0.0",
     "eslint-plugin-import": "^2.19.1",
     "eslint-plugin-n": "^15.0.0",
     "eslint-plugin-promise": "^6.0.0",
-    "@types/node": "^20.5.9",
-    "@intlify/unplugin-vue-i18n": "^2.0.0",
-    "@quasar/app-vite": "^2.0.0-beta.1",
-    "autoprefixer": "^10.4.2",
-    "typescript": "^5.2.2"
+    "eslint-plugin-vue": "^9.0.0",
+    "mockjs": "^1.1.0",
+    "typescript": "^5.2.2",
+    "unplugin-auto-import": "^0.17.5",
+    "unplugin-vue-components": "^0.26.0",
+    "vite-plugin-mock": "^3.0.1"
   },
   "engines": {
     "node": "^24 || ^22 || ^20 || ^18",
