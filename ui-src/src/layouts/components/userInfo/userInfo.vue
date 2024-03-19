@@ -1,6 +1,6 @@
 <template>
   <el-dropdown>
-    <div class="text-white">
+    <div>
       <q-avatar>
         <img src="https://cdn.quasar.dev/img/avatar.png">
       </q-avatar>

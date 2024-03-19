@@ -31,7 +31,7 @@ const routes: RouteRecordRaw[] = [
     },
     children: [
       {
-        path: 'person',
+        path: 'me',
         meta: {
           label: '我的'
         },
