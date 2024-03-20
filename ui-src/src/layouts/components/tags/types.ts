@@ -3,5 +3,6 @@ export interface IRouteHistory {
   name: string,
   label: string,
   isActive: boolean,
-  icon: string
+  icon: string,
+  showCloseIcon: boolean
 }

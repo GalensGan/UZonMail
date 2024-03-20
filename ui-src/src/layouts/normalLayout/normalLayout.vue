@@ -1,8 +1,14 @@
 <template>
   <q-layout view="lHh lpR fFf">
-    <q-header class="bg-white text-primary">
-      <q-toolbar>
-        <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
+    <q-header elevated bordered class="bg-white text-primary">
+      <q-toolbar class="row items-center full-width">
+        <button class="menu-button hamburger hamburger--slider negative" :class="{ 'is-active': leftDrawerOpen }"
+          @click="toggleLeftDrawer">
+          <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+          </span>
+        </button>
+
         <q-toolbar-title>
           <BreadcrumbsIndex />
         </q-toolbar-title>
@@ -12,17 +18,11 @@
 
       <q-separator></q-separator>
 
-      <div class="row justify-start q-ml-md">
-        <TagsView />
-      </div>
+      <TagsView/>
     </q-header>
 
     <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
-      <q-list>
-        <q-item-label header>
-          Essential Links
-        </q-item-label>
-      </q-list>
+      <MenuTree />
     </q-drawer>
 
     <q-page-container>
@@ -41,6 +41,7 @@
 import UserInfo from '../components/userInfo/userInfo.vue'
 import BreadcrumbsIndex from '../components/breadcrumbs/breadcrumbsIndex.vue'
 import TagsView from '../components/tags/tagsView.vue'
+import MenuTree from '../components/menuTree/menuTree.vue'
 
 // #region 开关左侧抽屉
 const leftDrawerOpen = ref(true)
@@ -62,3 +63,9 @@ const showDock = computed(() => {
 import SoftwareDock from '../components/softwareDock/softwareDock.vue'
 // #endregion
 </script>
+
+<style lang="scss" scoped>
+.menu-button {
+  transform: scale(0.6);
+}
+</style>

@@ -19,7 +19,8 @@ export function useRouteHistories () {
         label: route.meta.label,
         name: route.name,
         isActive: true,
-        icon: route.meta.icon
+        icon: route.meta.icon,
+        showCloseIcon: false
       } as IRouteHistory
       routes.value.push(routeTemp)
     } else {
