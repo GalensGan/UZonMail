@@ -1,7 +1,8 @@
 import { RouteRecordRaw } from 'vue-router'
 import NormalLayout from 'layouts/normalLayout/normalLayout.vue'
 
-const routes: RouteRecordRaw[] = [
+// 静态 routes
+export const constantRoutes: RouteRecordRaw[] = [
   {
     name: 'IndexHome',
     path: '/',
@@ -23,6 +24,7 @@ const routes: RouteRecordRaw[] = [
     ]
   },
   {
+    name: 'user',
     path: '/user',
     component: NormalLayout,
     meta: {
@@ -31,8 +33,10 @@ const routes: RouteRecordRaw[] = [
     },
     children: [
       {
+        name: 'my',
         path: 'me',
         meta: {
+          icon: 'menu',
           label: '我的'
         },
         component: () => import('pages/IndexPage.vue')
@@ -44,9 +48,17 @@ const routes: RouteRecordRaw[] = [
   // but you can also remove it
   // 异常处理
   {
+    name: 'exception',
     path: '/:catchAll(.*)*',
+    meta: {
+      label: '异常',
+      icon: 'error',
+      hideMenu: true, // 在菜单中隐藏
+      hideTag: true // 在标签中隐藏
+    },
     component: () => import('pages/ErrorNotFound.vue')
   }
 ]
 
-export default routes
+// 根据权限显示的 routes
+export const dynamicRoutes: RouteRecordRaw[] = []

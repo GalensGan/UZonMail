@@ -1,7 +1,9 @@
 <template>
-  <q-breadcrumbs style="font-size: 16px">
-    <q-breadcrumbs-el exact-active-class="text-secondary" v-for="item in matchedRoutes" :key="item.path"
-      :label="item.meta.label" :to="item.path" :icon="item.meta.icon" />
+  <q-breadcrumbs style="font-size: 14px">
+
+    <q-breadcrumbs-el exact-active-class="text-secondary animated fadeInRight slower" v-for="item in matchedRoutes"
+      :key="item.path" :to="item.path" :icon="item.meta.icon" :label="item.meta.label">
+    </q-breadcrumbs-el>
   </q-breadcrumbs>
 </template>
 

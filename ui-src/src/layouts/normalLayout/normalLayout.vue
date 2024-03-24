@@ -1,13 +1,9 @@
 <template>
   <q-layout view="lHh lpR fFf">
-    <q-header elevated bordered class="bg-white text-primary">
+    <q-header class="bg-white text-primary q-ma-md q-card">
+
       <q-toolbar class="row items-center full-width">
-        <button class="menu-button hamburger hamburger--slider negative" :class="{ 'is-active': leftDrawerOpen }"
-          @click="toggleLeftDrawer">
-          <span class="hamburger-box">
-            <span class="hamburger-inner"></span>
-          </span>
-        </button>
+        <MenuOpenButton v-model="drawer" />
 
         <q-toolbar-title>
           <BreadcrumbsIndex />
@@ -18,50 +14,36 @@
 
       <q-separator></q-separator>
 
-      <TagsView/>
+      <TagsView />
     </q-header>
 
-    <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
+    <q-drawer v-model="drawer" show-if-above :mini="miniState">
       <MenuTree />
     </q-drawer>
-
     <q-page-container>
       <router-view />
     </q-page-container>
-
-    <!--当菜单关闭且大屏幕时，才显示-->
-    <q-footer v-if="showDock" class="bg-white">
-      <SoftwareDock />
-    </q-footer>
   </q-layout>
 </template>
 
 <script lang="ts" setup>
 // 导入组件
+import MenuOpenButton from '../components/menuOpen/menuOpenButton.vue'
 import UserInfo from '../components/userInfo/userInfo.vue'
 import BreadcrumbsIndex from '../components/breadcrumbs/breadcrumbsIndex.vue'
 import TagsView from '../components/tags/tagsView.vue'
-import MenuTree from '../components/menuTree/menuTree.vue'
+// import LeftSidebarIndex from '../components/leftSidebar/leftSidebarIndex.vue'
+import MenuTree from '../components/leftSidebar/menuTree.vue'
+
+const drawer = ref(false)
+const miniState = ref(false)
+// const collapse = ref(false)
 
 // #region 开关左侧抽屉
-const leftDrawerOpen = ref(true)
 const $q = useQuasar()
 if ($q.platform.is.desktop) {
-  leftDrawerOpen.value = true
+  drawer.value = true
 }
-function toggleLeftDrawer () {
-  leftDrawerOpen.value = !leftDrawerOpen.value
-}
-// #endregion
-
-// #region 底部软件坞
-const showDock = computed(() => {
-  if ($q.screen.lt.md) return false
-  if (leftDrawerOpen.value) return false
-  return true
-})
-import SoftwareDock from '../components/softwareDock/softwareDock.vue'
-// #endregion
 </script>
 
 <style lang="scss" scoped>

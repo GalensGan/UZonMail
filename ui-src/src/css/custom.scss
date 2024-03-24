@@ -1,0 +1,39 @@
+// tooltip 带有箭头
+.q-tooltip--style {
+  overflow-x: visible;
+  overflow-y: visible;
+  &::before {
+    content: ' ';
+    width: 0;
+    height: 0;
+    border-top: 5px solid transparent;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    position: absolute;
+  }
+  &.arrow-top::before {
+    border-bottom-color: $tooltip-background;
+    left: 50%;
+    top: -10px;
+    margin-left: -5px;
+  }
+  &.arrow-left::before {
+    border-right-color: $tooltip-background;
+    top: 50%;
+    left: -10px;
+    margin-top: -5px;
+  }
+  &.arrow-right::before {
+    border-left-color: $tooltip-background;
+    top: 50%;
+    right: -10px;
+    margin-top: -5px;
+  }
+  &.arrow-bottom::before {
+    border-top-color: $tooltip-background;
+    left: 50%;
+    bottom: -10px;
+    margin-left: -5px;
+  }
+}

@@ -6,7 +6,7 @@ import {
   createWebHistory
 } from 'vue-router'
 
-import routes from './routes'
+import { constantRoutes } from './routes'
 
 /*
  * If not building with SSR mode, you can
@@ -26,7 +26,7 @@ export default route(function (/* { store, ssrContext } */) {
 
   const Router = createRouter({
     scrollBehavior: () => ({ left: 0, top: 0 }),
-    routes,
+    routes: constantRoutes,
 
     // Leave this as is and make changes in quasar.conf.js instead!
     // quasar.conf.js -> build -> vueRouterMode
@@ -34,5 +34,15 @@ export default route(function (/* { store, ssrContext } */) {
     history: createHistory(process.env.VUE_ROUTER_BASE)
   })
 
+  // 添加路由前置守卫
+  Router.beforeEach((to, from, next) => {
+    console.log('路由前置守卫', to, from)
+    next()
+  })
+
+  // 添加路由后置守卫
+  Router.afterEach((to, from) => {
+    console.log('路由后置守卫', to, from)
+  })
   return Router
 })

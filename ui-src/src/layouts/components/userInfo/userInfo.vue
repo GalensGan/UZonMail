@@ -1,11 +1,8 @@
 <template>
   <el-dropdown>
-    <div>
-      <q-avatar>
-        <img src="https://cdn.quasar.dev/img/avatar.png">
-      </q-avatar>
-      Admin
-    </div>
+    <q-avatar>
+      <img src="https://cdn.quasar.dev/img/boy-avatar.png">
+    </q-avatar>
     <template #dropdown>
       <el-dropdown-menu>
         <el-dropdown-item>个人信息</el-dropdown-item>

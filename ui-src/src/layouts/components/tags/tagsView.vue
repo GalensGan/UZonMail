@@ -1,11 +1,10 @@
 <template>
   <div class="tags-view q-ml-md row items-center justify-start">
-    <q-chip class="q-mr-sm route-tag row items-center" v-for="item in routes" :key="item.fullPath" text-color="negative"
+    <q-chip class="q-mr-sm route-tag row items-center" v-for="item in routes" :key="item.fullPath"
       :class="getTagClass(item)" square clickable transition-show="jump-right" transition-hide="jump-left"
       @click="goToRoute(item)" :removable="item.showCloseIcon" @mouseenter="mouseenterTag(item)"
       @mouseleave="item.showCloseIcon = false" @remove="removeTag(item)">
-      <div class="text-white">{{ item.label }}</div>
-
+      <div>{{ item.label }}</div>
       <ContextMenuIndex :items="contextItems" :value="item" />
     </q-chip>
   </div>
