@@ -4,22 +4,25 @@ export function useRouteHistories () {
   const routes: Ref<IRouteHistory[]> = ref([])
   // 监听 route 变化
   const route = useRoute()
-  watch(route, () => {
+  watch(route, (newRoute) => {
+    // 隐藏标签的路由，不显示
+    if (newRoute.meta.noTag) return
+
     // 将其它路由设置为非激活状态
     routes.value.forEach((item) => {
       item.isActive = false
     })
 
     // 判断是否已存在
-    const existIndex = routes.value.findIndex((item) => item.fullPath === route.fullPath)
+    const existIndex = routes.value.findIndex((item) => item.fullPath === newRoute.fullPath)
     // 不存在时，添加
     if (existIndex < 0) {
       const routeTemp = {
-        fullPath: route.fullPath,
-        label: route.meta.label,
-        name: route.name,
+        fullPath: newRoute.fullPath,
+        label: newRoute.meta.label,
+        name: newRoute.name,
         isActive: true,
-        icon: route.meta.icon,
+        icon: newRoute.meta.icon,
         showCloseIcon: false
       } as IRouteHistory
       routes.value.push(routeTemp)

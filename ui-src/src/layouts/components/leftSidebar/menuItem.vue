@@ -1,10 +1,10 @@
 <template>
-  <q-expansion-item v-if="!hideMenu && existChildren" v-model="openExpansionItem" active-class="text-orange"
+  <q-expansion-item v-if="!noMenu && existChildren" v-model="openExpansionItem" active-class="text-orange"
     class="rounded-borders" :class="{ 'text-orange': isActive }" expand-separator :icon="icon" :label="label">
     <MenuItem v-for="child in children" :key="child.path" :routeRaw="child">
     </MenuItem>
   </q-expansion-item>
-  <q-item v-else-if="!hideMenu" :active="isActive" :class="{ 'text-orange': isActive, 'text-primary': !isActive }"
+  <q-item v-else-if="!noMenu" :active="isActive" :class="{ 'text-orange': isActive, 'text-primary': !isActive }"
     clickable v-ripple>
     <q-item-section avatar>
       <q-icon :name="icon" />
@@ -14,6 +14,11 @@
 </template>
 
 <script lang="ts" setup>
+/**
+ * 显示逻辑
+ * -1 若只有一个子菜单，则只展示子菜单
+ */
+
 import { RouteRecordRaw } from 'vue-router'
 
 // props 参数
@@ -25,7 +30,7 @@ const props = defineProps({
   }
 })
 
-const { name, children, meta: { label, icon, hideMenu } } = props.routeRaw
+const { name, children, meta: { label, icon, noMenu } } = props.routeRaw
 const existChildren = computed(() => children && children.length > 0)
 
 // 判断当前菜单是否处于激活状态

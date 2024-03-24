@@ -4,6 +4,15 @@ import NormalLayout from 'layouts/normalLayout/normalLayout.vue'
 // 静态 routes
 export const constantRoutes: RouteRecordRaw[] = [
   {
+    name: 'Login',
+    path: '/login',
+    component: () => import('src/pages/Login/loginIndex.vue'),
+    meta: {
+      label: '用户登录',
+      icon: 'login'
+    }
+  },
+  {
     name: 'IndexHome',
     path: '/',
     component: NormalLayout,
@@ -53,8 +62,8 @@ export const constantRoutes: RouteRecordRaw[] = [
     meta: {
       label: '异常',
       icon: 'error',
-      hideMenu: true, // 在菜单中隐藏
-      hideTag: true // 在标签中隐藏
+      noMenu: true, // 在菜单中隐藏
+      noTag: true // 在标签中隐藏
     },
     component: () => import('pages/ErrorNotFound.vue')
   }
