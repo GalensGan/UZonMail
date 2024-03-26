@@ -1,7 +1,7 @@
 <template>
   <el-dropdown>
     <q-avatar>
-      <img src="https://cdn.quasar.dev/img/boy-avatar.png">
+      <img src="https://cdn.quasar.dev/img/avatar2.jpg">
     </q-avatar>
     <template #dropdown>
       <el-dropdown-menu>

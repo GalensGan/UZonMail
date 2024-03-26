@@ -1,25 +1,27 @@
 <template>
-  <q-expansion-item v-if="!noMenu && existChildren" v-model="openExpansionItem" active-class="text-orange"
-    class="rounded-borders" :class="{ 'text-orange': isActive }" expand-separator :icon="icon" :label="label">
-    <MenuItem v-for="child in children" :key="child.path" :routeRaw="child">
+  <q-expansion-item v-if="!noMenu && existChildren" v-model="openExpansionItem" class="rounded-borders"
+    :class="{ 'text-orange': isActive }" :icon="icon" :label="label">
+    <MenuItem v-for="child in childrenRoutes" :key="child.path" :routeRaw="child">
     </MenuItem>
   </q-expansion-item>
-  <q-item v-else-if="!noMenu" :active="isActive" :class="{ 'text-orange': isActive, 'text-primary': !isActive }"
-    clickable v-ripple>
+
+  <q-item v-else-if="!noMenu" :active="isActive" class="q-pr-xs"
+    :class="{ 'menu-item__active': isActive, 'menu-item__default': !isActive }" clickable v-ripple @click="goToRoute">
     <q-item-section avatar>
       <q-icon :name="icon" />
     </q-item-section>
-    <q-item-section>{{ label }}</q-item-section>
+    <q-item-section :class="{ 'slash-right': isActive }">{{ label }}</q-item-section>
   </q-item>
 </template>
 
 <script lang="ts" setup>
 /**
  * 显示逻辑
- * -1 若只有一个子菜单，则只展示子菜单
+ * 1- 若只有一个子菜单，则只展示子菜单
  */
 
 import { RouteRecordRaw } from 'vue-router'
+import { getMenuRoute } from './helper'
 
 // props 参数
 const props = defineProps({
@@ -32,6 +34,7 @@ const props = defineProps({
 
 const { name, children, meta: { label, icon, noMenu } } = props.routeRaw
 const existChildren = computed(() => children && children.length > 0)
+const childrenRoutes = children?.map(x => getMenuRoute(x))
 
 // 判断当前菜单是否处于激活状态
 const route = useRoute()
@@ -52,6 +55,14 @@ watch(route, () => {
   const matched = route.matched.find(x => x.name === name)
   openExpansionItem.value = !!matched
 }, { immediate: true })
+
+// 跳转到路由
+const router = useRouter()
+function goToRoute () {
+  router.push({
+    name
+  })
+}
 </script>
 
 <script lang="ts">
@@ -60,12 +71,21 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .menu-item__active {
-  color: $orange;
+  color: $secondary;
 }
 
 .menu-item__default {
-  color: $primary;
+  color: $accent;
+}
+
+.slash-right {
+  border-right: 2px solid $primary;
+}
+
+:deep(.q-expansion-item__toggle-icon,
+  .q-expansion-item__toggle-icon--rotated) {
+  color: $secondary
 }
 </style>

@@ -20,9 +20,10 @@ export const constantRoutes: RouteRecordRaw[] = [
       label: '首页',
       icon: 'home'
     },
+    redirect: 'index',
     children: [
       {
-        name: 'EmptyPage',
+        name: 'Index',
         path: 'index',
         meta: {
           label: '首页2',
@@ -40,6 +41,7 @@ export const constantRoutes: RouteRecordRaw[] = [
       label: '用户',
       icon: 'info'
     },
+    redirect: 'me',
     children: [
       {
         name: 'my',

@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="lHh lpR fFf">
+  <q-layout view="lHh lpR fFf" dark>
     <q-header class="bg-white text-primary q-ma-md q-card">
 
       <q-toolbar class="row items-center full-width">
@@ -17,10 +17,11 @@
       <TagsView />
     </q-header>
 
-    <q-drawer v-model="drawer" show-if-above :mini="miniState">
+    <q-drawer v-model="drawer" show-if-above :mini="miniState" :width="300">
       <MenuTree />
     </q-drawer>
-    <q-page-container>
+
+    <q-page-container class="bg-grey-12">
       <router-view />
     </q-page-container>
   </q-layout>

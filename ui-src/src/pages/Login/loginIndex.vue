@@ -1,23 +1,25 @@
 <template>
-  <div class="column justify-center login-container">
+  <div class="column justify-center login-container bg-grey-12">
+    <div class="row justify-center items-center q-mb-xl animated fadeIn slower">
+      <q-icon name="img:icons/undraw_mailbox_re_dvds.svg" size="220px" class="q-ma-lg animated fadeInUp"></q-icon>
 
-    <div class="row justify-center items-center q-mb-xl">
-      <q-icon name="img:icons/undraw_mailbox_re_dvds.svg" size="200px" class="q-ma-lg"></q-icon>
+      <q-card class="q-ma-md q-pa-lg column justify-center items-center radius-8 animated fadeInDown"
+        style="min-width: 400px;">
+        <div class="self-center q-mb-lg text-h5 text-secondary">Welcome to UZonMail</div>
 
-      <q-card class="q-ma-md q-pa-lg column justify-center items-center" style="min-width: 400px;">
-        <div class="self-center q-mb-lg text-h5 text-accent">Welcome UZonMail</div>
-
-        <q-input class="full-width q-mb-md" standout v-model="userId" label="用户名">
+        <q-input outlined class="full-width q-mb-md" standout v-model="userId" label="用户名">
           <template v-slot:prepend>
             <q-icon name="place" />
           </template>
         </q-input>
 
-        <q-input class="full-width" standout v-model="userId" label="用户名">
+        <q-input outlined class="full-width q-mb-md" standout v-model="password" label="用户名">
           <template v-slot:prepend>
             <q-icon name="place" />
           </template>
         </q-input>
+
+        <q-btn class="full-width radius-8" color="primary" label="登 陆" @click="userLogin" />
       </q-card>
     </div>
   </div>
@@ -26,7 +28,17 @@
 <script lang="ts" setup>
 // 登陆界面
 const userId = ref('')
-// const password = ref('')
+const password = ref('')
+
+/**
+ * 用户登陆
+ */
+async function userLogin () {
+  // 登陆逻辑
+  // 1- 请求登陆信息，返回用户信息、token、权限信息
+  // 2- 保存信息、密码加密后保存，用于解析服务器的密码
+  // 3- 跳转到主页或重定向的页面
+}
 </script>
 
 <style lang="scss" scoped>
