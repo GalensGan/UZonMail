@@ -40,8 +40,7 @@
     "mockjs": "^1.1.0",
     "typescript": "^5.2.2",
     "unplugin-auto-import": "^0.17.5",
-    "unplugin-vue-components": "^0.26.0",
-    "vite-plugin-mock": "^3.0.1"
+    "unplugin-vue-components": "^0.26.0"
   },
   "engines": {
     "node": "^24 || ^22 || ^20 || ^18",

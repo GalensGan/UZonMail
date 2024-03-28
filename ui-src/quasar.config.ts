@@ -53,7 +53,9 @@ export default configure((ctx) => {
     build: {
       // https://quasar.dev/quasar-cli-webpack/handling-process-env/#adding-to-process-env
       env: {
-        BASE_URL: ctx.dev ? 'http://localhost:3000' : 'https://api.example.com'
+        // 本机 mock 地址为: http://127.0.0.1:4523/m1/2361225-0-default
+        // 本机测试地址为: http://localhost:3000
+        BASE_URL: ctx.dev ? 'http://127.0.0.1:4523/m1/2361225-0-default' : 'https://api.example.com'
       },
 
       target: {
@@ -116,13 +118,6 @@ export default configure((ctx) => {
             resolvers: [ElementPlusResolver(), QuasarResolver()]
           }
         ]
-        // [
-        //   'vite-plugin-mock/vite',
-        //   {
-        //     mockPath: './src/mock',
-        //     enable: true
-        //   }
-        // ]
       ]
     },
 

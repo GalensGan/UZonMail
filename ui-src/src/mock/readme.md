@@ -1,3 +1,3 @@
-# 请求 mock
+# mock 说明
 
-目前该目录的功能未实现
+mock 使用 foxApi 进行模拟

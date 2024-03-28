@@ -8,3 +8,6 @@ declare module '*.vue' {
   const component: DefineComponent<{}, {}, any>;
   export default component;
 }
+
+// 解决 mockjs 导入报错
+declare module 'mockjs'

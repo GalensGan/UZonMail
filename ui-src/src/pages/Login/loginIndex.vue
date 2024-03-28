@@ -26,6 +26,8 @@
 </template>
 
 <script lang="ts" setup>
+import { apiGet } from 'src/api/test'
+
 // 登陆界面
 const userId = ref('')
 const password = ref('')
@@ -38,6 +40,7 @@ async function userLogin () {
   // 1- 请求登陆信息，返回用户信息、token、权限信息
   // 2- 保存信息、密码加密后保存，用于解析服务器的密码
   // 3- 跳转到主页或重定向的页面
+  await apiGet()
 }
 </script>
 
