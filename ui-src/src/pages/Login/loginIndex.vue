@@ -19,28 +19,35 @@
           </template>
         </q-input>
 
-        <q-btn class="full-width radius-8" color="primary" label="登 陆" @click="userLogin" />
+        <q-btn class="full-width radius-8" color="primary" label="登 陆" @click="onUserLogin" />
       </q-card>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { apiGet } from 'src/api/test'
+import { userLogin } from 'src/api/login'
+import { useUserInfoStore } from 'src/stores/user'
 
 // 登陆界面
 const userId = ref('')
 const password = ref('')
 
+const router = useRouter()
 /**
  * 用户登陆
  */
-async function userLogin () {
+async function onUserLogin () {
   // 登陆逻辑
   // 1- 请求登陆信息，返回用户信息、token、权限信息
   // 2- 保存信息、密码加密后保存，用于解析服务器的密码
   // 3- 跳转到主页或重定向的页面
-  await apiGet()
+  const { data: { userInfo, token, access } } = await userLogin()
+  const userInfoStore = useUserInfoStore()
+  userInfoStore.setUserLoginInfo(userInfo, token, access)
+
+  // 跳转到主页
+  router.push({ path: '/' })
 }
 </script>
 

@@ -7,6 +7,7 @@ import {
 } from 'vue-router'
 
 import { constantRoutes } from './routes'
+import { useRoutesStore } from 'src/stores/routes'
 
 /*
  * If not building with SSR mode, you can
@@ -36,7 +37,9 @@ export default route(function (/* { store, ssrContext } */) {
 
   // 添加路由前置守卫
   Router.beforeEach((to, from, next) => {
-    console.log('路由前置守卫', to, from)
+    // 添加动态路由
+    const routeStore = useRoutesStore()
+    routeStore.addDynamicRoutes()
     next()
   })
 

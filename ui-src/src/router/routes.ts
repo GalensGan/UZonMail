@@ -1,8 +1,8 @@
-import { RouteRecordRaw } from 'vue-router'
+import { ExtendedRouteRecordRaw } from './types'
 import NormalLayout from 'layouts/normalLayout/normalLayout.vue'
 
 // 静态 routes
-export const constantRoutes: RouteRecordRaw[] = [
+export const constantRoutes: ExtendedRouteRecordRaw[] = [
   {
     name: 'Login',
     path: '/login',
@@ -12,6 +12,25 @@ export const constantRoutes: RouteRecordRaw[] = [
       icon: 'login'
     }
   },
+
+  // Always leave this as last one,
+  // but you can also remove it
+  // 异常处理
+  {
+    name: 'exception',
+    path: '/:catchAll(.*)*',
+    meta: {
+      label: '异常',
+      icon: 'error',
+      noMenu: true, // 在菜单中隐藏
+      noTag: true // 在标签中隐藏
+    },
+    component: () => import('pages/ErrorNotFound.vue')
+  }
+]
+
+// 根据权限显示的 routes
+export const dynamicRoutes: ExtendedRouteRecordRaw[] = [
   {
     name: 'IndexHome',
     path: '/',
@@ -53,23 +72,5 @@ export const constantRoutes: RouteRecordRaw[] = [
         component: () => import('pages/IndexPage.vue')
       }
     ]
-  },
-
-  // Always leave this as last one,
-  // but you can also remove it
-  // 异常处理
-  {
-    name: 'exception',
-    path: '/:catchAll(.*)*',
-    meta: {
-      label: '异常',
-      icon: 'error',
-      noMenu: true, // 在菜单中隐藏
-      noTag: true // 在标签中隐藏
-    },
-    component: () => import('pages/ErrorNotFound.vue')
   }
 ]
-
-// 根据权限显示的 routes
-export const dynamicRoutes: RouteRecordRaw[] = []
