@@ -9,23 +9,10 @@ export const constantRoutes: ExtendedRouteRecordRaw[] = [
     component: () => import('src/pages/Login/loginIndex.vue'),
     meta: {
       label: '用户登录',
-      icon: 'login'
-    }
-  },
-
-  // Always leave this as last one,
-  // but you can also remove it
-  // 异常处理
-  {
-    name: 'exception',
-    path: '/:catchAll(.*)*',
-    meta: {
-      label: '异常',
-      icon: 'error',
+      icon: 'login',
       noMenu: true, // 在菜单中隐藏
       noTag: true // 在标签中隐藏
-    },
-    component: () => import('pages/ErrorNotFound.vue')
+    }
   }
 ]
 
@@ -72,5 +59,23 @@ export const dynamicRoutes: ExtendedRouteRecordRaw[] = [
         component: () => import('pages/IndexPage.vue')
       }
     ]
+  }
+]
+
+// 放到最后添加
+export const exceptionRoutes: ExtendedRouteRecordRaw[] = [
+  // Always leave this as last one,
+  // but you can also remove it
+  // 异常处理
+  {
+    name: 'exception',
+    path: '/:catchAll(.*)*',
+    meta: {
+      label: '异常',
+      icon: 'error',
+      noMenu: true, // 在菜单中隐藏
+      noTag: true // 在标签中隐藏
+    },
+    component: () => import('pages/ErrorNotFound.vue')
   }
 ]

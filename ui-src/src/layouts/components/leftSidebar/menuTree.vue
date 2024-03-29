@@ -14,9 +14,9 @@ import LogoItem from './logoItem.vue'
 import MenuItem from './menuItem.vue'
 
 import { getMenuRoute } from './helper'
-import { constantRoutes } from 'src/router/routes'
-
-const menuRoutes = constantRoutes.map(x => getMenuRoute(x))
+import { useRoutesStore } from 'src/stores/routes'
+const routeStore = useRoutesStore()
+const menuRoutes = routeStore.loadedRoutes.map(x => getMenuRoute(x))
 </script>
 
 <style lang="scss" scoped></style>

@@ -45,7 +45,7 @@ async function onUserLogin () {
   const { data: { userInfo, token, access } } = await userLogin()
   const userInfoStore = useUserInfoStore()
   userInfoStore.setUserLoginInfo(userInfo, token, access)
-
+  console.log('登陆成功:', userInfo, token, access)
   // 跳转到主页
   router.push({ path: '/' })
 }

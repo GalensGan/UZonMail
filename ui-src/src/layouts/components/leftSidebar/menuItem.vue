@@ -20,14 +20,14 @@
  * 1- 若只有一个子菜单，则只展示子菜单
  */
 
-import { RouteRecordRaw } from 'vue-router'
+import { ExtendedRouteRecordRaw } from 'src/router/types'
 import { getMenuRoute } from './helper'
 
 // props 参数
 const props = defineProps({
   // 路由的名称，是必须项
   routeRaw: {
-    type: Object as () => RouteRecordRaw,
+    type: Object as () => ExtendedRouteRecordRaw,
     required: true
   }
 })

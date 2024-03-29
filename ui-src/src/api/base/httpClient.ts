@@ -93,16 +93,21 @@ export default class HttpClient {
 
   }
 
-  // #region 重写 axios 的 get、post、put、delete 方法
+  // #region 对请求返回值的data进行解构，方便前端使用
+  private destructureAxiosResponse<R> (response: AxiosResponse<IResponseData<R>>): IResponseData<R> {
+    const data = response.data
+    data.axiosResponse = response
+    return data
+  }
 
   /**
    * 通用请求
    * @param config
    * @returns
    */
-  async request<R, C = any> (config: AxiosRequestConfig<C>): Promise<IResponseData<R>> {
-    const result = await this._axios.request<C, IResponseData<R>>(config)
-    return result
+  async request<R, D = any> (config: AxiosRequestConfig<D>): Promise<IResponseData<R>> {
+    const responseData = await this._axios.request<R, AxiosResponse<IResponseData<R>, D>, D>(config)
+    return this.destructureAxiosResponse(responseData)
   }
 
   /**
@@ -111,8 +116,9 @@ export default class HttpClient {
    * @param config 请求参数和配置
    * @returns
    */
-  async get<R, C = any> (url: string, config?: AxiosRequestConfig<C>): Promise<IResponseData<R>> {
-    return await this._axios.get<C, IResponseData<R>>(url, config)
+  async get<R, D = any> (url: string, config?: AxiosRequestConfig<D>): Promise<IResponseData<R>> {
+    const responseData = await this._axios.get<R, AxiosResponse<IResponseData<R>, D>, D>(url, config?.data, config)
+    return this.destructureAxiosResponse(responseData)
   }
 
   /**
@@ -121,8 +127,9 @@ export default class HttpClient {
    * @param config
    * @returns
    */
-  async delete<R, C = any> (url: string, config?: AxiosRequestConfig<C>): Promise<IResponseData<R>> {
-    return await this._axios.delete<C, IResponseData<R>>(url, config)
+  async delete<R, D = any> (url: string, config?: AxiosRequestConfig<D>): Promise<IResponseData<R>> {
+    const responseData = await this._axios.delete<R, AxiosResponse<IResponseData<R>, D>, D>(url, config?.data, config)
+    return this.destructureAxiosResponse(responseData)
   }
 
   /**
@@ -131,8 +138,9 @@ export default class HttpClient {
    * @param config
    * @returns
    */
-  async head<R, C = any> (url: string, config?: AxiosRequestConfig<C>): Promise<IResponseData<R>> {
-    return await this._axios.head<C, IResponseData<R>>(url, config)
+  async head<R, D = any> (url: string, config?: AxiosRequestConfig<D>): Promise<IResponseData<R>> {
+    const responseData = await this._axios.head<R, AxiosResponse<IResponseData<R>, D>, D>(url, config?.data, config)
+    return this.destructureAxiosResponse(responseData)
   }
 
   /**
@@ -141,8 +149,9 @@ export default class HttpClient {
    * @param config
    * @returns
    */
-  async options<R, C = any> (url: string, config?: AxiosRequestConfig<C>): Promise<IResponseData<R>> {
-    return await this._axios.options<C, IResponseData<R>>(url, config)
+  async options<R, D = any> (url: string, config?: AxiosRequestConfig<D>): Promise<IResponseData<R>> {
+    const responseData = await this._axios.options<R, AxiosResponse<IResponseData<R>, D>, D>(url, config?.data, config)
+    return this.destructureAxiosResponse(responseData)
   }
 
   /**
@@ -151,8 +160,9 @@ export default class HttpClient {
    * @param config
    * @returns
    */
-  async post<R, C = any> (url: string, config?: AxiosRequestConfig<C>): Promise<IResponseData<R>> {
-    return await this._axios.post<C, IResponseData<R>>(url, config)
+  async post<R, D = any> (url: string, config?: AxiosRequestConfig<D>): Promise<IResponseData<R>> {
+    const responseData = await this._axios.post<R, AxiosResponse<IResponseData<R>, D>, D>(url, config?.data, config)
+    return this.destructureAxiosResponse(responseData)
   }
 
   /**
@@ -161,8 +171,9 @@ export default class HttpClient {
    * @param config
    * @returns
    */
-  async put<R, C = any> (url: string, config?: AxiosRequestConfig<C>): Promise<IResponseData<R>> {
-    return await this._axios.put<C, IResponseData<R>>(url, config)
+  async put<R, D = any> (url: string, config?: AxiosRequestConfig<D>): Promise<IResponseData<R>> {
+    const responseData = await this._axios.put<R, AxiosResponse<IResponseData<R>, D>, D>(url, config?.data, config)
+    return this.destructureAxiosResponse(responseData)
   }
 
   /**
@@ -171,16 +182,19 @@ export default class HttpClient {
    * @param config
    * @returns
    */
-  async patch<R, C = any> (url: string, config?: AxiosRequestConfig<C>): Promise<IResponseData<R>> {
-    return await this._axios.patch<C, IResponseData<R>>(url, config)
+  async patch<R, D = any> (url: string, config?: AxiosRequestConfig<D>): Promise<IResponseData<R>> {
+    const responseData = await this._axios.patch<R, AxiosResponse<IResponseData<R>, D>, D>(url, config?.data, config)
+    return this.destructureAxiosResponse(responseData)
   }
 
-  async postForm<R, C = any> (url: string, config?: AxiosRequestConfig<C>): Promise<IResponseData<R>> {
-    return await this._axios.postForm<C, IResponseData<R>>(url, config)
+  async postForm<R, D = any> (url: string, config?: AxiosRequestConfig<D>): Promise<IResponseData<R>> {
+    const responseData = await this._axios.postForm<R, AxiosResponse<IResponseData<R>, D>, D>(url, config?.data, config)
+    return this.destructureAxiosResponse(responseData)
   }
 
-  async patchForm<R, C = any> (url: string, config?: AxiosRequestConfig<C>): Promise<IResponseData<R>> {
-    return await this._axios.patchForm<C, IResponseData<R>>(url, config)
+  async patchForm<R, D = any> (url: string, config?: AxiosRequestConfig<D>): Promise<IResponseData<R>> {
+    const responseData = await this._axios.patchForm<R, AxiosResponse<IResponseData<R>, D>, D>(url, config?.data, config)
+    return this.destructureAxiosResponse(responseData)
   }
   // #endregion
 }

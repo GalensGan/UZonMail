@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { useRouter } from 'vue-router'
 import { useUserInfoStore } from './user'
-import { dynamicRoutes } from 'src/router/routes'
+import { constantRoutes, dynamicRoutes, exceptionRoutes } from 'src/router/routes'
 import { ExtendedRouteRecordRaw } from 'src/router/types'
 
 // 过滤动态路由
@@ -29,21 +29,32 @@ function filterDynamicRouesByAccess (routes: ExtendedRouteRecordRaw[]): Extended
 // options 方式定义
 export const useRoutesStore = defineStore('routes', {
   state: () => ({
-    isAddedDynamicRoutes: false
+    isAddedDynamicRoutes: false,
+    // 该参数不包含异常处理路由
+    loadedRoutes: [] as ExtendedRouteRecordRaw[]
   }),
   actions: {
-    addDynamicRoutes () {
-      console.log('addDynamicRoutes', this.isAddedDynamicRoutes)
-      if (this.isAddedDynamicRoutes) return
+    /**
+     * 添加动态路由,若添加了，则返回 true
+     * @returns
+     */
+    addDynamicRoutes (): boolean {
+      // console.log('addDynamicRoutes', this.isAddedDynamicRoutes)
+      if (this.isAddedDynamicRoutes) return false
       this.isAddedDynamicRoutes = true
 
       // 动态添加路由
       const accessRoutes = filterDynamicRouesByAccess(dynamicRoutes)
-      console.log('动态路由', accessRoutes)
+      // console.log('添加的动态路由：', accessRoutes)
       const router = useRouter()
-      accessRoutes.forEach(route => {
+      const allDynamicRoutes = [...accessRoutes, ...exceptionRoutes]
+      allDynamicRoutes.forEach(route => {
         router.addRoute(route)
       })
+
+      // 将静态和动态路由保存到 store 中
+      this.loadedRoutes = [...constantRoutes, ...accessRoutes]
+      return true
     }
   }
 })

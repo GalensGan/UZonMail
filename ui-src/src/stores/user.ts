@@ -1,13 +1,14 @@
 import { defineStore } from 'pinia'
-import { useStorage } from '@vueuse/core'
+import { useSessionStorage } from '@vueuse/core'
 import { IUserInfo } from './types'
+import { useRouter } from 'src/router/index'
 
 // options 方式定义
 export const useUserInfoStore = defineStore('userInfo', {
   state: () => ({
-    token: useStorage('token', '').value,
-    access: useStorage('access', []).value as string[],
-    userInfo: useStorage('userInfo', {
+    token: useSessionStorage('token', '').value,
+    access: useSessionStorage('access', []).value as string[],
+    userInfo: useSessionStorage('userInfo', {
       userId: '',
       userName: '',
       avatar: ''
@@ -21,19 +22,22 @@ export const useUserInfoStore = defineStore('userInfo', {
   actions: {
     setToken (token: string) {
       this.token = token
-
       // 保存到 session 中，方便刷新后恢复
-      useStorage('token', token)
+      const tokenSession = useSessionStorage('token', '')
+      console.log('setToken: ', token, tokenSession.value)
+      tokenSession.value = token
     },
 
     setUserInfo (userInfo: IUserInfo) {
       this.userInfo = userInfo
-      useStorage('userInfo', userInfo)
+      const userInfoSession = useSessionStorage('userInfo', userInfo)
+      userInfoSession.value = userInfo
     },
 
     setAccess (access: string[]) {
       this.access = access
-      useStorage('access', access)
+      const accessSession = useSessionStorage('access', access)
+      accessSession.value = access
     },
 
     setUserLoginInfo (userInfo: IUserInfo, token: string, access: string[]) {
@@ -53,6 +57,19 @@ export const useUserInfoStore = defineStore('userInfo', {
       if (!targetAccess || targetAccess.length === 0) return false
       if (typeof targetAccess === 'string') targetAccess = [targetAccess]
       return this.access.some(x => targetAccess.includes(x))
+    },
+
+    // 退出登陆
+    logout () {
+      // 重置数据
+      const tokenSession = useSessionStorage('token', '')
+      const accessSession = useSessionStorage('access', [])
+      tokenSession.value = null
+      accessSession.value = null
+
+      // 重定向到登陆页面
+      const router = useRouter()
+      router.push('/login')
     }
   }
 })

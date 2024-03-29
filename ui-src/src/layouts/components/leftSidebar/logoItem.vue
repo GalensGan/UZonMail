@@ -1,7 +1,7 @@
 <template>
-  <q-item clickable v-ripple style="height: 50px;" class="text-primary">
+  <q-item style="height: 100px;" class="animated slideInDown">
     <q-item-section avatar>
-      <q-icon name="mark_email_read" />
+      <q-icon name="img:icons/undraw_mailbox_re_dvds.svg" size="70px" class="q-ma-lg"></q-icon>
     </q-item-section>
 
     <q-item-section>
