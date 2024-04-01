@@ -34,7 +34,7 @@ const props = defineProps({
 
 const { name, children, meta: { label, icon, noMenu } } = props.routeRaw
 const existChildren = computed(() => children && children.length > 0)
-const childrenRoutes = children?.map(x => getMenuRoute(x))
+const childrenRoutes = children?.map(x => getMenuRoute(x)) as ExtendedRouteRecordRaw[]
 
 // 判断当前菜单是否处于激活状态
 const route = useRoute()

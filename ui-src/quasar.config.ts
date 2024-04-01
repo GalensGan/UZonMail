@@ -54,7 +54,7 @@ export default configure((ctx) => {
       // https://quasar.dev/quasar-cli-webpack/handling-process-env/#adding-to-process-env
       env: {
         // 本机 mock 地址为: http://127.0.0.1:4523/m1/2361225-0-default
-        // 本机测试地址为: http://localhost:3000
+        // 本机测试地址为: http://localhost:22345/api/v1
         BASE_URL: ctx.dev ? 'http://127.0.0.1:4523/m1/2361225-0-default' : 'https://api.example.com'
       },
 

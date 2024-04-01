@@ -1,16 +1,20 @@
 <template>
   <q-menu context-menu auto-close transition-show="scale" transition-hide="scale">
-    <q-list style="min-width: 100px" dense>
-      <q-item v-for="item in contextItems" :key="item.name" clickable v-close-popup @click="item.onClick"
-        :class="getItemClass(item)">
-        <q-item-section>{{ item.label }}
+    <q-list style="min-width: 80px" dense>
+      <q-item v-for="(item, index) in contextItems" :key="item.name" clickable v-close-popup
+        @click="item.onClick(value)" :class="getItemClass(item, index)">
+        <q-item-section>
+          {{ item.label }}
         </q-item-section>
+        <AsyncTooltip class="q-tooltip--style arrow-left" :tooltip="item.tooltip" />
       </q-item>
     </q-list>
   </q-menu>
 </template>
 
 <script lang="ts" setup>
+import AsyncTooltip from 'src/components/asyncTooltip/AsyncTooltip.vue'
+
 import { IContextMenuItem } from './types'
 const props = defineProps({
   items: {
@@ -40,12 +44,11 @@ const contextItems = computed(() => {
   })
   return results
 })
-function getItemClass (contextItem: IContextMenuItem) {
-  return {
-    'text-primary': contextItem.color === 'primary',
-    'text-secondary': contextItem.color === 'secondary',
-    'text-accent': contextItem.color === 'accent'
-  }
+function getItemClass (contextItem: IContextMenuItem, index: number) {
+  if (contextItem.color) return `text-${contextItem.color}`
+
+  const colors = ['text-primary', 'text-secondary', 'text-accent']
+  return colors[index % 3]
 }
 </script>
 

@@ -1,21 +1,6 @@
 import { ExtendedRouteRecordRaw } from './types'
 import NormalLayout from 'layouts/normalLayout/normalLayout.vue'
 
-// 静态 routes
-export const constantRoutes: ExtendedRouteRecordRaw[] = [
-  {
-    name: 'Login',
-    path: '/login',
-    component: () => import('src/pages/Login/loginIndex.vue'),
-    meta: {
-      label: '用户登录',
-      icon: 'login',
-      noMenu: true, // 在菜单中隐藏
-      noTag: true // 在标签中隐藏
-    }
-  }
-]
-
 // 根据权限显示的 routes
 export const dynamicRoutes: ExtendedRouteRecordRaw[] = [
   {
@@ -26,13 +11,14 @@ export const dynamicRoutes: ExtendedRouteRecordRaw[] = [
       label: '首页',
       icon: 'home'
     },
-    redirect: 'index',
+    // 填绝对路径，若是相对路径，则相对于当前路由
+    redirect: '/index',
     children: [
       {
         name: 'Index',
         path: 'index',
         meta: {
-          label: '首页2',
+          label: '首页',
           icon: 'home'
         },
         component: () => import('pages/IndexPage.vue')
@@ -40,25 +26,162 @@ export const dynamicRoutes: ExtendedRouteRecordRaw[] = [
     ]
   },
   {
-    name: 'user',
+    name: 'User',
     path: '/user',
     component: NormalLayout,
     meta: {
-      label: '用户',
+      label: '用户信息',
       icon: 'info'
+      // noTag: true,
+      // noMenu: true
     },
-    redirect: 'me',
+    redirect: '/user/profile',
     children: [
       {
-        name: 'my',
-        path: 'me',
+        name: 'Profile',
+        path: 'profile',
         meta: {
           icon: 'menu',
-          label: '我的'
+          label: '个人资料'
+        },
+        component: () => import('pages/user/profileIndex.vue')
+      }
+    ]
+  },
+  {
+    name: 'EmailManage',
+    path: '/email-manage',
+    component: NormalLayout,
+    meta: {
+      label: '邮箱管理',
+      icon: 'alternate_email'
+    },
+    redirect: '/email-manage/send-box',
+    children: [
+      {
+        name: 'SendBox',
+        path: 'send-box',
+        meta: {
+          icon: 'forward_to_inbox',
+          label: '发件箱'
+        },
+        component: () => import('pages/IndexPage.vue')
+      },
+      {
+        name: 'InBox',
+        path: 'in-box',
+        meta: {
+          icon: 'contact_mail',
+          label: '收件人'
+        },
+        component: () => import('pages/IndexPage.vue')
+      },
+      {
+        name: 'Template',
+        path: 'template',
+        meta: {
+          icon: 'article',
+          label: '模板管理'
         },
         component: () => import('pages/IndexPage.vue')
       }
     ]
+  },
+  {
+    name: 'SendManage',
+    path: '/send-manage',
+    component: NormalLayout,
+    meta: {
+      label: '发件管理',
+      icon: 'send'
+    },
+    redirect: '/send-manage/profile',
+    children: [
+      {
+        name: 'NewEmail',
+        path: 'new-email',
+        meta: {
+          icon: 'add_box',
+          label: '新建邮件'
+        },
+        component: () => import('pages/IndexPage.vue')
+      },
+      {
+        name: 'SendHistory',
+        path: 'history',
+        meta: {
+          icon: 'schedule_send',
+          label: '发件历史'
+        },
+        component: () => import('pages/IndexPage.vue')
+      }
+    ]
+  },
+  {
+    name: 'System',
+    path: '/system',
+    component: NormalLayout,
+    meta: {
+      label: '系统设置',
+      icon: 'settings_suggest'
+    },
+    redirect: '/system/user-manage',
+    children: [
+      {
+        name: 'UserManage',
+        path: 'user-manage',
+        meta: {
+          icon: 'manage_accounts',
+          label: '用户管理'
+        },
+        component: () => import('pages/systemSetting/userManage.vue')
+      },
+      {
+        name: 'BasicSetting',
+        path: 'basicSetting',
+        meta: {
+          icon: 'tune',
+          label: '基础设置'
+        },
+        component: () => import('pages/IndexPage.vue')
+      }
+    ]
+  },
+  {
+    name: 'Help',
+    path: '/help',
+    component: NormalLayout,
+    meta: {
+      label: '帮助文档',
+      icon: 'settings_suggest'
+    },
+    redirect: 'https://galensgan.github.io/posts/2020/2QMK677.html',
+    children: [
+      {
+        name: 'UsageGuide',
+        path: 'https://galensgan.github.io/posts/2020/2QMK677.html',
+        meta: {
+          icon: 'manage_accounts',
+          label: '使用说明'
+        },
+        component: () => import('pages/IndexPage.vue')
+      }
+    ]
+  }
+]
+
+// 静态 routes
+export const constantRoutes: ExtendedRouteRecordRaw[] = [
+  {
+    name: 'Login',
+    path: '/login',
+    component: () => import('src/pages/login/loginIndex.vue'),
+    meta: {
+      label: '用户登录',
+      icon: 'login',
+      noMenu: true, // 在菜单中隐藏
+      noTag: true // 在标签中隐藏
+    }
   }
 ]
 

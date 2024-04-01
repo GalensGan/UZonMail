@@ -4,7 +4,7 @@
       <q-icon name="img:icons/undraw_mailbox_re_dvds.svg" size="220px" class="q-ma-lg animated fadeInUp"></q-icon>
 
       <q-card class="q-ma-md q-pa-lg column justify-center items-center radius-8 animated fadeInDown"
-        style="min-width: 400px;">
+        style="min-width: 400px;" @keyup.enter="onUserLogin">
         <div class="self-center q-mb-lg text-h5 text-secondary">Welcome to UZonMail</div>
 
         <q-input outlined class="full-width q-mb-md" standout v-model="userId" label="用户名">
@@ -28,6 +28,7 @@
 <script lang="ts" setup>
 import { userLogin } from 'src/api/login'
 import { useUserInfoStore } from 'src/stores/user'
+import { notifyError } from 'src/utils/notify'
 
 // 登陆界面
 const userId = ref('')
@@ -38,11 +39,22 @@ const router = useRouter()
  * 用户登陆
  */
 async function onUserLogin () {
+  // 验证数据
+  if (!userId.value) {
+    notifyError('请输入用户名')
+    return
+  }
+
+  if (!password.value) {
+    notifyError('请输入密码')
+    return
+  }
+
   // 登陆逻辑
   // 1- 请求登陆信息，返回用户信息、token、权限信息
   // 2- 保存信息、密码加密后保存，用于解析服务器的密码
   // 3- 跳转到主页或重定向的页面
-  const { data: { userInfo, token, access } } = await userLogin()
+  const { data: { userInfo, token, access } } = await userLogin(userId.value, password.value)
   const userInfoStore = useUserInfoStore()
   userInfoStore.setUserLoginInfo(userInfo, token, access)
   console.log('登陆成功:', userInfo, token, access)

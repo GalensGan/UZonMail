@@ -10,6 +10,11 @@ export interface IUserLoginInfo {
  * 测试 mock
  * @returns
  */
-export async function userLogin () {
-  return await httpClient.post<IUserLoginInfo>('/user/login')
+export async function userLogin (userId: string, password: string) {
+  return await httpClient.post<IUserLoginInfo>('/user/sign-in', {
+    data: {
+      userId,
+      password
+    }
+  })
 }

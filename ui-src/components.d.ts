@@ -7,18 +7,17 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    AsyncTooltip: typeof import('./src/components/asyncTooltip/AsyncTooltip.vue')['default']
+    ContextMen: typeof import('./src/components/contextMenu/ContextMen.vue')['default']
+    ContextMenu: typeof import('./src/components/contextMenu/ContextMenu.vue')['default']
     ContextMenuIndex: typeof import('./src/components/contextMenu/ContextMenuIndex.vue')['default']
     ElDropdown: typeof import('element-plus/es')['ElDropdown']
     ElDropdownItem: typeof import('element-plus/es')['ElDropdownItem']
     ElDropdownMenu: typeof import('element-plus/es')['ElDropdownMenu']
-    ElIcon: typeof import('element-plus/es')['ElIcon']
-    ElMenu: typeof import('element-plus/es')['ElMenu']
-    ElMenuItem: typeof import('element-plus/es')['ElMenuItem']
-    ElMenuItemGroup: typeof import('element-plus/es')['ElMenuItemGroup']
-    ElSubMenu: typeof import('element-plus/es')['ElSubMenu']
-    EssentialLink: typeof import('./src/components/EssentialLink.vue')['default']
-    ExampleComponent: typeof import('./src/components/ExampleComponent.vue')['default']
+    QTablePro: typeof import('./src/components/componentWrapper/QTablePro.vue')['default']
+    QTableSelf: typeof import('./src/components/componentWrapper/QTableSelf.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    UzonTable: typeof import('./src/components/componentWrapper/UzonTable.vue')['default']
   }
 }

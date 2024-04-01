@@ -5,6 +5,8 @@ export type ExtendedRouteRecordRaw = RouteRecordRaw & {
   meta: {
     label: string
     icon: string,
-    access?: string[]
+    access?: string[],
+    noTag?: boolean,
+    noMenu?: boolean
   }
 }

@@ -71,6 +71,8 @@ export default class HttpClient {
     },
     // 当 response.status 不是 200 时触发
     async (error) => {
+      console.log('response error:', error)
+
       const response = error.response as AxiosResponse
       if (response.status === StatusCode.ClientErrorUnauthorized) {
         // 退出登陆
@@ -81,7 +83,7 @@ export default class HttpClient {
         // 其它错误，进行提示，后端返回的错误，都会进行消息展示
         notifyError(response.statusText)
       } else {
-        notifyError(response.data.message)
+        notifyError(error.message)
       }
 
       return Promise.reject(error)

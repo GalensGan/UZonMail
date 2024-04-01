@@ -5,13 +5,13 @@
       @click="goToRoute(item)" :removable="item.showCloseIcon" @mouseenter="mouseenterTag(item)"
       @mouseleave="item.showCloseIcon = false" @remove="removeTag(item)">
       <div>{{ item.label }}</div>
-      <ContextMenuIndex :items="contextItems" :value="item" />
+      <ContextMenu :items="tagContextItems" :value="item" />
     </q-chip>
   </div>
 </template>
 
 <script lang="ts" setup>
-import ContextMenuIndex from 'src/components/contextMenu/ContextMenuIndex.vue'
+import ContextMenu from 'src/components/contextMenu/ContextMenu.vue'
 
 import { IRouteHistory } from './types'
 import { useRouteHistories } from './routeHistories'
@@ -21,7 +21,7 @@ import { IContextMenuItem } from 'src/components/contextMenu/types'
 const routes = useRouteHistories()
 function getTagClass (item: IRouteHistory) {
   return {
-    'bg-secondary': item.isActive,
+    'text-primary': item.isActive,
     'text-white': !item.isActive
   }
 }
@@ -54,6 +54,7 @@ function removeTag (item: IRouteHistory) {
     router.push({
       path: '/'
     })
+    return
   }
 
   // 向前显示
@@ -70,25 +71,34 @@ function removeTag (item: IRouteHistory) {
 }
 
 // 右键菜单
-const contextItems: IContextMenuItem[] = [
+const tagContextItems: IContextMenuItem[] = [
   {
     name: 'close',
     label: '关闭',
-    onClick: () => { }
+    tooltip: '关闭当前标签',
+    onClick: params => removeTag(params as IRouteHistory)
   }, {
     name: 'closeOther',
     label: '关闭其他',
-    onClick: () => { }
+    onClick: (params) => {
+      const current = params as IRouteHistory
+      routes.value = routes.value.filter((route) => route.fullPath === current.fullPath)
+      // 激活当前
+      router.push({
+        path: current.fullPath
+      })
+    }
   }, {
     name: 'closeAll',
     label: '关闭所有',
-    onClick: () => { }
+    onClick: () => {
+      routes.value = []
+      router.push({
+        path: '/'
+      })
+    }
   }
 ]
 </script>
 
-<style lang="scss" scoped>
-.tags-view {
-  .route-tag:hover {}
-}
-</style>
+<style lang="scss" scoped></style>

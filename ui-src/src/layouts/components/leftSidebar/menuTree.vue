@@ -10,13 +10,15 @@
 </template>
 
 <script lang="ts" setup>
+import { ExtendedRouteRecordRaw } from 'src/router/types'
+
 import LogoItem from './logoItem.vue'
 import MenuItem from './menuItem.vue'
 
 import { getMenuRoute } from './helper'
 import { useRoutesStore } from 'src/stores/routes'
 const routeStore = useRoutesStore()
-const menuRoutes = routeStore.loadedRoutes.map(x => getMenuRoute(x))
+const menuRoutes = routeStore.loadedRoutes.map(x => getMenuRoute(x)) as ExtendedRouteRecordRaw[]
 </script>
 
 <style lang="scss" scoped></style>
