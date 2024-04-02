@@ -1,6 +1,10 @@
 <template>
-  <q-table class="full-height" ref="tableRef" title="Treats" :rows="rows" :columns="columns" row-key="id"
-    v-model:pagination="pagination" :loading="loading" :filter="filter" binary-state-sort @request="onTableRequest">
+  <q-table class="full-height" :rows="rows" :columns="columns" row-key="id" v-model:pagination="pagination"
+    :loading="loading" :filter="filter" binary-state-sort @request="onTableRequest">
+    <template v-slot:top-left>
+      <CreateBtn @click="onNewUserClick" />
+    </template>
+
     <template v-slot:top-right>
       <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
         <template v-slot:append>
@@ -22,6 +26,7 @@
 import { QTableColumn } from 'quasar'
 import { useQTable } from 'src/compositions/qTableUtils'
 import { IQtableRequestPage, TTableFilterObject } from 'src/compositions/types'
+import CreateBtn from 'src/components/componentWrapper/buttons/CreateBtn.vue'
 
 const columns: QTableColumn[] = [
   {
@@ -101,17 +106,24 @@ import ContextMenu from 'src/components/contextMenu/ContextMenu.vue'
 import { IContextMenuItem } from 'src/components/contextMenu/types'
 const userManageContextItems: IContextMenuItem[] = [
   {
-    name: 'deleteUser',
-    label: '删除用户',
-    tooltip: ['test1', 'test2'],
+    name: 'addUser',
+    label: '新增',
+    tooltip: '新增用户',
     onClick: () => { }
   },
   {
     name: 'deleteUser',
-    label: '删除用户',
+    label: '删除',
+    tooltip: '删除用户',
+    color: 'negative',
     onClick: () => { }
   }
 ]
+
+// 新增用户
+async function onNewUserClick () {
+  console.log('onNewUserClick')
+}
 </script>
 
 <style lang="scss" scoped></style>

@@ -38,4 +38,7 @@
   }
 }
 
-
+// 表格行 hover
+main table tr:hover {
+  color: $secondary;
+}

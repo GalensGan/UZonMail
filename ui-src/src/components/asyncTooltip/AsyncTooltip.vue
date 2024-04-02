@@ -32,7 +32,7 @@ const props = defineProps({
       | 'bottom start'
       | 'bottom end'
       | undefined>,
-    default: 'center right'
+    default: undefined
   },
 
   self: {
@@ -52,7 +52,7 @@ const props = defineProps({
       | 'bottom start'
       | 'bottom end'
       | undefined>,
-    default: 'center left'
+    default: undefined
   },
 
   // 参数
