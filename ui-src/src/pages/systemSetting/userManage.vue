@@ -121,8 +121,20 @@ const userManageContextItems: IContextMenuItem[] = [
 ]
 
 // 新增用户
+import { showDialog } from 'src/components/popupDialog/PopupDialog'
+import { PopupDialogFieldType } from 'src/components/popupDialog/types'
 async function onNewUserClick () {
-  console.log('onNewUserClick')
+  const dialogResult = await showDialog({
+    dataSet: {
+      userIds: ['1', '2', '3']
+    },
+    title: '新增用户',
+    fields: [
+      { name: 'test', label: 'test', type: PopupDialogFieldType.text },
+      { name: 'test', label: 'test', type: PopupDialogFieldType.text }
+    ]
+  })
+  console.log('onNewUserClick', dialogResult)
 }
 </script>
 

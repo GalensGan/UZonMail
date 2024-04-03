@@ -9,13 +9,17 @@
 
         <q-input outlined class="full-width q-mb-md" standout v-model="userId" label="用户名">
           <template v-slot:prepend>
-            <q-icon name="place" />
+            <q-icon name="person" />
           </template>
         </q-input>
 
-        <q-input outlined class="full-width q-mb-md" standout v-model="password" label="用户名">
+        <q-input outlined class="full-width q-mb-md" standout v-model="password" label="密码"
+          :type="isPwd ? 'password' : 'text'">
           <template v-slot:prepend>
-            <q-icon name="place" />
+            <q-icon name="lock" />
+          </template>
+          <template v-slot:append>
+            <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
           </template>
         </q-input>
 
@@ -33,6 +37,7 @@ import { notifyError } from 'src/utils/notify'
 // 登陆界面
 const userId = ref('')
 const password = ref('')
+const isPwd = ref(true)
 
 const router = useRouter()
 /**

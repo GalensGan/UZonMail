@@ -19,6 +19,7 @@ declare module 'vue' {
     ElDropdown: typeof import('element-plus/es')['ElDropdown']
     ElDropdownItem: typeof import('element-plus/es')['ElDropdownItem']
     ElDropdownMenu: typeof import('element-plus/es')['ElDropdownMenu']
+    LowCodeForm: typeof import('./src/components/popupDialog/lowCodeForm.vue')['default']
     OkBtn: typeof import('./src/components/componentWrapper/buttons/OkBtn.vue')['default']
     QTablePro: typeof import('./src/components/componentWrapper/QTablePro.vue')['default']
     QTableSelf: typeof import('./src/components/componentWrapper/QTableSelf.vue')['default']
