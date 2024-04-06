@@ -17,9 +17,6 @@ defineProps({
 const userInfoStore = useUserInfoStore()
 const { userId, userAvatar } = storeToRefs(userInfoStore)
 const firstLetter = computed(() => userId.value?.charAt(0).toUpperCase())
-watch(userAvatar, () => {
-  console.log('userAvatar changed', userAvatar.value)
-})
 </script>
 
 <style lang="scss" scoped></style>

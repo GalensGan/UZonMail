@@ -20,7 +20,11 @@
 
     <q-page-container class="page-container">
       <q-page class="q-px-md q-pb-md full-height full-with">
-        <router-view />
+        <transition appear enter-active-class="animated fadeInDown">
+          <keep-alive :include="cachedViews">
+            <router-view :key="key" />
+          </keep-alive>
+        </transition>
       </q-page>
     </q-page-container>
   </q-layout>
@@ -44,6 +48,16 @@ const $q = useQuasar()
 if ($q.platform.is.desktop && $q.screen.gt.md) {
   drawer.value = true
 }
+
+// 缓存
+const cachedViews = computed(() => {
+  return []
+})
+
+const route = useRoute()
+const key = computed(() => {
+  return route.fullPath // this.$route.path
+})
 </script>
 
 <style lang="scss" scoped>
@@ -52,6 +66,7 @@ if ($q.platform.is.desktop && $q.screen.gt.md) {
 }
 
 .page-container {
+  overflow: hidden;
   position: absolute;
   top: 0px;
   left: 0px;

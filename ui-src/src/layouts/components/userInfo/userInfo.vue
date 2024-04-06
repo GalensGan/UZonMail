@@ -3,7 +3,7 @@
     <UserAvatar />
     <template #dropdown>
       <el-dropdown-menu>
-        <el-dropdown-item>个人信息</el-dropdown-item>
+        <el-dropdown-item @click="onGoToProfile">个人信息</el-dropdown-item>
         <el-dropdown-item @click="onLogout">退出</el-dropdown-item>
       </el-dropdown-menu>
     </template>
@@ -17,6 +17,12 @@ import { useUserInfoStore } from 'src/stores/user'
 const userInfoStore = useUserInfoStore()
 function onLogout () {
   userInfoStore.logout()
+}
+const router = useRouter()
+function onGoToProfile () {
+  router.push({
+    path: '/user/profile'
+  })
 }
 </script>
 

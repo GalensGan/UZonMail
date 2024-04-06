@@ -31,9 +31,9 @@ export const dynamicRoutes: ExtendedRouteRecordRaw[] = [
     component: NormalLayout,
     meta: {
       label: '用户信息',
-      icon: 'info'
-      // noTag: true,
-      // noMenu: true
+      icon: 'info',
+      noTag: true,
+      noMenu: true
     },
     redirect: '/user/profile',
     children: [

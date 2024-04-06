@@ -91,15 +91,21 @@ async function onChangeUserPassword () {
  * 修改头像
  */
 import ImageCropper from 'src/components/imageCropper/ImageCropper.vue'
+import { openFileSelector, bufferToBase64Png } from 'src/utils/file'
 async function onChangeUserAvatar () {
-  const blobResult = await showComponentDialog(ImageCropper)
+  // 选择文件
+  const buffer = await openFileSelector()
+  if (!buffer) return
+
+  const blobResult = await showComponentDialog(ImageCropper, {
+    img: bufferToBase64Png(buffer as ArrayBuffer)
+  })
   if (!blobResult.ok) return
 
   // 上传 blob 到服务器
   const { data } = blobResult
   const { data: avatarUrl } = await updateUserAvatar(data as Blob)
   // 将头像数据更新到 store 中
-
   userInfoStore.updateUserAvatar(avatarUrl)
 }
 </script>
