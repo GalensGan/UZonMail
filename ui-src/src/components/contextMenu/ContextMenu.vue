@@ -7,8 +7,7 @@
         <q-item-section>
           {{ item.label }}
         </q-item-section>
-        <AsyncTooltip :tooltip="item.tooltip" anchor="center right"
-          self="center left" />
+        <AsyncTooltip :tooltip="item.tooltip" anchor="center right" self="center left" />
       </q-item>
     </q-list>
   </q-menu>
@@ -64,6 +63,12 @@ function getItemClass (contextItem: IContextMenuItem, index: number) {
 // #region 菜单的显示和样式控制
 const qMenuModel = ref(false)
 const targetRowElement = ref<HTMLElement | null>(null)
+// 递归向上查找，判断元素是否包含指定的class
+function hasClass (element: HTMLElement, className: string) {
+  if (element.classList.contains(className)) return true
+  if (element.parentElement) return hasClass(element.parentElement, className)
+  return false
+}
 function beforeContextMenuShow (evt: Event) {
   const trElement = getTableRowElement(evt.target as HTMLElement)
   if (trElement) {
@@ -71,17 +76,8 @@ function beforeContextMenuShow (evt: Event) {
     targetRowElement.value = trElement
   }
 
-  // 递归向上查找，判断元素是否包含指定的class
-  function hasClass (element: HTMLElement, className: string) {
-    if (element.classList.contains(className)) return true
-    if (element.parentElement) return hasClass(element.parentElement, className)
-    return false
-  }
-
-  // 没有目标时，不处理
-  if (!props.targetClass) return
-
-  if (hasClass(evt.target as HTMLElement, props.targetClass)) {
+  // 没有目标类时，不进行控制
+  if (props.targetClass && hasClass(evt.target as HTMLElement, props.targetClass)) {
     qMenuModel.value = false
   }
 }
@@ -95,9 +91,9 @@ function getTableRowElement (element: HTMLElement | null) {
 }
 
 function onMenuBeforeHide () {
-  // 移除样式 table-row__hover
+  // 移除样式 .table-row__keep-hover
   if (targetRowElement.value) {
-    targetRowElement.value.classList.remove('table-row__hover')
+    targetRowElement.value.classList.remove('table-row__keep-hover')
     targetRowElement.value = null
   }
 }
@@ -109,10 +105,15 @@ async function onMenuItemClick (event: Event, item: IContextMenuItem) {
   // 当前菜单增加执行动画
   try {
     console.log('执行菜单命令', event, item)
+    // 开始执行
+    if (typeof item.onClick === 'function') {
+      const result = await item.onClick(props.value)
+      if (result === false) return
+    }
+    onMenuBeforeHide()
     // 关闭菜单
     qMenuModel.value = false
   } catch {
-
   } finally {
     // 重置所有的动画状态
   }

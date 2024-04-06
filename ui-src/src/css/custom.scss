@@ -40,5 +40,11 @@
 
 // 表格行 hover
 main table tr:hover {
-  color: $secondary;
+  font-weight: bold;
+  height: 40px !important;
+}
+
+main table .table-row__keep-hover {
+  font-weight: bold;
+  height: 40px !important;
 }

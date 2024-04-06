@@ -30,7 +30,7 @@
 </template>
 
 <script lang="ts" setup>
-import { userLogin } from 'src/api/login'
+import { userLogin } from 'src/api/user'
 import { useUserInfoStore } from 'src/stores/user'
 import { notifyError } from 'src/utils/notify'
 

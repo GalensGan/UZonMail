@@ -8,16 +8,27 @@ export const useUserInfoStore = defineStore('userInfo', {
   state: () => ({
     token: useSessionStorage('token', '').value,
     access: useSessionStorage('access', []).value as string[],
-    userInfo: useSessionStorage('userInfo', {
-      userId: '',
-      userName: '',
-      avatar: ''
-    } as IUserInfo).value
+    userId: useSessionStorage('userId', '').value,
+    userName: useSessionStorage('userName', '').value,
+    avatar: useSessionStorage('avatar', '').value
   }),
   getters: {
-    userId: (state) => state.userInfo.userId,
-    userName: (state) => state.userInfo.userName,
-    userAvatar: (state) => state.userInfo.avatar
+    userInfo: (state) => {
+      return {
+        userId: state.userId,
+        userName: state.userName,
+        avatar: state.avatar
+      }
+    },
+    userAvatar: (state) => {
+      // 判断是否包含 http，若不包含，添加后端的 http
+      const avatar = state.avatar
+      if (!avatar) return avatar
+
+      if (avatar.startsWith('http')) return avatar
+      const url = new URL(avatar, process.env.BASE_URL?.replace('/api/v1', ''))
+      return url.toString()
+    }
   },
   actions: {
     setToken (token: string) {
@@ -29,9 +40,13 @@ export const useUserInfoStore = defineStore('userInfo', {
     },
 
     setUserInfo (userInfo: IUserInfo) {
-      this.userInfo = userInfo
-      const userInfoSession = useSessionStorage('userInfo', userInfo)
-      userInfoSession.value = userInfo
+      this.userId = userInfo.userId
+      this.userName = userInfo.userName
+      this.avatar = userInfo.avatar
+
+      useSessionStorage('userId', this.userId).value = this.userId
+      useSessionStorage('userName', this.userName).value = this.userName
+      useSessionStorage('avatar', this.avatar).value = this.avatar
     },
 
     setAccess (access: string[]) {
@@ -70,6 +85,16 @@ export const useUserInfoStore = defineStore('userInfo', {
       // 重定向到登陆页面
       const router = useRouter()
       router.push('/login')
+    },
+
+    /**
+     * 更新用户头像
+     * @param string
+     * @param avatarUrl
+     */
+    updateUserAvatar (avatarUrl: string) {
+      this.avatar = avatarUrl
+      useSessionStorage('avatar', avatarUrl).value = avatarUrl
     }
   }
 })

@@ -119,7 +119,7 @@ export default class HttpClient {
    * @returns
    */
   async get<R, D = any> (url: string, config?: AxiosRequestConfig<D>): Promise<IResponseData<R>> {
-    const responseData = await this._axios.get<R, AxiosResponse<IResponseData<R>, D>, D>(url, config?.data, config)
+    const responseData = await this._axios.get<R, AxiosResponse<IResponseData<R>, D>, D>(url, config)
     return this.destructureAxiosResponse(responseData)
   }
 
@@ -130,7 +130,7 @@ export default class HttpClient {
    * @returns
    */
   async delete<R, D = any> (url: string, config?: AxiosRequestConfig<D>): Promise<IResponseData<R>> {
-    const responseData = await this._axios.delete<R, AxiosResponse<IResponseData<R>, D>, D>(url, config?.data, config)
+    const responseData = await this._axios.delete<R, AxiosResponse<IResponseData<R>, D>, D>(url, config)
     return this.destructureAxiosResponse(responseData)
   }
 
@@ -141,7 +141,7 @@ export default class HttpClient {
    * @returns
    */
   async head<R, D = any> (url: string, config?: AxiosRequestConfig<D>): Promise<IResponseData<R>> {
-    const responseData = await this._axios.head<R, AxiosResponse<IResponseData<R>, D>, D>(url, config?.data, config)
+    const responseData = await this._axios.head<R, AxiosResponse<IResponseData<R>, D>, D>(url, config)
     return this.destructureAxiosResponse(responseData)
   }
 
@@ -152,7 +152,7 @@ export default class HttpClient {
    * @returns
    */
   async options<R, D = any> (url: string, config?: AxiosRequestConfig<D>): Promise<IResponseData<R>> {
-    const responseData = await this._axios.options<R, AxiosResponse<IResponseData<R>, D>, D>(url, config?.data, config)
+    const responseData = await this._axios.options<R, AxiosResponse<IResponseData<R>, D>, D>(url, config)
     return this.destructureAxiosResponse(responseData)
   }
 

@@ -6,7 +6,7 @@ export interface IQTablePagination {
   rowsNumber: number
 }
 
-export interface IQtableRequestPage {
+export interface IQtableRequestParams {
   sortBy: string,
   descending: boolean,
   skip: number, // 跳过行数
@@ -29,5 +29,5 @@ export interface IQTableInitParams {
   filterFactor?: (filter: string) => Promise<TTableFilterObject>,
   getRowsNumberCount: (filterObj: TTableFilterObject) => Promise<number>, // 请求数据总数
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onRequest: (filterObj: TTableFilterObject, pagination: IQtableRequestPage) => Promise<Array<object>> // 请求数据
+  onRequest: (filterObj: TTableFilterObject, pagination: IQtableRequestParams) => Promise<Array<object>> // 请求数据
 }

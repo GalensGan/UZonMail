@@ -8,8 +8,10 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     AsyncTooltip: typeof import('./src/components/asyncTooltip/AsyncTooltip.vue')['default']
+    ButtonsGroup: typeof import('./src/components/buttonsGroup/ButtonsGroup.vue')['default']
     CancelBtn: typeof import('./src/components/componentWrapper/buttons/CancelBtn.vue')['default']
     CancleBtn: typeof import('./src/components/componentWrapper/buttons/CancleBtn.vue')['default']
+    CommonBtn: typeof import('./src/components/componentWrapper/buttons/CommonBtn.vue')['default']
     ConfirmBtn: typeof import('./src/components/componentWrapper/buttons/ConfirmBtn.vue')['default']
     ContextMen: typeof import('./src/components/contextMenu/ContextMen.vue')['default']
     ContextMenu: typeof import('./src/components/contextMenu/ContextMenu.vue')['default']
@@ -19,13 +21,16 @@ declare module 'vue' {
     ElDropdown: typeof import('element-plus/es')['ElDropdown']
     ElDropdownItem: typeof import('element-plus/es')['ElDropdownItem']
     ElDropdownMenu: typeof import('element-plus/es')['ElDropdownMenu']
+    ImageCropper: typeof import('./src/components/imageCropper/ImageCropper.vue')['default']
     LowCodeForm: typeof import('./src/components/popupDialog/lowCodeForm.vue')['default']
     OkBtn: typeof import('./src/components/componentWrapper/buttons/OkBtn.vue')['default']
+    PasswordInput: typeof import('./src/components/passwordInput/PasswordInput.vue')['default']
     QTablePro: typeof import('./src/components/componentWrapper/QTablePro.vue')['default']
     QTableSelf: typeof import('./src/components/componentWrapper/QTableSelf.vue')['default']
     QTableWrapper: typeof import('./src/components/componentWrapper/QTableWrapper.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    UserAvatar: typeof import('./src/components/userAvatar/UserAvatar.vue')['default']
     UzonTable: typeof import('./src/components/componentWrapper/UzonTable.vue')['default']
   }
 }

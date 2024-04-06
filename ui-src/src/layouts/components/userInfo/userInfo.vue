@@ -1,8 +1,6 @@
 <template>
   <el-dropdown>
-    <q-avatar>
-      <img src="https://cdn.quasar.dev/img/avatar2.jpg">
-    </q-avatar>
+    <UserAvatar />
     <template #dropdown>
       <el-dropdown-menu>
         <el-dropdown-item>个人信息</el-dropdown-item>
@@ -13,6 +11,8 @@
 </template>
 
 <script lang="ts" setup>
+import UserAvatar from 'src/components/userAvatar/UserAvatar.vue'
+
 import { useUserInfoStore } from 'src/stores/user'
 const userInfoStore = useUserInfoStore()
 function onLogout () {

@@ -41,7 +41,7 @@ const miniState = ref(false)
 
 // #region 开关左侧抽屉
 const $q = useQuasar()
-if ($q.platform.is.desktop) {
+if ($q.platform.is.desktop && $q.screen.gt.md) {
   drawer.value = true
 }
 </script>

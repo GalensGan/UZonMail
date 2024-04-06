@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { QTableProps } from 'quasar'
-import { IQTableInitParams, TTableFilterObject, IQTablePagination, IQtableRequestPage } from './types'
+import { IQTableInitParams, TTableFilterObject, IQTablePagination, IQtableRequestParams } from './types'
 
 // 返回一个QTable的配置对象
 export function useQTable (initParams: IQTableInitParams) {
@@ -41,7 +42,7 @@ export function useQTable (initParams: IQTableInitParams) {
 
   // 表格数据请求
   const loading = ref(false)
-  const rows: Ref<object> = ref([])
+  const rows: Ref<Record<string, any>[]> = ref([])
   async function onTableRequest (qTableProps: QTableProps) {
     if (refreshCounter.value < 0) return
     if (!initParams.onRequest) return
@@ -63,7 +64,7 @@ export function useQTable (initParams: IQTableInitParams) {
         descending,
         skip: startRow,
         limit: fetchCount
-      } as IQtableRequestPage)
+      } as IQtableRequestParams)
 
       // 更新数据
       rows.value = data
@@ -104,6 +105,19 @@ export function useQTable (initParams: IQTableInitParams) {
     refreshTable()
   })
 
+  // 增加新数据
+  // 新增数据时，可以使用这个方法，增加一行数据
+  function addNewRow (newRow: Record<string, any>) {
+    rows.value.push(newRow)
+    increaseRowsNumber(1)
+  }
+
+  // 删除行
+  function deleteRowById (id: string) {
+    rows.value = rows.value.filter(x => x.id !== id)
+    increaseRowsNumber(-1)
+  }
+
   return {
     rows,
     pagination,
@@ -111,6 +125,8 @@ export function useQTable (initParams: IQTableInitParams) {
     loading,
     onTableRequest,
     increaseRowsNumber,
-    refreshTable
+    refreshTable,
+    addNewRow,
+    deleteRowById
   }
 }

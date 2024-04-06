@@ -1,0 +1,25 @@
+<template>
+  <q-avatar color="primary" class="text-white" :size="size">
+    <img v-if="userAvatar" :src="userAvatar">
+    <span v-else>{{ firstLetter }}</span>
+  </q-avatar>
+</template>
+
+<script lang="ts" setup>
+import { useUserInfoStore } from 'src/stores/user'
+defineProps({
+  size: {
+    type: String,
+    default: 'lg'
+  }
+})
+
+const userInfoStore = useUserInfoStore()
+const { userId, userAvatar } = storeToRefs(userInfoStore)
+const firstLetter = computed(() => userId.value?.charAt(0).toUpperCase())
+watch(userAvatar, () => {
+  console.log('userAvatar changed', userAvatar.value)
+})
+</script>
+
+<style lang="scss" scoped></style>

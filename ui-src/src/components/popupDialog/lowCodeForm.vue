@@ -1,25 +1,34 @@
 <template>
-  <q-dialog ref="dialogRef" @hide="onDialogHide" :persist="persist">
+  <q-dialog ref="dialogRef" @hide="onDialogHide" :persistent="persistent">
     <q-card class="q-dialog-plugin">
       <!--
         ... 内容
         ... 用q-card-section来做？
       -->
+      <div v-if="title" class="text-h6 q-mx-md q-mt-sm">{{ title }}</div>
+
       <div class="q-py-md q-px-xs row justify-start items-center low-code__container">
-        <template v-for="field in formattedFields" :key="field.name">
+        <template v-for="field in validFields" :key="field.name">
           <q-input v-if="isMatchedType(field, 'text')" outlined class="q-mb-sm low-code__field q-px-sm" standout dense
-            v-model="results[field.name]" :label="field.label">
+            v-model="fieldsModel[field.name]" :label="field.label" :placeholder="field.placeholder">
             <template v-if="field.icon" v-slot:prepend>
               <q-icon :name="field.icon" />
             </template>
+
+            <AsyncTooltip :tooltip="field.tooltip" />
           </q-input>
+
+          <PasswordInput v-if="isMatchedType(field, 'password')" class="q-mb-sm low-code__field q-px-sm"
+            :label="field.label" v-model="fieldsModel[field.name]">
+            <AsyncTooltip :tooltip="field.tooltip" />
+          </PasswordInput>
         </template>
       </div>
 
       <!-- 按钮的例子 -->
       <q-card-actions align="right">
-        <OkBtn @click="onOKClick"></OkBtn>
         <CancelBtn @click="onDialogCancel"></CancelBtn>
+        <OkBtn :loading="okBtnLoading" @click="onOKClick"></OkBtn>
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -27,33 +36,117 @@
 
 <script lang="ts" setup>
 import { useDialogPluginComponent } from 'quasar'
-import { IPopupDialogParams } from './types'
+import dayjs from 'dayjs'
 
 import OkBtn from 'src/components/componentWrapper/buttons/OkBtn.vue'
 import CancelBtn from 'src/components/componentWrapper/buttons/CancelBtn.vue'
+import AsyncTooltip from 'src/components/asyncTooltip/AsyncTooltip.vue'
+import PasswordInput from '../passwordInput/PasswordInput.vue'
 
-const props = defineProps<IPopupDialogParams>()
+import { PropType } from 'vue'
+import { IPopupDialogField, PopupDialogFieldType } from './types'
+import { notifyError } from 'src/utils/notify'
+import { IFunctionResult } from 'src/types'
+
+const props = defineProps({
+  title: {
+    type: String,
+    default: ''
+  },
+  // 字段定义
+  fields: {
+    type: Array as PropType<Array<IPopupDialogField>>,
+    required: true,
+    default: () => { return [] }
+  },
+  // 数据源
+  dataSet: {
+    type: Object,
+    required: false,
+    default: () => { return {} }
+  },
+
+  // 用于数据验证
+  validate: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    type: Function as PropType<(params: Record<string, any>) => Promise<IFunctionResult>>,
+    required: false
+  },
+  // 窗体保持
+  persistent: {
+    type: Boolean,
+    default: true
+  },
+
+  // ok 单击后，调用的函数
+  // 在该函数中，可以向服务器发送请求，若不需要关闭窗体时，可以返回 false
+  onOkMain: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    type: Function as PropType<(params: Record<string, any>) => Promise<void | boolean>>
+  }
+})
 
 // 是否为匹配到的类型
-function isMatchedType (field: object, type: string): boolean {
+function isMatchedType (field: IPopupDialogField, type: string): boolean {
   return field.type === type
 }
 
-// 获取数据源
+/**
+ * 数据初始化
+ */
 const { fields, dataSet } = toRefs(props)
-const dataSetResults = ref({})
-const results = ref({})
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const dataSetRef: Ref<Record<string, any>> = ref({})
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const fieldsModel: Ref<Record<string, any>> = ref({})
+async function pullDateSet () {
+  // 获取数据源
+  for (const key of Object.keys(dataSet.value)) {
+    const value = dataSet.value[key]
+    switch (typeof value) {
+      case 'function':
+        // 函数
+        dataSetRef.value[key] = await value()
+        break
+      default:
+        dataSetRef.value[key] = value
+    }
+  }
+}
+function initFieldsModel () {
+  // 生成初始值
+  for (const field of fields.value) {
+    // 根据不同的类型，生成不同的初始值
+    switch (field.type) {
+      case PopupDialogFieldType.text:
+        fieldsModel.value[field.name] = field.value || ''
+        break
+      case PopupDialogFieldType.date:
+        fieldsModel.value[field.name] = field.value ? dayjs(field.value as string).format('YYYY-MM-DD') : ''
+        break
+      default:
+        fieldsModel.value[field.name] = field.value || ''
+    }
+  }
+}
+initFieldsModel()
+// console.log('fieldsModel:', fieldsModel.value)
 onMounted(async () => {
-  // 计算
-  Object.keys(dataSet.value).forEach(key => {
-    dataSetResults.value[key] = dataSet.value[key]
-  })
+  // 初始化数据源
+  await pullDateSet()
 })
 
-// 格式化后的字段
-const formattedFields = computed(() => {
+// 有效的字段
+const validFields = computed(() => {
   const results = []
   for (const field of fields.value) {
+    // 过滤没有 name 和 type 的字段
+    if (!field.name || !field.type) {
+      continue
+    }
+
+    // 对字段内容进行格式化，比如单选可能需要从数据源中获取
+
     results.push(field)
   }
 
@@ -75,11 +168,55 @@ const { dialogRef, onDialogHide, onDialogOK, onDialogCancel } = useDialogPluginC
 //              例子: onDialogOK({ /*...*/ }) -- 有有效载荷
 // onDialogCancel - 调用函数来处理结果为"取消"的对话框。
 
-// 这是我们例子的一部分（所以不是必须的）。
-function onOKClick () {
+// ok 逻辑
+const okBtnLoading = ref(false)
+async function onOKClick () {
+  okBtnLoading.value = true
+  try {
+    // 验证单个值
+    for (const field of validFields.value) {
+      const fieldValue = fieldsModel.value[field.name]
+      // 若是必须的，则验证是否为 null 或者 undefined
+      if (field.required) {
+        if (!fieldValue && fieldValue !== false) {
+          // 提示错误
+          notifyError(`${field.label} 不能为空`)
+          return
+        }
+      }
+
+      // 验证函数
+      if (typeof field.validate === 'function') {
+        const fieldVdResult = await field.validate(fieldValue)
+        if (!fieldVdResult.ok) {
+          // 提示错误
+          notifyError(fieldVdResult.message ? `${fieldVdResult.message}` : `${field.label} 数据格式错误`)
+          return
+        }
+      }
+    }
+
+    // 根据结果，调用所有参数的验证函数
+    if (typeof props.validate === 'function') {
+      const modelVdResult = await props.validate(fieldsModel.value)
+      if (!modelVdResult.ok) {
+        notifyError(modelVdResult.message)
+        return
+      }
+    }
+
+    // 验证完成后，若有，则调用 onOkClick 函数
+    if (typeof props.onOkMain === 'function') {
+      const mainResult = await props.onOkMain(fieldsModel.value)
+      if (mainResult === false) return
+    }
+  } finally {
+    okBtnLoading.value = false
+  }
+
   // 在"确定"时，它必须要
   // 调用onDialogOK（带可选的有效载荷）。
-  onDialogOK()
+  onDialogOK(fieldsModel.value)
   // 或使用有效载荷：onDialogOK({ ... })
   // ...它还会自动隐藏对话框
 }
@@ -94,7 +231,7 @@ function onOKClick () {
   .low-code__field {
     flex: 1 1 100%;
 
-    @media (min-width: 600px) {
+    @media screen and (min-width: 600px) {
       flex: 1 1 50%;
     }
   }
