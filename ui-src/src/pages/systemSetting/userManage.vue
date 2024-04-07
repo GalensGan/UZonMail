@@ -28,6 +28,7 @@ import { useQTable } from 'src/compositions/qTableUtils'
 import { IQtableRequestParams, TTableFilterObject } from 'src/compositions/types'
 import CreateBtn from 'src/components/componentWrapper/buttons/CreateBtn.vue'
 import { notifyError, notifySuccess, confirmOperation } from 'src/utils/notify'
+import { getFilteredUsersCount, checkUserId, createUser, getFilteredUsersData, getDefaultPassword, resetUserPassword } from 'src/api/user'
 
 const columns: QTableColumn[] = [
   {
@@ -50,8 +51,6 @@ const columns: QTableColumn[] = [
     sortable: true
   }
 ]
-
-import { getFilteredUsersCount, checkUserId, createUser, getFilteredUsersData, getDefaultPassword, resetUserPassword } from 'src/api/user'
 async function getRowsNumberCount (filterObj: TTableFilterObject) {
   const { data } = await getFilteredUsersCount(filterObj.filter)
   return data
