@@ -72,6 +72,9 @@ export default class HttpClient {
     // 当 response.status 不是 200 时触发
     async (error) => {
       console.log('response error:', error)
+      if (!error.response && error.code) {
+        notifyError(error.code)
+      }
 
       const response = error.response as AxiosResponse
       if (response.status === StatusCode.ClientErrorUnauthorized) {

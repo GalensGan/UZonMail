@@ -1,7 +1,8 @@
 <template>
   <div class="column justify-center login-container bg-grey-12">
     <div class="row justify-center items-center q-mb-xl animated fadeIn slower">
-      <q-icon name="img:icons/undraw_mailbox_re_dvds.svg" size="220px" class="q-ma-lg animated fadeInUp"></q-icon>
+      <q-icon :name="resolveSvgFullName('undraw_mailbox_re_dvds')" size="220px"
+        class="q-ma-lg animated fadeInUp"></q-icon>
 
       <q-card class="q-ma-md q-pa-lg column justify-center items-center radius-8 animated fadeInDown"
         style="min-width: 400px;" @keyup.enter="onUserLogin">
@@ -33,6 +34,7 @@
 import { userLogin } from 'src/api/user'
 import { useUserInfoStore } from 'src/stores/user'
 import { notifyError } from 'src/utils/notify'
+import { resolveSvgFullName } from 'src/utils/svgHelper'
 
 // 登陆界面
 const userId = ref('')
