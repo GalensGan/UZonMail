@@ -6,11 +6,7 @@
     </template>
 
     <template v-slot:top-right>
-      <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
-        <template v-slot:append>
-          <q-icon name="search" />
-        </template>
-      </q-input>
+      <SearchInput v-model="filter" />
     </template>
 
     <template v-slot:body-cell-userId="props">
@@ -26,6 +22,8 @@
 import { QTableColumn } from 'quasar'
 import { useQTable } from 'src/compositions/qTableUtils'
 import { IQtableRequestParams, TTableFilterObject } from 'src/compositions/types'
+import SearchInput from 'src/components/searchInput/SearchInput.vue'
+
 import CreateBtn from 'src/components/componentWrapper/buttons/CreateBtn.vue'
 import { notifyError, notifySuccess, confirmOperation } from 'src/utils/notify'
 import { getFilteredUsersCount, checkUserId, createUser, getFilteredUsersData, getDefaultPassword, resetUserPassword } from 'src/api/user'

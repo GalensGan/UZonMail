@@ -1,16 +1,27 @@
 <template>
   <q-dialog ref="dialogRef" @hide="onDialogHide" :persistent="persistent">
-    <q-card class="q-dialog-plugin">
+    <q-card>
       <!--
         ... 内容
         ... 用q-card-section来做？
       -->
       <div v-if="title" class="text-h6 q-mx-md q-mt-sm">{{ title }}</div>
 
-      <div class="q-py-md q-px-xs row justify-start items-center low-code__container">
+      <div class="q-py-md q-px-xs justify-start items-center" :class="getContainerClass()">
         <template v-for="field in validFields" :key="field.name">
-          <q-input v-if="isMatchedType(field, 'text')" outlined class="q-mb-sm low-code__field q-px-sm" standout dense
-            v-model="fieldsModel[field.name]" :label="field.label" :placeholder="field.placeholder">
+          <q-input v-if="isMatchedType(field, ['text', 'date', 'number'])" outlined
+            class="q-mb-sm low-code__field q-px-sm" standout dense v-model="fieldsModel[field.name]" :type="field.type"
+            :label="field.label" :placeholder="field.placeholder">
+            <template v-if="field.icon" v-slot:prepend>
+              <q-icon :name="field.icon" />
+            </template>
+
+            <AsyncTooltip :tooltip="field.tooltip" />
+          </q-input>
+
+          <q-input v-if="isMatchedType(field, ['textarea'])" outlined class="q-mb-sm low-code__field q-px-sm" standout
+            dense v-model="fieldsModel[field.name]" type="textarea" autogrow :label="field.label"
+            :placeholder="field.placeholder || '可 Enter 换行'">
             <template v-if="field.icon" v-slot:prepend>
               <q-icon :name="field.icon" />
             </template>
@@ -83,12 +94,28 @@ const props = defineProps({
   onOkMain: {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     type: Function as PropType<(params: Record<string, any>) => Promise<void | boolean>>
+  },
+
+  // 仅有一列
+  oneColumn: {
+    type: Boolean,
+    default: false
   }
 })
 
 // 是否为匹配到的类型
-function isMatchedType (field: IPopupDialogField, type: string): boolean {
+function isMatchedType (field: IPopupDialogField, type: string | string[]): boolean {
+  if (Array.isArray(type)) return type.includes(field.type)
   return field.type === type
+}
+
+function getContainerClass () {
+  return {
+    'low-code__container_1': props.oneColumn,
+    'low-code__container_2': !props.oneColumn,
+    row: !props.oneColumn,
+    column: props.oneColumn
+  }
 }
 
 /**
@@ -185,9 +212,14 @@ async function onOKClick () {
         }
       }
 
+      // 对结果进行转换
+      if (typeof field.parser === 'function') {
+        fieldsModel.value[field.name] = field.parser(fieldValue)
+      }
+
       // 验证函数
       if (typeof field.validate === 'function') {
-        const fieldVdResult = await field.validate(fieldValue)
+        const fieldVdResult = await field.validate(fieldValue, fieldsModel.value[field.name])
         if (!fieldVdResult.ok) {
           // 提示错误
           notifyError(fieldVdResult.message ? `${fieldVdResult.message}` : `${field.label} 数据格式错误`)
@@ -195,6 +227,9 @@ async function onOKClick () {
         }
       }
     }
+
+    // 对所有的结果进行转换
+    // 后期有需要再增加
 
     // 根据结果，调用所有参数的验证函数
     if (typeof props.validate === 'function') {
@@ -224,7 +259,7 @@ async function onOKClick () {
 </script>
 
 <style lang="scss" scoped>
-.low-code__container {
+.low-code__container_2 {
   display: flex;
   flex-wrap: wrap;
 
@@ -234,6 +269,13 @@ async function onOKClick () {
     @media screen and (min-width: 600px) {
       flex: 1 1 50%;
     }
+  }
+}
+
+.low-code__container_1 {
+  .low-code__field {
+    flex: 1 1 100%;
+    min-width: 300px;
   }
 }
 </style>

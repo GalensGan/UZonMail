@@ -10,7 +10,8 @@ export const useUserInfoStore = defineStore('userInfo', {
     access: useSessionStorage('access', []).value as string[],
     userId: useSessionStorage('userId', '').value,
     userName: useSessionStorage('userName', '').value,
-    avatar: useSessionStorage('avatar', '').value
+    avatar: useSessionStorage('avatar', '').value,
+    secretKey: useSessionStorage('secretKey', '').value
   }),
   getters: {
     userInfo: (state) => {
@@ -59,6 +60,12 @@ export const useUserInfoStore = defineStore('userInfo', {
       this.setUserInfo(userInfo)
       this.setToken(token)
       this.setAccess(access)
+    },
+
+    // 保存用户自己的密钥
+    setSecretKey (key: string) {
+      this.secretKey = key
+      useSessionStorage('secretKey', this.secretKey).value = key
     },
 
     /**

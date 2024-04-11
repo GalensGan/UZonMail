@@ -59,20 +59,20 @@ export const dynamicRoutes: ExtendedRouteRecordRaw[] = [
     redirect: '/email-manage/send-box',
     children: [
       {
-        name: 'OutBox',
+        name: 'Outbox',
         path: 'out-box',
         meta: {
           icon: 'forward_to_inbox',
           label: '发件箱'
         },
-        component: () => import('pages/emailManage/outBoxManage.vue')
+        component: () => import('pages/emailManage/outboxManage.vue')
       },
       {
         name: 'InBox',
         path: 'in-box',
         meta: {
-          icon: 'contact_mail',
-          label: '收件人'
+          icon: 'mark_email_unread',
+          label: '收件箱'
         },
         component: () => import('pages/IndexPage.vue')
       },

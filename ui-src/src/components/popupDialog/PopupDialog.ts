@@ -5,7 +5,8 @@ import lowCodeForm from './lowCodeForm.vue'
 /**
  * 弹出对话框
  */
-export async function showDialog (dialogParams: IPopupDialogParams): Promise<IDialogResult> {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function showDialog<T = Record<string, any>> (dialogParams: IPopupDialogParams): Promise<IDialogResult<T>> {
   /**
   * 显示对话框并返回结果
   */
@@ -19,16 +20,16 @@ export async function showDialog (dialogParams: IPopupDialogParams): Promise<IDi
       resolve({ ok: true, data: model })
     }).onCancel(() => {
       // console.log('Cancel')
-      resolve({ ok: false, data: {} })
+      resolve({ ok: false, data: {} as T })
     }).onDismiss(() => {
       // console.log('Dismiss')
-      resolve({ ok: false, data: {} })
+      resolve({ ok: false, data: {} as T })
     })
   })
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function showComponentDialog (component: Component, componentProps?: any): Promise<IDialogResult> {
+export async function showComponentDialog<T = Record<string, any>> (component: Component, componentProps?: any): Promise<IDialogResult<T>> {
   return new Promise((resolve) => {
     Dialog.create({
       component,
@@ -36,9 +37,9 @@ export async function showComponentDialog (component: Component, componentProps?
     }).onOk((model) => {
       resolve({ ok: true, data: model })
     }).onCancel(() => {
-      resolve({ ok: false, data: {} })
+      resolve({ ok: false, data: {} as T })
     }).onDismiss(() => {
-      resolve({ ok: false, data: {} })
+      resolve({ ok: false, data: {} as T })
     })
   })
 }

@@ -13,19 +13,19 @@ import AsyncTooltip from 'src/components/asyncTooltip/AsyncTooltip.vue'
 defineProps({
   color: {
     type: String,
-    default: 'primary'
+    default: 'secondary'
   },
   icon: {
     type: String,
-    default: undefined
+    default: 'file_download'
   },
   label: {
     type: String,
-    default: '确认'
+    default: '导出'
   },
   tooltip: {
     type: String,
-    default: ''
+    default: '导出数据'
   },
   size: {
     type: String,

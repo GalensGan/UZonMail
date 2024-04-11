@@ -1,5 +1,5 @@
 <template>
-  <q-table class="full-height">
+  <q-table class="full-height" v-bind="$attrs">
     <template #[getSlotName(slotName)]="slotProps" v-for="(slot, slotName) in $slots">
       <slot :name="slotName" v-bind="slotProps" />
     </template>

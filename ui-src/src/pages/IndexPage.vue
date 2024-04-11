@@ -1,6 +1,5 @@
 <template>
   <q-page class="row items-center justify-evenly">
-    Empty
   </q-page>
 </template>
 
@@ -13,3 +12,6 @@ export default defineComponent({
   }
 })
 </script>
+
+<style lang="scss" scoped>
+</style>

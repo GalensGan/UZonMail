@@ -1,5 +1,5 @@
 <template>
-  <q-menu v-model="qMenuModel" context-menu transition-show="scale" transition-hide="rotate"
+  <q-menu v-model="qMenuModel" context-menu transition-show="scale" transition-hide="rotate" auto-close
     @before-show="beforeContextMenuShow" @before-hide="onMenuBeforeHide">
     <q-list dense>
       <q-item v-for="(item, index) in contextItems" :key="item.name" clickable @click="onMenuItemClick($event, item)"
@@ -24,7 +24,7 @@ const props = defineProps({
   },
   value: {
     type: Object,
-    required: true
+    default: () => { return {} }
   },
   // 目标元素的 class
   // 只有匹配时，才会显示右键菜单

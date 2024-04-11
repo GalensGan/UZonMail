@@ -39,12 +39,12 @@
 }
 
 // 表格行 hover
-main table tr:hover {
+main table tbody tr:hover {
   font-weight: bold;
-  height: 40px !important;
+  height: 35px !important;
 }
 
-main table .table-row__keep-hover {
+main table tbody tr.table-row__keep-hover {
   font-weight: bold;
-  height: 40px !important;
+  height: 35px !important;
 }

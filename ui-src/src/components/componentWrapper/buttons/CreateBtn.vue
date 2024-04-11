@@ -1,5 +1,5 @@
 <template>
-  <q-btn class="q-px-sm" :dense="dense" :color="color" :size="size" :icon="icon" :label="label" v-bind="$attrs">
+  <q-btn class="q-pr-sm q-py-none" :dense="dense" :color="color" :size="size" :icon="icon" :label="label" v-bind="$attrs">
     <template v-for="(slot, slotName) in $slots">
       <slot :name="slotName"></slot>
     </template>

@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="lHh lpR fFf" dark>
+  <q-layout class="text-accent" view="lHh lpR fFf" dark>
     <q-header class="bg-grey-12 text-primary q-pa-md">
       <q-card class="column bg-white">
         <q-toolbar class="row items-center full-width">
@@ -21,9 +21,11 @@
     <q-page-container class="page-container">
       <q-page class="q-px-md q-pb-md full-height full-with">
         <transition appear enter-active-class="animated fadeInDown">
-          <keep-alive :include="cachedViews">
-            <router-view :key="key" />
-          </keep-alive>
+          <router-view v-slot="{ Component }">
+            <keep-alive>
+              <component :is="Component" />
+            </keep-alive>
+          </router-view>
         </transition>
       </q-page>
     </q-page-container>
@@ -50,14 +52,14 @@ if ($q.platform.is.desktop && $q.screen.gt.md) {
 }
 
 // 缓存
-const cachedViews = computed(() => {
-  return []
-})
+// const cachedViews = computed(() => {
+//   return []
+// })
 
-const route = useRoute()
-const key = computed(() => {
-  return route.fullPath // this.$route.path
-})
+// const route = useRoute()
+// const key = computed(() => {
+//   return route.fullPath // this.$route.path
+// })
 </script>
 
 <style lang="scss" scoped>

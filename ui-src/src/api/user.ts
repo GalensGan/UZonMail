@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { httpClient } from './base/httpClient'
+import { httpClient } from 'src/api//base/httpClient'
 import { IUserInfo } from 'src/stores/types'
 import { IQtableRequestParams } from 'src/compositions/types'
+import { sha256 } from 'js-sha256'
 
 export interface IUserLoginInfo {
   token: string,
@@ -14,6 +15,8 @@ export interface IUserLoginInfo {
  * @returns
  */
 export function userLogin (userId: string, password: string) {
+  // 对密码加密
+  password = sha256(password)
   return httpClient.post<IUserLoginInfo>('/user/sign-in', {
     data: {
       userId,
@@ -118,6 +121,8 @@ export function getUserInfo (userId: string) {
  * @returns
  */
 export function changeUserPassword (oldPassword: string, newPassword: string) {
+  oldPassword = sha256(oldPassword)
+  newPassword = sha256(newPassword)
   return httpClient.put<boolean>('/user/password', {
     params: {
       oldPassword,

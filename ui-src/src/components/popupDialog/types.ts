@@ -23,7 +23,8 @@ export interface IPopupDialogField {
   options?: Array<{ label: string, value: string | number }>, // 选项
   icon?: string, // 图标
   required?: boolean, // 是否必须
-  validate?: (value: any) => Promise<IFunctionResult>, // 验证函数
+  validate?: (value: any, parsedValue: any) => Promise<IFunctionResult>, // 验证函数
+  parser?: <T = any>(value: any) => T, // 解析函数,对数据
   tooltip?: string, // 提示
 }
 
@@ -42,11 +43,13 @@ export interface IPopupDialogParams {
   persistent?: boolean,
   // ok 最后执行的逻辑
   onOkMain?: (params: Record<string, any>) => Promise<void | boolean>,
+  // 只有一列
+  oneColumn?: boolean,
 }
 
 /**
  * 对话框返回的结果
  */
-export interface IDialogResult extends IFunctionResult {
-  data: Record<string, any>
+export interface IDialogResult<T = Record<string, any>> extends IFunctionResult {
+  data: T
 }
