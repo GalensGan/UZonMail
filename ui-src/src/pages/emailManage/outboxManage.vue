@@ -1,6 +1,6 @@
 <template>
   <div class="full-height full-width row items-start">
-    <EmailGroupList v-if="!isCollapseGroupList" v-model="emailGroupRef" class="q-card q-mr-sm"
+    <EmailGroupList v-show="!isCollapseGroupList" v-model="emailGroupRef" class="q-card q-mr-sm"
       style="width: 160px;" />
 
     <q-table class="col full-height" :rows="rows" :columns="columns" row-key="id" v-model:pagination="pagination" dense
@@ -17,11 +17,17 @@
         <SearchInput v-model="filter" />
       </template>
 
-      <template v-slot:body-cell-userId="props">
+      <template v-slot:body-cell-email="props">
         <q-td :props="props">
           {{ props.value }}
         </q-td>
         <ContextMenu :items="outboxContextMenuItems" :value="props.row" />
+      </template>
+
+      <template v-slot:body-cell-password="props">
+        <q-td class="cursor-pointer" :props="props" @click="togglePasswordViewMode(props.row)">
+          {{ getPasswordValue(props.row) }}
+        </q-td>
       </template>
     </q-table>
 
@@ -31,20 +37,19 @@
 
 <script lang="ts" setup>
 import { QTableColumn } from 'quasar'
+
 import SearchInput from 'src/components/searchInput/SearchInput.vue'
 import CreateBtn from 'src/components/componentWrapper/buttons/CreateBtn.vue'
 import ImportBtn from 'src/components/componentWrapper/buttons/ImportBtn.vue'
 import ExportBtn from 'src/components/componentWrapper/buttons/ExportBtn.vue'
 import EmailGroupList from './components/EmailGroupList.vue'
 import CollapseLeft from 'src/components/collapseLeft/CollapseLeft.vue'
+import ContextMenu from 'components/contextMenu/ContextMenu.vue'
 
 import { useQTable } from 'src/compositions/qTableUtils'
 import { IQtableRequestParams, TTableFilterObject } from 'src/compositions/types'
-import { getFilteredUsersCount, getFilteredUsersData } from 'src/api/user'
-import { IContextMenuItem } from 'src/components/contextMenu/types'
+import { getBoxesCount, getBoxesData, IOutbox } from 'src/api/emailBox'
 import { IEmailGroupListItem } from './components/types'
-import { showDialog } from 'src/components/popupDialog/PopupDialog'
-import { IDialogResult, IPopupDialogParams, PopupDialogFieldType } from 'src/components/popupDialog/types'
 
 // 左侧分组开关
 const isCollapseGroupList = ref(false)
@@ -98,99 +103,69 @@ const columns: QTableColumn[] = [
     sortable: true
   },
   {
-    name: 'name',
+    name: 'description',
     required: true,
-    label: '别名',
+    label: '描述',
     align: 'left',
-    field: 'name',
+    field: 'description',
+    sortable: true
+  },
+  {
+    name: 'proxy',
+    required: true,
+    label: '代理',
+    align: 'left',
+    field: 'proxy',
     sortable: true
   }
 ]
 async function getRowsNumberCount (filterObj: TTableFilterObject) {
-  const { data } = await getFilteredUsersCount(filterObj.filter)
+  const { data } = await getBoxesCount(emailGroupRef.value.id, 1, filterObj.filter)
   return data
 }
 async function onRequest (filterObj: TTableFilterObject, pagination: IQtableRequestParams) {
-  const { data } = await getFilteredUsersData(filterObj.filter as string, pagination)
+  const { data } = await getBoxesData<IOutbox>(emailGroupRef.value.id, 1, filterObj.filter, pagination)
   return data
 }
-const { pagination, rows, filter, onTableRequest, loading } = useQTable({
+const { pagination, rows, filter, onTableRequest, loading, refreshTable, addNewRow, deleteRowById } = useQTable({
   getRowsNumberCount,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onRequest
 })
+watch(emailGroupRef, () => {
+  // 组切换时，触发更新
+  refreshTable()
+})
 
-// #region 表头功能
-// 新建发件箱
-async function onNewOutboxClick () {
-  // 新增发件箱
-  const popupParams: IPopupDialogParams = {
-    title: '新增发件箱',
-    fields: [
-      {
-        name: 'email',
-        label: '邮箱',
-        type: PopupDialogFieldType.text,
-        value: '',
-        required: true
-      },
-      {
-        name: 'smtpHost',
-        label: 'smtp地址',
-        type: PopupDialogFieldType.text,
-        value: '',
-        required: true
-      },
-      {
-        name: 'smtpPort',
-        label: 'smtp端口',
-        type: PopupDialogFieldType.text,
-        value: 25,
-        required: true
-      },
-      {
-        name: 'password',
-        label: 'smtp密码',
-        type: PopupDialogFieldType.text,
-        required: true
-      },
-      {
-        name: 'name',
-        label: '别名',
-        type: PopupDialogFieldType.text,
-        required: true
-      }
-    ]
+function getPasswordValue (data: IOutbox) {
+  if (data.showPassword) return data.password
+  return '******'
+}
+import { deAes } from 'src/utils/encrypt'
+import { useUserInfoStore } from 'src/stores/user'
+const userInfoStore = useUserInfoStore()
+async function togglePasswordViewMode (data: IOutbox) {
+  // console.log('togglePasswordViewMode', data)
+  // 若是显示密码，但没有解密，则先解密
+  if (!data.decryptedPassword) {
+    // 进行解密
+    const plainPwd = deAes(userInfoStore.secretKey, userInfoStore.secretKey.substring(0, 16), data.password)
+    data.password = plainPwd || '密钥变动,解密失败,请重新输入 smtp 密码'
+    data.decryptedPassword = true
   }
 
-  // 弹出对话框
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  await showDialog<IDialogResult<any>>(popupParams)
+  data.showPassword = !data.showPassword
 }
 
-// 导出模板
-async function onExportOutboxTemplateClick () {
-
-}
-
-// 导入发件箱
-async function onImportOutboxClick () {
-
-}
+// #region 表头功能
+import { UseHeaderFunction } from './headerFunctions'
+const { onNewOutboxClick, onExportOutboxTemplateClick, onImportOutboxClick } = UseHeaderFunction(emailGroupRef, addNewRow)
 // #endregion
 
 // #region 数据右键菜单
-
-const outboxContextMenuItems: IContextMenuItem[] = [
-  {
-    name: 'delete',
-    label: '删除',
-    tooltip: '删除当前发件箱',
-    onClick: async () => { }
-  }
-]
+import { useContextMenu } from './contextMenu'
+const { outboxContextMenuItems } = useContextMenu(deleteRowById)
 // #endregion
-
 </script>
 
 <style lang="scss" scoped>

@@ -17,12 +17,14 @@ export function useQTable (initParams: IQTableInitParams) {
   const filter = ref('')
   const filterCache = ref('')
   async function getFilterObject (filter: string): Promise<TTableFilterObject> {
-    let filterObj: TTableFilterObject = { filter }
+    let filterObj: TTableFilterObject = { filter, refreshCounter: refreshCounter.value }
     if (initParams.filterFactor) {
       filterObj = await initParams.filterFactor(filter)
     }
     return filterObj
   }
+
+  // 通过缓存实现的数据总数请求
   async function getRowsNumberCount (filter: string): Promise<number> {
     if (!initParams.getRowsNumberCount) return 0
 
@@ -108,12 +110,22 @@ export function useQTable (initParams: IQTableInitParams) {
   // 增加新数据
   // 新增数据时，可以使用这个方法，增加一行数据
   function addNewRow (newRow: Record<string, any>) {
+    // 查找是否存在
+    const found = rows.value.find(x => x.id === newRow.id)
+    if (found) {
+      // 更新
+      Object.assign(found, newRow)
+      return
+    }
+
     rows.value.push(newRow)
     increaseRowsNumber(1)
   }
 
   // 删除行
-  function deleteRowById (id: string) {
+  function deleteRowById (id?: number) {
+    if (!id) return
+
     rows.value = rows.value.filter(x => x.id !== id)
     increaseRowsNumber(-1)
   }

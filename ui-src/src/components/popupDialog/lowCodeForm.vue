@@ -1,6 +1,6 @@
 <template>
   <q-dialog ref="dialogRef" @hide="onDialogHide" :persistent="persistent">
-    <q-card>
+    <q-card style="min-width: 250px;">
       <!--
         ... 内容
         ... 用q-card-section来做？
@@ -9,9 +9,9 @@
 
       <div class="q-py-md q-px-xs justify-start items-center" :class="getContainerClass()">
         <template v-for="field in validFields" :key="field.name">
-          <q-input v-if="isMatchedType(field, ['text', 'date', 'number'])" outlined
-            class="q-mb-sm low-code__field q-px-sm" standout dense v-model="fieldsModel[field.name]" :type="field.type"
-            :label="field.label" :placeholder="field.placeholder">
+          <q-input v-if="isMatchedType(field, commonInputTypes)" outlined class="q-mb-sm low-code__field q-px-sm"
+            standout dense v-model="fieldsModel[field.name]" :type="field.type" :label="field.label"
+            :placeholder="field.placeholder" :disable="field.disable">
             <template v-if="field.icon" v-slot:prepend>
               <q-icon :name="field.icon" />
             </template>
@@ -21,7 +21,7 @@
 
           <q-input v-if="isMatchedType(field, ['textarea'])" outlined class="q-mb-sm low-code__field q-px-sm" standout
             dense v-model="fieldsModel[field.name]" type="textarea" autogrow :label="field.label"
-            :placeholder="field.placeholder || '可 Enter 换行'">
+            :disable="field.disable" :placeholder="field.placeholder || '可 Enter 换行'">
             <template v-if="field.icon" v-slot:prepend>
               <q-icon :name="field.icon" />
             </template>
@@ -29,10 +29,14 @@
             <AsyncTooltip :tooltip="field.tooltip" />
           </q-input>
 
-          <PasswordInput v-if="isMatchedType(field, 'password')" class="q-mb-sm low-code__field q-px-sm"
-            :label="field.label" v-model="fieldsModel[field.name]">
+          <PasswordInput v-if="isMatchedType(field, 'password')" class="q-mb-sm low-code__field q-px-sm" no-icon
+            :label="field.label" v-model="fieldsModel[field.name]" dense>
             <AsyncTooltip :tooltip="field.tooltip" />
           </PasswordInput>
+
+          <q-select v-if="isMatchedType(field, 'selectOne')" class="q-mb-sm low-code__field q-px-sm" outlined
+            v-model="fieldsModel[field.name]" :options="field.options" :label="field.label" :disable="field.disable"
+            dense :option-label="field.optionLabel" :option-value="field.optionValue" />
         </template>
       </div>
 
@@ -104,9 +108,10 @@ const props = defineProps({
 })
 
 // 是否为匹配到的类型
-function isMatchedType (field: IPopupDialogField, type: string | string[]): boolean {
-  if (Array.isArray(type)) return type.includes(field.type)
-  return field.type === type
+const commonInputTypes = ['number', 'search', 'time', 'text', 'email', 'tel', 'file', 'url', 'date', 'datetime-local']
+function isMatchedType (field: IPopupDialogField, types: string | string[]): boolean {
+  if (Array.isArray(types)) return types.includes(field.type as string)
+  return field.type === types
 }
 
 function getContainerClass () {
@@ -150,6 +155,9 @@ function initFieldsModel () {
         break
       case PopupDialogFieldType.date:
         fieldsModel.value[field.name] = field.value ? dayjs(field.value as string).format('YYYY-MM-DD') : ''
+        break
+      case PopupDialogFieldType.number:
+        fieldsModel.value[field.name] = field.value || 0
         break
       default:
         fieldsModel.value[field.name] = field.value || ''
@@ -214,7 +222,7 @@ async function onOKClick () {
 
       // 对结果进行转换
       if (typeof field.parser === 'function') {
-        fieldsModel.value[field.name] = field.parser(fieldValue)
+        fieldsModel.value[field.name] = await field.parser(fieldValue)
       }
 
       // 验证函数

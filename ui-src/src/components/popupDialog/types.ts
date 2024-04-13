@@ -9,23 +9,34 @@ export enum PopupDialogFieldType {
   selectMany = 'selectMany',
   date = 'date',
   password = 'password',
+  number = 'number',
+  time = 'time',
+  email = 'email',
+  tel = 'tel',
+  file = 'file',
+  url = 'url',
+  datetimeLocal = 'datetime-local',
+  search = 'search'
 }
 
 /**
  * 弹出菜单项
  */
 export interface IPopupDialogField {
-  type: PopupDialogFieldType,
+  type?: PopupDialogFieldType,
   name: string, // 用于返回值的字段名
   label: string, // 显示的名称
   placeholder?: string, // 占位内容
-  value?: object | string | number, // 默认值
-  options?: Array<{ label: string, value: string | number }>, // 选项
+  value?: any, // 默认值
+  options?: Array<{ label: string, value: any }> | string[], // 多选或单选时的选项
+  optionLabel?: string, // 选项的显示字段
+  optionValue?: string, // 选项的值字段
   icon?: string, // 图标
   required?: boolean, // 是否必须
   validate?: (value: any, parsedValue: any) => Promise<IFunctionResult>, // 验证函数
-  parser?: <T = any>(value: any) => T, // 解析函数,对数据
+  parser?: (value: any) => any, // 解析函数,在返回时，对数据进行转换
   tooltip?: string, // 提示
+  disable?: boolean, // 是否禁用，一般用于仅显示数据,
 }
 
 /**

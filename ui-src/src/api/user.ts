@@ -2,7 +2,7 @@
 import { httpClient } from 'src/api//base/httpClient'
 import { IUserInfo } from 'src/stores/types'
 import { IQtableRequestParams } from 'src/compositions/types'
-import { sha256 } from 'js-sha256'
+import { sha256 } from 'src/utils/encrypt'
 
 export interface IUserLoginInfo {
   token: string,

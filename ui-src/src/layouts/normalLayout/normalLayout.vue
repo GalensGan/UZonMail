@@ -14,7 +14,7 @@
       </q-card>
     </q-header>
 
-    <q-drawer v-model="drawer" show-if-above :mini="miniState" :width="300">
+    <q-drawer v-model="drawer" show-if-above :mini="miniState" :width="280">
       <MenuTree />
     </q-drawer>
 

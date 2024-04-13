@@ -1,4 +1,4 @@
-import { IDialogResult, IPopupDialogParams } from './types'
+import { IDialogResult, IPopupDialogParams, PopupDialogFieldType } from './types'
 import { Dialog } from 'quasar'
 import lowCodeForm from './lowCodeForm.vue'
 
@@ -7,10 +7,14 @@ import lowCodeForm from './lowCodeForm.vue'
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function showDialog<T = Record<string, any>> (dialogParams: IPopupDialogParams): Promise<IDialogResult<T>> {
+  // 修改默认值：fields
+  dialogParams.fields.forEach(field => {
+    if (!field.type) field.type = PopupDialogFieldType.text
+  })
+
   /**
   * 显示对话框并返回结果
   */
-
   return new Promise((resolve) => {
     Dialog.create({
       component: lowCodeForm,

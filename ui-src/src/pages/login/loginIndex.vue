@@ -35,7 +35,7 @@ import { userLogin } from 'src/api/user'
 import { useUserInfoStore } from 'src/stores/user'
 import { notifyError } from 'src/utils/notify'
 import { resolveSvgFullName } from 'src/utils/svgHelper'
-import { sha256 } from 'js-sha256'
+import { sha256 } from 'src/utils/encrypt'
 
 // 登陆界面
 const userId = ref('')
