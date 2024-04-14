@@ -40,7 +40,7 @@ function mouseenterTag (item: IRouteHistory) {
 }
 
 // 移除按钮
-function removeTag (item: IRouteHistory) {
+async function removeTag (item: IRouteHistory) {
   // 如果仅有一个且是首页，则不允许删除
   if (routes.value.length === 1 && routes.value[0].fullPath === '/') {
     return
@@ -80,7 +80,7 @@ const tagContextItems: IContextMenuItem[] = [
   }, {
     name: 'closeOther',
     label: '关闭其他',
-    onClick: (params) => {
+    onClick: async (params) => {
       const current = params as IRouteHistory
       routes.value = routes.value.filter((route) => route.fullPath === current.fullPath)
       // 激活当前
@@ -91,7 +91,7 @@ const tagContextItems: IContextMenuItem[] = [
   }, {
     name: 'closeAll',
     label: '关闭所有',
-    onClick: () => {
+    onClick: async () => {
       routes.value = []
       router.push({
         path: '/'

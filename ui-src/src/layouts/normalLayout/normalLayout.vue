@@ -22,7 +22,7 @@
       <q-page class="q-px-md q-pb-md full-height full-with">
         <transition appear enter-active-class="animated fadeInDown">
           <router-view v-slot="{ Component }">
-            <keep-alive>
+            <keep-alive :include="cachedViews">
               <component :is="Component" />
             </keep-alive>
           </router-view>
@@ -52,14 +52,12 @@ if ($q.platform.is.desktop && $q.screen.gt.md) {
 }
 
 // 缓存
-// const cachedViews = computed(() => {
-//   return []
-// })
-
-// const route = useRoute()
-// const key = computed(() => {
-//   return route.fullPath // this.$route.path
-// })
+import { useRouteHistories } from '../components/tags/routeHistories'
+const routeHistories = useRouteHistories()
+const cachedViews = computed(() => {
+  const results = routeHistories.value.filter(x => !x.noCache).map(x => x.name)
+  return results
+})
 </script>
 
 <style lang="scss" scoped>

@@ -1,6 +1,12 @@
 import { ExtendedRouteRecordRaw } from './types'
 import NormalLayout from 'layouts/normalLayout/normalLayout.vue'
 
+/**
+ * 使用说明
+ * 1- name 应与组件名一样，在 setup 中与文件名一样，才会有缓存
+ * 2- noCache: true 不缓存
+ */
+
 // 根据权限显示的 routes
 export const dynamicRoutes: ExtendedRouteRecordRaw[] = [
   {
@@ -9,13 +15,15 @@ export const dynamicRoutes: ExtendedRouteRecordRaw[] = [
     component: NormalLayout,
     meta: {
       label: '首页',
-      icon: 'home'
+      icon: 'home',
+      // 不缓存
+      noCache: false
     },
     // 填绝对路径，若是相对路径，则相对于当前路由
     redirect: '/index',
     children: [
       {
-        name: 'Index',
+        name: 'IndexPage',
         path: 'index',
         meta: {
           label: '首页',
@@ -38,7 +46,7 @@ export const dynamicRoutes: ExtendedRouteRecordRaw[] = [
     redirect: '/user/profile',
     children: [
       {
-        name: 'Profile',
+        name: 'profileIndex',
         path: 'profile',
         meta: {
           icon: 'menu',
@@ -56,10 +64,10 @@ export const dynamicRoutes: ExtendedRouteRecordRaw[] = [
       label: '邮箱管理',
       icon: 'alternate_email'
     },
-    redirect: '/email-manage/send-box',
+    redirect: '/email-manage/out-box',
     children: [
       {
-        name: 'Outbox',
+        name: 'outboxManage',
         path: 'out-box',
         meta: {
           icon: 'forward_to_inbox',

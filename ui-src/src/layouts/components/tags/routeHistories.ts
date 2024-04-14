@@ -23,7 +23,9 @@ export function useRouteHistories () {
         name: newRoute.name,
         isActive: true,
         icon: newRoute.meta.icon,
-        showCloseIcon: false
+        // 专门用于标签页的属性
+        showCloseIcon: false,
+        noCache: newRoute.meta.noCache
       } as IRouteHistory
       routes.value.push(routeTemp)
     } else {
