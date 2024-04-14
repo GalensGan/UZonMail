@@ -93,9 +93,14 @@ export function UseHeaderFunction (emailGroup: Ref<IEmailGroupListItem>,
       return
     }
 
+    // 添加组
+    data.forEach(row => {
+      row.emailGroupId = emailGroup.value.id
+    })
+
     // 向服务器请求新增
-    const { data: outboxes } = await createInboxes(data as IInbox[])
-    outboxes.forEach(x => {
+    const { data: inboxes } = await createInboxes(data as IInbox[])
+    inboxes.forEach(x => {
       addNewRow(x)
     })
 

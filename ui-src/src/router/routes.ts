@@ -83,15 +83,37 @@ export const dynamicRoutes: ExtendedRouteRecordRaw[] = [
           label: '收件箱'
         },
         component: () => import('pages/emailManage/inbox/inboxManage.vue')
-      },
+      }
+    ]
+  },
+  {
+    name: 'TemplateManage',
+    path: '/template',
+    component: NormalLayout,
+    meta: {
+      label: '模板管理',
+      icon: 'article'
+    },
+    redirect: '/template-manage/view',
+    children: [
       {
-        name: 'Template',
-        path: 'template',
+        name: 'emailTemplates',
+        path: 'index',
         meta: {
           icon: 'article',
           label: '模板管理'
         },
-        component: () => import('pages/IndexPage.vue')
+        component: () => import('pages/templateManage/emailTemplates.vue')
+      },
+      {
+        name: 'templateEditor',
+        path: 'editor',
+        meta: {
+          icon: 'article',
+          label: '模板编辑',
+          noMenu: true
+        },
+        component: () => import('pages/templateManage/templateEditor.vue')
       }
     ]
   },

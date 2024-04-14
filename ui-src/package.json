@@ -18,6 +18,7 @@
     "axios": "^1.2.1",
     "crypto-js": "^4.2.0",
     "dayjs": "^1.11.10",
+    "dom-to-image": "^2.6.0",
     "element-plus": "^2.6.1",
     "path-browserify": "^1.0.1",
     "pinia": "^2.0.11",

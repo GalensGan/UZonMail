@@ -65,11 +65,11 @@ export function updateOutbox (outboxId: number, outbox: IOutbox) {
  * @param groupId
  * @param groupType
  */
-export function getBoxesCount (groupId: number | undefined, groupType: 1 | 2, filter?: string) {
+export function getBoxesCount (groupId: number | undefined, emailBoxType: 0 | 1, filter?: string) {
   return httpClient.get<number>('/email-box/filtered-count', {
     params: {
       groupId,
-      groupType,
+      emailBoxType,
       filter
     }
   })
@@ -83,11 +83,11 @@ export function getBoxesCount (groupId: number | undefined, groupType: 1 | 2, fi
  * @param pagination
  * @returns
  */
-export function getBoxesData<T> (groupId: number | undefined, groupType: 1 | 2, filter: string | undefined, pagination: IQtableRequestParams) {
+export function getBoxesData<T> (groupId: number | undefined, emailBoxType: 0 | 1, filter: string | undefined, pagination: IQtableRequestParams) {
   return httpClient.post<T[]>('/email-box/filtered-data', {
     params: {
       groupId,
-      groupType,
+      emailBoxType,
       filter
     },
     data: pagination
@@ -120,7 +120,7 @@ export function createInbox (outbox: IInbox) {
  * @returns
  */
 export function createInboxes (outboxes: IInbox[]) {
-  return httpClient.post<IInbox[]>('/email-box/inbox', {
+  return httpClient.post<IInbox[]>('/email-box/inboxes', {
     data: outboxes
   })
 }

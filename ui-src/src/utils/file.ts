@@ -171,10 +171,9 @@ export async function readExcel (params: IExcelReaderParams) {
     for (const key of Object.keys(row)) {
       const value = row[key]
       const map = mapper[key]
-      let formattedValue = value
       if (map) {
         // 先格式化，再过滤
-        formattedValue = map.format ? map.format(value) : value
+        const formattedValue = map.format ? map.format(value) : value
 
         // 过滤
         if (map.filter && !map.filter(formattedValue)) {
@@ -188,8 +187,10 @@ export async function readExcel (params: IExcelReaderParams) {
             throw new Error(`字段 ${map.fieldName} 不能为空`)
           }
         }
+        formattedRow[map.fieldName] = formattedValue
+      } else {
+        formattedRow[key] = value
       }
-      formattedRow[map.fieldName] = formattedValue
     }
 
     // 对行进行格式化
@@ -233,10 +234,9 @@ export async function writeExcel (rows: any[], params: IExcelWriterParams) {
     for (const key of Object.keys(row)) {
       const value = row[key]
       const map = mapper[key]
-      let formattedValue = value
       if (map) {
         // 先格式化，再过滤
-        formattedValue = map.format ? map.format(value) : value
+        const formattedValue = map.format ? map.format(value) : value
 
         // 过滤
         if (map.filter && !map.filter(formattedValue)) {
@@ -250,8 +250,11 @@ export async function writeExcel (rows: any[], params: IExcelWriterParams) {
             throw new Error(`列 ${map.headerName} 不能为空`)
           }
         }
+
+        formattedRow[map.headerName] = formattedValue
+      } else {
+        formattedRow[key] = value
       }
-      formattedRow[map.headerName] = formattedValue
     }
 
     // 对行进行格式化
