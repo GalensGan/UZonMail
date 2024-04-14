@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { QTableProps } from 'quasar'
+import { QTableColumn, QTableProps } from 'quasar'
 import { IQTableInitParams, TTableFilterObject, IQTablePagination, IQtableRequestParams } from './types'
+import QTableIndex from './qTableIndex.vue'
 
 // 返回一个QTable的配置对象
 export function useQTable (initParams: IQTableInitParams) {
@@ -140,5 +141,20 @@ export function useQTable (initParams: IQTableInitParams) {
     refreshTable,
     addNewRow,
     deleteRowById
+  }
+}
+
+export function useQTableIndex () {
+  // 序号
+  const indexColumn: QTableColumn = {
+    name: 'id',
+    label: '序号',
+    align: 'center',
+    field: v => v
+  }
+
+  return {
+    indexColumn,
+    QTableIndex
   }
 }

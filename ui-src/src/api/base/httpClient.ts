@@ -80,6 +80,7 @@ export default class HttpClient {
       if (response.status === StatusCode.ClientErrorUnauthorized) {
         // 退出登陆
         await this.logout()
+        return Promise.reject(error)
       }
 
       if (!response.data) {
@@ -95,7 +96,8 @@ export default class HttpClient {
 
   // 退出登陆
   private async logout () {
-
+    const store = useUserInfoStore()
+    store.logout()
   }
 
   // #region 对请求返回值的data进行解构，方便前端使用

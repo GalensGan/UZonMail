@@ -17,6 +17,12 @@
         <SearchInput v-model="filter" />
       </template>
 
+      <template v-slot:body-cell-id="props">
+        <q-td :props="props">
+          {{ props.rowIndex + 1 }}
+        </q-td>
+      </template>
+
       <template v-slot:body-cell-email="props">
         <q-td :props="props">
           {{ props.value }}
@@ -42,14 +48,14 @@ import SearchInput from 'src/components/searchInput/SearchInput.vue'
 import CreateBtn from 'src/components/componentWrapper/buttons/CreateBtn.vue'
 import ImportBtn from 'src/components/componentWrapper/buttons/ImportBtn.vue'
 import ExportBtn from 'src/components/componentWrapper/buttons/ExportBtn.vue'
-import EmailGroupList from './components/EmailGroupList.vue'
+import EmailGroupList from '../components/EmailGroupList.vue'
 import CollapseLeft from 'src/components/collapseLeft/CollapseLeft.vue'
 import ContextMenu from 'components/contextMenu/ContextMenu.vue'
 
 import { useQTable } from 'src/compositions/qTableUtils'
 import { IQtableRequestParams, TTableFilterObject } from 'src/compositions/types'
 import { getBoxesCount, getBoxesData, IOutbox } from 'src/api/emailBox'
-import { IEmailGroupListItem } from './components/types'
+import { IEmailGroupListItem } from '../components/types'
 
 // 左侧分组开关
 const isCollapseGroupList = ref(false)
@@ -70,6 +76,13 @@ const emailGroupRef: Ref<IEmailGroupListItem> = ref({
 const isValidEmailGroup = computed(() => emailGroupRef.value.id)
 
 const columns: QTableColumn[] = [
+  {
+    name: 'id',
+    required: true,
+    label: '序号',
+    align: 'left',
+    field: 'id'
+  },
   {
     name: 'email',
     required: true,

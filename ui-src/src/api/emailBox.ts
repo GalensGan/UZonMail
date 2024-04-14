@@ -102,3 +102,37 @@ export function getBoxesData<T> (groupId: number | undefined, groupType: 1 | 2, 
 export function deleteEmailBoxById<T> (emailBoxId: number) {
   return httpClient.delete<T[]>(`/email-box/${emailBoxId}`)
 }
+
+/**
+ * 批量创建收件箱
+ * @param outbox
+ * @returns
+ */
+export function createInbox (outbox: IInbox) {
+  return httpClient.post<IInbox[]>('/email-box/inbox', {
+    data: outbox
+  })
+}
+
+/**
+ * 批量创建收件箱
+ * @param outboxes
+ * @returns
+ */
+export function createInboxes (outboxes: IInbox[]) {
+  return httpClient.post<IInbox[]>('/email-box/inbox', {
+    data: outboxes
+  })
+}
+
+/**
+ * 更新收件箱
+ * @param inboxId
+ * @param inbox
+ * @returns
+ */
+export function updateInbox (inboxId: number, inbox: IInbox) {
+  return httpClient.put<IInbox[]>(`/email-box/inbox/${inboxId}`, {
+    data: inbox
+  })
+}

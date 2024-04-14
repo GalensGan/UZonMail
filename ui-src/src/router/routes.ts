@@ -73,16 +73,16 @@ export const dynamicRoutes: ExtendedRouteRecordRaw[] = [
           icon: 'forward_to_inbox',
           label: '发件箱'
         },
-        component: () => import('pages/emailManage/outboxManage.vue')
+        component: () => import('pages/emailManage/outbox/outboxManage.vue')
       },
       {
-        name: 'InBox',
+        name: 'inboxManage',
         path: 'in-box',
         meta: {
           icon: 'mark_email_unread',
           label: '收件箱'
         },
-        component: () => import('pages/IndexPage.vue')
+        component: () => import('pages/emailManage/inbox/inboxManage.vue')
       },
       {
         name: 'Template',

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { showDialog } from 'src/components/popupDialog/PopupDialog'
 import { IPopupDialogParams, PopupDialogFieldType } from 'src/components/popupDialog/types'
-import { IEmailGroupListItem } from './components/types'
+import { IEmailGroupListItem } from '../components/types'
 
 import { IOutbox, createOutbox, createOutboxes } from 'src/api/emailBox'
 
