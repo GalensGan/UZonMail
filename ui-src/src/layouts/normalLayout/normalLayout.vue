@@ -21,9 +21,10 @@
     <q-page-container class="page-container">
       <q-page class="q-px-md q-pb-md full-height full-with">
         <transition appear enter-active-class="animated fadeInDown">
+          <!--参考：https://juejin.cn/post/7083793875390693383-->
           <router-view v-slot="{ Component }">
             <keep-alive :include="cachedViews">
-              <component :is="Component" />
+              <component :is="Component" :key="getRouteId($route.fullPath, $route.query)" />
             </keep-alive>
           </router-view>
         </transition>
@@ -41,6 +42,8 @@ import TagsView from '../components/tags/tagsView.vue'
 // import LeftSidebarIndex from '../components/leftSidebar/leftSidebarIndex.vue'
 import MenuTree from '../components/leftSidebar/menuTree.vue'
 
+import { getRouteId, useRouteHistories } from '../components/tags/routeHistories'
+
 const drawer = ref(false)
 const miniState = ref(false)
 // const collapse = ref(false)
@@ -52,7 +55,6 @@ if ($q.platform.is.desktop && $q.screen.gt.md) {
 }
 
 // 缓存
-import { useRouteHistories } from '../components/tags/routeHistories'
 const routeHistories = useRouteHistories()
 const cachedViews = computed(() => {
   const results = routeHistories.value.filter(x => !x.noCache).map(x => x.name)

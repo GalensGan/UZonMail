@@ -3,8 +3,8 @@
     <q-chip class="q-mr-sm route-tag row items-center" v-for="item in routes" :key="item.fullPath"
       :class="getTagClass(item)" square clickable transition-show="jump-right" transition-hide="jump-left"
       @click="goToRoute(item)" :removable="item.showCloseIcon" @mouseenter="mouseenterTag(item)"
-      @mouseleave="item.showCloseIcon = false" @remove="removeTag(item)">
-      <div>{{ item.label }}</div>
+      @mouseleave="item.showCloseIcon = false" @remove="onRemoveTag(item)">
+      <div>{{ getTagLabel(item) }}</div>
       <ContextMenu :items="tagContextItems" :value="item" />
     </q-chip>
   </div>
@@ -14,7 +14,7 @@
 import ContextMenu from 'src/components/contextMenu/ContextMenu.vue'
 
 import { IRouteHistory } from './types'
-import { useRouteHistories } from './routeHistories'
+import { useRouteHistories, removeHistory } from './routeHistories'
 import { IContextMenuItem } from 'src/components/contextMenu/types'
 
 // 显示和跳转 tag
@@ -25,10 +25,15 @@ function getTagClass (item: IRouteHistory) {
     'text-white': !item.isActive
   }
 }
+function getTagLabel (tagItem: IRouteHistory) {
+  if (tagItem.query.tagName) return `${tagItem.label} - ${tagItem.query.tagName}`
+  return tagItem.label
+}
 const router = useRouter()
 function goToRoute (item: IRouteHistory) {
   router.push({
-    path: item.fullPath
+    path: item.fullPath,
+    query: item.query
   })
 }
 
@@ -40,34 +45,8 @@ function mouseenterTag (item: IRouteHistory) {
 }
 
 // 移除按钮
-async function removeTag (item: IRouteHistory) {
-  // 如果仅有一个且是首页，则不允许删除
-  if (routes.value.length === 1 && routes.value[0].fullPath === '/') {
-    return
-  }
-
-  const currentTagIndex = routes.value.findIndex(x => x.fullPath === item.fullPath)
-  routes.value = routes.value.filter((route) => route.fullPath !== item.fullPath)
-
-  // 如果已经没有 tags，则跳转到首页
-  if (routes.value.length === 0) {
-    router.push({
-      path: '/'
-    })
-    return
-  }
-
-  // 向前显示
-  if (currentTagIndex - 1 > -1) {
-    router.push({
-      path: routes.value[currentTagIndex - 1].fullPath
-    })
-  } else {
-    // 显示当前
-    router.push({
-      path: routes.value[currentTagIndex].fullPath
-    })
-  }
+async function onRemoveTag (item: IRouteHistory) {
+  removeHistory(router, item as unknown as IRouteHistory)
 }
 
 // 右键菜单
@@ -76,7 +55,7 @@ const tagContextItems: IContextMenuItem[] = [
     name: 'close',
     label: '关闭',
     tooltip: '关闭当前标签',
-    onClick: params => removeTag(params as IRouteHistory)
+    onClick: params => onRemoveTag(params as IRouteHistory)
   }, {
     name: 'closeOther',
     label: '关闭其他',

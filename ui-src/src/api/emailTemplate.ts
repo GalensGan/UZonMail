@@ -31,8 +31,8 @@ export function getEmailTemplatesCount (filter?: string) {
  * @param pagination
  * @returns
  */
-export function getEmailTemplatesData<T> (filter: string | undefined, pagination: IQtableRequestParams) {
-  return httpClient.post<T[]>('/email-template/filtered-data', {
+export function getEmailTemplatesData (filter: string | undefined, pagination: IQtableRequestParams) {
+  return httpClient.post<IEmailTemplate[]>('/email-template/filtered-data', {
     params: {
       filter
     },
@@ -56,7 +56,7 @@ export function upsertEmailTemplate (emailTemplate: IEmailTemplate) {
  * @param emailTemplateId
  * @returns
  */
-export function deleteEmailTemplates (emailTemplateId: number) {
+export function deleteEmailTemplate (emailTemplateId: number) {
   return httpClient.delete<IEmailTemplate>(`/email-template/${emailTemplateId}`)
 }
 

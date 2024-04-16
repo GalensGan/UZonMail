@@ -28,19 +28,31 @@ onMounted(async () => {
   templateName.value = templateData.name
   editorValue.value = templateData.content
 })
-
+import { removeHistory } from 'src/layouts/components/tags/routeHistories'
+import { IRouteHistory } from 'src/layouts/components/tags/types'
+const router = useRouter()
 const editorDefinitions = {
   save: {
     tip: '保存模板',
     icon: 'save',
-    label: '保存',
+    label: '',
     handler: saveTemplate
+  },
+  back: {
+    tip: '返回',
+    icon: 'west',
+    label: '',
+    handler: () => {
+      removeHistory(router, route as unknown as IRouteHistory, '/template/index')
+    }
   }
 }
 const editorToolbar = ref([
+  ['back'],
   ['templateName'],
   ['save'],
-  ['bold', 'italic', 'strike', 'underline'],
+  ['left', 'center', 'right', 'justify'],
+  ['bold', 'italic', 'strike', 'underline', 'link'],
   ['undo', 'redo'],
   ['viewsource']
 ])
@@ -55,24 +67,28 @@ async function saveTemplate () {
   }
 
   // 生成缩略图并上传到服务器
-  const blob = await new Promise((resolve) => {
+  const blob = await new Promise((resolve, reject) => {
     const node = document.querySelector('.q-editor__content')
-    domToImage.toBlob(node)
+    if (!node) return reject('未找到编辑器内容')
+    domToImage.toBlob(node, {
+      bgcolor: 'white'
+    })
       .then(function (blob: Blob) {
         resolve(blob)
       })
   })
 
-  const { data: url } = await uploadToStaticFile('template-thumbnails', `${templateName.value}.png`, blob as Blob)
   // 保存模板
   const templateData = {
     id: templateId.value,
     name: templateName.value,
     content: editorValue.value,
-    thumbnail: url
+    // 完成的路径会在服务器进行拼接，子路径位于 template-thumbnails，因此文件要传到此处
+    thumbnail: ''
   }
-
   const { data: { id } } = await upsertEmailTemplate(templateData)
+  await uploadToStaticFile('template-thumbnails', `${id}.png`, blob as Blob)
+
   templateId.value = id as number
   notifySuccess('保存成功')
 }

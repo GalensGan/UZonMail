@@ -101,7 +101,8 @@ export const dynamicRoutes: ExtendedRouteRecordRaw[] = [
         path: 'index',
         meta: {
           icon: 'article',
-          label: '模板管理'
+          label: '模板管理',
+          noCache: true
         },
         component: () => import('pages/templateManage/emailTemplates.vue')
       },
