@@ -28,6 +28,7 @@
         <ContextMenu :items="inboxContextMenuItems" :value="props.row" />
       </template>
     </q-table>
+
     <CollapseLeft v-model="isCollapseGroupList" :class="collapseLeftClass" />
   </div>
 </template>

@@ -82,9 +82,7 @@ async function saveTemplate () {
   const templateData = {
     id: templateId.value,
     name: templateName.value,
-    content: editorValue.value,
-    // 完成的路径会在服务器进行拼接，子路径位于 template-thumbnails，因此文件要传到此处
-    thumbnail: ''
+    content: editorValue.value
   }
   const { data: { id } } = await upsertEmailTemplate(templateData)
   await uploadToStaticFile('template-thumbnails', `${id}.png`, blob as Blob)

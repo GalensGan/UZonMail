@@ -4,14 +4,18 @@ import { notifyError } from './notify'
 import * as XLSX from 'xlsx'
 import { PopupDialogFieldType } from 'src/components/popupDialog/types'
 
+export interface ISelectFileResult {
+  ok: boolean,
+  data: string | ArrayBuffer | undefined | null,
+  files?: FileList
+}
 /**
- * 打开文件选择器
- * @param accept
+ * 选择文件
  * @param multiple
- * @returns
+ * @param accept
  */
-export function openFileSelector (multiple: boolean = false, accept: string = ''): Promise<boolean | string | ArrayBuffer | undefined | null> {
-  const promise = new Promise<boolean | string | ArrayBuffer | undefined | null>((resolve, reject) => {
+export function selectFile (multiple: boolean = false, accept: string = ''): Promise<ISelectFileResult> {
+  const promise = new Promise<ISelectFileResult>((resolve, reject) => {
     const inputElement = document.createElement('input')
     inputElement.type = 'file'
     inputElement.accept = accept
@@ -27,7 +31,9 @@ export function openFileSelector (multiple: boolean = false, accept: string = ''
         notifyError('没有找到文件')
         // 删除 input
         // inputElement.remove()
-        return reject(false)
+        return reject({
+          ok: false
+        })
       }
 
       const file = files[0]
@@ -38,7 +44,11 @@ export function openFileSelector (multiple: boolean = false, accept: string = ''
         const buffer = e.target?.result
         // 删除 input
         // inputElement.remove()
-        resolve(buffer)
+        resolve({
+          ok: true,
+          data: buffer,
+          files
+        })
       }
       reader.readAsArrayBuffer(file)
     }
@@ -50,7 +60,9 @@ export function openFileSelector (multiple: boolean = false, accept: string = ''
       () => {
         setTimeout(() => {
           if (fileCancel) {
-            reject(false)
+            reject({
+              ok: false
+            })
           }
         }, 300)
       },
@@ -61,6 +73,17 @@ export function openFileSelector (multiple: boolean = false, accept: string = ''
   })
 
   return promise
+}
+
+/**
+ * 打开文件选择器
+ * @param accept
+ * @param multiple
+ * @returns
+ */
+export async function openFileSelector (multiple: boolean = false, accept: string = ''): Promise<boolean | string | ArrayBuffer | undefined | null> {
+  const { data } = await selectFile(multiple, accept)
+  return data
 }
 
 /**
@@ -126,12 +149,13 @@ export interface IExcelWriterParams extends IExcelMapperParams {
 }
 
 /**
- * 读取 excel
+ * 读取 excel 文件，会同时返回文件名和文件内容
  * @param params
+ * @returns
  */
-export async function readExcel (params: IExcelReaderParams) {
+export async function readExcelCore (params: IExcelReaderParams): Promise<{ data: Record<string, any>[], files?: FileList, sheetName: string }> {
   // 打开文件
-  const buffer = await openFileSelector()
+  const { data: buffer, files } = await selectFile()
   const workbook = XLSX.read(buffer, { type: 'buffer' })
 
   // 打开选择框
@@ -147,7 +171,13 @@ export async function readExcel (params: IExcelReaderParams) {
         }
       ]
     })
-    if (!ok) return []
+    if (!ok) {
+      return {
+        data: [],
+        files,
+        sheetName: ''
+      }
+    }
     params.sheetIndex = workbook.SheetNames.indexOf(data.sheetName)
   }
 
@@ -203,9 +233,26 @@ export async function readExcel (params: IExcelReaderParams) {
       continue
     }
 
-    results.push(formattedRow)
+    results.push({
+      data: formattedRow,
+      files
+    })
   }
 
+  return {
+    data: results,
+    files,
+    sheetName
+  }
+}
+
+/**
+ * 读取 excel
+ * @param params
+ */
+export async function readExcel (params: IExcelReaderParams) {
+  // 打开文件
+  const { data: results } = await readExcelCore(params)
   return results
 }
 

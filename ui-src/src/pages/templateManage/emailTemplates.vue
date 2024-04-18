@@ -50,39 +50,17 @@
 </template>
 
 <script lang="ts" setup>
-import { useQTable } from 'src/compositions/qTableUtils'
-import { IQtableRequestParams, TTableFilterObject } from 'src/compositions/types'
 import SearchInput from 'src/components/searchInput/SearchInput.vue'
 import ContextMenu from 'src/components/contextMenu/ContextMenu.vue'
 
 import CreateBtn from 'src/components/componentWrapper/buttons/CreateBtn.vue'
-import { IEmailTemplate, getEmailTemplatesCount, getEmailTemplatesData, deleteEmailTemplate } from 'src/api/emailTemplate'
+import { IEmailTemplate, deleteEmailTemplate } from 'src/api/emailTemplate'
 import { IContextMenuItem } from 'src/components/contextMenu/types'
 import { confirmOperation, notifySuccess } from 'src/utils/notify'
 
-async function getRowsNumberCount (filterObj: TTableFilterObject) {
-  const { data } = await getEmailTemplatesCount(filterObj.filter)
-  return data
-}
-async function onRequest (filterObj: TTableFilterObject, pagination: IQtableRequestParams) {
-  const { data } = await getEmailTemplatesData(filterObj.filter as string, pagination)
-  return data
-}
-
-const { pagination, rows, filter, onTableRequest, loading, deleteRowById } = useQTable({
-  getRowsNumberCount,
-  onRequest
-})
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function getTemplateImage (row: Record<string, any>) {
-  if (!row) return '/public/icons/undraw_mailbox_re_dvds.svg'
-  let baseUrl = process.env.BASE_URL as string
-  baseUrl = baseUrl.replace('/api/v1', '')
-  const url = baseUrl + '/' + row.thumbnail
-  console.log(url)
-  return url
-}
+// 模板接口
+import { useEmailTemplateTable } from './compositions'
+const { pagination, rows, filter, onTableRequest, loading, deleteRowById, getTemplateImage, onPreviewThumbnail } = useEmailTemplateTable()
 
 // 打开模板编辑器
 const router = useRouter()
@@ -147,23 +125,6 @@ const templateContextMenuItems = ref<IContextMenuItem[]>([
 const contextItemsForError = computed(() => {
   return templateContextMenuItems.value.filter(item => item.name !== 'preview')
 })
-
-// 查看缩略图
-import 'viewerjs/dist/viewer.css'
-import { api as viewerApi } from 'v-viewer'
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function onPreviewThumbnail (row: Record<string, any>) {
-  const imageUrl = getTemplateImage(row)
-
-  viewerApi({
-    options: {
-      title: false,
-      transition: false,
-      navbar: false
-    },
-    images: [imageUrl]
-  })
-}
 </script>
 
 <style lang="scss" scoped>

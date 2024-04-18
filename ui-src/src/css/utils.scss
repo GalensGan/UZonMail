@@ -1,12 +1,15 @@
-.radius-4 {
+/*
+边框样式
+*/
+.border-radius-4 {
   border-radius: 4px;
 }
 
-.radius-8 {
+.border-radius-8 {
   border-radius: 8px;
 }
 
-.radius-16 {
+.border-radius-16 {
   border-radius: 16px;
 }
 
@@ -17,4 +20,46 @@
   &:hover {
     border-bottom: 1px solid currentColor;
   }
+}
+
+// 鼠标悬停时以卡片状态显示
+.hover-card {
+  cursor: pointer;
+  transition: all 0.3s;
+  &:hover {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.3);
+    // 绕中心放大
+    transform: scale(1.03);
+  }
+}
+
+// 卡片样式
+.card-like {
+  border-radius: 4px;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+}
+
+// y轴滚动条
+.scroll-y {
+  overflow-y: auto;
+}
+
+.half-height {
+  height: 50%;
+}
+
+.half-width {
+  width: 50%;
+}
+
+// 设定高度为 0
+// 在 flex 某些场景中需要用到
+.zero-height {
+  height: 0px;
+}
+
+// 透明背景
+.bg-transparent {
+  background-color: transparent;
 }

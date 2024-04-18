@@ -126,16 +126,16 @@ export const dynamicRoutes: ExtendedRouteRecordRaw[] = [
       label: '发件管理',
       icon: 'send'
     },
-    redirect: '/send-manage/profile',
+    redirect: '/send-manage/new-task',
     children: [
       {
-        name: 'NewEmail',
-        path: 'new-email',
+        name: 'sendingTask',
+        path: 'new-task',
         meta: {
           icon: 'add_box',
-          label: '新建邮件'
+          label: '新建发件'
         },
-        component: () => import('pages/IndexPage.vue')
+        component: () => import('pages/sendingManage/sendingTask/sendingTask.vue')
       },
       {
         name: 'SendHistory',

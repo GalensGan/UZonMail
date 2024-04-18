@@ -4,7 +4,7 @@
       <q-icon :name="resolveSvgFullName('undraw_mailbox_re_dvds')" size="220px"
         class="q-ma-lg animated fadeInUp"></q-icon>
 
-      <q-card class="q-ma-md q-pa-lg column justify-center items-center radius-8 animated fadeInDown"
+      <q-card class="q-ma-md q-pa-lg column justify-center items-center border-radius-8 animated fadeInDown"
         style="min-width: 400px;" @keyup.enter="onUserLogin">
         <div class="self-center q-mb-lg text-h5 text-secondary">Welcome to UZonMail</div>
 
@@ -24,7 +24,7 @@
           </template>
         </q-input>
 
-        <q-btn class="full-width radius-8" color="primary" label="登 陆" @click="onUserLogin" />
+        <q-btn class="full-width border-radius-8" color="primary" label="登 陆" @click="onUserLogin" />
       </q-card>
     </div>
   </div>

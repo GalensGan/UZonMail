@@ -20,14 +20,14 @@
 
     <q-page-container class="page-container">
       <q-page class="q-px-md q-pb-md full-height full-with">
-        <transition appear enter-active-class="animated fadeInDown">
-          <!--参考：https://juejin.cn/post/7083793875390693383-->
-          <router-view v-slot="{ Component }">
-            <keep-alive :include="cachedViews">
+        <!--参考：https://juejin.cn/post/7083793875390693383-->
+        <router-view v-slot="{ Component }">
+          <keep-alive :include="cachedViews">
+            <transition appear enter-active-class="animated fadeInDown">
               <component :is="Component" :key="getRouteId($route.fullPath, $route.query)" />
-            </keep-alive>
-          </router-view>
-        </transition>
+            </transition>
+          </keep-alive>
+        </router-view>
       </q-page>
     </q-page-container>
   </q-layout>
