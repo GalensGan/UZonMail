@@ -65,3 +65,99 @@ export function deAes (key: string, iv: string, ciphertext: string) {
 export function sha256 (data: string) {
   return CryptoJS.SHA256(data).toString()
 }
+
+export interface IUploadFile extends File {
+  __sha256?: string
+  __key?: string,
+  __sizeLabel?: string,
+  __progressLabel?: string,
+  __img?: string,
+  __src?: string,
+  __fileUsageId?: string | number
+}
+
+export interface FileSha256Callback {
+  progressLabel: string
+  process: number
+  computed: number
+  total: number
+  file: IUploadFile,
+  end: boolean
+}
+
+/**
+ * 计算文件的 sha256
+ * 参考：https://github1s.com/emn178/online-tools/blob/master/js/main.js#L37
+ * https://blog.csdn.net/weixin_39364136/article/details/132538445
+ * @param file
+ * @param callback 若回调中修改界面，需要强制触发刷新
+ * @param progressStep 回调进度的步长，默认为 5 %
+ * @returns
+ */
+export function fileSha256 (file: File, callback?: (params: FileSha256Callback) => void, progressStep: number = 5): Promise<string> {
+  console.log('getSha256:', file)
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    let start = 0
+    const batch = 1024 * 1024 * 5
+    const total = file.size
+    const hashObject = CryptoJS.algo.SHA256.create()
+    progressStep /= 100
+    let progressDisplayLimit = 0
+    function asyncUpdate () {
+      if (start < total) {
+        const process = start / total
+        const progressLabel = '正在计算 hash 值...' + (process * 100).toFixed(2) + '%'
+        const end = Math.min(start + batch, total)
+        reader.readAsArrayBuffer(file.slice(start, end))
+        start = end
+
+        // 回调
+        if (typeof callback === 'function' && progressDisplayLimit <= process) {
+          progressDisplayLimit += progressStep
+          const callbackResult = {
+            progressLabel,
+            process,
+            computed: end,
+            total,
+            file,
+            end: false
+          }
+          // console.log('fileSha256 callback:', callbackResult)
+          callback(callbackResult)
+        }
+      } else {
+        const sha256 = hashObject.finalize()
+        console.log(`文件 ${file.name} sha256 值为：`, sha256.toString())
+
+        if (typeof callback === 'function') {
+          const callbackResult = {
+            progressLabel: 'hash 已校验, 等待上传', // 重置为未上传的显示状态
+            process: total,
+            computed: total,
+            total,
+            file,
+            end: true
+          }
+          callback(callbackResult)
+        }
+        resolve(sha256.toString())
+      }
+    }
+
+    reader.onload = function () {
+      // console.log('onload:', event, new Uint8Array(event.target.result))
+      const arrayBuffer = reader.result as ArrayBuffer
+      const wordArray = CryptoJS.lib.WordArray.create(arrayBuffer)
+      // 更新哈希对象
+      hashObject.update(wordArray)
+      asyncUpdate()
+    }
+
+    asyncUpdate()
+
+    reader.onerror = err => {
+      reject({ ok: false, message: err })
+    }
+  })
+}

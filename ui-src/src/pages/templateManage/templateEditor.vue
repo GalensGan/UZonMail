@@ -30,8 +30,12 @@ onMounted(async () => {
 })
 import { removeHistory } from 'src/layouts/components/tags/routeHistories'
 import { IRouteHistory } from 'src/layouts/components/tags/types'
+
+// 编辑器配置
+import { useWysiwygEditor } from './compositions'
+const { editorDefinitions, editorToolbar } = useWysiwygEditor()
 const router = useRouter()
-const editorDefinitions = {
+Object.assign(editorDefinitions, {
   save: {
     tip: '保存模板',
     icon: 'save',
@@ -46,16 +50,11 @@ const editorDefinitions = {
       removeHistory(router, route as unknown as IRouteHistory, '/template/index')
     }
   }
-}
-const editorToolbar = ref([
-  ['back'],
+})
+
+editorToolbar.unshift(...[['back'],
   ['templateName'],
-  ['save'],
-  ['left', 'center', 'right', 'justify'],
-  ['bold', 'italic', 'strike', 'underline', 'link'],
-  ['undo', 'redo'],
-  ['viewsource']
-])
+  ['save']])
 // 保存模板
 import domToImage from 'dom-to-image'
 import { uploadToStaticFile } from 'src/api/file'

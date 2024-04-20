@@ -18,3 +18,34 @@ export function uploadToStaticFile (subPath: string, fileName: string, data: Blo
     data: form
   })
 }
+
+/**
+ * 获取文件使用ID
+ * @param sha256
+ * @param fileName
+ * @returns
+ */
+export function GetFileUsageId (sha256: string, fileName: string) {
+  return httpClient.get<number>('/file/file-id', {
+    params: {
+      sha256,
+      fileName
+    }
+  })
+}
+
+/**
+ * 上传文件
+ * @param sha256
+ * @param fileName
+ * @returns
+ */
+export function uploadFileObject (sha256: string, file: File) {
+  const form = new FormData()
+  form.append('sha256', sha256)
+  form.append('file', file, file.name)
+
+  return httpClient.post<number>('/file/upload-file-object', {
+    data: form
+  })
+}

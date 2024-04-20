@@ -28,6 +28,7 @@ declare module 'vue' {
     ImageCropper_bak: typeof import('./src/components/imageCropper/ImageCropper_bak.vue')['default']
     ImportBtn: typeof import('./src/components/componentWrapper/buttons/ImportBtn.vue')['default']
     LowCodeForm: typeof import('./src/components/popupDialog/lowCodeForm.vue')['default']
+    ObjectUploader: typeof import('./src/components/uploader/ObjectUploader.vue')['default']
     OkBtn: typeof import('./src/components/componentWrapper/buttons/OkBtn.vue')['default']
     PasswordInput: typeof import('./src/components/passwordInput/PasswordInput.vue')['default']
     PopupDialogExample: typeof import('./src/components/componentWrapper/PopupDialogExample.vue')['default']

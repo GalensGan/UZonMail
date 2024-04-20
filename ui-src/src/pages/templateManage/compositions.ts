@@ -55,3 +55,19 @@ export function useEmailTemplateTable () {
     ...others
   }
 }
+
+/**
+ * 获取 WYSIWYG (what you see is what you get) 编辑器配置
+ */
+export function useWysiwygEditor () {
+  const editorDefinitions = {}
+
+  const editorToolbar = [
+    ['left', 'center', 'right', 'justify'],
+    ['bold', 'italic', 'strike', 'underline', 'link'],
+    ['undo', 'redo'],
+    ['viewsource']
+  ]
+
+  return { editorDefinitions, editorToolbar }
+}

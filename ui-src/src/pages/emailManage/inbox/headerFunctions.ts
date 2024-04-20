@@ -38,20 +38,32 @@ function getInboxExcelDataMapper (): IExcelColumnMapper[] {
   ]
 }
 
+/**
+ * 弹出新增收件箱弹窗
+ * @param emailGroupLabel
+ * @returns
+ */
+export async function showNewInboxDialog (emailGroupLabel: string) {
+  // 新增发件箱
+  const popupParams: IPopupDialogParams = {
+    title: `新增收件箱 / ${emailGroupLabel}`,
+    fields: getInboxFields()
+  }
+
+  // 弹出对话框
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return await showDialog<IInbox>(popupParams)
+}
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
 export function UseHeaderFunction (emailGroup: Ref<IEmailGroupListItem>,
   addNewRow: (newRow: Record<string, any>) => void) {
   // 新建发件箱
   async function onNewInboxClick () {
     // 新增发件箱
-    const popupParams: IPopupDialogParams = {
-      title: `新增收件箱 / ${emailGroup.value.label}`,
-      fields: getInboxFields()
-    }
-
     // 弹出对话框
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { ok, data } = await showDialog<IInbox>(popupParams)
+    const { ok, data } = await showNewInboxDialog(emailGroup.value.label)
     if (!ok) return
     // 新建请求
     // 添加邮箱组

@@ -103,4 +103,8 @@ function onOkBtnClick () {
 .select-template__image-title {
   padding: 4px !important;
 }
+
+:deep(.q-table__grid-content) {
+  overflow-y: scroll;
+}
 </style>

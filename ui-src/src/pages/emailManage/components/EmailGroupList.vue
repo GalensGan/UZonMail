@@ -14,7 +14,7 @@
     <q-item class="plain-list__item q-ma-xs" v-for="item in sortedItems" :key="item.name" clickable v-ripple
       :active="item.active" active-class="text-secondary" @click="onItemClick(item)">
       <q-item-section v-if="item.icon" avatar class="q-pr-none">
-        <q-icon name="contact_mail" />
+        <q-icon :name="item.icon || 'contact_mail'" />
       </q-item-section>
       <q-item-section class="q-px-lg" v-if="item.label">{{ item.label }}</q-item-section>
       <q-item-section side v-if="item.side">{{ item.side }}</q-item-section>
@@ -33,6 +33,13 @@ import { IContextMenuItem } from 'src/components/contextMenu/types'
 const modelValue = defineModel<IEmailGroupListItem>()
 
 const props = defineProps({
+  // 树形结构顶部的菜单
+  // 通过 order 来控制显示位置
+  extraItems: {
+    type: Array as PropType<IEmailGroupListItem[]>,
+    default: () => []
+  },
+
   // 只读模式
   readonly: {
     type: Boolean,
@@ -60,7 +67,15 @@ const header: ComputedRef<IFlatHeader> = computed(() => {
   }
 })
 const groupItems = ref<IEmailGroupListItem[]>([])
-const sortedItems = computed(() => groupItems.value.sort((a, b) => a.order - b.order))
+const sortedItems = computed(() => {
+  const results = []
+  if (props.extraItems.length > 0) {
+    results.push(...props.extraItems)
+  }
+  results.push(...groupItems.value)
+  results.sort((a, b) => a.order - b.order)
+  return results
+})
 
 // 初始化获取组
 import { getEmailGroups, createEmailCroup, IEmailGroup, updateEmailCroup, deleteEmailGroupById } from 'src/api/emailGroup'
@@ -72,12 +87,12 @@ onMounted(async () => {
   groupItems.value = groups.map(x => ({ ...x, label: x.name, active: false, side: String(x.order) }))
 
   // 默认选中第一个
-  if (groupItems.value.length > 0) {
-    activeGroup(groupItems.value[0])
+  if (sortedItems.value.length > 0) {
+    activeGroup(sortedItems.value[0])
   }
 })
 function activeGroup (group: IEmailGroupListItem) {
-  groupItems.value.forEach(x => { x.active = false })
+  sortedItems.value.forEach(x => { x.active = false })
   group.active = true
   modelValue.value = group
 }

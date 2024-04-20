@@ -45,6 +45,33 @@
   overflow-y: auto;
 }
 
+.scroll-y_pretty {
+  // 优化滚动条显示
+  //滚动条
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgb(239, 239, 239);
+    border-radius: 2px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #bfbfbf;
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #bfbfbf;
+  }
+
+  &::-webkit-scrollbar-corner {
+    background: #bfbfbf;
+  }
+}
+
 .half-height {
   height: 50%;
 }

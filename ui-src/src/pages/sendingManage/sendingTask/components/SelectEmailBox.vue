@@ -64,7 +64,7 @@ import { createAbstractLabel } from 'src/utils/labelHelper'
 import SelectEmailBoxDialog from './SelectEmailBoxDialog.vue'
 async function onSelectOutboxes () {
   const { ok, data: inboxes } = await showComponentDialog<IInbox[]>(SelectEmailBoxDialog, {
-    initOutboxes: modelValue.value,
+    initEmailBoxes: modelValue.value,
     emailBoxType: props.emailBoxType
   })
   if (!ok) return

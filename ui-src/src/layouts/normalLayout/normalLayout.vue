@@ -20,14 +20,17 @@
 
     <q-page-container class="page-container">
       <q-page class="q-px-md q-pb-md full-height full-with">
-        <!--参考：https://juejin.cn/post/7083793875390693383-->
-        <router-view v-slot="{ Component }">
-          <keep-alive :include="cachedViews">
-            <transition appear enter-active-class="animated fadeInDown">
-              <component :is="Component" :key="getRouteId($route.fullPath, $route.query)" />
-            </transition>
-          </keep-alive>
-        </router-view>
+        <q-scroll-area class="full-height full-with" :thumb-style="thumbStyle"
+          :content-style="contentStyle" :content-active-style="contentActiveStyle">
+          <!--参考：https://juejin.cn/post/7083793875390693383-->
+          <router-view v-slot="{ Component }">
+            <keep-alive :include="cachedViews">
+              <transition appear enter-active-class="animated fadeInDown">
+                <component :is="Component" :key="getRouteId($route.fullPath, $route.query)" />
+              </transition>
+            </keep-alive>
+          </router-view>
+        </q-scroll-area>
       </q-page>
     </q-page-container>
   </q-layout>
@@ -60,6 +63,9 @@ const cachedViews = computed(() => {
   const results = routeHistories.value.filter(x => !x.noCache).map(x => x.name)
   return results
 })
+
+import { useScrollAreaStyle } from 'src/compositions/scrollUtils'
+const { contentStyle, contentActiveStyle, thumbStyle } = useScrollAreaStyle()
 </script>
 
 <style lang="scss" scoped>
