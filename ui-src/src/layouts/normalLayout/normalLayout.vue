@@ -20,15 +20,15 @@
 
     <q-page-container class="page-container">
       <q-page class="q-px-md q-pb-md full-height full-with">
-        <q-scroll-area class="full-height full-with" :thumb-style="thumbStyle"
-          :content-style="contentStyle" :content-active-style="contentActiveStyle">
+        <q-scroll-area class="full-height full-with" :thumb-style="thumbStyle" :content-style="contentStyle"
+          :content-active-style="contentActiveStyle">
           <!--参考：https://juejin.cn/post/7083793875390693383-->
           <router-view v-slot="{ Component }">
-            <keep-alive :include="cachedViews">
-              <transition appear enter-active-class="animated fadeInDown">
+            <transition appear enter-active-class="animated fadeInDown">
+              <keep-alive :include="cachedViews">
                 <component :is="Component" :key="getRouteId($route.fullPath, $route.query)" />
-              </transition>
-            </keep-alive>
+              </keep-alive>
+            </transition>
           </router-view>
         </q-scroll-area>
       </q-page>
@@ -61,6 +61,7 @@ if ($q.platform.is.desktop && $q.screen.gt.md) {
 const routeHistories = useRouteHistories()
 const cachedViews = computed(() => {
   const results = routeHistories.value.filter(x => !x.noCache).map(x => x.name)
+  console.log('cachedViews:', results)
   return results
 })
 

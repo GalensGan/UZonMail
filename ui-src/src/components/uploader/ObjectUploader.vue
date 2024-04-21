@@ -1,5 +1,6 @@
 <template>
-  <q-uploader v-bind="$attrs" ref="uploaderRef" :factory="factoryFn" @added="onFileAdded" no-thumbnails>
+  <q-uploader v-bind="$attrs" ref="uploaderRef" :factory="factoryFn" @added="onFileAdded" no-thumbnails
+    @uploaded="onFileUploaded">
     <template v-slot:header="scope">
       <div class="row no-wrap items-center q-pa-sm q-gutter-xs">
         <q-btn v-if="scope.queuedFiles.length > 0" icon="clear_all" @click="scope.removeQueuedFiles" round dense flat>
@@ -68,8 +69,21 @@ defineProps({
   }
 })
 
+import { FileSha256Callback, IUploadFile, IUploadResult, fileSha256 } from 'src/utils/file'
+// 定义 v-model
+const modelValue = defineModel({
+  type: Array as PropType<IUploadResult[]>,
+  default: () => []
+})
+// 初始化显示
+// 显示已经上传的文件信息
+onMounted(() => {
+  // 通过 modelValue 回显已经上传的文件
+  // 后期有需要再实现
+})
+
 import { QUploader, QUploaderFactoryObject } from 'quasar'
-const uploaderRef: Ref<QUploader> = ref(null)
+const uploaderRef: Ref<QUploader> = ref(null as unknown as QUploader)
 onMounted(() => {
   console.log('uploaderRef:', uploaderRef.value)
 })
@@ -77,7 +91,6 @@ onMounted(() => {
 // 上传地址配置
 import { useUserInfoStore } from 'src/stores/user'
 const userInfoStore = useUserInfoStore()
-import { FileSha256Callback, IUploadFile, fileSha256 } from 'src/utils/encrypt'
 function factoryFn (files: IUploadFile[]): Promise<QUploaderFactoryObject> {
   console.log('uploader factory called:', files)
   return new Promise((resolve) => {
@@ -107,6 +120,7 @@ function sha256Callback (params: FileSha256Callback) {
   // 强制刷新
   vm?.proxy?.$forceUpdate()
 }
+
 async function onFileAdded (files: readonly IUploadFile[]) {
   // 计算文件的 sha256 值，若已经上传过，则直接修改文件状态
   console.log('files:', files)
@@ -121,6 +135,7 @@ async function onFileAdded (files: readonly IUploadFile[]) {
     // 向服务器请求文件是否已经上传过
     const { data: fileUsageId } = await GetFileUsageId(sha256, file.name)
     if (fileUsageId < 0) continue
+
     // 说明文件已经上传过
     file.__fileUsageId = fileUsageId
     // 修改文件状态
@@ -131,11 +146,53 @@ async function onFileAdded (files: readonly IUploadFile[]) {
     // 添加到已上传文件列表
     uploaderRef.value.uploadedFiles.push(file)
     // console.log('queuedFiles:', uploaderRef.value.queuedFiles)
+    // 保存到结果中
+    updateModelValue(file)
   }
 }
 
 const canUpload = computed(() => {
   return uploaderRef.value?.queuedFiles.some(x => !x.__fileUsageId)
+})
+
+// 文件上传后的操作
+import { notifyError } from 'src/utils/notify'
+function onFileUploaded (file: IUploadFile, xhr: XMLHttpRequest) {
+  console.log('file uploaded:', file, xhr)
+  const response = JSON.parse(xhr.responseText)
+  if (!response.ok) {
+    notifyError(response.message)
+    return
+  }
+
+  // 向文件中记录 id
+  file.__fileUsageId = response.data
+
+  // 更新 v-model 值
+  updateModelValue(file)
+}
+function updateModelValue (file: IUploadFile) {
+  if (modelValue.value.find(x => x.__sha256 === file.__sha256)) return
+
+  const result: IUploadResult = {
+    __fileName: file.name,
+    __sha256: file.__sha256,
+    __key: file.__key,
+    __sizeLabel: file.__sizeLabel,
+    __progressLabel: file.__progressLabel,
+    __fileUsageId: file.__fileUsageId
+  }
+
+  modelValue.value.push(result)
+}
+
+// 文件是否需要上传标记
+const needUpload = defineModel('needUpload', {
+  type: Boolean,
+  default: false
+})
+watch(canUpload, (newValue) => {
+  needUpload.value = newValue
 })
 </script>
 

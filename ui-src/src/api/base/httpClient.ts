@@ -2,10 +2,12 @@
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 import axios from 'axios'
 
-import { IHttpClientOptions, IResponseData } from './types'
+import { IAxiosRequestConfig, IHttpClientOptions, IResponseData } from './types'
 import { useUserInfoStore } from 'src/stores/user'
 import { StatusCode } from 'status-code-enum'
 import { notifyError } from 'src/utils/notify'
+
+import { getDataFromCache, setDataToCache } from './httpCache'
 
 /**
  * HttpClient 封装
@@ -123,9 +125,24 @@ export default class HttpClient {
    * @param config 请求参数和配置
    * @returns
    */
-  async get<R, D = any> (url: string, config?: AxiosRequestConfig<D>): Promise<IResponseData<R>> {
+  async get<R, D = any> (url: string, config?: IAxiosRequestConfig<D>): Promise<IResponseData<R>> {
+    // 从 cache 中获取值
+    const { ok, data } = getDataFromCache<R, D>(url, config)
+    if (ok) {
+      return {
+        data,
+        code: StatusCode.SuccessOK,
+        message: 'fromCache',
+        ok: true
+      }
+    }
     const responseData = await this._axios.get<R, AxiosResponse<IResponseData<R>, D>, D>(url, config)
-    return this.destructureAxiosResponse(responseData)
+    const dataResult = this.destructureAxiosResponse(responseData)
+
+    // 添加到缓存
+    setDataToCache(url, config, dataResult.data)
+
+    return dataResult
   }
 
   /**

@@ -1,6 +1,7 @@
 <template>
   <div class="card-like column q-pa-md scroll-y no-wrap">
-    <q-input v-model="emailInfo.subject" label="主题" dense placeholder="请输入邮件主题" class="q-mb-sm">
+    <q-input v-model="emailInfo.subject" autogrow label="主题" dense
+      placeholder="请输入邮件主题(若需要随机主题，多个主题之间请使用分号 ; 进行分隔或者单独一行)" class="email-subject q-mb-sm" style="max-height:200px">
       <template v-slot:before>
         <q-icon name="subject" color="primary" />
       </template>
@@ -24,12 +25,14 @@
       placeholder="在此处输入模板内容, 变量使用 {{ }} 号包裹, 例如 {{ variableName }}">
     </q-editor>
 
-    <ObjectUploader label="附件" class="q-mx-sm q-mt-sm" style="width:auto" multiple />
+    <ObjectUploader v-model="emailInfo.attachments" v-model:need-upload="needUpload" label="附件" class="q-mx-sm q-mt-sm"
+      style="width:auto" multiple />
 
     <div class="row justify-end items-center q-ma-sm q-mt-lg">
-      <CommonBtn label="预览" color="accent" icon="view_carousel" tooltip="预览发件正文" />
-      <CommonBtn label="定时发送" class="q-ml-sm" color="primary" icon="schedule" tooltip="定时发件" />
-      <OkBtn label="发送" class="q-ml-sm" icon="alternate_email" tooltip="立即发件" />
+      <CommonBtn label="预览" color="accent" icon="view_carousel" tooltip="预览发件正文" @click="onPreviewClick" />
+      <CommonBtn label="定时发送" class="q-ml-sm" color="primary" icon="schedule" tooltip="定时发件"
+        @click="onScheduleSendClick" />
+      <OkBtn label="发送" class="q-ml-sm" icon="alternate_email" tooltip="立即发件" @click="onSendNowClick" />
     </div>
   </div>
 </template>
@@ -39,8 +42,9 @@ import SelectEmailTemplate from './components/SelectEmailTemplate.vue'
 import SelectEmailBox from './components/SelectEmailBox.vue'
 import SelectEmailData from './components/SelectEmailData.vue'
 import ObjectUploader from 'components/uploader/ObjectUploader.vue'
+import { IEmailCreateInfo, useBottomFunctions } from './bottomFunctions'
 
-const emailInfo = ref({
+const emailInfo: Ref<IEmailCreateInfo> = ref({
   subject: '', // 主题
   templates: [], // 模板 id
   data: [], // 用户发件数据
@@ -49,16 +53,20 @@ const emailInfo = ref({
   ccBoxes: [], // 抄送人邮箱
   body: '', // 邮件正文
   // 附件必须先上传，此处保存的是附件的Id
-  attachmentIds: [] // 附件
+  attachments: [] // 附件
 })
 
 // 编辑器配置
 import { useWysiwygEditor } from 'pages/templateManage/compositions'
 const { editorDefinitions, editorToolbar } = useWysiwygEditor()
 
-// 底部按钮
-import OkBtn from 'src/components/componentWrapper/buttons/OkBtn.vue'
-import CommonBtn from 'src/components/componentWrapper/buttons/CommonBtn.vue'
+// 底部功能按钮
+const { OkBtn, CommonBtn, onPreviewClick, onScheduleSendClick, onSendNowClick } = useBottomFunctions(emailInfo)
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.email-subject :deep(textarea) {
+  max-height: 120px;
+  overflow-y: auto;
+}
+</style>
