@@ -11,7 +11,6 @@ import { fileURLToPath } from 'node:url'
 import { ElementPlusResolver, QuasarResolver } from 'unplugin-vue-components/resolvers'
 
 // mock:https://github.com/vbenjs/vite-plugin-mock/blob/main/README.zh_CN.md
-
 export default configure((ctx) => {
   return {
     eslint: {
@@ -79,7 +78,8 @@ export default configure((ctx) => {
       // polyfillModulePreload: true,
       // distDir
 
-      // extendViteConf (viteConf) {},
+      // extendViteConf (viteConf) {
+      // },
       // viteVuePluginOptions: {},
 
       vitePlugins: [

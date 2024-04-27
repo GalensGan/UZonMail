@@ -11,7 +11,7 @@
 
     <template v-slot:item="props">
       <div class="q-card rounded-borders q-ma-sm" style="height: 180px; width: 300px">
-        <q-img :src="getTemplateImage(props.row)" error-src="/public/icons/undraw_mailbox_re_dvds.svg"
+        <q-img :src="getTemplateImage(props.row)" error-src="/icons/undraw_mailbox_re_dvds.svg"
           spinner-color="white" class="full-width full-height cursor-pointer" fit="cover" position="left top"
           @click="onPreviewThumbnail(props.row)">
 

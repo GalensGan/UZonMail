@@ -41,6 +41,27 @@ export function notifySuccess (opts: QNotifyCreateOptions | string | undefined):
 }
 
 /**
+ * 根据传递的 type 来智能识别消息类型
+ * @param opts
+ * @returns
+ */
+export function notifyAny (opts: QNotifyCreateOptions | string | undefined): void {
+  if (!opts) return
+  if (typeof opts === 'string') opts = { message: opts, type: 'success' }
+
+  switch (opts.type) {
+    case 'success':
+      notifySuccess(opts)
+      break
+    case 'error':
+      notifyError(opts)
+      break
+    default:
+      Notify.create(opts)
+  }
+}
+
+/**
  * 确认操作
  * @param title
  * @param message

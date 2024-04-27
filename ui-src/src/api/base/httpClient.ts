@@ -9,6 +9,8 @@ import { notifyError } from 'src/utils/notify'
 
 import { getDataFromCache, setDataToCache } from './httpCache'
 
+import { useConfig } from 'src/config'
+
 /**
  * HttpClient 封装
  */
@@ -29,7 +31,8 @@ export default class HttpClient {
 
   // 获取基础 url
   private getBaseUrl (): string {
-    return process.env.BASE_URL as string
+    const config = useConfig()
+    return `${config.baseUrl}${config.api}` as string
   }
 
   // 创建 axios 实例

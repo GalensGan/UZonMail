@@ -7,6 +7,7 @@
           <q-toolbar-title>
             <BreadcrumbsIndex />
           </q-toolbar-title>
+          <GlobalSignalR />
           <UserInfo />
         </q-toolbar>
         <q-separator></q-separator>
@@ -44,6 +45,7 @@ import BreadcrumbsIndex from '../components/breadcrumbs/breadcrumbsIndex.vue'
 import TagsView from '../components/tags/tagsView.vue'
 // import LeftSidebarIndex from '../components/leftSidebar/leftSidebarIndex.vue'
 import MenuTree from '../components/leftSidebar/menuTree.vue'
+import GlobalSignalR from '../components/signalR/GlobalSignalR.vue'
 
 import { getRouteId, useRouteHistories } from '../components/tags/routeHistories'
 

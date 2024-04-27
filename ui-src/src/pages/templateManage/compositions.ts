@@ -5,6 +5,7 @@ import { IQtableRequestParams, TTableFilterObject } from 'src/compositions/types
 // 查看缩略图
 import 'viewerjs/dist/viewer.css'
 import { api as viewerApi } from 'v-viewer'
+import { useConfig } from 'src/config'
 
 // 生成邮件模板数据
 export function useEmailTemplateTable () {
@@ -22,12 +23,11 @@ export function useEmailTemplateTable () {
     onRequest
   })
 
+  const config = useConfig()
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   function getTemplateImage (row: Record<string, any>) {
-    if (!row) return '/public/icons/undraw_mailbox_re_dvds.svg'
-    let baseUrl = process.env.BASE_URL as string
-    baseUrl = baseUrl.replace('/api/v1', '')
-    const url = baseUrl + '/' + row.thumbnail
+    if (!row) return '/icons/undraw_mailbox_re_dvds.svg'
+    const url = `${config.baseUrl}/${row.thumbnail}`
     // console.log(url)
     return url
   }

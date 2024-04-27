@@ -4,5 +4,5 @@
  * @returns
  */
 export function resolveSvgFullName (svgName: string) {
-  return `img:/public/icons/${svgName.replace('.svg', '')}.svg`
+  return `img:/icons/${svgName.replace('.svg', '')}.svg`
 }

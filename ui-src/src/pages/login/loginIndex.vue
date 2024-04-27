@@ -71,6 +71,7 @@ async function onUserLogin () {
   // 跳转到主页
   router.push({ path: '/' })
 }
+
 </script>
 
 <style lang="scss" scoped>

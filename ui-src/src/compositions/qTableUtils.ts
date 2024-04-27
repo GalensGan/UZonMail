@@ -56,18 +56,20 @@ export function useQTable (initParams: IQTableInitParams) {
     try {
       loading.value = true
       const totalCount = await getRowsNumberCount(filter)
-
-      // get all rows if "All" (0) is selected
-      const fetchCount = rowsPerPage === 0 ? totalCount : rowsPerPage
-      // calculate starting row of data
-      const startRow = (page as number - 1) * (rowsPerPage as number)
-      const filterObj = await getFilterObject(filter)
-      const data = await initParams.onRequest(filterObj, {
-        sortBy,
-        descending,
-        skip: startRow,
-        limit: fetchCount
-      } as IQtableRequestParams)
+      let data: object[] = []
+      if (totalCount > 0) {
+        // get all rows if "All" (0) is selected
+        const fetchCount = rowsPerPage === 0 ? totalCount : rowsPerPage
+        // calculate starting row of data
+        const startRow = (page as number - 1) * (rowsPerPage as number)
+        const filterObj = await getFilterObject(filter)
+        data = await initParams.onRequest(filterObj, {
+          sortBy,
+          descending,
+          skip: startRow,
+          limit: fetchCount
+        } as IQtableRequestParams)
+      }
 
       // 更新数据
       rows.value = data
@@ -110,9 +112,9 @@ export function useQTable (initParams: IQTableInitParams) {
 
   // 增加新数据
   // 新增数据时，可以使用这个方法，增加一行数据
-  function addNewRow (newRow: Record<string, any>) {
+  function addNewRow (newRow: Record<string, any>, idField: string = 'id') {
     // 查找是否存在
-    const found = rows.value.find(x => x.id === newRow.id)
+    const found = rows.value.find(x => x[idField] === newRow[idField])
     if (found) {
       // 更新
       Object.assign(found, newRow)
@@ -124,10 +126,10 @@ export function useQTable (initParams: IQTableInitParams) {
   }
 
   // 删除行
-  function deleteRowById (id?: number) {
+  function deleteRowById (id?: number, idField: string = 'id') {
     if (!id) return
 
-    rows.value = rows.value.filter(x => x.id !== id)
+    rows.value = rows.value.filter(x => x[idField] !== id)
     increaseRowsNumber(-1)
   }
 

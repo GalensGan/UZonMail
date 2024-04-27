@@ -11,7 +11,7 @@
         <template v-slot:item="props">
           <div class="rounded-borders q-ma-sm hover-card" style="height: 100px; width: 200px"
             @click="onItemClick(props.row)">
-            <q-img :src="getTemplateImage(props.row)" error-src="/public/icons/undraw_mailbox_re_dvds.svg"
+            <q-img :src="getTemplateImage(props.row)" error-src="/icons/undraw_mailbox_re_dvds.svg"
               spinner-color="white" class="full-width full-height" fit="cover" position="left top">
 
               <template v-slot:loading>
