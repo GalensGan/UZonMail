@@ -1,6 +1,6 @@
 <template>
   <q-input v-bind="$attrs" :dense="dense" outlined standout v-model="password" :label="label"
-    :type="isPwd ? 'password' : 'text'" :size="iconSize">
+    :type="isPwd ? 'password' : 'text'">
     <template v-if="!noIcon" v-slot:prepend>
       <q-icon name="lock" />
     </template>

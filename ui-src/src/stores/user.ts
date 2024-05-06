@@ -29,6 +29,10 @@ export const useUserInfoStore = defineStore('userInfo', {
       if (avatar.startsWith('http')) return avatar
       const url = new URL(avatar, process.env.BASE_URL?.replace('/api/v1', ''))
       return url.toString()
+    },
+    isAdmin: (state) => {
+      // 目前使用 * 或者 admin 来表示超管权限
+      return state.access.includes('*') || state.userId === 'admin'
     }
   },
   actions: {

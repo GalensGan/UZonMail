@@ -9,6 +9,7 @@ export interface IInbox {
   emailGroupId?: number,
   userId?: number,
   email: string,
+  name?: string,
   description?: string,
 }
 
@@ -19,7 +20,7 @@ export interface IOutbox extends IInbox {
   smtpHost: string,
   smtpPort?: number,
   password: string,
-  proxy?: string,
+  systemProxy?: string,
   // 是否显示密码
   showPassword?: boolean,
   // 密码已解密

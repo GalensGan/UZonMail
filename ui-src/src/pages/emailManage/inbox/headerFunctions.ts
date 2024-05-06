@@ -18,6 +18,11 @@ export function getInboxFields () {
       required: true
     },
     {
+      name: 'name',
+      type: PopupDialogFieldType.text,
+      label: '收件人名称'
+    },
+    {
       name: 'description',
       label: '描述'
     }
@@ -30,6 +35,10 @@ function getInboxExcelDataMapper (): IExcelColumnMapper[] {
       headerName: '邮箱',
       fieldName: 'email',
       required: true
+    },
+    {
+      headerName: '收件人名称',
+      fieldName: 'name'
     },
     {
       headerName: '描述',

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as signalR from '@microsoft/signalr'
 import { useConfig } from 'src/config'
 import { useUserInfoStore } from 'src/stores/user'
@@ -57,4 +58,66 @@ export function useSendEmailHub () {
 
   signalRs.sendingProgressHub = signal
   return signal
+}
+
+/**
+ * 向服务器订阅通信
+ * @param methodName
+ * @param newMethod
+ * @returns
+ */
+export function subscribeOne (methodName: string, newMethod: (...args: any[]) => any): void {
+  const hub = useSendEmailHub()
+  if (!hub) return
+
+  onMounted(async () => {
+    hub.on(methodName, newMethod)
+  })
+
+  onUnmounted(() => {
+    hub.off(methodName, newMethod)
+  })
+}
+
+/**
+ * 只订阅一次
+ */
+export function subscribeOnce (methodName: string, newMethod: (...args: any[]) => any): void {
+  const hub = useSendEmailHub()
+  if (!hub) return
+
+  function methodCore (...args: any[]): any {
+    newMethod(...args)
+    hub.off(methodName, methodCore)
+  }
+
+  onMounted(async () => {
+    hub.on(methodName, methodCore)
+  })
+
+  onUnmounted(() => {
+    hub.off(methodName, methodCore)
+  })
+}
+
+export interface ISubscribeInfo {
+  methodName: string
+  newMethod: (...args: any[]) => any
+}
+
+export function subscribeMany (subscribeInfos: ISubscribeInfo[]) {
+  const hub = useSendEmailHub()
+  if (!hub) return
+
+  onMounted(async () => {
+    for (const { methodName, newMethod } of subscribeInfos) {
+      hub.on(methodName, newMethod)
+    }
+  })
+
+  onUnmounted(() => {
+    for (const { methodName, newMethod } of subscribeInfos) {
+      hub.off(methodName, newMethod)
+    }
+  })
 }

@@ -8,7 +8,7 @@
       <template v-slot:top-left>
         <div class="row justify-start q-gutter-sm">
           <CreateBtn tooltip="新增收件箱" @click="onNewInboxClick" :disable="!isValidEmailGroup" />
-          <ExportBtn tooltip="导出收件箱模板" @click="onExportInboxTemplateClick" />
+          <ExportBtn label="模板" tooltip="导出收件箱模板" @click="onExportInboxTemplateClick" />
           <ImportBtn tooltip="导入收件箱" @click="onImportInboxClick" :disable="!isValidEmailGroup" />
         </div>
       </template>
@@ -73,15 +73,20 @@ const columns: QTableColumn[] = [
   indexColumn,
   {
     name: 'email',
-    required: true,
     label: '邮箱',
     align: 'left',
     field: 'email',
     sortable: true
   },
   {
+    name: 'name',
+    label: '名称(收件人姓名)',
+    align: 'left',
+    field: 'name',
+    sortable: true
+  },
+  {
     name: 'description',
-    required: true,
     label: '描述',
     align: 'left',
     field: 'description',
@@ -89,7 +94,6 @@ const columns: QTableColumn[] = [
   },
   {
     name: 'createDate',
-    required: true,
     label: '创建日期',
     align: 'left',
     field: 'createDate',

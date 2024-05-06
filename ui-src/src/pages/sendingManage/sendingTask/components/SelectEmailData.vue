@@ -46,7 +46,7 @@ const modelValue = defineModel({
 // 选择模板数据
 import { readExcelCore } from 'src/utils/file'
 async function onSelectExcel () {
-  const { files, sheetName } = await readExcelCore({
+  const { files, sheetName, data } = await readExcelCore({
     sheetIndex: 0,
     selectSheet: true
   })
@@ -54,7 +54,7 @@ async function onSelectExcel () {
     const firstFile = files[0]
     fieldModelValue.value = `${firstFile.name} - ${sheetName}`
   }
-  modelValue.value = []
+  modelValue.value = data
 }
 
 // placeholder 显示

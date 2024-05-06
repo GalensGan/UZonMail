@@ -1,6 +1,6 @@
 <template>
   <div class="tags-view q-ml-md row items-center justify-start">
-    <q-chip class="q-mr-sm route-tag row items-center" v-for="item in routes" :key="item.fullPath"
+    <q-chip class="q-mr-xs route-tag row items-center" v-for="item in routes" :key="item.fullPath"
       :class="getTagClass(item)" square clickable transition-show="jump-right" transition-hide="jump-left"
       @click="goToRoute(item)" :removable="item.showCloseIcon" @mouseenter="mouseenterTag(item)"
       @mouseleave="item.showCloseIcon = false" @remove="onRemoveTag(item)">

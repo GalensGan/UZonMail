@@ -195,7 +195,7 @@ export async function readExcelCore (params: IExcelReaderParams): Promise<{ data
   }
 
   // 对每行数据进行处理
-  const results = []
+  const formattedRows = []
   for (const row of rowsData) {
     // 对数据进行转换
     let formattedRow: Record<string, any> = {}
@@ -234,14 +234,11 @@ export async function readExcelCore (params: IExcelReaderParams): Promise<{ data
       continue
     }
 
-    results.push({
-      data: formattedRow,
-      files
-    })
+    formattedRows.push(formattedRow)
   }
 
   return {
-    data: results,
+    data: formattedRows,
     files,
     sheetName
   }

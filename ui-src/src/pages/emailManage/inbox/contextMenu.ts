@@ -34,6 +34,9 @@ export function useContextMenu (deleteRowById: (id?: number) => void) {
         case 'email':
           field.value = inbox.email
           break
+        case 'name':
+          field.value = inbox.name
+          break
         case 'description':
           field.value = inbox.description
           break

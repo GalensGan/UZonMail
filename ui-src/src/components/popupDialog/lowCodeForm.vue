@@ -37,6 +37,15 @@
           <q-select v-if="isMatchedType(field, 'selectOne')" class="q-mb-sm low-code__field q-px-sm" outlined
             v-model="fieldsModel[field.name]" :options="field.options" :label="field.label" :disable="field.disable"
             dense :option-label="field.optionLabel" :option-value="field.optionValue" />
+
+          <q-select v-if="isMatchedType(field, 'selectMany')" class="q-mb-sm low-code__field q-px-sm" outlined
+            v-model="fieldsModel[field.name]" :options="field.options" :label="field.label" :disable="field.disable"
+            dense :option-label="field.optionLabel" :option-value="field.optionValue" multiple />
+
+          <q-checkbox v-if="isMatchedType(field, 'boolean')" class="q-mb-sm low-code__field q-px-sm" dense keep-color
+            v-model="fieldsModel[field.name]" :label="field.label" color="primary">
+            <AsyncTooltip :tooltip="field.tooltip" />
+          </q-checkbox>
         </template>
       </div>
 

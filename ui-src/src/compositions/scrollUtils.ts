@@ -2,6 +2,7 @@
 const contentStyle = {
   // backgroundColor: 'rgba(0,0,0,0.02)',
   // color: '#555'
+  height: '100%'
 }
 
 const contentActiveStyle = {

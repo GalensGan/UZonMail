@@ -14,12 +14,26 @@ function encryptPassword (secretKey: string, password: string) {
   return aes(secretKey, secretKey.substring(0, 16), password)
 }
 
+/**
+ * 获取发件箱字段
+ * @param secretKey
+ * @returns
+ */
 export function getOutboxFields (secretKey: string) {
+  // 获取所有的代理
+
   return [
     {
       name: 'email',
       type: PopupDialogFieldType.email,
       label: 'smtp邮箱',
+      value: '',
+      required: true
+    },
+    {
+      name: 'name',
+      type: PopupDialogFieldType.text,
+      label: '发件人名称',
       value: '',
       required: true
     },
@@ -51,14 +65,21 @@ export function getOutboxFields (secretKey: string) {
       required: true
     },
     {
+      name: 'enableSSL',
+      label: '启用 SSL',
+      type: PopupDialogFieldType.boolean,
+      value: true,
+      required: true
+    },
+    {
       name: 'description',
       label: '描述'
     },
     {
-      name: 'proxy',
+      name: 'systemProxy',
       label: '代理',
-      type: PopupDialogFieldType.url,
-      value: '',
+      type: PopupDialogFieldType.selectMany,
+      value: {},
       placeholder: '为空时使用系统设置'
     }
   ]
@@ -70,6 +91,10 @@ function getOutboxExcelDataMapper (): IExcelColumnMapper[] {
       headerName: 'smtp邮箱',
       fieldName: 'email',
       required: true
+    },
+    {
+      headerName: '发件人名称',
+      fieldName: 'name'
     },
     {
       headerName: 'smtp密码',
@@ -85,6 +110,10 @@ function getOutboxExcelDataMapper (): IExcelColumnMapper[] {
       headerName: 'smtp端口',
       fieldName: 'smtpPort',
       required: true
+    },
+    {
+      headerName: '使用 SSL',
+      fieldName: 'EnableSSL'
     },
     {
       headerName: '描述',

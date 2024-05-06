@@ -79,6 +79,7 @@ export default class HttpClient {
       console.log('response error:', error)
       if (!error.response && error.code) {
         notifyError(error.code)
+        return Promise.reject(error)
       }
 
       const response = error.response as AxiosResponse

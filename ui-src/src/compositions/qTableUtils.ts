@@ -151,7 +151,7 @@ export function useQTableIndex () {
   const indexColumn: QTableColumn = {
     name: 'id',
     label: '序号',
-    align: 'center',
+    align: 'left',
     field: v => v
   }
 

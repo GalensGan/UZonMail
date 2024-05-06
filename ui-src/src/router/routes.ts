@@ -175,6 +175,15 @@ export const dynamicRoutes: ExtendedRouteRecordRaw[] = [
           label: '基础设置'
         },
         component: () => import('pages/IndexPage.vue')
+      },
+      {
+        name: 'ProxyManager',
+        path: 'proxy',
+        meta: {
+          icon: 'public',
+          label: '代理管理'
+        },
+        component: () => import('pages/systemSetting/proxyManage/ProxyManager.vue')
       }
     ]
   },

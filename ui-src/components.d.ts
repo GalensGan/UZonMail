@@ -21,6 +21,7 @@ declare module 'vue' {
     ExportBtn: typeof import('./src/components/componentWrapper/buttons/ExportBtn.vue')['default']
     ImageCropper: typeof import('./src/components/imageCropper/ImageCropper.vue')['default']
     ImportBtn: typeof import('./src/components/componentWrapper/buttons/ImportBtn.vue')['default']
+    LinearProgress: typeof import('./src/components/Progress/LinearProgress.vue')['default']
     LowCodeForm: typeof import('./src/components/popupDialog/lowCodeForm.vue')['default']
     ObjectUploader: typeof import('./src/components/uploader/ObjectUploader.vue')['default']
     OkBtn: typeof import('./src/components/componentWrapper/buttons/OkBtn.vue')['default']

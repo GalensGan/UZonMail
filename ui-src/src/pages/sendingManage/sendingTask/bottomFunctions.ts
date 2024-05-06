@@ -3,21 +3,12 @@
 import OkBtn from 'src/components/componentWrapper/buttons/OkBtn.vue'
 import CommonBtn from 'src/components/componentWrapper/buttons/CommonBtn.vue'
 import { notifyError, notifySuccess } from 'src/utils/notify'
-
-export interface IEmailCreateInfo {
-  subject: string, // 主题
-  templates: Record<string, any>[], // 模板 id
-  data: Record<string, any>[], // 用户发件数据
-  outboxes: Record<string, any>[], // 发件人邮箱
-  inboxes: Record<string, any>[], // 收件人邮箱
-  ccBoxes: Record<string, any>[], // 抄送人邮箱
-  body?: string, // 邮件正文
-  // 附件必须先上传，此处保存的是附件的Id
-  attachments: Record<string, any>[] // 附件
-}
+import { IEmailCreateInfo, sendEmailNow } from 'src/api/emailSending'
 
 import { showComponentDialog } from 'src/components/popupDialog/PopupDialog'
-import PreviewEmailSendingBody from './components/PreivewEmailSendingBody.vue'
+import PreviewEmailSendingBody from './components/PreviewEmailSendingBody.vue'
+import SendingProgress from '../sendingProgress/SendingProgress.vue'
+
 /**
  * 使用底部功能定义
  * @param emailInfo
@@ -58,7 +49,16 @@ export function useBottomFunctions (emailInfo: Ref<IEmailCreateInfo>) {
     return true
   }
   async function onSendNowClick () {
-    if (!validateParams()) return
+    // if (!validateParams()) return
+
+    console.log('email info:', emailInfo.value)
+
+    // 向服务器推送数据
+    await sendEmailNow(emailInfo.value)
+
+    await showComponentDialog(SendingProgress, {
+      title: '发送进度'
+    })
 
     // 将数据传到后台发送
     notifySuccess('开始发送...')
@@ -66,7 +66,6 @@ export function useBottomFunctions (emailInfo: Ref<IEmailCreateInfo>) {
 
   // 定时发送
   async function onScheduleSendClick () {
-
   }
 
   // 预览
