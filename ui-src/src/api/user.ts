@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { httpClient } from 'src/api//base/httpClient'
 import { IUserInfo } from 'src/stores/types'
-import { IQtableRequestParams } from 'src/compositions/types'
+import { IRequestPagination } from 'src/compositions/types'
 import { sha256 } from 'src/utils/encrypt'
 
 export interface IUserLoginInfo {
@@ -71,7 +71,7 @@ export function getFilteredUsersCount (filter?: string) {
  * @param limit
  * @returns
  */
-export function getFilteredUsersData (filter: string, pagination: IQtableRequestParams) {
+export function getFilteredUsersData (filter: string, pagination: IRequestPagination) {
   return httpClient.post<Array<object>>('/user/filtered-data', {
     params: {
       filter

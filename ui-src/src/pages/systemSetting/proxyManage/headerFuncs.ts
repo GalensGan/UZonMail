@@ -1,7 +1,8 @@
-import { IProxy } from 'src/api/proxy'
+import { IProxy, validateProxyName } from 'src/api/proxy'
 import { showDialog } from 'src/components/popupDialog/PopupDialog'
 import { IPopupDialogField, IPopupDialogParams, PopupDialogFieldType } from 'src/components/popupDialog/types'
 import { useUserInfoStore } from 'src/stores/user'
+import { notifySuccess } from 'src/utils/notify'
 
 export function getCommonProxyFields (): IPopupDialogField[] {
   return [
@@ -48,6 +49,12 @@ export function getCommonProxyFields (): IPopupDialogField[] {
  */
 export function useHeaderFunctions () {
   const userInfoStore = useUserInfoStore()
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async function validateProxyInfo (data: Record<string, any>) {
+    return await validateProxyName(data.name)
+  }
+
   async function onCreateProxy () {
     const fields = getCommonProxyFields()
     // 若是管理员，则添加共享字段
@@ -56,6 +63,7 @@ export function useHeaderFunctions () {
         name: 'isShared',
         type: PopupDialogFieldType.boolean,
         label: '是否共享',
+        tooltip: '共享后,其它用户可以使用该代理',
         value: false
       })
     }
@@ -64,12 +72,19 @@ export function useHeaderFunctions () {
     // 新增发件箱
     const popupParams: IPopupDialogParams = {
       title: '新增代理',
-      fields
+      fields,
+      validate: validateProxyInfo
     }
 
     // 弹出对话框
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await showDialog<IProxy>(popupParams)
+    const { ok, data } = await showDialog<IProxy>(popupParams)
+    if (!ok) return
+
+    console.log(data)
+
+    // 向服务器请求数据
+    notifySuccess('创建成功')
   }
 
   return { onCreateProxy }

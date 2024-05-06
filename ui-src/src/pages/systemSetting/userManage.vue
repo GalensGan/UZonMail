@@ -21,7 +21,7 @@
 <script lang="ts" setup>
 import { QTableColumn } from 'quasar'
 import { useQTable } from 'src/compositions/qTableUtils'
-import { IQtableRequestParams, TTableFilterObject } from 'src/compositions/types'
+import { IRequestPagination, TTableFilterObject } from 'src/compositions/types'
 import SearchInput from 'src/components/searchInput/SearchInput.vue'
 
 import CreateBtn from 'src/components/componentWrapper/buttons/CreateBtn.vue'
@@ -53,7 +53,7 @@ async function getRowsNumberCount (filterObj: TTableFilterObject) {
   const { data } = await getFilteredUsersCount(filterObj.filter)
   return data
 }
-async function onRequest (filterObj: TTableFilterObject, pagination: IQtableRequestParams) {
+async function onRequest (filterObj: TTableFilterObject, pagination: IRequestPagination) {
   const { data } = await getFilteredUsersData(filterObj.filter as string, pagination)
   return data
 }

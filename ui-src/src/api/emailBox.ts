@@ -1,5 +1,5 @@
 import { httpClient } from 'src/api//base/httpClient'
-import { IQtableRequestParams } from 'src/compositions/types'
+import { IRequestPagination } from 'src/compositions/types'
 
 /**
  * 收件箱
@@ -84,7 +84,7 @@ export function getBoxesCount (groupId: number | undefined, emailBoxType: 0 | 1,
  * @param pagination
  * @returns
  */
-export function getBoxesData<T> (groupId: number | undefined, emailBoxType: 0 | 1, filter: string | undefined, pagination: IQtableRequestParams) {
+export function getBoxesData<T> (groupId: number | undefined, emailBoxType: 0 | 1, filter: string | undefined, pagination: IRequestPagination) {
   return httpClient.post<T[]>('/email-box/filtered-data', {
     params: {
       groupId,

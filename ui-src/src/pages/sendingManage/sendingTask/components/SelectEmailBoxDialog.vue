@@ -106,7 +106,7 @@ const columns: QTableColumn[] = [
     sortable: true
   }
 ]
-import { IQtableRequestParams, TTableFilterObject } from 'src/compositions/types'
+import { IRequestPagination, TTableFilterObject } from 'src/compositions/types'
 // 选择结果
 const selected: Ref<IInbox[]> = ref([])
 // 初始化选择结果
@@ -124,7 +124,7 @@ async function getRowsNumberCount (filterObj: TTableFilterObject) {
   const { data } = await getBoxesCount(emailGroupRef.value.id, props.emailBoxType, filterObj.filter)
   return data
 }
-async function onRequest (filterObj: TTableFilterObject, pagination: IQtableRequestParams) {
+async function onRequest (filterObj: TTableFilterObject, pagination: IRequestPagination) {
   if (emailGroupRef.value.name === 'selected') {
     let results = selected.value
     if (filterObj.filter) {

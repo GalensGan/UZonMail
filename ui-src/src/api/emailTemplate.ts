@@ -1,5 +1,5 @@
 import { httpClient } from 'src/api//base/httpClient'
-import { IQtableRequestParams } from 'src/compositions/types'
+import { IRequestPagination } from 'src/compositions/types'
 
 /**
  * 邮箱模板
@@ -31,7 +31,7 @@ export function getEmailTemplatesCount (filter?: string) {
  * @param pagination
  * @returns
  */
-export function getEmailTemplatesData (filter: string | undefined, pagination: IQtableRequestParams) {
+export function getEmailTemplatesData (filter: string | undefined, pagination: IRequestPagination) {
   return httpClient.post<IEmailTemplate[]>('/email-template/filtered-data', {
     params: {
       filter

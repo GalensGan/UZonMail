@@ -36,15 +36,19 @@
 
           <q-select v-if="isMatchedType(field, 'selectOne')" class="q-mb-sm low-code__field q-px-sm" outlined
             v-model="fieldsModel[field.name]" :options="field.options" :label="field.label" :disable="field.disable"
-            dense :option-label="field.optionLabel" :option-value="field.optionValue" />
+            dense :option-label="field.optionLabel" :option-value="field.optionValue">
+            <AsyncTooltip :tooltip="field.tooltip" />
+          </q-select>
 
           <q-select v-if="isMatchedType(field, 'selectMany')" class="q-mb-sm low-code__field q-px-sm" outlined
             v-model="fieldsModel[field.name]" :options="field.options" :label="field.label" :disable="field.disable"
-            dense :option-label="field.optionLabel" :option-value="field.optionValue" multiple />
+            dense :option-label="field.optionLabel" :option-value="field.optionValue" multiple>
+            <AsyncTooltip :tooltip="field.tooltip" />
+          </q-select>
 
           <q-checkbox v-if="isMatchedType(field, 'boolean')" class="q-mb-sm low-code__field q-px-sm" dense keep-color
-            v-model="fieldsModel[field.name]" :label="field.label" color="primary">
-            <AsyncTooltip :tooltip="field.tooltip" />
+            v-model="fieldsModel[field.name]" :label="field.label">
+            <AsyncTooltip anchor="bottom left" self="top start" :tooltip="field.tooltip" />
           </q-checkbox>
         </template>
       </div>
@@ -169,12 +173,13 @@ function initFieldsModel () {
         fieldsModel.value[field.name] = field.value || 0
         break
       default:
-        fieldsModel.value[field.name] = field.value || ''
+        fieldsModel.value[field.name] = (field.value === undefined || field.value === null) ? '' : field.value
     }
   }
 }
 initFieldsModel()
-// console.log('fieldsModel:', fieldsModel.value)
+console.log('fieldsModel:', fieldsModel.value, fields)
+
 onMounted(async () => {
   // 初始化数据源
   await pullDateSet()

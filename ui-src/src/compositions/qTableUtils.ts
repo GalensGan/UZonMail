@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { QTableColumn, QTableProps } from 'quasar'
-import { IQTableInitParams, TTableFilterObject, IQTablePagination, IQtableRequestParams } from './types'
+import { IQTableInitParams, TTableFilterObject, IQTablePagination, IRequestPagination } from './types'
 import QTableIndex from './qTableIndex.vue'
 
 // 返回一个QTable的配置对象
@@ -68,7 +68,7 @@ export function useQTable (initParams: IQTableInitParams) {
           descending,
           skip: startRow,
           limit: fetchCount
-        } as IQtableRequestParams)
+        } as IRequestPagination)
       }
 
       // 更新数据

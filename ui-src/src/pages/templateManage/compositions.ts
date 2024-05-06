@@ -1,6 +1,6 @@
 import { getEmailTemplatesCount, getEmailTemplatesData } from 'src/api/emailTemplate'
 import { useQTable } from 'src/compositions/qTableUtils'
-import { IQtableRequestParams, TTableFilterObject } from 'src/compositions/types'
+import { IRequestPagination, TTableFilterObject } from 'src/compositions/types'
 
 // 查看缩略图
 import 'viewerjs/dist/viewer.css'
@@ -13,7 +13,7 @@ export function useEmailTemplateTable () {
     const { data } = await getEmailTemplatesCount(filterObj.filter)
     return data
   }
-  async function onRequest (filterObj: TTableFilterObject, pagination: IQtableRequestParams) {
+  async function onRequest (filterObj: TTableFilterObject, pagination: IRequestPagination) {
     const { data } = await getEmailTemplatesData(filterObj.filter as string, pagination)
     return data
   }

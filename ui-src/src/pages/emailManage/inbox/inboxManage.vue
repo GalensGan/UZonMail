@@ -46,7 +46,7 @@ import CollapseLeft from 'src/components/collapseLeft/CollapseLeft.vue'
 import ContextMenu from 'components/contextMenu/ContextMenu.vue'
 
 import { useQTable, useQTableIndex } from 'src/compositions/qTableUtils'
-import { IQtableRequestParams, TTableFilterObject } from 'src/compositions/types'
+import { IRequestPagination, TTableFilterObject } from 'src/compositions/types'
 import { getBoxesCount, getBoxesData, IOutbox } from 'src/api/emailBox'
 import { IEmailGroupListItem } from '../components/types'
 
@@ -105,7 +105,7 @@ async function getRowsNumberCount (filterObj: TTableFilterObject) {
   const { data } = await getBoxesCount(emailGroupRef.value.id, 1, filterObj.filter)
   return data
 }
-async function onRequest (filterObj: TTableFilterObject, pagination: IQtableRequestParams) {
+async function onRequest (filterObj: TTableFilterObject, pagination: IRequestPagination) {
   const { data } = await getBoxesData<IOutbox>(emailGroupRef.value.id, 1, filterObj.filter, pagination)
   return data
 }
