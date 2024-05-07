@@ -52,6 +52,6 @@ main table tbody tr.table-row__keep-hover {
 // 消除弹出对话框最大宽度限制
 @media (min-width: 600px) {
   .q-dialog__inner--minimized > div {
-    max-width: 80%;
+    max-width: min(80%, 700px);
   }
 }

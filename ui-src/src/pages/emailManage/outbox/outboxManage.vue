@@ -74,7 +74,12 @@ const emailGroupRef: Ref<IEmailGroupListItem> = ref({
   order: 0
 })
 const isValidEmailGroup = computed(() => emailGroupRef.value.id)
-
+import { IProxy, getUsableProxies } from 'src/api/proxy'
+const usableProxies: Ref<IProxy[]> = ref([])
+onMounted(async () => {
+  const { data: proxies } = await getUsableProxies()
+  usableProxies.value = proxies
+})
 const columns: QTableColumn[] = [
   {
     name: 'id',
@@ -131,12 +136,16 @@ const columns: QTableColumn[] = [
     sortable: true
   },
   {
-    name: 'proxy',
+    name: 'proxyId',
     required: true,
     label: '代理',
     align: 'left',
-    field: 'proxy',
-    sortable: true
+    field: 'proxyId',
+    sortable: true,
+    format: (val: number) => {
+      const proxy = usableProxies.value.find(p => p.id === val)
+      return proxy?.name ?? '无'
+    }
   }
 ]
 async function getRowsNumberCount (filterObj: TTableFilterObject) {
@@ -150,7 +159,8 @@ async function onRequest (filterObj: TTableFilterObject, pagination: IRequestPag
 const { pagination, rows, filter, onTableRequest, loading, refreshTable, addNewRow, deleteRowById } = useQTable({
   getRowsNumberCount,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onRequest
+  onRequest,
+  requestWhenMounted: false
 })
 watch(emailGroupRef, () => {
   // 组切换时，触发更新

@@ -36,13 +36,15 @@
 
           <q-select v-if="isMatchedType(field, 'selectOne')" class="q-mb-sm low-code__field q-px-sm" outlined
             v-model="fieldsModel[field.name]" :options="field.options" :label="field.label" :disable="field.disable"
-            dense :option-label="field.optionLabel" :option-value="field.optionValue">
+            dense :option-label="field.optionLabel" :option-value="field.optionValue" options-dense
+            :map-options="field.mapOptions" :emit-value="field.emitValue">
             <AsyncTooltip :tooltip="field.tooltip" />
           </q-select>
 
           <q-select v-if="isMatchedType(field, 'selectMany')" class="q-mb-sm low-code__field q-px-sm" outlined
             v-model="fieldsModel[field.name]" :options="field.options" :label="field.label" :disable="field.disable"
-            dense :option-label="field.optionLabel" :option-value="field.optionValue" multiple>
+            dense :option-label="field.optionLabel" :option-value="field.optionValue" multiple options-dense
+            :map-options="field.mapOptions" :emit-value="field.emitValue">
             <AsyncTooltip :tooltip="field.tooltip" />
           </q-select>
 

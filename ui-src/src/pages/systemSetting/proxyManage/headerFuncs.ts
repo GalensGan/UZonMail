@@ -1,4 +1,5 @@
-import { IProxy, validateProxyName } from 'src/api/proxy'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { IProxy, validateProxyName, createProxy, updateProxySharedStatus } from 'src/api/proxy'
 import { showDialog } from 'src/components/popupDialog/PopupDialog'
 import { IPopupDialogField, IPopupDialogParams, PopupDialogFieldType } from 'src/components/popupDialog/types'
 import { useUserInfoStore } from 'src/stores/user'
@@ -20,12 +21,35 @@ export function getCommonProxyFields (): IPopupDialogField[] {
       label: '代理地址',
       placeholder: '格式：username:password@host 或 host',
       value: '',
-      required: true
+      required: true,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      validate: async (value: any) => {
+        if (!value) {
+          return {
+            ok: false,
+            message: '代理地址不能为空'
+          }
+        }
+
+        // 若不包含 http 或 https 则添加
+        if (!value.includes('http://') && !value.includes('https://')) {
+          value = `https://${value}`
+        }
+        if (!URL.canParse(value)) {
+          return {
+            ok: false,
+            message: '代理地址格式不正确,格式为：username:password@host 或 host'
+          }
+        }
+        return {
+          ok: true
+        }
+      }
     },
     {
       name: 'matchRegex',
       label: '匹配规则',
-      type: PopupDialogFieldType.number,
+      type: PopupDialogFieldType.text,
       placeholder: '使用正则表达式进行匹配',
       value: '.*'
     },
@@ -47,7 +71,7 @@ export function getCommonProxyFields (): IPopupDialogField[] {
  * 顶部功能区
  * @returns
  */
-export function useHeaderFunctions () {
+export function useHeaderFunctions (addNewRow: (newRow: Record<string, any>) => void) {
   const userInfoStore = useUserInfoStore()
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -81,11 +105,17 @@ export function useHeaderFunctions () {
     const { ok, data } = await showDialog<IProxy>(popupParams)
     if (!ok) return
 
-    console.log(data)
-
+    const { data: newRowData } = await createProxy(data)
+    addNewRow(newRowData)
     // 向服务器请求数据
     notifySuccess('创建成功')
   }
 
-  return { onCreateProxy }
+  // 开关代理共享
+  async function onToggleShareProxy (proxyInfo: IProxy) {
+    // 向服务器请求更新
+    updateProxySharedStatus(proxyInfo.id as number, !!proxyInfo.isShared)
+  }
+
+  return { onCreateProxy, onToggleShareProxy }
 }

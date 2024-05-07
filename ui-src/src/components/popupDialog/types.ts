@@ -28,9 +28,11 @@ export interface IPopupDialogField {
   label: string, // 显示的名称
   placeholder?: string, // 占位内容
   value?: any, // 默认值
-  options?: Array<{ label: string, value: any }> | string[], // 多选或单选时的选项
+  options?: Array<Record<string, any>> | string[] | [], // 多选或单选时的选项
   optionLabel?: string, // 选项的显示字段
   optionValue?: string, // 选项的值字段
+  optionTooltip?: string, // 选项的提示字段
+  mapOptions?: boolean,
   icon?: string, // 图标
   required?: boolean, // 是否必须
   validate?: (value: any, parsedValue: any) => Promise<IFunctionResult>, // 验证函数

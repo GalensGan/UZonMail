@@ -41,7 +41,7 @@ export function useContextMenu (deleteRowById: (id?: number) => void) {
   async function onUpdateOutbox (row: Record<string, any>) {
     const outbox = row as IOutbox
 
-    const fields = getOutboxFields(userInfoStore.secretKey)
+    const fields = await getOutboxFields(userInfoStore.secretKey)
     // 修改默认值
     fields.forEach(field => {
       switch (field.name) {
@@ -63,8 +63,8 @@ export function useContextMenu (deleteRowById: (id?: number) => void) {
         case 'description':
           field.value = outbox.description
           break
-        case 'systemProxy':
-          field.value = outbox.systemProxy
+        case 'proxyId':
+          field.value = outbox.proxyId
           break
         default:
           break

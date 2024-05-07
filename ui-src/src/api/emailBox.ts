@@ -20,7 +20,7 @@ export interface IOutbox extends IInbox {
   smtpHost: string,
   smtpPort?: number,
   password: string,
-  systemProxy?: string,
+  proxyId?: number,
   // 是否显示密码
   showPassword?: boolean,
   // 密码已解密

@@ -8,7 +8,8 @@ export interface IProxy {
   emailMatch?: string
   description?: string
   isActive: boolean
-  proxy: string
+  proxy: string,
+  isShared?: boolean
 }
 
 /**
@@ -36,6 +37,40 @@ export function createProxy (proxyInfo: IProxy) {
 }
 
 /**
+ * 更新代理
+ * @param proxyInfo
+ * @returns
+ */
+export function updateProxy (proxyInfo: IProxy) {
+  return httpClient.put<boolean>('/proxy', {
+    data: proxyInfo
+  })
+}
+
+/**
+ * 更新 isShared 状态
+ * @param proxyId
+ * @param isShared
+ * @returns
+ */
+export function updateProxySharedStatus (proxyId: number, isShared: boolean) {
+  return httpClient.put<boolean>(`/proxy/${proxyId}/shared`, {
+    params: {
+      isShared
+    }
+  })
+}
+
+/**
+ * 删除代理
+ * @param proxyId
+ * @returns
+ */
+export function deleteProxy (proxyId: number) {
+  return httpClient.delete<boolean>(`/proxy/${proxyId}`)
+}
+
+/**
  * 获取代理数量
  * @param filter
  * @returns
@@ -55,7 +90,7 @@ export function getProxiesCount (filter?: string) {
  * @returns
  */
 export function getProxiesData (filter: string | undefined, pagination: IRequestPagination) {
-  return httpClient.post<IProxy[]>('/proxy/filtered-count', {
+  return httpClient.post<IProxy[]>('/proxy/filtered-data', {
     params: {
       filter
     },
@@ -63,4 +98,12 @@ export function getProxiesData (filter: string | undefined, pagination: IRequest
       pagination
     }
   })
+}
+
+/**
+ * 获取当前用户可用的代理
+ * @returns
+ */
+export function getUsableProxies () {
+  return httpClient.get<IProxy[]>('/proxy/usable')
 }

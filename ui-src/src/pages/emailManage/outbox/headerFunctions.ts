@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { showDialog } from 'src/components/popupDialog/PopupDialog'
-import { IPopupDialogParams, PopupDialogFieldType } from 'src/components/popupDialog/types'
+import { IPopupDialogField, IPopupDialogParams, PopupDialogFieldType } from 'src/components/popupDialog/types'
 import { IEmailGroupListItem } from '../components/types'
 
 import { IOutbox, createOutbox, createOutboxes } from 'src/api/emailBox'
@@ -9,6 +9,7 @@ import { notifyError, notifySuccess } from 'src/utils/notify'
 import { useUserInfoStore } from 'src/stores/user'
 import { aes } from 'src/utils/encrypt'
 import { IExcelColumnMapper, readExcel, writeExcel } from 'src/utils/file'
+import { getUsableProxies } from 'src/api/proxy'
 
 function encryptPassword (secretKey: string, password: string) {
   return aes(secretKey, secretKey.substring(0, 16), password)
@@ -19,8 +20,9 @@ function encryptPassword (secretKey: string, password: string) {
  * @param secretKey
  * @returns
  */
-export function getOutboxFields (secretKey: string) {
+export async function getOutboxFields (secretKey: string): Promise<IPopupDialogField[]> {
   // 获取所有的代理
+  const { data: proxyOptions } = await getUsableProxies()
 
   return [
     {
@@ -76,11 +78,17 @@ export function getOutboxFields (secretKey: string) {
       label: '描述'
     },
     {
-      name: 'systemProxy',
+      name: 'proxyId',
       label: '代理',
-      type: PopupDialogFieldType.selectMany,
-      value: {},
-      placeholder: '为空时使用系统设置'
+      type: PopupDialogFieldType.selectOne,
+      value: 0,
+      placeholder: '为空时使用系统设置',
+      options: proxyOptions,
+      optionLabel: 'name',
+      optionValue: 'id',
+      optionTooltip: 'description',
+      mapOptions: true,
+      emitValue: true
     }
   ]
 }
@@ -136,7 +144,7 @@ export function UseHeaderFunction (emailGroup: Ref<IEmailGroupListItem>,
     // 新增发件箱
     const popupParams: IPopupDialogParams = {
       title: `新增发件箱 / ${emailGroup.value.label}`,
-      fields: getOutboxFields(userInfoStore.secretKey)
+      fields: await getOutboxFields(userInfoStore.secretKey)
     }
 
     // 弹出对话框

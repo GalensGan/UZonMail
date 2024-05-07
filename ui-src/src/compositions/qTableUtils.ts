@@ -3,7 +3,12 @@ import { QTableColumn, QTableProps } from 'quasar'
 import { IQTableInitParams, TTableFilterObject, IQTablePagination, IRequestPagination } from './types'
 import QTableIndex from './qTableIndex.vue'
 
-// 返回一个QTable的配置对象
+/**
+ * 返回一个QTable的配置对象
+ * @param initParams
+ * @param requestWhenMounted
+ * @returns
+ */
 export function useQTable (initParams: IQTableInitParams) {
   // 分页
   const pagination: Ref<IQTablePagination> = ref({
@@ -107,7 +112,7 @@ export function useQTable (initParams: IQTableInitParams) {
   // 加载时，请求数据
   onMounted(async () => {
     // 初始化表格数据
-    refreshTable()
+    if (initParams.requestWhenMounted) refreshTable()
   })
 
   // 增加新数据

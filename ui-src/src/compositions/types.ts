@@ -29,5 +29,6 @@ export interface IQTableInitParams {
   filterFactor?: (filter: string) => Promise<TTableFilterObject>,
   getRowsNumberCount: (filterObj: TTableFilterObject) => Promise<number>, // 请求数据总数
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onRequest: (filterObj: TTableFilterObject, pagination: IRequestPagination) => Promise<Array<object>> // 请求数据
+  onRequest: (filterObj: TTableFilterObject, pagination: IRequestPagination) => Promise<Array<object>>, // 请求数据
+  requestWhenMounted?: boolean // 在挂载时请求数据
 }

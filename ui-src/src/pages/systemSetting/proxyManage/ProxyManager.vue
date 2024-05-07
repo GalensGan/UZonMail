@@ -11,11 +11,17 @@
 
     <template v-slot:body-cell-id="props">
       <QTableIndex :props="props" />
+      <ContextMenu :items="proxyContextMenuItems" :value="props.row" />
     </template>
 
-    <template v-slot:body-cell-userId="props">
+    <template v-slot:body-cell-isShared="props">
       <q-td :props="props">
-        {{ props.value }}
+        <q-toggle color="secondary" dense v-model="props.row.isShared" @click="onToggleShareProxy(props.row)">
+          <q-tooltip>
+            <div v-if="props.row.isShared">已共享</div>
+            <div v-else>未共享</div>
+          </q-tooltip>
+        </q-toggle>
       </q-td>
     </template>
   </q-table>
@@ -47,10 +53,10 @@ const columns: QTableColumn[] = [
     sortable: true
   },
   {
-    name: 'emailMatch',
+    name: 'matchRegex',
     label: '匹配规则',
     align: 'left',
-    field: 'emailMatch',
+    field: 'matchRegex',
     sortable: true
   },
   {
@@ -78,8 +84,7 @@ if (userInfoStore.isAdmin) {
     label: '共享',
     align: 'left',
     field: 'isShared',
-    sortable: true,
-    format: v => v ? '是' : '否'
+    sortable: true
   })
 }
 
@@ -95,7 +100,7 @@ async function onRequest (filterObj: TTableFilterObject, pagination: IRequestPag
   return data || []
 }
 
-const { pagination, rows, filter, onTableRequest, loading } = useQTable({
+const { pagination, rows, filter, onTableRequest, loading, addNewRow, deleteRowById } = useQTable({
   getRowsNumberCount,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onRequest
@@ -104,7 +109,11 @@ const { pagination, rows, filter, onTableRequest, loading } = useQTable({
 
 // #region 代理的新建、编辑、删除
 import { useHeaderFunctions } from './headerFuncs'
-const { onCreateProxy } = useHeaderFunctions()
+const { onCreateProxy, onToggleShareProxy } = useHeaderFunctions(addNewRow)
+
+import ContextMenu from 'src/components/contextMenu/ContextMenu.vue'
+import { useContextMenu } from './contextMenu'
+const { proxyContextMenuItems } = useContextMenu(deleteRowById)
 // #endregion
 </script>
 

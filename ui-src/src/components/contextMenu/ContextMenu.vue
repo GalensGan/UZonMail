@@ -3,10 +3,13 @@
     @before-show="beforeContextMenuShow" @before-hide="onMenuBeforeHide">
     <q-list dense>
       <q-item v-for="(item, index) in contextItems" :key="item.name" clickable @click="onMenuItemClick($event, item)"
-        :class="getItemClass(item, index)">
-        <q-item-section>
-          {{ item.label }}
-        </q-item-section>
+        :class="getItemClass(item, index)" dense>
+        <div class="row justify-start items-center">
+          <q-icon v-if="item.icon" :color="item.color" :name="item.icon" class="q-mr-sm"></q-icon>
+          <q-item-section>
+            {{ item.label }}
+          </q-item-section>
+        </div>
         <AsyncTooltip :tooltip="item.tooltip" anchor="center right" self="center left" />
       </q-item>
     </q-list>
