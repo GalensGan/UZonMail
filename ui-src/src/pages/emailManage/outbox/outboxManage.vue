@@ -160,7 +160,7 @@ const { pagination, rows, filter, onTableRequest, loading, refreshTable, addNewR
   getRowsNumberCount,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onRequest,
-  requestWhenMounted: false
+  preventRequestWhenMounted: true
 })
 watch(emailGroupRef, () => {
   // 组切换时，触发更新

@@ -65,8 +65,6 @@ export function deleteEmailTemplate (emailTemplateId: number) {
  * @param emailTemplateId
  * @returns
  */
-export function getEmailTemplateById (emailTemplateId: number, cacheKey: string) {
-  return httpClient.get<IEmailTemplate>(`/email-template/${emailTemplateId}`, {
-    cacheKey
-  })
+export function getEmailTemplateById (emailTemplateId: number) {
+  return httpClient.get<IEmailTemplate>(`/email-template/${emailTemplateId}`)
 }

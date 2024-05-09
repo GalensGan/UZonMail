@@ -70,7 +70,13 @@ async function onSelectOutboxes () {
   if (!ok) return
 
   // 更新选择的数据
-  modelValue.value = inboxes
+  modelValue.value = inboxes.map(x => {
+    return {
+      id: x.id,
+      email: x.email,
+      name: x.name
+    }
+  })
   const label = createAbstractLabel(inboxes.map(item => item.email), 3, '个邮箱')
   fieldModelValue.value = label
 }

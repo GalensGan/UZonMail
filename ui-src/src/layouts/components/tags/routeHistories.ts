@@ -68,6 +68,7 @@ export function removeHistory (router: Router, route: IRouteHistory, nextPath?: 
     router.push({
       path: nextPath
     })
+    return
   }
 
   // 如果已经没有 tags，则跳转到首页

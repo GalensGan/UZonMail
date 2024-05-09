@@ -6,7 +6,6 @@ import QTableIndex from './qTableIndex.vue'
 /**
  * 返回一个QTable的配置对象
  * @param initParams
- * @param requestWhenMounted
  * @returns
  */
 export function useQTable (initParams: IQTableInitParams) {
@@ -112,7 +111,8 @@ export function useQTable (initParams: IQTableInitParams) {
   // 加载时，请求数据
   onMounted(async () => {
     // 初始化表格数据
-    if (initParams.requestWhenMounted) refreshTable()
+    if (initParams.preventRequestWhenMounted) return
+    refreshTable()
   })
 
   // 增加新数据

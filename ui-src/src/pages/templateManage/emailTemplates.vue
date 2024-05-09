@@ -10,9 +10,9 @@
     </template>
 
     <template v-slot:item="props">
-      <div class="q-card rounded-borders q-ma-sm" style="height: 180px; width: 300px">
-        <q-img :src="getTemplateImage(props.row)" error-src="/icons/undraw_mailbox_re_dvds.svg"
-          spinner-color="white" class="full-width full-height cursor-pointer" fit="cover" position="left top"
+      <div class="q-card rounded-borders q-ma-sm" style="height: 150px; width: 250px">
+        <q-img :src="getTemplateImage(props.row)" error-src="/icons/undraw_mailbox_re_dvds.svg" spinner-color="white"
+          class="full-width full-height cursor-pointer" fit="cover" position="left top"
           @click="onPreviewThumbnail(props.row)">
 
           <template v-slot:loading>
@@ -130,5 +130,7 @@ const contextItemsForError = computed(() => {
 <style lang="scss" scoped>
 :deep(.q-table__grid-content) {
   align-content: start;
+  justify-content: space-around;
+  overflow-y: auto;
 }
 </style>

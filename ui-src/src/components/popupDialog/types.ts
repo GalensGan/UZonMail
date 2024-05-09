@@ -33,6 +33,7 @@ export interface IPopupDialogField {
   optionValue?: string, // 选项的值字段
   optionTooltip?: string, // 选项的提示字段
   mapOptions?: boolean,
+  emitValue?: boolean, // 是否返回值
   icon?: string, // 图标
   required?: boolean, // 是否必须
   validate?: (value: any, parsedValue: any) => Promise<IFunctionResult>, // 验证函数
