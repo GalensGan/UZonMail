@@ -10,7 +10,8 @@ export interface IEmailCreateInfo {
   ccBoxes: Record<string, any>[], // 抄送人邮箱
   body: string, // 邮件正文
   // 附件必须先上传，此处保存的是附件的Id
-  attachments: Record<string, any>[] // 附件
+  attachments: Record<string, any>[], // 附件
+  smtpPasswordSecretKeys?: string[], // 发件人邮箱密码密钥, 发件时，需要由用户上传到服务器
 }
 
 /**

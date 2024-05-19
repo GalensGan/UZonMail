@@ -14,9 +14,9 @@ import { deAes } from 'src/utils/encrypt'
  * @param IOutbox
  * @returns
  */
-function getSmtpPassword (outbox: IOutbox, secretKey: string) {
+function getSmtpPassword (outbox: IOutbox, smtpPasswordSecretKeys: string[]) {
   if (outbox.decryptedPassword) return outbox.password
-  return deAes(secretKey, secretKey.substring(0, 16), outbox.password)
+  return deAes(smtpPasswordSecretKeys[0], smtpPasswordSecretKeys[1], outbox.password)
 }
 
 export function useContextMenu (deleteRowById: (id?: number) => void) {
@@ -41,7 +41,7 @@ export function useContextMenu (deleteRowById: (id?: number) => void) {
   async function onUpdateOutbox (row: Record<string, any>) {
     const outbox = row as IOutbox
 
-    const fields = await getOutboxFields(userInfoStore.secretKey)
+    const fields = await getOutboxFields(userInfoStore.smtpPasswordSecretKeys)
     // 修改默认值
     fields.forEach(field => {
       switch (field.name) {
@@ -52,7 +52,7 @@ export function useContextMenu (deleteRowById: (id?: number) => void) {
           field.value = outbox.name
           break
         case 'password':
-          field.value = getSmtpPassword(outbox, userInfoStore.secretKey)
+          field.value = getSmtpPassword(outbox, userInfoStore.smtpPasswordSecretKeys)
           break
         case 'smtpHost':
           field.value = outbox.smtpHost

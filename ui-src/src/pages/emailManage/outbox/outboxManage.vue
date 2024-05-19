@@ -179,8 +179,8 @@ async function togglePasswordViewMode (data: IOutbox) {
   // 若是显示密码，但没有解密，则先解密
   if (!data.decryptedPassword) {
     // 进行解密
-    const plainPwd = deAes(userInfoStore.secretKey, userInfoStore.secretKey.substring(0, 16), data.password)
-    data.password = plainPwd || '密钥变动,解密失败,请重新输入 smtp 密码'
+    const plainPwd = deAes(userInfoStore.smtpPasswordSecretKeys[0], userInfoStore.smtpPasswordSecretKeys[1], data.password)
+    data.password = plainPwd || '密钥变动,解密失败。请重新输入 smtp 密码'
     data.decryptedPassword = true
   }
 

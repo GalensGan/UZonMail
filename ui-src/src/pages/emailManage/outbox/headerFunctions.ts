@@ -11,16 +11,16 @@ import { aes } from 'src/utils/encrypt'
 import { IExcelColumnMapper, readExcel, writeExcel } from 'src/utils/file'
 import { getUsableProxies } from 'src/api/proxy'
 
-function encryptPassword (secretKey: string, password: string) {
-  return aes(secretKey, secretKey.substring(0, 16), password)
+function encryptPassword (smtpPasswordSecretKeys: string[], password: string) {
+  return aes(smtpPasswordSecretKeys[0], smtpPasswordSecretKeys[1], password)
 }
 
 /**
  * 获取发件箱字段
- * @param secretKey
+ * @param smtpPasswordSecretKeys
  * @returns
  */
-export async function getOutboxFields (secretKey: string): Promise<IPopupDialogField[]> {
+export async function getOutboxFields (smtpPasswordSecretKeys: string[]): Promise<IPopupDialogField[]> {
   // 获取所有的代理
   const { data: proxyOptions } = await getUsableProxies()
 
@@ -48,7 +48,7 @@ export async function getOutboxFields (secretKey: string): Promise<IPopupDialogF
       parser: async (value: any) => {
         const pwd = String(value)
         // 对密码进行加密
-        return encryptPassword(secretKey, pwd)
+        return encryptPassword(smtpPasswordSecretKeys, pwd)
       },
       value: ''
     },
@@ -144,7 +144,7 @@ export function UseHeaderFunction (emailGroup: Ref<IEmailGroupListItem>,
     // 新增发件箱
     const popupParams: IPopupDialogParams = {
       title: `新增发件箱 / ${emailGroup.value.label}`,
-      fields: await getOutboxFields(userInfoStore.secretKey)
+      fields: await getOutboxFields(userInfoStore.smtpPasswordSecretKeys)
     }
 
     // 弹出对话框
@@ -197,7 +197,7 @@ export function UseHeaderFunction (emailGroup: Ref<IEmailGroupListItem>,
 
     // 对密码进行加密
     data.forEach(row => {
-      row.password = encryptPassword(userInfoStore.secretKey, row.password)
+      row.password = encryptPassword(userInfoStore.smtpPasswordSecretKeys, row.password)
       row.emailGroupId = emailGroup.value.id
     })
 

@@ -13,7 +13,7 @@
         <q-spinner v-if="scope.isUploading" class="q-uploader__spinner" />
         <div class="col">
           <div class="q-uploader__title">{{ label }}</div>
-          <div class="q-uploader__subtitle">{{ scope.uploadSizeLabel }} / {{ scope.uploadProgressLabel }}</div>
+          <!--<div class="q-uploader__subtitle">{{ scope.uploadSizeLabel }} / {{ scope.uploadProgressLabel }}</div>-->
         </div>
         <q-btn v-if="scope.canAddFiles" type="a" icon="add_box" @click="scope.pickFiles" round dense flat>
           <q-uploader-add-trigger />
@@ -157,8 +157,8 @@ const canUpload = computed(() => {
 
 // 文件上传后的操作
 import { notifyError } from 'src/utils/notify'
-function onFileUploaded (file: IUploadFile, xhr: XMLHttpRequest) {
-  console.log('file uploaded:', file, xhr)
+function onFileUploaded ({ files, xhr }: { files: IUploadFile[], xhr: XMLHttpRequest }) {
+  const file = files[0]
   const response = JSON.parse(xhr.responseText)
   if (!response.ok) {
     notifyError(response.message)

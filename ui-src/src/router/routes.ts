@@ -144,7 +144,7 @@ export const dynamicRoutes: ExtendedRouteRecordRaw[] = [
           icon: 'schedule_send',
           label: '发件历史'
         },
-        component: () => import('pages/IndexPage.vue')
+        component: () => import('pages/sendingManage/sendHistory/sendHistory.vue')
       }
     ]
   },

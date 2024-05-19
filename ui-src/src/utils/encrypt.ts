@@ -17,10 +17,10 @@ export function aes (key: string, iv: string, data: string | object) {
     }
   }
   // 统一将传入的字符串转成UTF8编码
-  const dataHex = CryptoJS.enc.Utf8.parse(data as string) // 需要加密的数据
-  const keyHex = CryptoJS.enc.Hex.parse(key) // 秘钥
-  const ivHex = CryptoJS.enc.Hex.parse(iv) // 偏移量
-  const encrypted = CryptoJS.AES.encrypt(dataHex, keyHex, {
+  const dataWordArray = CryptoJS.enc.Utf8.parse(data as string) // 需要加密的数据
+  const keyHex = CryptoJS.enc.Utf8.parse(key) // 秘钥
+  const ivHex = CryptoJS.enc.Utf8.parse(iv) // 偏移量
+  const encrypted = CryptoJS.AES.encrypt(dataWordArray, keyHex, {
     iv: ivHex,
     mode: CryptoJS.mode.CBC, // 加密模式
     padding: CryptoJS.pad.Pkcs7
@@ -45,8 +45,8 @@ export function deAes (key: string, iv: string, ciphertext: string) {
   // 统一将传入的字符串转成UTF8编码
   const encryptedHexStr = CryptoJS.enc.Hex.parse(ciphertext)
   ciphertext = CryptoJS.enc.Base64.stringify(encryptedHexStr)
-  const keyHex = CryptoJS.enc.Hex.parse(key) // 秘钥
-  const ivHex = CryptoJS.enc.Hex.parse(iv) // 偏移量
+  const keyHex = CryptoJS.enc.Utf8.parse(key) // 秘钥
+  const ivHex = CryptoJS.enc.Utf8.parse(iv) // 偏移量
   const decrypt = CryptoJS.AES.decrypt(ciphertext, keyHex, {
     iv: ivHex,
     mode: CryptoJS.mode.CBC,
@@ -64,4 +64,8 @@ export function deAes (key: string, iv: string, ciphertext: string) {
  */
 export function sha256 (data: string) {
   return CryptoJS.SHA256(data).toString()
+}
+
+export function md5 (data: string) {
+  return CryptoJS.MD5(data).toString()
 }

@@ -33,6 +33,12 @@ export const useUserInfoStore = defineStore('userInfo', {
     isAdmin: (state) => {
       // 目前使用 * 或者 admin 来表示超管权限
       return state.access.includes('*') || state.userId === 'admin'
+    },
+    // smtp 加密解密密钥
+    smtpPasswordSecretKeys: (state) => {
+      const key = state.secretKey
+      if (!key || key.length < 16) return [key, key]
+      return [key, key.substring(0, 16)]
     }
   },
   actions: {

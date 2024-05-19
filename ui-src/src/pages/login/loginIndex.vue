@@ -35,7 +35,7 @@ import { userLogin } from 'src/api/user'
 import { useUserInfoStore } from 'src/stores/user'
 import { notifyError } from 'src/utils/notify'
 import { resolveSvgFullName } from 'src/utils/svgHelper'
-import { sha256 } from 'src/utils/encrypt'
+import { md5 } from 'src/utils/encrypt'
 
 // 登陆界面
 const userId = ref('')
@@ -65,7 +65,7 @@ async function onUserLogin () {
   const { data: { userInfo, token, access } } = await userLogin(userId.value, password.value)
   const userInfoStore = useUserInfoStore()
   userInfoStore.setUserLoginInfo(userInfo, token, access)
-  userInfoStore.setSecretKey(sha256(password.value))
+  userInfoStore.setSecretKey(md5(password.value))
 
   console.log('登陆成功:', userInfo, token, access)
   // 跳转到主页

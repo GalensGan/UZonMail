@@ -4,6 +4,7 @@ import OkBtn from 'src/components/componentWrapper/buttons/OkBtn.vue'
 import CommonBtn from 'src/components/componentWrapper/buttons/CommonBtn.vue'
 import { notifyError, notifySuccess } from 'src/utils/notify'
 import { IEmailCreateInfo, sendEmailNow } from 'src/api/emailSending'
+import { useUserInfoStore } from 'src/stores/user'
 
 import { showComponentDialog } from 'src/components/popupDialog/PopupDialog'
 import PreviewEmailSendingBody from './components/PreviewEmailSendingBody.vue'
@@ -17,6 +18,7 @@ import SendingProgress from '../sendingProgress/SendingProgress.vue'
 export function useBottomFunctions (emailInfo: Ref<IEmailCreateInfo>) {
   // 数据验证
   const needUpload = ref(false)
+  const userInfoStore = useUserInfoStore()
 
   function validateParams () {
     console.log('email info:', emailInfo.value)
@@ -50,11 +52,10 @@ export function useBottomFunctions (emailInfo: Ref<IEmailCreateInfo>) {
   }
   async function onSendNowClick () {
     // if (!validateParams()) return
-
     console.log('email info:', emailInfo.value)
 
     // 向服务器推送数据
-    await sendEmailNow(emailInfo.value)
+    await sendEmailNow(Object.assign({ smtpPasswordSecretKeys: userInfoStore.smtpPasswordSecretKeys }, emailInfo.value))
 
     await showComponentDialog(SendingProgress, {
       title: '发送进度'
