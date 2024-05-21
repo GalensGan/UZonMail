@@ -2,7 +2,7 @@
   <q-table class="full-height" :rows="rows" :columns="columns" row-key="id" v-model:pagination="pagination" dense
     :loading="loading" :filter="filter" binary-state-sort @request="onTableRequest">
     <template v-slot:top-left>
-      <CreateBtn />
+      <div class="text-subtile1">历史发件</div>
     </template>
 
     <template v-slot:top-right>
@@ -11,7 +11,6 @@
 
     <template v-slot:body-cell-id="props">
       <QTableIndex :props="props" />
-
       <ContextMenu :items="sendingHistoryContextItems" :value="props.row" />
     </template>
 
@@ -20,10 +19,20 @@
         {{ props.value }}
       </q-td>
     </template>
+
+    <template v-slot:body-cell-status="props">
+      <q-td :props="props">
+        <q-chip v-if="props.value !== 'Sending'" dense square :label="props.value"
+          :color="getStatusColor(props.row.status)" />
+        <LinearProgress v-else :value="props.row.progress" :width="60"></LinearProgress>
+      </q-td>
+    </template>
   </q-table>
 </template>
 
 <script lang="ts" setup>
+import LinearProgress from 'src/components/Progress/LinearProgress.vue'
+
 import { QTableColumn } from 'quasar'
 import { useQTable, useQTableIndex } from 'src/compositions/qTableUtils'
 import { IRequestPagination, TTableFilterObject } from 'src/compositions/types'
@@ -34,6 +43,13 @@ import { getSendingGroupsCount, getEmailTemplatesData, SendingGroupStatus, Sendi
 const { indexColumn, QTableIndex } = useQTableIndex()
 const columns: QTableColumn[] = [
   indexColumn,
+  {
+    name: 'id',
+    label: 'ID',
+    align: 'left',
+    field: 'id',
+    sortable: true
+  },
   {
     name: 'subjects',
     required: true,
@@ -123,9 +139,37 @@ const { pagination, rows, filter, onTableRequest, loading } = useQTable({
   onRequest
 })
 
+// 右键菜单
 import ContextMenu from 'src/components/contextMenu/ContextMenu.vue'
 import { useContextMenu } from './sendingHistoryContext'
 const { sendingHistoryContextItems } = useContextMenu()
+
+/**
+ * 进度与状态显示
+ */
+
+// 获取状态颜色
+function getStatusColor (status: number): string {
+  switch (status) {
+    case SendingGroupStatus.Cancel:
+      return 'negative'
+    case SendingGroupStatus.Pause:
+      return 'warning'
+    case SendingGroupStatus.Scheduled:
+    case SendingGroupStatus.Finish:
+    case SendingGroupStatus.Created:
+      return 'primary'
+    default:
+      return 'accent'
+  }
+}
+// 注册进度获取回调
+import { subscribeOne } from 'src/signalR/signalR'
+import { UzonMailClientMethods } from 'src/signalR/types'
+function onSendingGroupProgressChanged () {
+
+}
+subscribeOne(UzonMailClientMethods.SendingGroupProgressChanged, onSendingGroupProgressChanged)
 </script>
 
 <style lang="scss" scoped></style>

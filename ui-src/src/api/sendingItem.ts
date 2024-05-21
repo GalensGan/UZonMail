@@ -11,6 +11,31 @@ export interface ISendingGroup {
   SendResult?: string
 }
 
+/// <summary>
+/// 邮件状态
+/// </summary>
+export enum SendingItemStatus {
+  /// <summary>
+  /// 初始状态
+  /// </summary>
+  Created,
+
+  /// <summary>
+  /// 发送状态
+  /// </summary>
+  Sending,
+
+  /// <summary>
+  /// 发送成功
+  /// </summary>
+  Success,
+
+  /// <summary>
+  /// 发送失败
+  /// </summary>
+  Failed,
+}
+
 /**
  * 获取模板数量
  * @param filter

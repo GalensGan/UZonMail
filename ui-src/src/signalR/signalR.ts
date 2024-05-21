@@ -2,6 +2,7 @@
 import * as signalR from '@microsoft/signalr'
 import { useConfig } from 'src/config'
 import { useUserInfoStore } from 'src/stores/user'
+import { UzonMailClientMethods } from './types'
 
 export interface ISignalRs {
   sendingProgressHub?: signalR.HubConnection
@@ -36,62 +37,63 @@ export function useSendEmailHub () {
   // signal.on('SendAll', (res) => {
   //   console.log(res, '收到消息')
   // })
-  signal.start().then(() => {
-    // if (window.Notification) {
-    //   if (Notification.permission === 'granted') {
-    //     console.log('允许通知')
-    //   } else if (Notification.permission !== 'denied') {
-    //     console.log('需要通知权限')
-    //     Notification.requestPermission((permission) => { console.log('权限通知', permission) })
-    //   } else if (Notification.permission === 'denied') {
-    //     console.log('拒绝通知')
-    //   }
-    // } else {
-    //   console.error('浏览器不支持Notification')
-    // }
-    console.log('连接成功')
-  })
+
   signal.onclose((err) => {
     console.log('连接已经断开 执行函数onclose', err)
     signalRs.sendingProgressHub = undefined
   })
 
+  signal.start().then(() => {
+    console.log('signalR 连接成功')
+  })
+
   signalRs.sendingProgressHub = signal
+
   return signal
 }
 
 /**
  * 向服务器订阅通信
- * @param methodName
- * @param newMethod
+ * 在 setup 中调用，当组件销毁时会自动取消订阅
+ * @param methodEnum
+ * @param callback
  * @returns
  */
-export function subscribeOne (methodName: string, newMethod: (...args: any[]) => any): void {
+export function subscribeOne (methodEnum: UzonMailClientMethods, callback: (...args: any[]) => any): void {
   const hub = useSendEmailHub()
   if (!hub) return
 
+  const methodName = UzonMailClientMethods[methodEnum]
   onMounted(async () => {
-    hub.on(methodName, newMethod)
+    console.log('订阅事件', methodName)
+    // hub.on(methodName, callback)
+    hub.on(methodName, callback)
   })
 
-  onUnmounted(() => {
-    hub.off(methodName, newMethod)
+  onUnmounted(async () => {
+    console.log('取消订阅事件', methodName)
+    hub.off(methodName, callback)
   })
 }
 
 /**
  * 只订阅一次
  */
-export function subscribeOnce (methodName: string, newMethod: (...args: any[]) => any): void {
+export function subscribeOnce (methodEnum: UzonMailClientMethods, callbackFunc: (...args: any[]) => any): void {
   const hub = useSendEmailHub()
   if (!hub) return
 
-  function methodCore (...args: any[]): any {
-    newMethod(...args)
+  const methodName = UzonMailClientMethods[methodEnum]
+
+  async function methodCore (...args: any[]): any {
+    await callbackFunc(...args)
+    const hub = useSendEmailHub()
+    if (!hub) return
+
     hub.off(methodName, methodCore)
   }
 
-  onMounted(async () => {
+  onMounted(() => {
     hub.on(methodName, methodCore)
   })
 
@@ -100,24 +102,27 @@ export function subscribeOnce (methodName: string, newMethod: (...args: any[]) =
   })
 }
 
+/**
+ * 订阅信息
+ */
 export interface ISubscribeInfo {
   methodName: string
-  newMethod: (...args: any[]) => any
+  callback: (...args: any[]) => any
 }
 
 export function subscribeMany (subscribeInfos: ISubscribeInfo[]) {
   const hub = useSendEmailHub()
   if (!hub) return
 
-  onMounted(async () => {
-    for (const { methodName, newMethod } of subscribeInfos) {
-      hub.on(methodName, newMethod)
+  onMounted(() => {
+    for (const { methodName, callback } of subscribeInfos) {
+      hub.on(methodName, callback)
     }
   })
 
   onUnmounted(() => {
-    for (const { methodName, newMethod } of subscribeInfos) {
-      hub.off(methodName, newMethod)
+    for (const { methodName, callback } of subscribeInfos) {
+      hub.off(methodName, callback)
     }
   })
 }

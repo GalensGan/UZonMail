@@ -1,5 +1,5 @@
 <template>
-  <q-dialog ref='dialogRef' :persistent='true'>
+  <q-dialog ref='dialogRef' @hide="onDialogHide" :persistent='true'>
     <q-card class='column no-wrap q-pa-sm zero-height' style="min-width: 500px; min-height: 400px;">
       <div class="col row items-start">
         <EmailGroupList v-model="emailGroupRef" :extra-items="categoryTopItems" readonly :groupType="groupType"
@@ -62,7 +62,7 @@ defineEmits([
   // （组件将通过useDialogPluginComponent()发出）
   ...useDialogPluginComponent.emits
 ])
-const { dialogRef, onDialogOK, onDialogCancel } = useDialogPluginComponent()
+const { dialogRef, onDialogHide, onDialogOK, onDialogCancel } = useDialogPluginComponent()
 
 // 分类列表
 import EmailGroupList from 'pages/emailManage/components/EmailGroupList.vue'

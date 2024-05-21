@@ -1,5 +1,5 @@
 <template>
-  <q-dialog ref='dialogRef'>
+  <q-dialog ref='dialogRef' @hide="onDialogHide">
     <q-card class='column items-center items-start'>
       <SendingDetailTable :sending-group-id="props.sendingGroupId" />
     </q-card>
@@ -18,7 +18,7 @@ defineEmits([
   // （组件将通过useDialogPluginComponent()发出）
   ...useDialogPluginComponent.emits
 ])
-const { dialogRef /* , onDialogOK, onDialogCancel */ } = useDialogPluginComponent()
+const { dialogRef, onDialogHide /* , onDialogOK, onDialogCancel */ } = useDialogPluginComponent()
 
 const props = defineProps({
   sendingGroupId: {

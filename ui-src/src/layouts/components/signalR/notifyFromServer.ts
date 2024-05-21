@@ -1,4 +1,5 @@
-import { useSendEmailHub } from 'src/compositions/signalR'
+import { subscribeOne } from 'src/signalR/signalR'
+import { UzonMailClientMethods } from 'src/signalR/types'
 import { notifyAny } from 'src/utils/notify'
 
 export interface INotifyMessage {
@@ -10,20 +11,12 @@ export interface INotifyMessage {
 /**
  * 从服务器接收通知
  */
-export function useNotifyRegister () {
+export async function useNotifyRegister () {
   function receivedNotify (message: INotifyMessage) {
     console.log('receive message from server', message)
 
     notifyAny(message)
   }
 
-  onMounted(() => {
-    const signal = useSendEmailHub()
-    signal.on('notify', receivedNotify)
-  })
-
-  onUnmounted(() => {
-    const signal = useSendEmailHub()
-    signal.off('notify', receivedNotify)
-  })
+  subscribeOne(UzonMailClientMethods.notify, receivedNotify)
 }

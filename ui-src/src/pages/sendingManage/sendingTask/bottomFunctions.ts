@@ -55,14 +55,17 @@ export function useBottomFunctions (emailInfo: Ref<IEmailCreateInfo>) {
     console.log('email info:', emailInfo.value)
 
     // 向服务器推送数据
-    await sendEmailNow(Object.assign({ smtpPasswordSecretKeys: userInfoStore.smtpPasswordSecretKeys }, emailInfo.value))
+    const condition = false
+    if (condition) {
+      await sendEmailNow(Object.assign({ smtpPasswordSecretKeys: userInfoStore.smtpPasswordSecretKeys }, emailInfo.value))
+    }
+
+    // 将数据传到后台发送
+    notifySuccess('开始发送...')
 
     await showComponentDialog(SendingProgress, {
       title: '发送进度'
     })
-
-    // 将数据传到后台发送
-    notifySuccess('开始发送...')
   }
 
   // 定时发送

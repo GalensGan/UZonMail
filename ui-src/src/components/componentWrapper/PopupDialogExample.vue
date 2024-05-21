@@ -1,7 +1,7 @@
 <template>
-  <q-dialog ref="dialogRef" :persistent="true">
+  <q-dialog ref="dialogRef" :persistent="false">
     <q-card class="column items-center items-start">
-
+      this is dialog example
     </q-card>
   </q-dialog>
 </template>

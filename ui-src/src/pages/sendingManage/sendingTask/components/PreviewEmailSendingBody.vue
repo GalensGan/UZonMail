@@ -1,5 +1,5 @@
 <template>
-  <q-dialog ref='dialogRef'>
+  <q-dialog ref='dialogRef' @hide="onDialogHide">
     <q-card class='column justify-start q-pa-sm width-600 height-400'>
       <div class="text-subtitle1 text-primary">
         主题：{{ emailSubject }}
@@ -33,9 +33,9 @@ defineEmits([
   // （组件将通过useDialogPluginComponent()发出）
   ...useDialogPluginComponent.emits
 ])
-const { dialogRef /* , onDialogOK, onDialogCancel */ } = useDialogPluginComponent()
+const { dialogRef, onDialogHide /* , onDialogOK, onDialogCancel */ } = useDialogPluginComponent()
 
-import { IEmailCreateInfo } from '../bottomFunctions'
+import { IEmailCreateInfo } from 'src/api/emailSending'
 const props = defineProps({
   emailCreateInfo: {
     type: Object as PropType<IEmailCreateInfo>,

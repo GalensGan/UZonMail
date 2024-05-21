@@ -1,16 +1,22 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { IContextMenuItem } from 'src/components/contextMenu/types'
-import { showComponentDialog } from 'src/components/popupDialog/PopupDialog'
-import SendDetailDialog from './SendDetailDialog.vue'
+// import { showComponentDialog } from 'src/components/popupDialog/PopupDialog'
+// import SendDetailDialog from './SendDetailDialog.vue'
 
 /**
  * 添加右键菜单
  */
 export function useContextMenu () {
+  const router = useRouter()
   // 打开发件明细
   async function openSendDetailDialog (data: Record<string, any>) {
-    await showComponentDialog(SendDetailDialog, {
-      sendingGroupId: data.id
+    // 跳转到发件明细页面
+    router.push({
+      name: 'SendDetailTable',
+      query: {
+        sendingGroupId: data.id,
+        tagName: data.id
+      }
     })
   }
 

@@ -120,13 +120,13 @@ export const dynamicRoutes: ExtendedRouteRecordRaw[] = [
   },
   {
     name: 'SendManage',
-    path: '/send-manage',
+    path: '/send-management',
     component: NormalLayout,
     meta: {
       label: '发件管理',
       icon: 'send'
     },
-    redirect: '/send-manage/new-task',
+    redirect: '/send-management/new-task',
     children: [
       {
         name: 'sendingTask',
@@ -142,9 +142,19 @@ export const dynamicRoutes: ExtendedRouteRecordRaw[] = [
         path: 'history',
         meta: {
           icon: 'schedule_send',
-          label: '发件历史'
+          label: '历史发件'
         },
         component: () => import('pages/sendingManage/sendHistory/sendHistory.vue')
+      },
+      {
+        name: 'SendDetailTable',
+        path: 'task-detail',
+        meta: {
+          noMenu: true,
+          icon: 'schedule_send',
+          label: '发件明细'
+        },
+        component: () => import('pages/sendingManage/sendHistory/SendDetailTable.vue')
       }
     ]
   },

@@ -1,6 +1,17 @@
 <template>
   <q-table class="full-height full-width" :rows="rows" :columns="columns" row-key="id" v-model:pagination="pagination"
     dense :loading="loading" :filter="filter" binary-state-sort @request="onTableRequest">
+    <template v-slot:top-left>
+      <div class="row justify-start items-center">
+        <q-btn dense icon="west" class="q-mr-sm" flat size="sm" @click="goBackToSendHistory">
+          <q-tooltip>
+            返回到历史发件
+          </q-tooltip>
+        </q-btn>
+        <div class="text-subtitle1">发件明细</div>
+      </div>
+    </template>
+
     <template v-slot:top-right>
       <SearchInput v-model="filter" />
     </template>
@@ -26,10 +37,14 @@ const vueProps = defineProps({
   }
 })
 
+const sendingGroupId = ref(vueProps.sendingGroupId)
+
 import { QTableColumn } from 'quasar'
 import { useQTable, useQTableIndex } from 'src/compositions/qTableUtils'
 import { IRequestPagination, TTableFilterObject } from 'src/compositions/types'
 import SearchInput from 'src/components/searchInput/SearchInput.vue'
+
+import { getSendingItemsCount, getSendingItemsData, SendingItemStatus } from 'src/api/sendingItem'
 
 const { indexColumn, QTableIndex } = useQTableIndex()
 const columns: QTableColumn[] = [
@@ -64,15 +79,8 @@ const columns: QTableColumn[] = [
     label: '状态',
     align: 'left',
     field: 'status',
-    sortable: true
-  },
-  {
-    name: 'sendResult',
-    required: true,
-    label: '发送结果',
-    align: 'left',
-    field: 'sendResult',
-    sortable: true
+    sortable: true,
+    format: v => SendingItemStatus[v]
   },
   {
     name: 'sendDate',
@@ -87,22 +95,37 @@ const columns: QTableColumn[] = [
   }
 ]
 
-import { getSendingItemsCount, getSendingItemsData } from 'src/api/sendingItem'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function getRowsNumberCount (filterObj: TTableFilterObject) {
-  const { data } = await getSendingItemsCount(vueProps.sendingGroupId, filterObj.filter)
+  const { data } = await getSendingItemsCount(sendingGroupId.value, filterObj.filter)
   return data || 0
 }
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function onRequest (filterObj: TTableFilterObject, pagination: IRequestPagination) {
-  const { data } = await getSendingItemsData(vueProps.sendingGroupId, filterObj.filter, pagination)
+  const { data } = await getSendingItemsData(sendingGroupId.value, filterObj.filter, pagination)
   return data || []
 }
 
-const { pagination, rows, filter, onTableRequest, loading } = useQTable({
+const { pagination, rows, filter, onTableRequest, loading, refreshTable } = useQTable({
   getRowsNumberCount,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onRequest
+})
+
+import { removeHistory } from 'src/layouts/components/tags/routeHistories'
+import { IRouteHistory } from 'src/layouts/components/tags/types'
+const router = useRouter()
+function goBackToSendHistory () {
+  removeHistory(router, route as unknown as IRouteHistory, '/send-management/history')
+}
+
+// 从路由中获取id
+const route = useRoute()
+onMounted(async () => {
+  if (!route.query.sendingGroupId) return
+  sendingGroupId.value = Number(route.query.sendingGroupId)
+  // 触发更新
+  refreshTable()
 })
 </script>
 
