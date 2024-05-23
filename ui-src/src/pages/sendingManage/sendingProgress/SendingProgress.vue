@@ -79,14 +79,15 @@ async function onEmailGroupSendingProgressChanged (progress: ISendingGroupProgre
 
   // 更新进度
   progressValue.value = progress.current / progress.total
-
-  if (progress.total === progress.current) {
-    // 关闭弹窗
-    onDialogCancel()
-    notifySuccess('发送完成')
-  }
 }
-subscribeOne(UzonMailClientMethods.SendingGroupProgressChanged, onEmailGroupSendingProgressChanged)
+subscribeOne(UzonMailClientMethods.sendingGroupProgressChanged, onEmailGroupSendingProgressChanged)
+// 注册结束发件
+function onGroupEndSending () {
+  // 关闭弹窗
+  onDialogCancel()
+  notifySuccess('发送完成')
+}
+subscribeOne(UzonMailClientMethods.groupEndSending, onGroupEndSending)
 
 // 取消发件
 async function OnCancelSending () {

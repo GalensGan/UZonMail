@@ -21,8 +21,8 @@
 
     <q-page-container class="page-container">
       <q-page class="q-px-md q-pb-md full-height full-with">
-        <q-scroll-area class="full-height full-with" :thumb-style="thumbStyle" :content-style="contentStyle"
-          :content-active-style="contentActiveStyle">
+        <q-scroll-area class="page__scroll-area full-height full-with" :thumb-style="thumbStyle"
+          :content-style="contentStyle" :content-active-style="contentActiveStyle">
           <!--参考：https://juejin.cn/post/7083793875390693383-->
           <router-view v-slot="{ Component }">
             <transition appear enter-active-class="animated fadeInDown">
@@ -84,5 +84,11 @@ const { contentStyle, contentActiveStyle, thumbStyle } = useScrollAreaStyle()
   bottom: 0px;
   right: 0px;
   background-color: $grey-12;
+
+  .page__scroll-area {
+    :deep(.q-scrollarea__content) {
+      width: 100%;
+    }
+  }
 }
 </style>

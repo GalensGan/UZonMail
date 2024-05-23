@@ -154,7 +154,7 @@ export function useQTable (initParams: IQTableInitParams) {
 export function useQTableIndex () {
   // 序号
   const indexColumn: QTableColumn = {
-    name: 'id',
+    name: 'index',
     label: '序号',
     align: 'left',
     field: v => v

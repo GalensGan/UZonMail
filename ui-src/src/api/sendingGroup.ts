@@ -100,3 +100,20 @@ export function getEmailTemplatesData (filter: string | undefined, pagination: I
     data: pagination
   })
 }
+
+export interface IRunningSendingGroup {
+  id: number
+  subjects: string
+  progress: number,
+  totalCount: number,
+  sentCount: number,
+  successCount?: number
+}
+
+/**
+ * 获取正在执行的发送组
+ * @returns
+ */
+export function getRunningSendingGroups () {
+  return httpClient.get<IRunningSendingGroup[]>('/sending-group/running')
+}

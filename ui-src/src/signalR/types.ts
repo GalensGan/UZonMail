@@ -5,10 +5,20 @@
 export enum UzonMailClientMethods {
   notify,
 
-  sendingGroupTotalProgressChanged,
-  SendingGroupProgressChanged,
+  userSendingProgressChanged,
+  sendingGroupProgressChanged,
   sendingItemProgressChanged,
+  groupStartSending,
+  groupEndSending,
+
   sendError,
+}
+
+export interface IUserSendingProgressArg {
+  startDate: string,
+  total: number,
+  current: number,
+  message?: string
 }
 
 export interface ISendingGroupProgressArg {
@@ -16,5 +26,28 @@ export interface ISendingGroupProgressArg {
   sendingGroupId: number,
   total: number,
   current: number,
+  message?: string
+}
+
+/**
+ * 开始发件参数
+ */
+export interface IGroupStartSendingArg {
+  startDate: string,
+  sendingGroupId: number,
+  subjects: string,
+  total: number,
+  current: number,
+  message?: string
+}
+
+/**
+ * 结束发件
+ */
+export interface IGroupEndSendingArg {
+  startDate: string,
+  sendingGroupId: number,
+  total: number,
+  success: number,
   message?: string
 }

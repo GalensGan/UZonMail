@@ -124,7 +124,40 @@
   width: 600px;
 }
 
+.max-width-200 {
+  max-width: 200px;
+}
+.max-width-300 {
+  max-width: 300px;
+}
+
 // 透明背景
 .bg-transparent {
   background-color: transparent;
+}
+
+// warning: 使用该css时，需要将文本包裹在 <span dir="ltr">{{ props.value }}</span> 里，否则数字+空格开头会粘在文本的末尾
+.ellipsis-left {
+  /* Standard CSS ellipsis */
+  white-space: nowrap; // 让文字显示成一行
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  /* Beginning of string */
+  direction: rtl;
+  text-align: left;
+}
+
+.ellipsis {
+  /* Standard CSS ellipsis */
+  white-space: nowrap; // 让文字显示成一行
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// 实现placeholder效果
+[contentEditable='true']:empty:before {
+  content: attr(placeholder);
+  color: #b3b3b3;
+  cursor: text;
 }

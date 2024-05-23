@@ -17,7 +17,7 @@
         <SearchInput v-model="filter" />
       </template>
 
-      <template v-slot:body-cell-id="props">
+      <template v-slot:body-cell-index="props">
         <QTableIndex :props="props" />
       </template>
 

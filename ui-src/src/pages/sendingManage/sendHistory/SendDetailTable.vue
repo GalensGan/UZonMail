@@ -16,7 +16,7 @@
       <SearchInput v-model="filter" />
     </template>
 
-    <template v-slot:body-cell-id="props">
+    <template v-slot:body-cell-index="props">
       <QTableIndex :props="props" />
     </template>
 
@@ -127,6 +127,38 @@ onMounted(async () => {
   // 触发更新
   refreshTable()
 })
+
+// #region 发件进度相关
+import { subscribeOne } from 'src/signalR/signalR'
+import { UzonMailClientMethods } from 'src/signalR/types'
+
+const isEmailSending = ref(false)
+onMounted(async () => {
+  // 读取初始状态
+})
+// 注册开始发件状态
+function onGroupStartSending () {
+  isEmailSending.value = true
+}
+subscribeOne(UzonMailClientMethods.groupStartSending, onGroupStartSending)
+// 注册结束发件状态
+function onGroupEndSending () {
+  isEmailSending.value = false
+}
+subscribeOne(UzonMailClientMethods.groupEndSending, onGroupEndSending)
+
+// 注册单个邮件发送进度回调
+function onSendingItemProgressChanged () {
+
+}
+subscribeOne(UzonMailClientMethods.sendingItemProgressChanged, onSendingItemProgressChanged)
+// 注册所有邮件发送组进度回调
+function onSendingGroupProgressChanged () {
+
+}
+subscribeOne(UzonMailClientMethods.sendingGroupProgressChanged, onSendingGroupProgressChanged)
+// 注册邮件组开始发件回调，主要用于计划型的发件
+// #endregion
 </script>
 
 <style lang="scss" scoped></style>

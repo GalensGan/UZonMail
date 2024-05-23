@@ -9,7 +9,7 @@
       <SearchInput v-model="filter" />
     </template>
 
-    <template v-slot:body-cell-id="props">
+    <template v-slot:body-cell-index="props">
       <QTableIndex :props="props" />
       <ContextMenu :items="sendingHistoryContextItems" :value="props.row" />
     </template>
@@ -169,7 +169,7 @@ import { UzonMailClientMethods } from 'src/signalR/types'
 function onSendingGroupProgressChanged () {
 
 }
-subscribeOne(UzonMailClientMethods.SendingGroupProgressChanged, onSendingGroupProgressChanged)
+subscribeOne(UzonMailClientMethods.sendingGroupProgressChanged, onSendingGroupProgressChanged)
 </script>
 
 <style lang="scss" scoped></style>
