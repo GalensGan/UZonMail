@@ -22,7 +22,7 @@ import LinearProgress from 'src/components/Progress/LinearProgress.vue'
 
 // 打开详细进度弹窗
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-import { IRunningSendingGroup, getRunningSendingGroups } from 'src/api/sendingGroup'
+import { IRunningSendingGroup, getRunningSendingGroups, getSendingGroupSubjects } from 'src/api/sendingGroup'
 const sendingGroups: Ref<IRunningSendingGroup[]> = ref([])
 const showMore = ref(false)
 watch(sendingGroups, () => {
@@ -65,41 +65,34 @@ function showSendingGroupDetail (sendingGroupInfo: IRunningSendingGroup) {
 import { useNotifyRegister } from './notifyFromServer'
 useNotifyRegister()
 
-// 注册总进度回调
+// 注册进度回调
 import { subscribeOne } from 'src/signalR/signalR'
-import { IGroupEndSendingArg, IGroupStartSendingArg, ISendingGroupProgressArg, IUserSendingProgressArg, UzonMailClientMethods } from 'src/signalR/types'
-function onUserSendingProgressChanged (arg: IUserSendingProgressArg) {
-  // 更新进度条
-  progressValue.value = arg.current / arg.total
-}
-subscribeOne(UzonMailClientMethods.userSendingProgressChanged, onUserSendingProgressChanged)
-
+import { IGroupEndSendingArg, ISendingGroupProgressArg, UzonMailClientMethods } from 'src/signalR/types'
 // 注册单个发件组进度回调
-function onSendingGroupProgressChanged (arg: ISendingGroupProgressArg) {
+async function onSendingGroupProgressChanged (arg: ISendingGroupProgressArg) {
   // 更新单个进度
-  const index = sendingGroups.value.findIndex(item => item.id === arg.sendingGroupId)
-  if (index < 0) return
+  const group = sendingGroups.value.find(item => item.id === arg.sendingGroupId)
+  if (!group) {
+    // 获取组的主题
+    const { data: subjects } = await getSendingGroupSubjects(arg.sendingGroupId)
+    // 向里面添加值
+    sendingGroups.value.push({
+      id: arg.sendingGroupId,
+      subjects,
+      progress: arg.current / arg.total,
+      totalCount: arg.total,
+      sentCount: arg.current,
+      successCount: arg.successCount
+    })
+    return
+  }
 
   // 更新值
-  sendingGroups.value[index].totalCount = arg.total
-  sendingGroups.value[index].sentCount = arg.current
-  sendingGroups.value[index].progress = arg.current * 1.0 / arg.total
+  group.totalCount = arg.total
+  group.sentCount = arg.current
+  group.progress = arg.current * 1.0 / arg.total
 }
 subscribeOne(UzonMailClientMethods.sendingGroupProgressChanged, onSendingGroupProgressChanged)
-
-// 注册开始发件
-function onGroupStartSending (arg: IGroupStartSendingArg) {
-  // 添加到发送组列表
-  sendingGroups.value.push({
-    id: arg.sendingGroupId,
-    subjects: arg.subjects,
-    progress: 0,
-    totalCount: arg.total,
-    sentCount: arg.current,
-    successCount: 0
-  })
-}
-subscribeOne(UzonMailClientMethods.groupStartSending, onGroupStartSending)
 // 注册结束发件
 function onGroupEndSending (arg: IGroupEndSendingArg) {
   const index = sendingGroups.value.findIndex(item => item.id === arg.sendingGroupId)

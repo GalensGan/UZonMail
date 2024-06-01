@@ -107,7 +107,8 @@ export interface IRunningSendingGroup {
   progress: number,
   totalCount: number,
   sentCount: number,
-  successCount?: number
+  successCount?: number,
+  status?: number
 }
 
 /**
@@ -116,4 +117,31 @@ export interface IRunningSendingGroup {
  */
 export function getRunningSendingGroups () {
   return httpClient.get<IRunningSendingGroup[]>('/sending-group/running')
+}
+
+/**
+ * 获取发送组中的 subjects 值
+ * @param sendingGroupId
+ * @returns
+ */
+export function getSendingGroupSubjects (sendingGroupId: number) {
+  return httpClient.get<string>(`/sending-group/${sendingGroupId}/subjects`)
+}
+
+export interface ISendingGroupStatusInfo {
+  id: number
+  progress: number,
+  totalCount: number,
+  sentCount: SendingGroupStatus,
+  successCount?: number,
+  status?: number
+}
+
+/**
+ * 获取发送组中的 subjects 值
+ * @param sendingGroupId
+ * @returns
+ */
+export function getSendingGroupRunningInfo (sendingGroupId: number) {
+  return httpClient.get<ISendingGroupStatusInfo>(`/sending-group/${sendingGroupId}/status-info`)
 }

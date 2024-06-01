@@ -2,13 +2,16 @@
   <q-table class="full-height full-width" :rows="rows" :columns="columns" row-key="id" v-model:pagination="pagination"
     dense :loading="loading" :filter="filter" binary-state-sort @request="onTableRequest">
     <template v-slot:top-left>
-      <div class="row justify-start items-center">
+      <div class="row justify-start items-center q-gutter-sm">
         <q-btn dense icon="west" class="q-mr-sm" flat size="sm" @click="goBackToSendHistory">
           <q-tooltip>
             返回到历史发件
           </q-tooltip>
         </q-btn>
         <div class="text-subtitle1">发件明细</div>
+
+        <LinearProgress v-if="showProgressBar" :value="sendingGroupProgressValue" :width="160">
+        </LinearProgress>
       </div>
     </template>
 
@@ -65,14 +68,17 @@ const columns: QTableColumn[] = [
     field: 'fromEmail',
     sortable: true
   },
-  // {
-  //   name: 'inboxes',
-  //   required: true,
-  //   label: '收件箱',
-  //   align: 'left',
-  //   field: 'inboxes',
-  //   sortable: true
-  // },
+  {
+    name: 'inboxes',
+    required: true,
+    label: '收件箱',
+    align: 'left',
+    field: 'inboxes',
+    sortable: true,
+    format: v => {
+      return v.map((e: { email: string }) => e.email).join(';')
+    }
+  },
   {
     name: 'status',
     required: true,
@@ -129,35 +135,41 @@ onMounted(async () => {
 })
 
 // #region 发件进度相关
+import LinearProgress from 'src/components/Progress/LinearProgress.vue'
 import { subscribeOne } from 'src/signalR/signalR'
-import { UzonMailClientMethods } from 'src/signalR/types'
-
-const isEmailSending = ref(false)
+import { IGroupEndSendingArg, ISendingGroupProgressArg, ISendingItemStatusChangedArg, UzonMailClientMethods } from 'src/signalR/types'
+import { getSendingGroupRunningInfo, SendingGroupStatus } from 'src/api/sendingGroup'
+const sendingGroupProgressValue = ref(-1)
+const showProgressBar = computed(() => sendingGroupProgressValue.value >= 0)
 onMounted(async () => {
   // 读取初始状态
+  const { data } = await getSendingGroupRunningInfo(sendingGroupId.value)
+  if (data.status !== SendingGroupStatus.Sending) return
+  sendingGroupProgressValue.value = data.sentCount / data.totalCount
 })
-// 注册开始发件状态
-function onGroupStartSending () {
-  isEmailSending.value = true
-}
-subscribeOne(UzonMailClientMethods.groupStartSending, onGroupStartSending)
 // 注册结束发件状态
-function onGroupEndSending () {
-  isEmailSending.value = false
+function onGroupEndSending (arg: IGroupEndSendingArg) {
+  if (arg.sendingGroupId !== sendingGroupId.value) return
+  sendingGroupProgressValue.value = -1
 }
 subscribeOne(UzonMailClientMethods.groupEndSending, onGroupEndSending)
-
 // 注册单个邮件发送进度回调
-function onSendingItemProgressChanged () {
+function onSendingItemStatusChanged (arg: ISendingItemStatusChangedArg) {
+  // 更新单个进度
+  const row = rows.value.find(r => r.id === arg.sendingItemId)
+  if (!row) return
 
+  // 更新参数
+  Object.assign(row, arg)
 }
-subscribeOne(UzonMailClientMethods.sendingItemProgressChanged, onSendingItemProgressChanged)
-// 注册所有邮件发送组进度回调
-function onSendingGroupProgressChanged () {
-
+subscribeOne(UzonMailClientMethods.sendingItemStatusChanged, onSendingItemStatusChanged)
+// 注册由件组的发送进度
+function onSendingGroupProgressChanged (arg: ISendingGroupProgressArg) {
+  // 更新总进度
+  if (arg.sendingGroupId !== sendingGroupId.value) return
+  sendingGroupProgressValue.value = arg.current / arg.total
 }
 subscribeOne(UzonMailClientMethods.sendingGroupProgressChanged, onSendingGroupProgressChanged)
-// 注册邮件组开始发件回调，主要用于计划型的发件
 // #endregion
 </script>
 

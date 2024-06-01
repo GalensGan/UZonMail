@@ -131,6 +131,7 @@ export default class HttpClient {
    */
   async get<R, D = any> (url: string, config?: IAxiosRequestConfig<D>): Promise<IResponseData<R>> {
     // 从 cache 中获取值
+    // 如果包含 key,则从缓存中获取
     const { ok, data } = getDataFromCache<R, D>(url, config)
     if (ok) {
       return {
@@ -140,6 +141,7 @@ export default class HttpClient {
         ok: true
       }
     }
+
     const responseData = await this._axios.get<R, AxiosResponse<IResponseData<R>, D>, D>(url, config)
     const dataResult = this.destructureAxiosResponse(responseData)
 

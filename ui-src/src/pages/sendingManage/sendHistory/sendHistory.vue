@@ -24,7 +24,7 @@
       <q-td :props="props">
         <q-chip v-if="props.value !== 'Sending'" dense square :label="props.value"
           :color="getStatusColor(props.row.status)" />
-        <LinearProgress v-else :value="props.row.progress" :width="60"></LinearProgress>
+        <LinearProgress class="full-width" v-else :value="props.row.progress" :width="60"></LinearProgress>
       </q-td>
     </template>
   </q-table>
@@ -72,7 +72,7 @@ const columns: QTableColumn[] = [
     name: 'status',
     required: true,
     label: '状态',
-    align: 'left',
+    align: 'center',
     field: 'status',
     sortable: true,
     format: v => SendingGroupStatus[v]
@@ -94,7 +94,7 @@ const columns: QTableColumn[] = [
   {
     name: 'totalCount',
     required: true,
-    label: '收件数',
+    label: '收件箱数',
     align: 'left',
     field: 'totalCount',
     sortable: true
@@ -132,7 +132,7 @@ async function onRequest (filterObj: TTableFilterObject, pagination: IRequestPag
 }
 
 const { pagination, rows, filter, onTableRequest, loading } = useQTable({
-  sortBy: 'createDate',
+  sortBy: 'id',
   descending: true,
   getRowsNumberCount,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -165,9 +165,15 @@ function getStatusColor (status: number): string {
 }
 // 注册进度获取回调
 import { subscribeOne } from 'src/signalR/signalR'
-import { UzonMailClientMethods } from 'src/signalR/types'
-function onSendingGroupProgressChanged () {
+import { ISendingGroupProgressArg, UzonMailClientMethods } from 'src/signalR/types'
+// 进度变化
+function onSendingGroupProgressChanged (arg: ISendingGroupProgressArg) {
+  const row = rows.value.find(r => r.id === arg.sendingGroupId)
+  if (!row) return
 
+  row.successCount = arg.successCount
+  // 更新进度
+  row.progress = arg.current * 1.0 / arg.total
 }
 subscribeOne(UzonMailClientMethods.sendingGroupProgressChanged, onSendingGroupProgressChanged)
 </script>

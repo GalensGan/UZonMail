@@ -67,7 +67,7 @@ function getSubjects () {
   // 通过分号，换行符进行分隔
   // 先将所有的 ; 和 ； 替换为 \n
   const regex = /;|；/gm
-  const subject = props.emailCreateInfo.subject.replace(regex, '\n')
+  const subject = props.emailCreateInfo.subjects.replace(regex, '\n')
   return subject.split('\n').filter(x => x)
 }
 const subjects = getSubjects()

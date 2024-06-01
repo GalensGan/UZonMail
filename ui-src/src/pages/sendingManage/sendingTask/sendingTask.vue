@@ -14,11 +14,11 @@
     <SelectEmailBox v-model="emailInfo.outboxes" :emailBoxType="0" icon="directions_run" label="发件人" class="q-mb-sm"
       icon-color="secondary" placeholder="请选择发件箱 (必须)" />
 
-    <SelectEmailBox v-model="emailInfo.inboxes" :emailBoxType="1" icon="settings_accessibility" label="收件人"
+    <SelectEmailBox v-model="emailInfo.inboxes" :emailBoxType="1" icon="hail" label="收件人"
       placeholder="请选择收件箱 (必须)" class="q-mb-sm" />
 
     <SelectEmailBox v-model="emailInfo.ccBoxes" :emailBoxType="1" icon="settings_accessibility" label="抄送人"
-      placeholder="请选择抄送人 (可选)" class="q-mb-sm" />
+      placeholder="请选择抄送人 (可选)" class="q-mb-sm" icon-color="secondary"/>
 
     <q-editor v-model="emailInfo.body" :definitions="editorDefinitions" :toolbar="editorToolbar"
       class="column no-wrap q-pa-xs flex q-ma-sm" style="max-height: 300px;"

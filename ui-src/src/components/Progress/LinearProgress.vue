@@ -30,4 +30,8 @@ const progressLabel = computed(() => `${(value.value * 100).toFixed(2)}%`)
 const styleObject = computed(() => ({ width: `min(${props.width}px, 100vw)`, borderRadius: `${props.borderRadius}px` }))
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.uzon-linear-progress {
+  font-size: unset;
+}
+</style>

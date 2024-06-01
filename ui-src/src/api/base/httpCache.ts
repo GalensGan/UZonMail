@@ -69,8 +69,8 @@ export default cacheManager
  * 并添加到缓存管理器中
  */
 export function createHttpCache () {
-  const uniqueId = `${Date.now()}_${Math.random().toString(16).substring(2)}`
-  const cacheStore = new HttpCache(uniqueId)
+  const cacheKey = `${Date.now()}_${Math.random().toString(16).substring(2)}`
+  const cacheStore = new HttpCache(cacheKey)
   cacheManager.setCacheManager(cacheStore)
   return cacheStore
 }
@@ -85,8 +85,9 @@ export function getDataFromCache<R, D = any> (url: string, config?: IAxiosReques
   const key = url + JSON.stringify(config.params)
   const cacheStore = cacheManager.getCacheManager(config.cacheKey)
   if (!cacheStore) return { ok: false, data: null as R }
-
-  return { ok: true, data: cacheStore.get(key) as R }
+  const cachedData = cacheStore.get(key)
+  if (cachedData === undefined) return { ok: false, data: null as R }
+  return { ok: true, data: cachedData as R }
 }
 
 /**
@@ -111,13 +112,9 @@ export function setDataToCache<R> (url: string, config: IAxiosRequestConfig | un
 export function useInstanceRequestCache () {
   const cache = createHttpCache()
 
-  function clearCache () {
-    cacheManager.deleteCacheManager(cache.cacheKey)
-  }
-
   onUnmounted(() => {
     // 清空缓存
-    clearCache()
+    cacheManager.deleteCacheManager(cache.cacheKey)
   })
 
   return cache.cacheKey

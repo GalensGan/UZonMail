@@ -1,6 +1,4 @@
-/*
-边框样式
-*/
+// #region 边框样式
 .border-radius-4 {
   border-radius: 4px;
 }
@@ -40,6 +38,13 @@
   background-color: #fff;
 }
 
+// 卡片样式，没见有圆角
+.card-like-borderless {
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+}
+// #endregion
+
 // y轴滚动条
 .scroll-y {
   overflow-y: auto;
@@ -72,6 +77,7 @@
   }
 }
 
+// #region 尺寸
 .half-height {
   height: 50%;
 }
@@ -82,7 +88,7 @@
 
 // 设定高度为 0
 // 在 flex 某些场景中需要用到
-.zero-height {
+.height-0 {
   height: 0px;
 }
 
@@ -130,6 +136,7 @@
 .max-width-300 {
   max-width: 300px;
 }
+// #endregion
 
 // 透明背景
 .bg-transparent {
@@ -161,3 +168,15 @@
   color: #b3b3b3;
   cursor: text;
 }
+
+// #region flex 布局
+// 默认一列，大于 600 时，两列
+.flex-auto-column {
+  width: 0px; // echarts 需要这个属性来触发变化
+  flex: 1 1 100%;
+
+  @media screen and (min-width: 600px) {
+    flex: 1 1 50%;
+  }
+}
+// #endregion

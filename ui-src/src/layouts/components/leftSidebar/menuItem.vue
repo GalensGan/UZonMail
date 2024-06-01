@@ -76,6 +76,12 @@ watch(route, () => {
 // 跳转到路由
 const router = useRouter()
 function goToRoute () {
+  // 若 path 为绝对路径，则直接跳转
+  if (props.routeRaw.path.startsWith('http')) {
+    window.open(props.routeRaw.path, '_blank')
+    return
+  }
+
   router.push({
     name
   })

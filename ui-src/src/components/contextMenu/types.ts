@@ -7,5 +7,5 @@ export interface IContextMenuItem {
   icon?: string, // 图标
   // 当返回 false 时，右键菜单不会退出
   onClick: (value: Record<string, any>) => Promise<void | boolean>,
-  vif?: (value: Record<string, any>) => Promise<void>,
+  vif?: (value: Record<string, any>) => boolean,
 }

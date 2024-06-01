@@ -25,3 +25,30 @@ export function sendEmailNow (sendingGroup: IEmailCreateInfo) {
     data: sendingGroup
   })
 }
+
+/**
+ * 暂停发件
+ * @param sendingGroupId
+ * @returns
+ */
+export function pauseSending (sendingGroupId: string) {
+  return httpClient.post<boolean>(`/email-sending/${sendingGroupId}/pause`)
+}
+
+/**
+ * 重新开始发件
+ * @param sendingGroupId
+ * @returns
+ */
+export function restartSending (sendingGroupId: string) {
+  return httpClient.post<boolean>(`/email-sending/${sendingGroupId}/restart`)
+}
+
+/**
+ * 取消发件
+ * @param sendingGroupId
+ * @returns
+ */
+export function cancelSending (sendingGroupId: string) {
+  return httpClient.post<boolean>(`/email-sending/${sendingGroupId}/cancel`)
+}

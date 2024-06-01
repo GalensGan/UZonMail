@@ -8,7 +8,7 @@
       <div class="row justify-end q-mt-md q-gutter-sm">
         <CancelBtn @click="OnCancelSending" tooltip="取消发件" />
         <CommonBtn @click="onToggleTaskSending" :label="toggleLabel" :tooltip="toggleTooltip" />
-        <OkBtn @click="onSendBackGround" label="后台" tooltip="在后台发件" />
+        <OkBtn v-if="showRunInBackgroundBtn" @click="onSendBackGround" label="后台" tooltip="在后台发件" />
       </div>
     </q-card>
   </q-dialog>
@@ -37,12 +37,14 @@ const props = defineProps({
   // 发件组 id
   // 若有，说明是查看
   sendingGroupId: {
-    type: Number
+    type: Number,
+    required: false
   },
 
   // 发件接口
   sendingApi: {
-    type: Function
+    type: Function,
+    required: false
   },
 
   title: {
@@ -55,14 +57,17 @@ const sendingGroupIdRef = ref(props.sendingGroupId)
 onMounted(async () => {
   // 当有 api 时，说明是新增，先调用 api
   if (typeof props.sendingApi === 'function') {
-    const { data: groupId } = await props.sendingApi()
-    sendingGroupIdRef.value = groupId
+    const { data: groupDoc } = await props.sendingApi()
+    sendingGroupIdRef.value = groupDoc.id
   }
 
   if (!sendingGroupIdRef.value) return
 
   // 有 id 时，获取 id 信息
   console.log(sendingGroupIdRef.value)
+})
+const showRunInBackgroundBtn = computed(() => {
+  return !props.sendingGroupId
 })
 
 const progressValue = ref(0)
@@ -117,6 +122,7 @@ async function onSendBackGround () {
   // 关闭当前操作
   onDialogOK()
 
+  console.log('发送到后台', sendingGroupIdRef.value)
   // 切换到明细中
   router.push({
     name: 'SendDetailTable',

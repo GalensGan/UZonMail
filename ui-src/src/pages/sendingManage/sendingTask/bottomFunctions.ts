@@ -22,7 +22,7 @@ export function useBottomFunctions (emailInfo: Ref<IEmailCreateInfo>) {
 
   function validateParams () {
     console.log('email info:', emailInfo.value)
-    if (!emailInfo.value.subject) {
+    if (!emailInfo.value.subjects) {
       notifyError('请填写邮件主题')
       return false
     }
@@ -51,20 +51,20 @@ export function useBottomFunctions (emailInfo: Ref<IEmailCreateInfo>) {
     return true
   }
   async function onSendNowClick () {
-    // if (!validateParams()) return
+    if (!validateParams()) return
     console.log('email info:', emailInfo.value)
 
     // 向服务器推送数据
-    const condition = false
-    if (condition) {
-      await sendEmailNow(Object.assign({ smtpPasswordSecretKeys: userInfoStore.smtpPasswordSecretKeys }, emailInfo.value))
-    }
+    // await sendEmailNow(Object.assign({ smtpPasswordSecretKeys: userInfoStore.smtpPasswordSecretKeys }, emailInfo.value))
 
     // 将数据传到后台发送
     notifySuccess('开始发送...')
 
     await showComponentDialog(SendingProgress, {
-      title: '发送进度'
+      title: '发送进度',
+      sendingApi: async () => {
+        return await sendEmailNow(Object.assign({ smtpPasswordSecretKeys: userInfoStore.smtpPasswordSecretKeys }, emailInfo.value))
+      }
     })
   }
 

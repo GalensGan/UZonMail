@@ -1,6 +1,6 @@
 <template>
   <q-dialog ref='dialogRef' @hide="onDialogHide" :persistent='true'>
-    <q-card class='column no-wrap q-pa-sm zero-height' style="min-width: 500px; min-height: 400px;">
+    <q-card class='column no-wrap q-pa-sm height-0' style="min-width: 500px; min-height: 400px;">
       <div class="col row items-start">
         <EmailGroupList v-model="emailGroupRef" :extra-items="categoryTopItems" readonly :groupType="groupType"
           class="q-mr-sm card-like" style="width: 160px;" />

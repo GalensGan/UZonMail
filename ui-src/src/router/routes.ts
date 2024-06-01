@@ -29,7 +29,7 @@ export const dynamicRoutes: ExtendedRouteRecordRaw[] = [
           label: '首页',
           icon: 'home'
         },
-        component: () => import('pages/IndexPage.vue')
+        component: () => import('pages/dashboard/DashboardIndex.vue')
       }
     ]
   },
@@ -184,7 +184,7 @@ export const dynamicRoutes: ExtendedRouteRecordRaw[] = [
           icon: 'tune',
           label: '基础设置'
         },
-        component: () => import('pages/IndexPage.vue')
+        component: () => import('pages/systemSetting/basicSetting/BasicSettings.vue')
       },
       {
         name: 'ProxyManager',
@@ -211,8 +211,31 @@ export const dynamicRoutes: ExtendedRouteRecordRaw[] = [
         name: 'UsageGuide',
         path: 'https://galensgan.github.io/posts/2020/2QMK677.html',
         meta: {
-          icon: 'manage_accounts',
-          label: '使用说明'
+          icon: 'tips_and_updates',
+          label: '使用说明',
+          noTag: true
+        },
+        component: () => import('pages/IndexPage.vue')
+      }
+    ]
+  },
+  {
+    name: 'Encourage',
+    path: '/encourage',
+    component: NormalLayout,
+    meta: {
+      label: '支持作者',
+      icon: 'thumb_up'
+    },
+    redirect: '/encourage/author',
+    children: [
+      {
+        name: 'EncourageAuthor',
+        path: 'author',
+        meta: {
+          icon: 'thumb_up',
+          label: '支持作者',
+          noTag: true
         },
         component: () => import('pages/IndexPage.vue')
       }
