@@ -165,7 +165,7 @@ export function UseHeaderFunction (emailGroup: Ref<IEmailGroupListItem>,
   async function onExportOutboxTemplateClick () {
     const data: any[] = [
       {
-        email: '填写邮箱(导入时，需删除该条记录)',
+        email: '填写邮箱(导入时，请删除该行数据)',
         password: '填写 smtp 密码',
         smtpHost: '填写 smtp 地址',
         smtpPort: 25,

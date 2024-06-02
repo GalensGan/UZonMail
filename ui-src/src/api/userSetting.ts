@@ -4,7 +4,9 @@ import { httpClient } from 'src/api//base/httpClient'
 export interface IUserSetting {
   userId: string,
   maxSendCountPerEmailDay: number,
-  outboxCooldownMs: number,
+  minOutboxCooldownSecond: number,
+  maxOutboxCooldownSecond: number,
+  maxSendingBatchSize: number,
 }
 
 /**

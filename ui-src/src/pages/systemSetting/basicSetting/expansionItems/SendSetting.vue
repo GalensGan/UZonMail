@@ -1,5 +1,5 @@
 <template>
-  <q-expansion-item popup icon="flight_takeoff" label="发件箱设置" caption="设置发件间隔、最大发件量等"
+  <q-expansion-item popup icon="flight_takeoff" label="发件设置" caption="设置发件间隔、最大发件量等"
     header-class="text-primary card-like-borderless" @after-show="onAfterShow">
     <q-card>
       <q-card-section>
@@ -7,8 +7,19 @@
           :debounce="500" type="number" label="单个发件箱每日最大发件量" placeholder="为 0 时表示不限制">
         </q-input>
 
-        <q-input outlined class="q-mb-sm" standout dense v-model="outboxSettingRef.outboxCooldownMs" type="number"
-          :debounce="500" label="单个发件箱间隔发件时间 (单位: 毫秒)" placeholder="为 0 时表示不限制">
+        <div class="row justify-start items-center">
+          <q-input outlined class="q-mb-sm col" standout dense v-model="outboxSettingRef.minOutboxCooldownSecond"
+            type="number" :debounce="500" label="单个发件箱最小发件间隔 (单位: 秒)" placeholder="为 0 时表示不限制">
+          </q-input>
+
+          <q-input outlined class="q-ml-sm q-mb-sm col" standout dense
+            v-model="outboxSettingRef.maxOutboxCooldownSecond" type="number" :debounce="500" label="单个发件箱最大发件间隔 (单位: 秒)"
+            placeholder="为 0 时表示不限制">
+          </q-input>
+        </div>
+
+        <q-input outlined class="q-mb-sm" standout dense v-model="outboxSettingRef.maxSendingBatchSize" :debounce="500"
+          type="number" label="合并发件最大数量" placeholder="为 0 时表示不合并">
         </q-input>
       </q-card-section>
     </q-card>
@@ -22,7 +33,9 @@ const userInfoStore = useUserInfoStore()
 const outboxSettingRef: Ref<IUserSetting> = ref({
   userId: userInfoStore.userId,
   maxSendCountPerEmailDay: 0,
-  outboxCooldownMs: 5000
+  minOutboxCooldownSecond: 5,
+  maxOutboxCooldownSecond: 10,
+  maxSendingBatchSize: 20
 })
 // 获取设置
 let updateSettingSignal = true

@@ -74,32 +74,28 @@ const progressValue = ref(0)
 
 // 发送进度
 import { subscribeOne } from 'src/signalR/signalR'
-import { UzonMailClientMethods, ISendingGroupProgressArg } from 'src/signalR/types'
+import { UzonMailClientMethods, ISendingGroupProgressArg, SendingGroupProgressType } from 'src/signalR/types'
 import { confirmOperation, notifySuccess } from 'src/utils/notify'
 async function onEmailGroupSendingProgressChanged (progress: ISendingGroupProgressArg) {
-  console.log(progress)
-
   if (!progress) return
   if (progress.sendingGroupId !== sendingGroupIdRef.value) return
+  if (progress.progressType === SendingGroupProgressType.end) {
+    onDialogCancel()
+    return
+  }
 
   // 更新进度
   progressValue.value = progress.current / progress.total
 }
 subscribeOne(UzonMailClientMethods.sendingGroupProgressChanged, onEmailGroupSendingProgressChanged)
-// 注册结束发件
-function onGroupEndSending () {
-  // 关闭弹窗
-  onDialogCancel()
-  notifySuccess('发送完成')
-}
-subscribeOne(UzonMailClientMethods.groupEndSending, onGroupEndSending)
 
 // 取消发件
+import { cancelSending, pauseSending, restartSending } from 'src/api/emailSending'
 async function OnCancelSending () {
   const confirm = await confirmOperation('取消发件', '确定取消发件吗？')
   if (!confirm) return
   // 开始取消
-
+  await cancelSending(sendingGroupIdRef.value as number)
   notifySuccess('取消成功')
   // 关闭窗体
   onDialogCancel()
@@ -114,6 +110,11 @@ const toggleTooltip = computed(() => {
 })
 async function onToggleTaskSending () {
   // 向服务器发送暂停/继续请求
+  if (isSendingPause.value) {
+    await restartSending(sendingGroupIdRef.value as number)
+  } else {
+    await pauseSending(sendingGroupIdRef.value as number)
+  }
 
   isSendingPause.value = !isSendingPause.value
 }

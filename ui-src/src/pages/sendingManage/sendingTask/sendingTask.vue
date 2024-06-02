@@ -14,11 +14,18 @@
     <SelectEmailBox v-model="emailInfo.outboxes" :emailBoxType="0" icon="directions_run" label="发件人" class="q-mb-sm"
       icon-color="secondary" placeholder="请选择发件箱 (必须)" />
 
-    <SelectEmailBox v-model="emailInfo.inboxes" :emailBoxType="1" icon="hail" label="收件人"
-      placeholder="请选择收件箱 (必须)" class="q-mb-sm" />
+    <div class="q-mb-sm row justify-start items-center">
+      <SelectEmailBox class="col" v-model="emailInfo.inboxes" :emailBoxType="1" icon="hail" label="收件人"
+        placeholder="请选择收件箱 (必须)" />
+
+      <q-checkbox dense keep-color v-model="emailInfo.sendBatch" label="合并" color="secondary"
+        :disable="disableSendBatchCheckbox">
+        <AsyncTooltip anchor="bottom left" self="top start" :tooltip="sendBatchTooltips" />
+      </q-checkbox>
+    </div>
 
     <SelectEmailBox v-model="emailInfo.ccBoxes" :emailBoxType="1" icon="settings_accessibility" label="抄送人"
-      placeholder="请选择抄送人 (可选)" class="q-mb-sm" icon-color="secondary"/>
+      placeholder="请选择抄送人 (可选)" class="q-mb-sm" icon-color="secondary" />
 
     <q-editor v-model="emailInfo.body" :definitions="editorDefinitions" :toolbar="editorToolbar"
       class="column no-wrap q-pa-xs flex q-ma-sm" style="max-height: 300px;"
@@ -42,6 +49,8 @@ import SelectEmailTemplate from './components/SelectEmailTemplate.vue'
 import SelectEmailBox from './components/SelectEmailBox.vue'
 import SelectEmailData from './components/SelectEmailData.vue'
 import ObjectUploader from 'components/uploader/ObjectUploader.vue'
+import AsyncTooltip from 'components/asyncTooltip/AsyncTooltip.vue'
+
 import { useBottomFunctions } from './bottomFunctions'
 
 import { IEmailCreateInfo } from 'src/api/emailSending'
@@ -56,7 +65,8 @@ const emailInfo: Ref<IEmailCreateInfo> = ref({
   bccBoxes: [], // 密送人邮箱
   body: '', // 邮件正文
   // 附件必须先上传，此处保存的是附件的Id
-  attachments: [] // 附件
+  attachments: [], // 附件
+  sendBatch: false
 })
 
 // 编辑器配置
@@ -66,6 +76,22 @@ const { editorDefinitions, editorToolbar } = useWysiwygEditor()
 
 // 底部功能按钮
 const { needUpload, OkBtn, CommonBtn, onPreviewClick, onScheduleSendClick, onSendNowClick } = useBottomFunctions(emailInfo)
+
+// 合并发送
+const sendBatchTooltips = ['若有多个发件人,将其合并到一封邮件中发送', '启用后无法对单个发件箱进行重发', '一般不建议启用']
+// 进行重置
+watch(() => emailInfo.value.inboxes, (newValue) => {
+  if (newValue.length < 2) emailInfo.value.sendBatch = false
+})
+watch(() => emailInfo.value.data, (newValue) => {
+  if (newValue.length > 0) emailInfo.value.sendBatch = false
+})
+watch(() => emailInfo.value.outboxes, (newValue) => {
+  if (newValue.length > 1) emailInfo.value.sendBatch = false
+})
+const disableSendBatchCheckbox = computed(() => {
+  return emailInfo.value.data.length === 0 && emailInfo.value.inboxes.length < 2 && emailInfo.value.outboxes.length < 2
+})
 </script>
 
 <style lang="scss" scoped>

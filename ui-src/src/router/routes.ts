@@ -198,6 +198,28 @@ export const dynamicRoutes: ExtendedRouteRecordRaw[] = [
     ]
   },
   {
+    name: 'Sponsor',
+    path: '/sponsor',
+    component: NormalLayout,
+    meta: {
+      label: '支持作者',
+      icon: 'thumb_up'
+    },
+    redirect: '/sponsor/author',
+    children: [
+      {
+        name: 'SponsorAuthor',
+        path: 'author',
+        meta: {
+          icon: 'thumb_up',
+          label: '支持作者',
+          noTag: true
+        },
+        component: () => import('pages/sponsor/SponsorAuthor.vue')
+      }
+    ]
+  },
+  {
     name: 'Help',
     path: '/help',
     component: NormalLayout,
@@ -205,39 +227,17 @@ export const dynamicRoutes: ExtendedRouteRecordRaw[] = [
       label: '帮助文档',
       icon: 'settings_suggest'
     },
-    redirect: 'https://galensgan.github.io/posts/2020/2QMK677.html',
+    redirect: '/help/start-guide',
     children: [
       {
-        name: 'UsageGuide',
-        path: 'https://galensgan.github.io/posts/2020/2QMK677.html',
+        name: 'StartGuide',
+        path: 'start-guide',
+        component: () => import('pages/help/StartGuide.vue'),
         meta: {
           icon: 'tips_and_updates',
           label: '使用说明',
           noTag: true
-        },
-        component: () => import('pages/IndexPage.vue')
-      }
-    ]
-  },
-  {
-    name: 'Encourage',
-    path: '/encourage',
-    component: NormalLayout,
-    meta: {
-      label: '支持作者',
-      icon: 'thumb_up'
-    },
-    redirect: '/encourage/author',
-    children: [
-      {
-        name: 'EncourageAuthor',
-        path: 'author',
-        meta: {
-          icon: 'thumb_up',
-          label: '支持作者',
-          noTag: true
-        },
-        component: () => import('pages/IndexPage.vue')
+        }
       }
     ]
   }

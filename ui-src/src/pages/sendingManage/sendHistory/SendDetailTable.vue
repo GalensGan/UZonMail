@@ -137,7 +137,7 @@ onMounted(async () => {
 // #region 发件进度相关
 import LinearProgress from 'src/components/Progress/LinearProgress.vue'
 import { subscribeOne } from 'src/signalR/signalR'
-import { IGroupEndSendingArg, ISendingGroupProgressArg, ISendingItemStatusChangedArg, UzonMailClientMethods } from 'src/signalR/types'
+import { ISendingGroupProgressArg, ISendingItemStatusChangedArg, UzonMailClientMethods, SendingGroupProgressType } from 'src/signalR/types'
 import { getSendingGroupRunningInfo, SendingGroupStatus } from 'src/api/sendingGroup'
 const sendingGroupProgressValue = ref(-1)
 const showProgressBar = computed(() => sendingGroupProgressValue.value >= 0)
@@ -147,12 +147,6 @@ onMounted(async () => {
   if (data.status !== SendingGroupStatus.Sending) return
   sendingGroupProgressValue.value = data.sentCount / data.totalCount
 })
-// 注册结束发件状态
-function onGroupEndSending (arg: IGroupEndSendingArg) {
-  if (arg.sendingGroupId !== sendingGroupId.value) return
-  sendingGroupProgressValue.value = -1
-}
-subscribeOne(UzonMailClientMethods.groupEndSending, onGroupEndSending)
 // 注册单个邮件发送进度回调
 function onSendingItemStatusChanged (arg: ISendingItemStatusChangedArg) {
   // 更新单个进度
@@ -167,6 +161,10 @@ subscribeOne(UzonMailClientMethods.sendingItemStatusChanged, onSendingItemStatus
 function onSendingGroupProgressChanged (arg: ISendingGroupProgressArg) {
   // 更新总进度
   if (arg.sendingGroupId !== sendingGroupId.value) return
+  if (arg.progressType === SendingGroupProgressType.end) {
+    if (arg.sendingGroupId !== sendingGroupId.value) return
+    sendingGroupProgressValue.value = -1
+  }
   sendingGroupProgressValue.value = arg.current / arg.total
 }
 subscribeOne(UzonMailClientMethods.sendingGroupProgressChanged, onSendingGroupProgressChanged)

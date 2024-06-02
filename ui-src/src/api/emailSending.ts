@@ -12,6 +12,7 @@ export interface IEmailCreateInfo {
   // 附件必须先上传，此处保存的是附件的Id
   attachments: Record<string, any>[], // 附件
   smtpPasswordSecretKeys?: string[], // 发件人邮箱密码密钥, 发件时，需要由用户上传到服务器
+  sendBatch: boolean, // 多个收件箱时，是否批量发送
 }
 
 /**
@@ -27,11 +28,22 @@ export function sendEmailNow (sendingGroup: IEmailCreateInfo) {
 }
 
 /**
+ * 立即发件
+ * @param sendingGroup
+ * @returns
+ */
+export function sendSchedule (sendingGroup: IEmailCreateInfo) {
+  return httpClient.post<boolean>('/email-sending/schedule', {
+    data: sendingGroup
+  })
+}
+
+/**
  * 暂停发件
  * @param sendingGroupId
  * @returns
  */
-export function pauseSending (sendingGroupId: string) {
+export function pauseSending (sendingGroupId: number) {
   return httpClient.post<boolean>(`/email-sending/${sendingGroupId}/pause`)
 }
 
@@ -40,7 +52,7 @@ export function pauseSending (sendingGroupId: string) {
  * @param sendingGroupId
  * @returns
  */
-export function restartSending (sendingGroupId: string) {
+export function restartSending (sendingGroupId: number) {
   return httpClient.post<boolean>(`/email-sending/${sendingGroupId}/restart`)
 }
 
@@ -49,6 +61,6 @@ export function restartSending (sendingGroupId: string) {
  * @param sendingGroupId
  * @returns
  */
-export function cancelSending (sendingGroupId: string) {
+export function cancelSending (sendingGroupId: number) {
   return httpClient.post<boolean>(`/email-sending/${sendingGroupId}/cancel`)
 }

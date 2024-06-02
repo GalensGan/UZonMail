@@ -88,7 +88,7 @@ export function UseHeaderFunction (emailGroup: Ref<IEmailGroupListItem>,
   async function onExportInboxTemplateClick () {
     const data: any[] = [
       {
-        email: '邮箱(导入时，需删除该条记录)',
+        email: '邮箱(导入时，请删除该行数据)',
         description: ''
       }
     ]

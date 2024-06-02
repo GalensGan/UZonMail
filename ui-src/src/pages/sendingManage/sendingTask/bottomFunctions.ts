@@ -3,12 +3,13 @@
 import OkBtn from 'src/components/componentWrapper/buttons/OkBtn.vue'
 import CommonBtn from 'src/components/componentWrapper/buttons/CommonBtn.vue'
 import { notifyError, notifySuccess } from 'src/utils/notify'
-import { IEmailCreateInfo, sendEmailNow } from 'src/api/emailSending'
+import { IEmailCreateInfo, sendEmailNow, sendSchedule } from 'src/api/emailSending'
 import { useUserInfoStore } from 'src/stores/user'
 
 import { showComponentDialog } from 'src/components/popupDialog/PopupDialog'
 import PreviewEmailSendingBody from './components/PreviewEmailSendingBody.vue'
 import SendingProgress from '../sendingProgress/SendingProgress.vue'
+import SelectScheduleDate from './components/SelectScheduleDate.vue'
 
 /**
  * 使用底部功能定义
@@ -52,8 +53,7 @@ export function useBottomFunctions (emailInfo: Ref<IEmailCreateInfo>) {
   }
   async function onSendNowClick () {
     if (!validateParams()) return
-    console.log('email info:', emailInfo.value)
-
+    // console.log('email info:', emailInfo.value)
     // 向服务器推送数据
     // await sendEmailNow(Object.assign({ smtpPasswordSecretKeys: userInfoStore.smtpPasswordSecretKeys }, emailInfo.value))
 
@@ -70,6 +70,19 @@ export function useBottomFunctions (emailInfo: Ref<IEmailCreateInfo>) {
 
   // 定时发送
   async function onScheduleSendClick () {
+    if (!validateParams()) return
+    console.log('email info:', emailInfo.value)
+
+    // 选择日期
+    const { ok, data } = await showComponentDialog<string>(SelectScheduleDate)
+    if (!ok) return
+
+    // 将数据传到后台发送
+    await sendSchedule(Object.assign({ smtpPasswordSecretKeys: userInfoStore.smtpPasswordSecretKeys }, emailInfo.value, {
+      scheduleDate: data
+    }))
+
+    notifySuccess('定时发送已预约')
   }
 
   // 预览

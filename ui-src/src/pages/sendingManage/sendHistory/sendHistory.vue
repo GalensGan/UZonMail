@@ -69,15 +69,6 @@ const columns: QTableColumn[] = [
     format: v => SendingGroupType[v]
   },
   {
-    name: 'status',
-    required: true,
-    label: '状态',
-    align: 'center',
-    field: 'status',
-    sortable: true,
-    format: v => SendingGroupStatus[v]
-  },
-  {
     name: 'templatesCount',
     required: true,
     label: '模板数',
@@ -117,6 +108,14 @@ const columns: QTableColumn[] = [
       return val ? new Date(val).toLocaleString() : ''
     },
     sortable: true
+  }, {
+    name: 'status',
+    required: true,
+    label: '状态',
+    align: 'center',
+    field: 'status',
+    sortable: true,
+    format: v => SendingGroupStatus[v]
   }
 ]
 

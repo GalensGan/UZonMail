@@ -44,7 +44,7 @@ const modelValue = defineModel({
 })
 
 // 选择模板数据
-import { readExcelCore } from 'src/utils/file'
+import { IExcelColumnMapper, readExcelCore, writeExcel } from 'src/utils/file'
 async function onSelectExcel () {
   const { files, sheetName, data } = await readExcelCore({
     sheetIndex: 0,
@@ -59,6 +59,7 @@ async function onSelectExcel () {
 
 // placeholder 显示
 import { useCustomQField } from '../helper'
+import { notifySuccess } from 'src/utils/notify'
 const { isActive, fieldModelValue, fieldText } = useCustomQField('请选择数据 (该项可为空)')
 
 // 删除选择的数据
@@ -67,9 +68,85 @@ function onRemoveSelectedFile () {
   modelValue.value = []
 }
 
-// 下载模板
-function onDownloadEmailDataTemplate () {
+// 下载模板：下载邮件数据模板
+function getEmailSendingExcelDataMapper (): IExcelColumnMapper[] {
+  return [
+    {
+      headerName: '收件箱(必填)',
+      fieldName: 'inbox',
+      required: true
+    },
+    {
+      headerName: '收件人姓名',
+      fieldName: 'inboxName'
+    },
+    {
+      headerName: '发件箱',
+      fieldName: 'outbox'
+    },
+    {
+      headerName: '发件人姓名',
+      fieldName: 'outboxName'
+    },
+    {
+      headerName: '主题',
+      fieldName: 'subject'
+    },
+    {
+      headerName: '内容',
+      fieldName: 'body'
+    },
+    {
+      headerName: '抄送(多个逗号分隔)',
+      fieldName: 'cc'
+    },
+    {
+      headerName: '密送(多个逗号分隔)',
+      fieldName: 'bcc'
+    },
+    {
+      headerName: '模板名称',
+      fieldName: 'templateName'
+    },
+    {
+      headerName: '模板id',
+      fieldName: 'templateId'
+    },
+    {
+      headerName: 'proxyId',
+      fieldName: '代理 Id'
+    },
+    {
+      headerName: '自定义xxx',
+      fieldName: 'other'
+    }
+  ]
+}
+async function onDownloadEmailDataTemplate () {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const data: any[] = [
+    {
+      inbox: '收件箱(导入时，请删除该行数据)',
+      inboxName: '收件人姓名(可选)',
+      outbox: '发件箱(可选)',
+      outboxName: '发件人姓名(可选)',
+      subject: '主题(可选)',
+      body: '内容(可选)',
+      cc: '抄送(多个逗号分隔,可选)',
+      bcc: '密送(多个逗号分隔)(可选)',
+      templateName: '模板名称(可选)',
+      templateId: '模板id(可选)',
+      proxy: '代理Id(可选)',
+      other: '可以继续增加列，作为自定义字段(可选)'
+    }
+  ]
+  await writeExcel(data, {
+    fileName: '发件数据模板.xlsx',
+    sheetName: '发件数据',
+    mappers: getEmailSendingExcelDataMapper()
+  })
 
+  notifySuccess('模板下载成功，请在下载目录中查看')
 }
 </script>
 
