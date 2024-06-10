@@ -71,7 +71,7 @@ namespace UzonMailDesktop
 
             var startInfo = new ProcessStartInfo
             {
-                FileName = "UZonMailService.exe",
+                FileName = "service/UZonMailService.exe",
                 WorkingDirectory = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "service"),
                 UseShellExecute = false,
                 CreateNoWindow = true,
