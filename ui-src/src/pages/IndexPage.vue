@@ -1,6 +1,5 @@
 <template>
   <q-page class="row items-center justify-evenly">
-    empty
   </q-page>
 </template>
 
@@ -10,7 +9,9 @@ import { defineComponent } from 'vue'
 export default defineComponent({
   name: 'IndexPage',
   setup () {
-
   }
 })
 </script>
+
+<style lang="scss" scoped>
+</style>

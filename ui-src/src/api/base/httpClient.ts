@@ -2,10 +2,14 @@
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 import axios from 'axios'
 
-import { IHttpClientOptions, IResponseData } from './types'
+import { IAxiosRequestConfig, IHttpClientOptions, IResponseData } from './types'
 import { useUserInfoStore } from 'src/stores/user'
 import { StatusCode } from 'status-code-enum'
-import { notifyError } from 'src/utils/notify'
+import { notifyError } from 'src/utils/dialog'
+
+import { getDataFromCache, setDataToCache } from './httpCache'
+
+import { useConfig } from 'src/config'
 
 /**
  * HttpClient 封装
@@ -27,7 +31,8 @@ export default class HttpClient {
 
   // 获取基础 url
   private getBaseUrl (): string {
-    return process.env.BASE_URL as string
+    const config = useConfig()
+    return `${config.baseUrl}${config.api}` as string
   }
 
   // 创建 axios 实例
@@ -71,17 +76,24 @@ export default class HttpClient {
     },
     // 当 response.status 不是 200 时触发
     async (error) => {
+      console.log('response error:', error)
+      if (!error.response && error.code) {
+        notifyError(error.code)
+        return Promise.reject(error)
+      }
+
       const response = error.response as AxiosResponse
       if (response.status === StatusCode.ClientErrorUnauthorized) {
         // 退出登陆
         await this.logout()
+        return Promise.reject(error)
       }
 
       if (!response.data) {
         // 其它错误，进行提示，后端返回的错误，都会进行消息展示
         notifyError(response.statusText)
       } else {
-        notifyError(response.data.message)
+        notifyError(error.message)
       }
 
       return Promise.reject(error)
@@ -90,7 +102,8 @@ export default class HttpClient {
 
   // 退出登陆
   private async logout () {
-
+    const store = useUserInfoStore()
+    store.logout()
   }
 
   // #region 对请求返回值的data进行解构，方便前端使用
@@ -116,9 +129,26 @@ export default class HttpClient {
    * @param config 请求参数和配置
    * @returns
    */
-  async get<R, D = any> (url: string, config?: AxiosRequestConfig<D>): Promise<IResponseData<R>> {
-    const responseData = await this._axios.get<R, AxiosResponse<IResponseData<R>, D>, D>(url, config?.data, config)
-    return this.destructureAxiosResponse(responseData)
+  async get<R, D = any> (url: string, config?: IAxiosRequestConfig<D>): Promise<IResponseData<R>> {
+    // 从 cache 中获取值
+    // 如果包含 key,则从缓存中获取
+    const { ok, data } = getDataFromCache<R, D>(url, config)
+    if (ok) {
+      return {
+        data,
+        code: StatusCode.SuccessOK,
+        message: 'fromCache',
+        ok: true
+      }
+    }
+
+    const responseData = await this._axios.get<R, AxiosResponse<IResponseData<R>, D>, D>(url, config)
+    const dataResult = this.destructureAxiosResponse(responseData)
+
+    // 添加到缓存
+    setDataToCache(url, config, dataResult.data)
+
+    return dataResult
   }
 
   /**
@@ -128,7 +158,7 @@ export default class HttpClient {
    * @returns
    */
   async delete<R, D = any> (url: string, config?: AxiosRequestConfig<D>): Promise<IResponseData<R>> {
-    const responseData = await this._axios.delete<R, AxiosResponse<IResponseData<R>, D>, D>(url, config?.data, config)
+    const responseData = await this._axios.delete<R, AxiosResponse<IResponseData<R>, D>, D>(url, config)
     return this.destructureAxiosResponse(responseData)
   }
 
@@ -139,7 +169,7 @@ export default class HttpClient {
    * @returns
    */
   async head<R, D = any> (url: string, config?: AxiosRequestConfig<D>): Promise<IResponseData<R>> {
-    const responseData = await this._axios.head<R, AxiosResponse<IResponseData<R>, D>, D>(url, config?.data, config)
+    const responseData = await this._axios.head<R, AxiosResponse<IResponseData<R>, D>, D>(url, config)
     return this.destructureAxiosResponse(responseData)
   }
 
@@ -150,7 +180,7 @@ export default class HttpClient {
    * @returns
    */
   async options<R, D = any> (url: string, config?: AxiosRequestConfig<D>): Promise<IResponseData<R>> {
-    const responseData = await this._axios.options<R, AxiosResponse<IResponseData<R>, D>, D>(url, config?.data, config)
+    const responseData = await this._axios.options<R, AxiosResponse<IResponseData<R>, D>, D>(url, config)
     return this.destructureAxiosResponse(responseData)
   }
 

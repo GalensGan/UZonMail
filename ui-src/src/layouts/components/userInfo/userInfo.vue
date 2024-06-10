@@ -1,11 +1,9 @@
 <template>
   <el-dropdown>
-    <q-avatar>
-      <img src="https://cdn.quasar.dev/img/avatar2.jpg">
-    </q-avatar>
+    <UserAvatar />
     <template #dropdown>
       <el-dropdown-menu>
-        <el-dropdown-item>个人信息</el-dropdown-item>
+        <el-dropdown-item @click="onGoToProfile">个人信息</el-dropdown-item>
         <el-dropdown-item @click="onLogout">退出</el-dropdown-item>
       </el-dropdown-menu>
     </template>
@@ -13,10 +11,18 @@
 </template>
 
 <script lang="ts" setup>
+import UserAvatar from 'src/components/userAvatar/UserAvatar.vue'
+
 import { useUserInfoStore } from 'src/stores/user'
 const userInfoStore = useUserInfoStore()
 function onLogout () {
   userInfoStore.logout()
+}
+const router = useRouter()
+function onGoToProfile () {
+  router.push({
+    path: '/user/profile'
+  })
 }
 </script>
 

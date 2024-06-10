@@ -1,11 +1,11 @@
 <template>
-  <q-expansion-item v-if="!noMenu && existChildren" v-model="openExpansionItem" class="rounded-borders"
-    :class="{ 'text-orange': isActive }" :icon="icon" :label="label">
-    <MenuItem v-for="child in childrenRoutes" :key="child.path" :routeRaw="child">
+  <q-expansion-item :inset-level="insetLevel" v-if="!noMenu && existChildren" v-model="openExpansionItem"
+    class="rounded-borders" :class="{ 'text-orange': isActive }" :icon="icon" :label="label">
+    <MenuItem v-for="child in childrenRoutes" :key="child.path" :routeRaw="child" :depth="depth + 1">
     </MenuItem>
   </q-expansion-item>
 
-  <q-item v-else-if="!noMenu" :active="isActive" class="q-pr-xs"
+  <q-item v-else-if="!noMenu" :inset-level="insetLevel" :active="isActive" class="q-pr-xs"
     :class="{ 'menu-item__active': isActive, 'menu-item__default': !isActive }" clickable v-ripple @click="goToRoute">
     <q-item-section avatar>
       <q-icon :name="icon" />
@@ -29,12 +29,29 @@ const props = defineProps({
   routeRaw: {
     type: Object as () => ExtendedRouteRecordRaw,
     required: true
+  },
+
+  // 深度
+  depth: {
+    type: Number,
+    default: 0
+  },
+
+  // 单位缩进
+  unitInsetLevel: {
+    type: Number,
+    default: 0.25
   }
+})
+
+// 缩进
+const insetLevel = computed(() => {
+  return props.depth * props.unitInsetLevel
 })
 
 const { name, children, meta: { label, icon, noMenu } } = props.routeRaw
 const existChildren = computed(() => children && children.length > 0)
-const childrenRoutes = children?.map(x => getMenuRoute(x))
+const childrenRoutes = children?.map(x => getMenuRoute(x)) as ExtendedRouteRecordRaw[]
 
 // 判断当前菜单是否处于激活状态
 const route = useRoute()
@@ -59,6 +76,12 @@ watch(route, () => {
 // 跳转到路由
 const router = useRouter()
 function goToRoute () {
+  // 若 path 为绝对路径，则直接跳转
+  if (props.routeRaw.path.startsWith('http')) {
+    window.open(props.routeRaw.path, '_blank')
+    return
+  }
+
   router.push({
     name
   })

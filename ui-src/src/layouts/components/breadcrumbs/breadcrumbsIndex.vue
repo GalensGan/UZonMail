@@ -1,6 +1,6 @@
 <template>
-  <q-breadcrumbs style="font-size: 14px">
-    <q-breadcrumbs-el v-for="item in matchedRoutes" :key="item.path" class="animated fadeInDown"
+  <q-breadcrumbs style="font-size: 15px">
+    <q-breadcrumbs-el v-for="item in matchedRoutes" :key="item.path" class="animated fadeInRight"
       exact-active-class="text-secondary" :to="item.path" :icon="item.meta.icon" :label="item.meta.label">
     </q-breadcrumbs-el>
   </q-breadcrumbs>
@@ -10,7 +10,11 @@
 const route = useRoute()
 const matchedRoutes = computed(() => {
   // 获取路由的全路径
-  const results = route.matched
+  const results = route.matched.filter(x => {
+    const validChildren = x.children.filter(child => !child.meta?.noMenu)
+    return validChildren.length !== 1
+  })
+  // console.log('results', results)
   return results
 })
 </script>

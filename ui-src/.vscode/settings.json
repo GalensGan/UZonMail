@@ -15,5 +15,16 @@
   "typescript.tsdk": "node_modules/typescript/lib",
   "[typescript]": {
     "editor.defaultFormatter": "vscode.typescript-language-features"
-  }
+  },
+  "cSpell.words": [
+    "autogrow",
+    "axios",
+    "ciphertext",
+    "Cooldown",
+    "dbclick",
+    "signalr",
+    "uzon",
+    "viewerjs",
+    "viewsource"
+  ]
 }

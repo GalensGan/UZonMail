@@ -1,23 +1,17 @@
 <template>
-  <div class="fullscreen bg-blue text-white text-center q-pa-md flex flex-center">
+  <div class="fullscreen bg-grey-12 text-primary text-center q-pa-md flex flex-center">
     <div>
-      <div style="font-size: 30vh">
-        404
-      </div>
+      <q-icon :name="resolveSvgFullName('undraw_page_not_found')" size="75vh"></q-icon>
 
-      <div class="text-h2" style="opacity:.4">
+      <div class="text-h6" style="opacity:.5">
         Oops. Nothing here...
       </div>
 
-      <q-btn class="q-mt-xl" color="white" text-color="blue" unelevated to="/" label="Go Home" no-caps />
+      <q-btn class="q-mt-xl" color="white" text-color="secondary" unelevated to="/" label="Go Home" no-caps />
     </div>
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
-
-export default defineComponent({
-  name: 'ErrorNotFound'
-})
+<script lang="ts" setup>
+import { resolveSvgFullName } from 'src/utils/svgHelper'
 </script>

@@ -1,28 +1,38 @@
 <template>
-  <q-layout view="lHh lpR fFf" dark>
-    <q-header class="bg-white text-primary q-ma-md q-card">
-
-      <q-toolbar class="row items-center full-width">
-        <MenuOpenButton v-model="drawer" />
-
-        <q-toolbar-title>
-          <BreadcrumbsIndex />
-        </q-toolbar-title>
-
-        <UserInfo />
-      </q-toolbar>
-
-      <q-separator></q-separator>
-
-      <TagsView />
+  <q-layout class="text-accent" view="lHh lpR fFf" dark>
+    <q-header class="bg-grey-12 text-primary q-pa-md">
+      <q-card class="column bg-white">
+        <q-toolbar class="row items-center full-width">
+          <MenuOpenButton v-model="drawer" />
+          <q-toolbar-title>
+            <BreadcrumbsIndex />
+          </q-toolbar-title>
+          <GlobalSignalR />
+          <UserInfo />
+        </q-toolbar>
+        <q-separator></q-separator>
+        <TagsView />
+      </q-card>
     </q-header>
 
-    <q-drawer v-model="drawer" show-if-above :mini="miniState" :width="300">
+    <q-drawer v-model="drawer" show-if-above :mini="miniState" :width="280">
       <MenuTree />
     </q-drawer>
 
-    <q-page-container class="bg-grey-12">
-      <router-view />
+    <q-page-container class="page-container">
+      <q-page class="q-px-md q-pb-md full-height full-with">
+        <q-scroll-area class="page__scroll-area full-height full-with" :thumb-style="thumbStyle"
+          :content-style="contentStyle" :content-active-style="contentActiveStyle">
+          <!--参考：https://juejin.cn/post/7083793875390693383-->
+          <router-view v-slot="{ Component }">
+            <transition appear enter-active-class="animated fadeInDown">
+              <keep-alive :include="cachedViews">
+                <component :is="Component" :key="getRouteId($route.fullPath, $route.query)" />
+              </keep-alive>
+            </transition>
+          </router-view>
+        </q-scroll-area>
+      </q-page>
     </q-page-container>
   </q-layout>
 </template>
@@ -35,6 +45,9 @@ import BreadcrumbsIndex from '../components/breadcrumbs/breadcrumbsIndex.vue'
 import TagsView from '../components/tags/tagsView.vue'
 // import LeftSidebarIndex from '../components/leftSidebar/leftSidebarIndex.vue'
 import MenuTree from '../components/leftSidebar/menuTree.vue'
+import GlobalSignalR from '../components/signalR/GlobalSignalR.vue'
+
+import { getRouteId, useRouteHistories } from '../components/tags/routeHistories'
 
 const drawer = ref(false)
 const miniState = ref(false)
@@ -42,13 +55,40 @@ const miniState = ref(false)
 
 // #region 开关左侧抽屉
 const $q = useQuasar()
-if ($q.platform.is.desktop) {
+if ($q.platform.is.desktop && $q.screen.gt.md) {
   drawer.value = true
 }
+
+// 缓存
+const routeHistories = useRouteHistories()
+const cachedViews = computed(() => {
+  const results = routeHistories.value.filter(x => !x.noCache).map(x => x.name)
+  console.log('cachedViews:', results)
+  return results
+})
+
+import { useScrollAreaStyle } from 'src/compositions/scrollUtils'
+const { contentStyle, contentActiveStyle, thumbStyle } = useScrollAreaStyle()
 </script>
 
 <style lang="scss" scoped>
 .menu-button {
   transform: scale(0.6);
+}
+
+.page-container {
+  overflow: hidden;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  bottom: 0px;
+  right: 0px;
+  background-color: $grey-12;
+
+  .page__scroll-area {
+    :deep(.q-scrollarea__content) {
+      width: 100%;
+    }
+  }
 }
 </style>

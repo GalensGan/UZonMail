@@ -1,4 +1,5 @@
-import { AxiosResponse } from 'axios'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { AxiosRequestConfig, AxiosResponse } from 'axios'
 
 /**
  * 初始化化 Client 的参数
@@ -17,4 +18,13 @@ export interface IResponseData<T> {
   code: number,
   message: string,
   ok: boolean,
+}
+
+/**
+ * 自定义请求类型
+ * 增加缓存策略
+ */
+export interface IAxiosRequestConfig<T = any> extends AxiosRequestConfig<T> {
+  // 缓存的 Key
+  cacheKey?: string
 }

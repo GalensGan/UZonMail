@@ -11,7 +11,6 @@ import { fileURLToPath } from 'node:url'
 import { ElementPlusResolver, QuasarResolver } from 'unplugin-vue-components/resolvers'
 
 // mock:https://github.com/vbenjs/vite-plugin-mock/blob/main/README.zh_CN.md
-
 export default configure((ctx) => {
   return {
     eslint: {
@@ -54,8 +53,8 @@ export default configure((ctx) => {
       // https://quasar.dev/quasar-cli-webpack/handling-process-env/#adding-to-process-env
       env: {
         // 本机 mock 地址为: http://127.0.0.1:4523/m1/2361225-0-default
-        // 本机测试地址为: http://localhost:3000
-        BASE_URL: ctx.dev ? 'http://127.0.0.1:4523/m1/2361225-0-default' : 'https://api.example.com'
+        // 本机测试地址为: http://localhost:22345/api/v1
+        BASE_URL: ctx.dev ? 'http://localhost:22345/api/v1' : 'https://api.example.com'
       },
 
       target: {
@@ -79,7 +78,8 @@ export default configure((ctx) => {
       // polyfillModulePreload: true,
       // distDir
 
-      // extendViteConf (viteConf) {},
+      // extendViteConf (viteConf) {
+      // },
       // viteVuePluginOptions: {},
 
       vitePlugins: [
@@ -136,7 +136,7 @@ export default configure((ctx) => {
       },
 
       // iconSet: 'material-icons', // Quasar icon set
-      // lang: 'en-US', // Quasar language pack
+      lang: 'zh-CN', // Quasar language pack
 
       // For special cases outside of where the auto-import strategy can have an impact
       // (like functional components as one of the examples),
@@ -146,7 +146,7 @@ export default configure((ctx) => {
       // directives: [],
 
       // Quasar plugins
-      plugins: ['Notify']
+      plugins: ['Notify', 'Dialog']
     },
 
     animations: 'all', // --- includes all animations
