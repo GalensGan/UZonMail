@@ -81,7 +81,7 @@ const sortedItems = computed(() => {
 import { getEmailGroups, createEmailCroup, IEmailGroup, updateEmailCroup, deleteEmailGroupById } from 'src/api/emailGroup'
 import { IPopupDialogParams, PopupDialogFieldType } from 'src/components/popupDialog/types'
 import { showDialog } from 'src/components/popupDialog/PopupDialog'
-import { confirmOperation, notifySuccess } from 'src/utils/notify'
+import { confirmOperation, notifySuccess } from 'src/utils/dialog'
 onMounted(async () => {
   const { data: groups } = await getEmailGroups(props.groupType)
   groupItems.value = groups.map(x => ({ ...x, label: x.name, active: false, side: String(x.order) }))

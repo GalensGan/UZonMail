@@ -70,3 +70,20 @@ export function getEmailTemplateById (emailTemplateId: number, cacheKey?: string
     cacheKey
   })
 }
+
+/**
+ * 通过 id 或者 name 来获取邮箱模板
+ * @param templateId
+ * @param templateName
+ * @param cacheKey
+ * @returns
+ */
+export function getEmailTemplateByIdOrName (templateId?: number, templateName?: string, cacheKey?: string) {
+  return httpClient.get<IEmailTemplate>('/email-template/by-id-or-name', {
+    params: {
+      templateId,
+      templateName
+    },
+    cacheKey
+  })
+}

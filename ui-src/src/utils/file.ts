@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { showDialog } from 'src/components/popupDialog/PopupDialog'
-import { notifyError } from './notify'
+import { notifyError } from 'src/utils/dialog'
 import * as XLSX from 'xlsx'
 import { PopupDialogFieldType } from 'src/components/popupDialog/types'
 import CryptoJS from 'crypto-js'
@@ -29,11 +29,12 @@ export function selectFile (multiple: boolean = false, accept: string = ''): Pro
       // 获取file文件
       const files = (data.target as HTMLInputElement).files
       if (!files || files.length < 1) {
-        notifyError('没有找到文件')
+        notifyError('未找到文件')
         // 删除 input
         // inputElement.remove()
         return reject({
-          ok: false
+          ok: false,
+          message: '未找到文件'
         })
       }
 
@@ -62,10 +63,11 @@ export function selectFile (multiple: boolean = false, accept: string = ''): Pro
         setTimeout(() => {
           if (fileCancel) {
             reject({
-              ok: false
+              ok: false,
+              message: '取消选择文件'
             })
           }
-        }, 300)
+        }, 500)
       },
       { once: true }
     )
@@ -140,7 +142,9 @@ export interface IExcelMapperParams {
 export interface IExcelReaderParams extends IExcelMapperParams {
   sheetIndex: number,
   // 是否要选择 sheet
-  selectSheet?: boolean
+  selectSheet?: boolean,
+  // 数字类型保留的小数位，默认最多 5 位
+  numberDecimalCount?: number
 }
 
 export interface IExcelWriterParams extends IExcelMapperParams {
@@ -157,6 +161,7 @@ export interface IExcelWriterParams extends IExcelMapperParams {
 export async function readExcelCore (params: IExcelReaderParams): Promise<{ data: Record<string, any>[], files?: FileList, sheetName: string }> {
   // 打开文件
   const { data: buffer, files } = await selectFile()
+  console.log('readExcelCore:', buffer, files)
   const workbook = XLSX.read(buffer, { type: 'buffer' })
 
   // 打开选择框
@@ -185,6 +190,16 @@ export async function readExcelCore (params: IExcelReaderParams): Promise<{ data
   const sheetName = workbook.SheetNames[params.sheetIndex]
   const worksheet = workbook.Sheets[sheetName]
   const rowsData = XLSX.utils.sheet_to_json(worksheet) as Record<string, any>[]
+  // 对数据进行处理，主要是浮点数问题
+  const decimalCount = params.numberDecimalCount === undefined ? 5 : params.numberDecimalCount
+  rowsData.forEach(row => {
+    for (const key of Object.keys(row)) {
+      const value = row[key]
+      if (typeof value === 'number') {
+        row[key] = Number(value.toFixed(decimalCount))
+      }
+    }
+  })
 
   // 将 mappers 转换成对象
   const mapper: Record<string, IExcelColumnMapper> = {}
@@ -431,5 +446,23 @@ export function fileSha256 (file: File, callback?: (params: FileSha256Callback) 
       reject({ ok: false, message: err })
     }
   })
+}
+// #endregion
+
+// #region 文件保存相关操作
+/**
+ * 保存字符串到文件
+ * @param fileName
+ * @param content
+ */
+export async function saveStringToFile (fileName: string, content: string) {
+  const blob = new Blob([content], { type: 'text/plain' })
+  const url = URL.createObjectURL(blob)
+  const aLink = document.createElement('a')
+  aLink.href = url
+  aLink.download = fileName
+  aLink.click()
+  // 删除 alink
+  aLink.remove()
 }
 // #endregion

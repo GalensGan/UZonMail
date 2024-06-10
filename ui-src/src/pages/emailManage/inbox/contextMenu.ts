@@ -3,7 +3,7 @@ import { IInbox, deleteEmailBoxById, updateInbox } from 'src/api/emailBox'
 
 import { IContextMenuItem } from 'src/components/contextMenu/types'
 import { IPopupDialogParams } from 'src/components/popupDialog/types'
-import { confirmOperation, notifySuccess } from 'src/utils/notify'
+import { confirmOperation, notifySuccess } from 'src/utils/dialog'
 import { getInboxFields } from './headerFunctions'
 import { showDialog } from 'src/components/popupDialog/PopupDialog'
 

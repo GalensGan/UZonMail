@@ -25,7 +25,7 @@ import { IRequestPagination, TTableFilterObject } from 'src/compositions/types'
 import SearchInput from 'src/components/searchInput/SearchInput.vue'
 
 import CreateBtn from 'src/components/componentWrapper/buttons/CreateBtn.vue'
-import { notifyError, notifySuccess, confirmOperation } from 'src/utils/notify'
+import { notifyError, notifySuccess, confirmOperation } from 'src/utils/dialog'
 import { getFilteredUsersCount, checkUserId, createUser, getFilteredUsersData, getDefaultPassword, resetUserPassword } from 'src/api/user'
 
 const columns: QTableColumn[] = [

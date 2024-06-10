@@ -33,7 +33,7 @@
 <script lang="ts" setup>
 import { userLogin } from 'src/api/user'
 import { useUserInfoStore } from 'src/stores/user'
-import { notifyError } from 'src/utils/notify'
+import { notifyError } from 'src/utils/dialog'
 import { resolveSvgFullName } from 'src/utils/svgHelper'
 import { md5 } from 'src/utils/encrypt'
 

@@ -152,7 +152,7 @@ watch(emailGroupRef, () => {
 
 // 新增收件箱
 import { showNewInboxDialog } from 'pages/emailManage/inbox/headerFunctions'
-import { notifyError } from 'src/utils/notify'
+import { notifyError } from 'src/utils/dialog'
 async function onNewTempInboxClick () {
   // 打开输入框
   const { ok, data } = await showNewInboxDialog('临时收件')

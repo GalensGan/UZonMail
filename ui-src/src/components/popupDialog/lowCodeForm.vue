@@ -75,7 +75,7 @@ import PasswordInput from '../passwordInput/PasswordInput.vue'
 
 import { PropType } from 'vue'
 import { IPopupDialogField, PopupDialogFieldType } from './types'
-import { notifyError } from 'src/utils/notify'
+import { notifyError } from 'src/utils/dialog'
 import { IFunctionResult } from 'src/types'
 
 const props = defineProps({

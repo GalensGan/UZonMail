@@ -5,7 +5,7 @@ import { IEmailGroupListItem } from '../components/types'
 
 import { IInbox, createInbox, createInboxes } from 'src/api/emailBox'
 
-import { notifyError, notifySuccess } from 'src/utils/notify'
+import { notifyError, notifySuccess } from 'src/utils/dialog'
 import { IExcelColumnMapper, readExcel, writeExcel } from 'src/utils/file'
 
 export function getInboxFields () {

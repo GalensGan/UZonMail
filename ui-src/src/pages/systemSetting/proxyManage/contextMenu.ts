@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { IProxy, deleteProxy, updateProxy, validateProxyName } from 'src/api/proxy'
 import { IContextMenuItem } from 'src/components/contextMenu/types'
-import { confirmOperation, notifySuccess } from 'src/utils/notify'
+import { confirmOperation, notifySuccess } from 'src/utils/dialog'
 import { getCommonProxyFields } from './headerFuncs'
 import { IPopupDialogParams, PopupDialogFieldType } from 'src/components/popupDialog/types'
 import { showDialog } from 'src/components/popupDialog/PopupDialog'

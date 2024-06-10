@@ -68,6 +68,7 @@ useNotifyRegister()
 // 注册进度回调
 import { subscribeOne } from 'src/signalR/signalR'
 import { ISendingGroupProgressArg, UzonMailClientMethods, SendingGroupProgressType } from 'src/signalR/types'
+import { notifySuccess } from 'src/utils/dialog'
 // 注册单个发件组进度回调
 async function onSendingGroupProgressChanged (arg: ISendingGroupProgressArg) {
   let group = sendingGroups.value.find(item => item.id === arg.sendingGroupId)
@@ -94,6 +95,8 @@ async function onSendingGroupProgressChanged (arg: ISendingGroupProgressArg) {
     if (index < 0) return
     // 移除
     sendingGroups.value.splice(index, 1)
+
+    notifySuccess(`邮件组 ${arg.sendingGroupId} 发送完成`)
     return
   }
 

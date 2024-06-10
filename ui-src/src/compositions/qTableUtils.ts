@@ -115,8 +115,13 @@ export function useQTable (initParams: IQTableInitParams) {
     refreshTable()
   })
 
-  // 增加新数据
+  /**
+   * 增加新数据或者更新既有数据
   // 新增数据时，可以使用这个方法，增加一行数据
+   * @param newRow
+   * @param idField
+   * @returns
+   */
   function addNewRow (newRow: Record<string, any>, idField: string = 'id') {
     // 查找是否存在
     const found = rows.value.find(x => x[idField] === newRow[idField])

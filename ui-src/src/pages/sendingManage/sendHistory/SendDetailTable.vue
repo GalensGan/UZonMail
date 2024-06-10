@@ -21,11 +21,18 @@
 
     <template v-slot:body-cell-index="props">
       <QTableIndex :props="props" />
+
+      <ContextMenu :items="sendDetailContextItems" :value="props.row"></ContextMenu>
     </template>
 
-    <template v-slot:body-cell-userId="props">
+    <template v-slot:body-cell-status="props">
       <q-td :props="props">
-        {{ props.value }}
+        <q-circular-progress v-if="props.value === 1" indeterminate size="sm" :thickness="0.4" color="secondary"
+          track-color="grey-3" center-color="primary" />
+        <StatusChip :status="props.value">
+          <AsyncTooltip v-if="props.value === SendingItemStatus[SendingItemStatus.Failed]"
+            :tooltip="props.row.sendResult"></AsyncTooltip>
+        </StatusChip>
       </q-td>
     </template>
   </q-table>
@@ -36,7 +43,7 @@
 const vueProps = defineProps({
   sendingGroupId: {
     type: Number,
-    required: true
+    required: false
   }
 })
 
@@ -103,12 +110,12 @@ const columns: QTableColumn[] = [
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function getRowsNumberCount (filterObj: TTableFilterObject) {
-  const { data } = await getSendingItemsCount(sendingGroupId.value, filterObj.filter)
+  const { data } = await getSendingItemsCount(sendingGroupId.value as number, filterObj.filter)
   return data || 0
 }
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function onRequest (filterObj: TTableFilterObject, pagination: IRequestPagination) {
-  const { data } = await getSendingItemsData(sendingGroupId.value, filterObj.filter, pagination)
+  const { data } = await getSendingItemsData(sendingGroupId.value as number, filterObj.filter, pagination)
   return data || []
 }
 
@@ -140,10 +147,10 @@ import { subscribeOne } from 'src/signalR/signalR'
 import { ISendingGroupProgressArg, ISendingItemStatusChangedArg, UzonMailClientMethods, SendingGroupProgressType } from 'src/signalR/types'
 import { getSendingGroupRunningInfo, SendingGroupStatus } from 'src/api/sendingGroup'
 const sendingGroupProgressValue = ref(-1)
-const showProgressBar = computed(() => sendingGroupProgressValue.value >= 0)
+const showProgressBar = computed(() => sendingGroupProgressValue.value > 0 && sendingGroupProgressValue.value < 1)
 onMounted(async () => {
   // 读取初始状态
-  const { data } = await getSendingGroupRunningInfo(sendingGroupId.value)
+  const { data } = await getSendingGroupRunningInfo(sendingGroupId.value as number)
   if (data.status !== SendingGroupStatus.Sending) return
   sendingGroupProgressValue.value = data.sentCount / data.totalCount
 })
@@ -158,17 +165,32 @@ function onSendingItemStatusChanged (arg: ISendingItemStatusChangedArg) {
 }
 subscribeOne(UzonMailClientMethods.sendingItemStatusChanged, onSendingItemStatusChanged)
 // 注册由件组的发送进度
+import { notifySuccess } from 'src/utils/dialog'
 function onSendingGroupProgressChanged (arg: ISendingGroupProgressArg) {
   // 更新总进度
   if (arg.sendingGroupId !== sendingGroupId.value) return
   if (arg.progressType === SendingGroupProgressType.end) {
     if (arg.sendingGroupId !== sendingGroupId.value) return
     sendingGroupProgressValue.value = -1
+
+    notifySuccess(`邮件组 ${arg.sendingGroupId} 发送完成`)
+    return
   }
   sendingGroupProgressValue.value = arg.current / arg.total
 }
 subscribeOne(UzonMailClientMethods.sendingGroupProgressChanged, onSendingGroupProgressChanged)
 // #endregion
+
+// #region 发送状态
+import StatusChip from 'src/components/statusChip/StatusChip.vue'
+import AsyncTooltip from 'src/components/asyncTooltip/AsyncTooltip.vue'
+// #endregion
+
+/**
+ * 右键菜单
+ */
+import { useContextMenu } from './sendDetailContext'
+const { sendDetailContextItems, ContextMenu } = useContextMenu()
 </script>
 
 <style lang="scss" scoped></style>

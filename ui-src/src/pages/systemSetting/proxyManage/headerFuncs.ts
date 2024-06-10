@@ -3,7 +3,7 @@ import { IProxy, validateProxyName, createProxy, updateProxySharedStatus } from 
 import { showDialog } from 'src/components/popupDialog/PopupDialog'
 import { IPopupDialogField, IPopupDialogParams, PopupDialogFieldType } from 'src/components/popupDialog/types'
 import { useUserInfoStore } from 'src/stores/user'
-import { notifySuccess } from 'src/utils/notify'
+import { notifySuccess } from 'src/utils/dialog'
 
 export function getCommonProxyFields (): IPopupDialogField[] {
   return [

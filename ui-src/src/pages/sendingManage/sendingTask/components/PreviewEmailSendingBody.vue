@@ -1,6 +1,6 @@
 <template>
   <q-dialog ref='dialogRef' @hide="onDialogHide">
-    <q-card class='column justify-start q-pa-sm width-600 height-400'>
+    <q-card class='column justify-start q-pa-sm width-800 height-500'>
       <div class="text-subtitle1 text-primary">
         主题：{{ emailSubject }}
       </div>
@@ -13,8 +13,8 @@
 
       <div class="q-pb-md col scroll-y" v-html="emailBody"></div>
 
-      <q-pagination v-if="pagesCount > 1" class="self-center" v-model="currentPage" :max="pagesCount" :max-pages="6"
-        boundary-numbers />
+      <q-pagination v-if="pagesCount > 1" class="self-center q-pt-sm" v-model="currentPage" :max="pagesCount"
+        :max-pages="6" boundary-numbers size="md" padding="0px" />
     </q-card>
   </q-dialog>
 </template>
@@ -50,17 +50,18 @@ const currentPage = ref(1)
 // #region 预览邮件发件正文逻辑
 // 若用户数据中有收件箱，则要与收件箱中的数据进行合并
 let inboxes = [...props.emailCreateInfo.inboxes]
+console.log('emailCreateInfo.data', props.emailCreateInfo.data)
 const userDataInboxes = props.emailCreateInfo.data.map((item) => item.inbox)
   .filter(x => x)
 if (userDataInboxes.length > 0) {
-  inboxes.push(...userDataInboxes)
+  inboxes.push(...userDataInboxes.map(x => ({ email: x })))
 }
 // 去重
 inboxes = Array.from(new Set(inboxes))
 pagesCount.value = inboxes.length
 
 import { useInstanceRequestCache } from 'src/api/base/httpCache'
-import { getEmailTemplateById } from 'src/api/emailTemplate'
+import { getEmailTemplateById, getEmailTemplateByIdOrName } from 'src/api/emailTemplate'
 const cacheKey = useInstanceRequestCache()
 // 主题
 function getSubjects () {
@@ -72,7 +73,7 @@ function getSubjects () {
 }
 const subjects = getSubjects()
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function applyVariablesToTemplate (userData: Record<string, any>, templateContent: string) {
+function applyVariablesToTemplate (userData?: Record<string, any>, templateContent?: string) {
   if (!templateContent || !userData) return templateContent
 
   // 应用变量
@@ -86,32 +87,33 @@ function applyVariablesToTemplate (userData: Record<string, any>, templateConten
 async function getEmailBody (inbox: string, inboxIndex: number) {
   // 正文优先级：用户数据/正文 > 用户数据/模板 > 界面/正文 > 界面/模板
   const userData = props.emailCreateInfo.data.find((item) => item.inbox === inbox)
+  let templateContent = ''
   if (userData) {
     // 查找模板
-    const templateIndex = inboxIndex % props.emailCreateInfo.templates.length
-    const template = props.emailCreateInfo.templates[templateIndex]
-    // 从服务器拉取模板数据
-    const { data } = await getEmailTemplateById(template.id, cacheKey)
-
-    // 对模板应用变量
-    return applyVariablesToTemplate(userData, data.content)
+    // 若数据中有模板，则使用数据模板
+    if (userData.body) {
+      templateContent = userData.body
+    } else if (userData.templateId || userData.templateName) {
+      const { data } = await getEmailTemplateByIdOrName(userData.templateId, userData.templateName, cacheKey)
+      templateContent = data.content
+    }
   }
 
   // 说明没有变量，直接从界面正文中获取
-  if (props.emailCreateInfo.body) return props.emailCreateInfo.body
+  if (!templateContent) templateContent = props.emailCreateInfo.body
 
-  // 判断是有模板数据,从模板中读取，但是没有变量
-  if (props.emailCreateInfo.templates.length > 0) {
+  if (!templateContent && props.emailCreateInfo.templates.length > 0) {
+    // 从模板中读取
     // 查找模板
     const templateIndex = inboxIndex % props.emailCreateInfo.templates.length
     const template = props.emailCreateInfo.templates[templateIndex]
     const { data } = await getEmailTemplateById(template.id, cacheKey)
 
     // 返回模板数据
-    return data.content
+    templateContent = data.content
   }
 
-  return ''
+  return applyVariablesToTemplate(userData, templateContent) || '正文为空'
 }
 
 const currentInbox = ref('')
@@ -120,11 +122,18 @@ const emailSubject = ref('')
 watch(currentPage, async () => {
   const index = currentPage.value - 1
   const inbox = inboxes[index].email as string
-  currentInbox.value = inbox
-  const subject = subjects[index % subjects.length]
-  emailSubject.value = subject
-  const body = await getEmailBody(inbox, index)
-  emailBody.value = body
+
+  // subject 优先级：Excel数据/subject  > 界面/主题
+  const userData = props.emailCreateInfo.data.find((x) => x.inbox === inbox)
+  if (userData && userData.subject) emailSubject.value = userData.subject
+  else {
+    emailSubject.value = subjects[index % subjects.length]
+  }
+  if (userData && userData.inbox) currentInbox.value = userData.inbox
+  else currentInbox.value = inbox
+
+  const body = await getEmailBody(currentInbox.value, index)
+  emailBody.value = body || ''
 }, {
   immediate: true
 })

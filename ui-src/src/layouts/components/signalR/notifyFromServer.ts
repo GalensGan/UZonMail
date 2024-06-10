@@ -1,6 +1,6 @@
 import { subscribeOne } from 'src/signalR/signalR'
 import { UzonMailClientMethods } from 'src/signalR/types'
-import { notifyAny } from 'src/utils/notify'
+import { notifyAny } from 'src/utils/dialog'
 
 export interface INotifyMessage {
   message?: string,

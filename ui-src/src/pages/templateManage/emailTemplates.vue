@@ -3,6 +3,7 @@
     :loading="loading" :filter="filter" binary-state-sort @request="onTableRequest">
     <template v-slot:top-left>
       <CreateBtn @click="onNewEmailTemplate" tooltip="新增邮件模板" />
+      <ImportBtn class="q-ml-sm" @click="onImportTemplateFromHtml" :tooltip="['导入模板', '文件名为模板名']" />
     </template>
 
     <template v-slot:top-right>
@@ -54,13 +55,14 @@ import SearchInput from 'src/components/searchInput/SearchInput.vue'
 import ContextMenu from 'src/components/contextMenu/ContextMenu.vue'
 
 import CreateBtn from 'src/components/componentWrapper/buttons/CreateBtn.vue'
-import { IEmailTemplate, deleteEmailTemplate } from 'src/api/emailTemplate'
+import ImportBtn from 'src/components/componentWrapper/buttons/ImportBtn.vue'
+import { IEmailTemplate, deleteEmailTemplate, upsertEmailTemplate } from 'src/api/emailTemplate'
 import { IContextMenuItem } from 'src/components/contextMenu/types'
-import { confirmOperation, notifySuccess } from 'src/utils/notify'
+import { confirmOperation, notifySuccess } from 'src/utils/dialog'
 
 // 模板接口
 import { useEmailTemplateTable } from './compositions'
-const { pagination, rows, filter, onTableRequest, loading, deleteRowById, getTemplateImage, onPreviewThumbnail } = useEmailTemplateTable()
+const { pagination, rows, filter, onTableRequest, loading, deleteRowById, getTemplateImage, onPreviewThumbnail, addNewRow } = useEmailTemplateTable()
 
 // 打开模板编辑器
 const router = useRouter()
@@ -69,6 +71,30 @@ async function onNewEmailTemplate () {
   router.push({
     name: 'templateEditor'
   })
+}
+// 导入模板
+import { selectFile, saveStringToFile } from 'src/utils/file'
+async function onImportTemplateFromHtml () {
+  const { ok, data: buffer, files } = await selectFile()
+  if (!ok) return
+
+  // 获取第一个文件
+  const file = files?.item(0)
+  const templateName = file?.name.substring(0, file.name.lastIndexOf('.')) || '未命名'
+  const templateContent = (new TextDecoder('utf8')).decode(buffer as ArrayBuffer)
+
+  // 向服务器请求新建模板
+  const data = {
+    name: templateName,
+    content: templateContent,
+    description: '从文件导入'
+  }
+  const { data: newTemplate } = await upsertEmailTemplate(data)
+
+  // 新增数据
+  addNewRow(newTemplate)
+
+  notifySuccess('导入成功')
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -96,6 +122,11 @@ async function onEditTemplateClick (value: Record<string, any>) {
     }
   })
 }
+// 导出模板
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function onExportTemplateClick (value: Record<string, any>) {
+  await saveStringToFile(value.name + '.html', value.content)
+}
 // 右键菜单
 const templateContextMenuItems = ref<IContextMenuItem[]>([
   {
@@ -113,6 +144,12 @@ const templateContextMenuItems = ref<IContextMenuItem[]>([
     label: '编辑',
     tooltip: '编辑当前模板',
     onClick: onEditTemplateClick
+  },
+  {
+    name: 'export',
+    label: '导出',
+    tooltip: '导出当前模板',
+    onClick: onExportTemplateClick
   },
   {
     name: 'delete',

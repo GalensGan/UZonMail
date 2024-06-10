@@ -39,12 +39,38 @@ export function sendSchedule (sendingGroup: IEmailCreateInfo) {
 }
 
 /**
+ * 重新发送邮件
+ * @param sendingItemId
+ * @returns
+ */
+export function resendSendingItem (sendingItemId: number, smtpPasswordSecretKeys: string[]) {
+  return httpClient.post<boolean>(`/email-sending/sending-items/${sendingItemId}/resend`, {
+    data: {
+      smtpPasswordSecretKeys
+    }
+  })
+}
+
+/**
+ * 重新发送邮件
+ * @param sendingItemId
+ * @returns
+ */
+export function resendSendingGroup (sendingGroupId: number, smtpPasswordSecretKeys: string[]) {
+  return httpClient.post<boolean>(`/email-sending/sending-groups/${sendingGroupId}/resend`, {
+    data: {
+      smtpPasswordSecretKeys
+    }
+  })
+}
+
+/**
  * 暂停发件
  * @param sendingGroupId
  * @returns
  */
 export function pauseSending (sendingGroupId: number) {
-  return httpClient.post<boolean>(`/email-sending/${sendingGroupId}/pause`)
+  return httpClient.post<boolean>(`/email-sending/sending-groups/${sendingGroupId}/pause`)
 }
 
 /**
@@ -53,7 +79,7 @@ export function pauseSending (sendingGroupId: number) {
  * @returns
  */
 export function restartSending (sendingGroupId: number) {
-  return httpClient.post<boolean>(`/email-sending/${sendingGroupId}/restart`)
+  return httpClient.post<boolean>(`/email-sending/sending-groups/${sendingGroupId}/restart`)
 }
 
 /**
@@ -62,5 +88,5 @@ export function restartSending (sendingGroupId: number) {
  * @returns
  */
 export function cancelSending (sendingGroupId: number) {
-  return httpClient.post<boolean>(`/email-sending/${sendingGroupId}/cancel`)
+  return httpClient.post<boolean>(`/email-sending/sending-groups/${sendingGroupId}/cancel`)
 }

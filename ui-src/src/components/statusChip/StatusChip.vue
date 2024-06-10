@@ -1,0 +1,71 @@
+<template>
+  <q-chip v-bind="$attrs" outline square dense :color="statusStyle.color" :text-color="statusStyle.textColor"
+    :label="statusStyle.label">
+    <slot name="default"></slot>
+  </q-chip>
+</template>
+
+<script lang="ts" setup>
+
+import { IStatusChipItem } from './types'
+const defaultStatusStyles = [
+  { status: 'created', label: '新建', color: 'primary', textColor: 'white', icon: '' },
+  { status: 'pending', label: '等待中', color: 'accent', textColor: 'white', icon: '' },
+  { status: 'sending', label: '发送中', color: 'secondary', textColor: 'white', icon: '' },
+  { status: 'success', label: '成功', color: 'secondary', textColor: 'white', icon: '' },
+  { status: 'failed', label: '失败', color: 'negative', textColor: 'white', icon: '' },
+  { status: 'paused', label: '暂停', color: 'orange', textColor: 'white', icon: '' },
+  { status: 'stopped', label: '已停止', color: 'grey', textColor: 'white', icon: '' },
+  { status: 'finish', label: '完成', color: 'secondary', textColor: 'white', icon: '' },
+  { status: 'cancel', label: '取消', color: 'grey', textColor: 'white', icon: '' }
+]
+const props = defineProps({
+  status: {
+    type: [String, Number],
+    required: true
+  },
+
+  statusStyles: {
+    type: Array as PropType<IStatusChipItem[]>,
+    default: () => []
+  }
+})
+
+// 将 props.statusStyles 进行格式化
+const colors = ['primary', 'secondary', 'accent', 'negative', 'info', 'warning', 'positive', 'white', 'grey-3']
+const statusStylesMap = computed(() => {
+  const result: Record<string, IStatusChipItem> = {}
+
+  const fullStatusStyles = [...defaultStatusStyles, ...props.statusStyles]
+  for (let i = 0; i < fullStatusStyles.length; i++) {
+    const item = fullStatusStyles[i]
+
+    // 修改颜色
+    if (!item.color) {
+      item.color = colors[i % colors.length]
+    }
+    if (!item.textColor) {
+      item.textColor = 'white'
+    }
+    if (!item.label) item.label = String(item.status)
+    result[String(item.status).toLowerCase()] = item
+  }
+  return result
+})
+
+const statusStyle = computed(() => {
+  const status = String(props.status).toLowerCase()
+  const result = statusStylesMap.value[status]
+  if (!result) {
+    return {
+      status: 'unknown',
+      color: 'negative',
+      label: `${status} 未定义`,
+      textColor: 'white'
+    }
+  }
+  return result
+})
+</script>
+
+<style lang="scss" scoped></style>

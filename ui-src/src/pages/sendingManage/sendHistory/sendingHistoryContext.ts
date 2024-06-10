@@ -2,9 +2,10 @@
 import { IContextMenuItem } from 'src/components/contextMenu/types'
 // import { showComponentDialog } from 'src/components/popupDialog/PopupDialog'
 // import SendDetailDialog from './SendDetailDialog.vue'
-import { SendingGroupStatus } from 'src/api/sendingGroup'
-import { pauseSending, restartSending, cancelSending } from 'src/api/emailSending'
-import { confirmOperation, notifySuccess } from 'src/utils/notify'
+import { ISendingGroupHistory, SendingGroupStatus } from 'src/api/sendingGroup'
+import { pauseSending, restartSending, cancelSending, resendSendingGroup } from 'src/api/emailSending'
+import { confirmOperation, notifySuccess } from 'src/utils/dialog'
+import { useUserInfoStore } from 'src/stores/user'
 
 /**
  * 添加右键菜单
@@ -12,7 +13,7 @@ import { confirmOperation, notifySuccess } from 'src/utils/notify'
 export function useContextMenu () {
   const router = useRouter()
   // 打开发件明细
-  async function openSendDetailDialog (data: Record<string, any>) {
+  async function openSendDetailDialog (data: ISendingGroupHistory) {
     // 跳转到发件明细页面
     router.push({
       name: 'SendDetailTable',
@@ -24,10 +25,10 @@ export function useContextMenu () {
   }
 
   // 暂停发件
-  function canPauseSending (data: Record<string, any>): boolean {
+  function canPauseSending (data: ISendingGroupHistory): boolean {
     return data.status === SendingGroupStatus.Sending
   }
-  async function onPauseSending (data: Record<string, any>) {
+  async function onPauseSending (data: ISendingGroupHistory) {
     // 进行确认
     const confirm = await confirmOperation('暂停确认', '确认暂停发件吗？')
     if (!confirm) return
@@ -40,10 +41,10 @@ export function useContextMenu () {
     notifySuccess('暂停成功')
   }
 
-  function canRestart (data: Record<string, any>): boolean {
+  function canRestart (data: ISendingGroupHistory): boolean {
     return data.status === SendingGroupStatus.Pause
   }
-  async function onRestartSending (data: Record<string, any>) {
+  async function onRestartSending (data: ISendingGroupHistory) {
     // 进行确认
     const confirm = await confirmOperation('发送确认', '确认重新开始发件吗？')
     if (!confirm) return
@@ -56,10 +57,10 @@ export function useContextMenu () {
 
   // 是否可以取消发件
   // 非完成的发件组都可以取消
-  function canCancel (data: Record<string, any>): boolean {
+  function canCancel (data: ISendingGroupHistory): boolean {
     return data.status !== SendingGroupStatus.Finish && data.status !== SendingGroupStatus.Cancel
   }
-  async function onCancelSending (data: Record<string, any>) {
+  async function onCancelSending (data: ISendingGroupHistory) {
     // 进行确认
     const confirm = await confirmOperation('取消确认', '确认取消发件吗，取消后将不可重新开始，是否继续？')
     if (!confirm) return
@@ -70,34 +71,58 @@ export function useContextMenu () {
     notifySuccess('取消成功')
   }
 
+  function canResend (data: ISendingGroupHistory): boolean {
+    return data.status === SendingGroupStatus.Finish && data.successCount < data.totalCount
+  }
+
+  const userInfoStore = useUserInfoStore()
+  async function onResendSendingGroup (data: ISendingGroupHistory) {
+    const confirm = await confirmOperation('重发确认', `即将重新发送【${data.totalCount - data.successCount}】封邮件，是否继续？`)
+    if (!confirm) return
+
+    // 开始重发
+    await resendSendingGroup(data.id, userInfoStore.smtpPasswordSecretKeys)
+
+    notifySuccess('正在重新发送...')
+
+    // 更新进度
+    data.status = SendingGroupStatus.Sending
+  }
   const sendingHistoryContextItems: IContextMenuItem[] = [
     {
       name: 'detail',
       label: '明细',
       tooltip: '查看发件明细',
-      onClick: openSendDetailDialog
+      onClick: openSendDetailDialog as any
     },
     {
       name: 'pause',
       label: '暂停',
       tooltip: '暂停发件',
-      onClick: onPauseSending,
-      vif: canPauseSending
+      onClick: onPauseSending as any,
+      vif: canPauseSending as any
     },
     {
       name: 'start',
       label: '开始',
       tooltip: '重新开始发件',
-      vif: canRestart,
-      onClick: onRestartSending
+      vif: canRestart as any,
+      onClick: onRestartSending as any
+    },
+    {
+      name: 'startForFailed',
+      label: '重发',
+      tooltip: '失败重发',
+      vif: canResend as any,
+      onClick: onResendSendingGroup as any
     },
     {
       name: 'cancelSchedule',
       label: '取消',
       tooltip: '取消计划发件',
       color: 'negative',
-      vif: canCancel,
-      onClick: onCancelSending
+      vif: canCancel as any,
+      onClick: onCancelSending as any
     }
     // {
     //   name: 'viewRawData',
@@ -108,6 +133,7 @@ export function useContextMenu () {
   ]
 
   return {
+    openSendDetailDialog,
     sendingHistoryContextItems
   }
 }

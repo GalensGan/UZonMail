@@ -56,7 +56,7 @@ const userRole = computed(() => {
  */
 import { showDialog, showComponentDialog } from 'src/components/popupDialog/PopupDialog'
 import { PopupDialogFieldType } from 'src/components/popupDialog/types'
-import { notifySuccess } from 'src/utils/notify'
+import { notifySuccess } from 'src/utils/dialog'
 async function onChangeUserPassword () {
   const result = await showDialog({
     title: '修改密码',

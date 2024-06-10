@@ -1,11 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { IRequestPagination } from 'src/compositions/types'
 import { httpClient } from './base/httpClient'
 
-export interface ISendingGroup {
+export interface ISendingItem {
   id: number
   subject: string
   fromEmail: string,
-  inboxes: object[],
+  inboxes: Record<string, any>[],
   sendDate: string,
   status: number,
   SendResult?: string
@@ -19,6 +20,9 @@ export enum SendingItemStatus {
   /// 初始状态
   /// </summary>
   Created,
+
+  // 等待发件
+  Pending,
 
   /// <summary>
   /// 发送状态
@@ -37,7 +41,7 @@ export enum SendingItemStatus {
 }
 
 /**
- * 获取模板数量
+ * 获取发件项数量
  * @param filter
  * @returns
  */
@@ -51,17 +55,26 @@ export function getSendingItemsCount (sendingGroupId: number, filter?: string) {
 }
 
 /**
- * 获取模板数据
+ * 获取发件项数据
  * @param filter
  * @param pagination
  * @returns
  */
 export function getSendingItemsData (sendingGroupId: number, filter: string | undefined, pagination: IRequestPagination) {
-  return httpClient.post<ISendingGroup[]>('/sending-item/filtered-data', {
+  return httpClient.post<ISendingItem[]>('/sending-item/filtered-data', {
     params: {
       sendingGroupId,
       filter
     },
     data: pagination
   })
+}
+
+/**
+ * 获取发件项的正文
+ * @param sendingItemId
+ * @returns
+ */
+export function getSendingItemBody (sendingItemId: number) {
+  return httpClient.get<string>(`/sending-item/${sendingItemId}/body`)
 }

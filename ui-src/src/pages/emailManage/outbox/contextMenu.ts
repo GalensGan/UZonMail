@@ -3,7 +3,7 @@ import { IOutbox, deleteEmailBoxById, updateOutbox } from 'src/api/emailBox'
 
 import { IContextMenuItem } from 'src/components/contextMenu/types'
 import { IPopupDialogParams } from 'src/components/popupDialog/types'
-import { confirmOperation, notifySuccess } from 'src/utils/notify'
+import { confirmOperation, notifySuccess } from 'src/utils/dialog'
 import { getOutboxFields } from './headerFunctions'
 import { useUserInfoStore } from 'src/stores/user'
 import { showDialog } from 'src/components/popupDialog/PopupDialog'
@@ -86,7 +86,7 @@ export function useContextMenu (deleteRowById: (id?: number) => void) {
     await updateOutbox(outbox.id as number, data)
 
     // 将参数更新到 outbox 中
-    Object.assign(outbox, data, { decryptedPassword: false })
+    Object.assign(outbox, data, { decryptedPassword: false, showPassword: false })
 
     notifySuccess('更新成功')
   }

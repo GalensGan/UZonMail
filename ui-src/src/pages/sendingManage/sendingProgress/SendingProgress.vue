@@ -5,10 +5,10 @@
 
       <LinearProgress size="40px" :value="progressValue" :width="400" />
 
-      <div class="row justify-end q-mt-md q-gutter-sm">
+      <div v-if="existSendingGroupId" class="row justify-end q-mt-md q-gutter-sm">
         <CancelBtn @click="OnCancelSending" tooltip="取消发件" />
         <CommonBtn @click="onToggleTaskSending" :label="toggleLabel" :tooltip="toggleTooltip" />
-        <OkBtn v-if="showRunInBackgroundBtn" @click="onSendBackGround" label="后台" tooltip="在后台发件" />
+        <OkBtn @click="onSendBackGround" label="后台" tooltip="在后台发件" />
       </div>
     </q-card>
   </q-dialog>
@@ -66,8 +66,8 @@ onMounted(async () => {
   // 有 id 时，获取 id 信息
   console.log(sendingGroupIdRef.value)
 })
-const showRunInBackgroundBtn = computed(() => {
-  return !props.sendingGroupId
+const existSendingGroupId = computed(() => {
+  return sendingGroupIdRef.value
 })
 
 const progressValue = ref(0)
@@ -75,12 +75,15 @@ const progressValue = ref(0)
 // 发送进度
 import { subscribeOne } from 'src/signalR/signalR'
 import { UzonMailClientMethods, ISendingGroupProgressArg, SendingGroupProgressType } from 'src/signalR/types'
-import { confirmOperation, notifySuccess } from 'src/utils/notify'
+import { confirmOperation, notifySuccess } from 'src/utils/dialog'
 async function onEmailGroupSendingProgressChanged (progress: ISendingGroupProgressArg) {
+  console.log('onEmailGroupSendingProgressChanged', progress)
   if (!progress) return
   if (progress.sendingGroupId !== sendingGroupIdRef.value) return
   if (progress.progressType === SendingGroupProgressType.end) {
     onDialogCancel()
+
+    notifySuccess(`邮件组 ${progress.sendingGroupId} 发送完成`)
     return
   }
 

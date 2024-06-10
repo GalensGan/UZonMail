@@ -18,6 +18,7 @@ declare module 'vue' {
     ElDropdown: typeof import('element-plus/es')['ElDropdown']
     ElDropdownItem: typeof import('element-plus/es')['ElDropdownItem']
     ElDropdownMenu: typeof import('element-plus/es')['ElDropdownMenu']
+    EllipsisContent: typeof import('./src/components/ellipsisContent/EllipsisContent.vue')['default']
     ExportBtn: typeof import('./src/components/componentWrapper/buttons/ExportBtn.vue')['default']
     ImageCropper: typeof import('./src/components/imageCropper/ImageCropper.vue')['default']
     ImportBtn: typeof import('./src/components/componentWrapper/buttons/ImportBtn.vue')['default']
@@ -31,6 +32,7 @@ declare module 'vue' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SearchInput: typeof import('./src/components/searchInput/SearchInput.vue')['default']
+    StatusChip: typeof import('./src/components/statusChip/StatusChip.vue')['default']
     UserAvatar: typeof import('./src/components/userAvatar/UserAvatar.vue')['default']
   }
 }

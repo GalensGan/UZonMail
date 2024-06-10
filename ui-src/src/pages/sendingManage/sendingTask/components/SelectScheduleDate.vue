@@ -38,7 +38,7 @@ const modelValue = ref(dayjs().format('YYYY-MM-DD HH:mm'))
 
 import OkBtn from 'src/components/componentWrapper/buttons/OkBtn.vue'
 import CancelBtn from 'src/components/componentWrapper/buttons/CancelBtn.vue'
-import { notifyError } from 'src/utils/notify'
+import { notifyError } from 'src/utils/dialog'
 function onOkClick () {
   // 验证日期是否大于当前日期
   if (dayjs(modelValue.value).isBefore(dayjs().add(3, 'minute'))) {

@@ -59,7 +59,7 @@ export interface ISendingGroupInfo {
   attachments: object[], // 附件
   totalCount: number, // 总数
   successCount: number, // 成功数
-  status: string, // 状态
+  status: SendingGroupStatus, // 状态
   sendStartDate: string, // 发送开始时间
 }
 

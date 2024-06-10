@@ -107,7 +107,7 @@ async function onMenuItemClick (event: Event, item: IContextMenuItem) {
   // 其它菜单设置成不可点击
   // 当前菜单增加执行动画
   try {
-    console.log('执行菜单命令', event, item)
+    console.log('执行菜单命令', event, item, props.value)
     // 开始执行
     if (typeof item.onClick === 'function') {
       const result = await item.onClick(props.value)

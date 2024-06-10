@@ -96,3 +96,28 @@ export async function confirmOperation (title: string, message: string): Promise
     })
   })
 }
+
+/**
+ * 显示 html 内容
+ * @param title
+ * @param html
+ * @returns
+ */
+export function showHtmlDialog (title: string, html: string) {
+  return new Promise((resolve) => {
+    Dialog.create({
+      title,
+      message: html,
+      html: true,
+      ok: {
+        dense: true
+      }
+    }).onOk(() => {
+      resolve(true)
+    }).onCancel(() => {
+      resolve(false)
+    }).onDismiss(() => {
+      resolve(false)
+    })
+  })
+}

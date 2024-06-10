@@ -5,7 +5,7 @@ import { IEmailGroupListItem } from '../components/types'
 
 import { IOutbox, createOutbox, createOutboxes } from 'src/api/emailBox'
 
-import { notifyError, notifySuccess } from 'src/utils/notify'
+import { notifyError, notifySuccess } from 'src/utils/dialog'
 import { useUserInfoStore } from 'src/stores/user'
 import { aes } from 'src/utils/encrypt'
 import { IExcelColumnMapper, readExcel, writeExcel } from 'src/utils/file'

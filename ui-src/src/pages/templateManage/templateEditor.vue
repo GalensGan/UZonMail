@@ -17,7 +17,7 @@ const templateId = ref(0)
 const templateName = ref('')
 
 import { getEmailTemplateById, upsertEmailTemplate } from 'src/api/emailTemplate'
-import { notifyError, notifySuccess } from 'src/utils/notify'
+import { notifyError, notifySuccess } from 'src/utils/dialog'
 // 从服务器拉取内容
 const route = useRoute()
 onMounted(async () => {

@@ -91,7 +91,7 @@ onMounted(() => {
 // 上传地址配置
 import { useUserInfoStore } from 'src/stores/user'
 const userInfoStore = useUserInfoStore()
-function factoryFn (files: IUploadFile[]): Promise<QUploaderFactoryObject> {
+function factoryFn (files: readonly IUploadFile[]): Promise<QUploaderFactoryObject> {
   console.log('uploader factory called:', files)
   return new Promise((resolve) => {
     // Retrieve JWT token from your store.
@@ -141,7 +141,7 @@ async function onFileAdded (files: readonly IUploadFile[]) {
     // 修改文件状态
     uploaderRef.value.updateFileStatus(file, 'uploaded', file.size)
     const queueIndex = uploaderRef.value.queuedFiles.findIndex(x => x.__key === file.__key)
-    // 从队列中移除
+    // 从队列中移除, 强制去修改
     uploaderRef.value.queuedFiles.splice(queueIndex, 1)
     // 添加到已上传文件列表
     uploaderRef.value.uploadedFiles.push(file)
@@ -156,8 +156,8 @@ const canUpload = computed(() => {
 })
 
 // 文件上传后的操作
-import { notifyError } from 'src/utils/notify'
-function onFileUploaded ({ files, xhr }: { files: IUploadFile[], xhr: XMLHttpRequest }) {
+import { notifyError } from 'src/utils/dialog'
+function onFileUploaded ({ files, xhr }: { files: readonly IUploadFile[], xhr: XMLHttpRequest }) {
   const file = files[0]
   const response = JSON.parse(xhr.responseText)
   if (!response.ok) {

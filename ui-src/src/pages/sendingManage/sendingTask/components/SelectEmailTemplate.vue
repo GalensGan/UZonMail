@@ -1,5 +1,6 @@
 <template>
-  <q-field v-model="fieldModelValue" tag="div" label="模板" dense @focus="isActive = true" @blur="isActive = false">
+  <q-field v-model="fieldModelValue" tag="div" label="模板" dense @focus="isActive = true" @blur="isActive = false"
+    @dbclick="onSelectEmailTemplates">
     <template v-slot:before>
       <q-icon name="article" color="secondary" />
     </template>

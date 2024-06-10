@@ -5,7 +5,7 @@ import axios from 'axios'
 import { IAxiosRequestConfig, IHttpClientOptions, IResponseData } from './types'
 import { useUserInfoStore } from 'src/stores/user'
 import { StatusCode } from 'status-code-enum'
-import { notifyError } from 'src/utils/notify'
+import { notifyError } from 'src/utils/dialog'
 
 import { getDataFromCache, setDataToCache } from './httpCache'
 

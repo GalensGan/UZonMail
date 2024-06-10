@@ -215,7 +215,7 @@ export const dynamicRoutes: ExtendedRouteRecordRaw[] = [
           label: '支持作者',
           noTag: true
         },
-        component: () => import('pages/sponsor/SponsorAuthor.vue')
+        component: () => import('pages/sponsor/sponsorAuthor.vue')
       }
     ]
   },
