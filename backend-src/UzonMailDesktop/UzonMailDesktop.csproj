@@ -78,6 +78,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Helpers\Webview2Helper.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -85,6 +86,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MainWindowViewModel.cs" />
+    <Compile Include="Models\DotnetCoreEnvDetection.cs" />
+    <Compile Include="Models\IDetectRuntimeEnv.cs" />
+    <Compile Include="Models\Webview2EnvDetection.cs" />
     <Compile Include="MVVM\ObservableObject.cs" />
     <Compile Include="MVVM\WebView2Extensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">

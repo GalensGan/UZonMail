@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using UzonMailDesktop.Models;
 
 namespace UzonMailDesktop
 {
@@ -47,6 +48,24 @@ namespace UzonMailDesktop
             //});
             //MainWebview2.EnsureCoreWebView2Async(env.Result);
 
+            // 验证环境
+            var envs = new List<IDetectRuntimeEnv>
+            {
+                new DotnetCoreEnvDetection(),
+                new Webview2EnvDetection()
+            };
+            for(int i = 0; i < envs.Count; i++)
+            {
+                var env = envs[i];
+                if (!env.DetectEnv())
+                {
+                    MessageBox.Show(env.FailedMessage, "环境缺失", MessageBoxButton.OK, MessageBoxImage.Error);
+                    Process.Start(env.RedirectUrl);
+                    Application.Current.Shutdown();
+                    return;
+                }
+            }
+
             // 启动后端服务
             CloseBackService();
 
@@ -54,8 +73,8 @@ namespace UzonMailDesktop
             {
                 FileName = "UZonMailService.exe",
                 WorkingDirectory = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "service"),
-                UseShellExecute = true,
-                CreateNoWindow = false,
+                UseShellExecute = false,
+                CreateNoWindow = true,
                 WindowStyle = ProcessWindowStyle.Hidden
             };
             Process.Start(startInfo);
