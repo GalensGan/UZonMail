@@ -5,6 +5,7 @@ using UZonMailService.Services.EmailSending;
 using Microsoft.Extensions.Options;
 using UZonMailService.Config;
 using UZonMailService.Models.SqlLite.Init;
+using Microsoft.EntityFrameworkCore;
 
 namespace UZonMailService.Services.HostedServices
 {
@@ -26,7 +27,9 @@ namespace UZonMailService.Services.HostedServices
             var nv = serviceProvider.GetRequiredService<IWebHostEnvironment>();
             var context = serviceProvider.GetRequiredService<SqlContext>();
             // 应用迁移
-            //context.Database.Migrate();
+            context.Database.Migrate();
+            await context.Database.EnsureCreatedAsync();
+
             var appConfig = serviceProvider.GetRequiredService<IOptions<AppConfig>>();
             // 初始数据
             var initDb = new InitDatabase(nv, context, appConfig.Value);

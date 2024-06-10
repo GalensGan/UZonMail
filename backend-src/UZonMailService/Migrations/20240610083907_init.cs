@@ -12,23 +12,6 @@ namespace UZonMailService.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "EmailAddress",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Email = table.Column<string>(type: "TEXT", nullable: false),
-                    Name = table.Column<string>(type: "TEXT", nullable: true),
-                    CreateDate = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
-                    IsHidden = table.Column<bool>(type: "INTEGER", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_EmailAddress", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "EmailTemplates",
                 columns: table => new
                 {
@@ -65,23 +48,6 @@ namespace UZonMailService.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_FileBuckets", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "GlobalUserSettings",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    UserId = table.Column<int>(type: "INTEGER", nullable: false),
-                    OutboxCooldownMs = table.Column<long>(type: "INTEGER", nullable: false),
-                    CreateDate = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
-                    IsHidden = table.Column<bool>(type: "INTEGER", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_GlobalUserSettings", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -129,16 +95,17 @@ namespace UZonMailService.Migrations
                     Inboxes = table.Column<string>(type: "TEXT", nullable: false),
                     CcBoxes = table.Column<string>(type: "TEXT", nullable: true),
                     BccBoxes = table.Column<string>(type: "TEXT", nullable: true),
-                    Attachments = table.Column<string>(type: "TEXT", nullable: true),
-                    Data = table.Column<string>(type: "TEXT", nullable: false),
+                    Data = table.Column<string>(type: "TEXT", nullable: true),
                     IsDistributed = table.Column<bool>(type: "INTEGER", nullable: false),
                     TotalCount = table.Column<int>(type: "INTEGER", nullable: false),
                     SuccessCount = table.Column<int>(type: "INTEGER", nullable: false),
+                    SentCount = table.Column<int>(type: "INTEGER", nullable: false),
                     Status = table.Column<int>(type: "INTEGER", nullable: false),
                     SendStartDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     SendEndDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    LastMessage = table.Column<string>(type: "TEXT", nullable: true),
                     SendingType = table.Column<int>(type: "INTEGER", nullable: false),
-                    ScheduleDate = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    ScheduleDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     CreateDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
                     IsHidden = table.Column<bool>(type: "INTEGER", nullable: false)
@@ -146,6 +113,23 @@ namespace UZonMailService.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_SendingGroups", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SystemSettings",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    InitializedQuartz = table.Column<bool>(type: "INTEGER", nullable: false),
+                    CreateDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
+                    IsHidden = table.Column<bool>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SystemSettings", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -161,10 +145,7 @@ namespace UZonMailService.Migrations
                     Description = table.Column<string>(type: "TEXT", nullable: true),
                     IsActive = table.Column<bool>(type: "INTEGER", nullable: false),
                     Proxy = table.Column<string>(type: "TEXT", nullable: false),
-                    Discriminator = table.Column<string>(type: "TEXT", maxLength: 13, nullable: false),
-                    IgnoreUserIds = table.Column<string>(type: "TEXT", nullable: true),
-                    MachedUserIds = table.Column<string>(type: "TEXT", nullable: true),
-                    IsShared = table.Column<bool>(type: "INTEGER", nullable: true),
+                    IsShared = table.Column<bool>(type: "INTEGER", nullable: false),
                     CreateDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
                     IsHidden = table.Column<bool>(type: "INTEGER", nullable: false)
@@ -172,6 +153,26 @@ namespace UZonMailService.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_UserProxies", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserSettings",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    UserId = table.Column<int>(type: "INTEGER", nullable: false),
+                    MaxSendCountPerEmailDay = table.Column<int>(type: "INTEGER", nullable: false),
+                    MinOutboxCooldownSecond = table.Column<int>(type: "INTEGER", nullable: false),
+                    MaxOutboxCooldownSecond = table.Column<int>(type: "INTEGER", nullable: false),
+                    MaxSendingBatchSize = table.Column<int>(type: "INTEGER", nullable: false),
+                    CreateDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
+                    IsHidden = table.Column<bool>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserSettings", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -256,22 +257,24 @@ namespace UZonMailService.Migrations
                 name: "EmailTemplateSendingGroup",
                 columns: table => new
                 {
-                    SendingGroupsId = table.Column<int>(type: "INTEGER", nullable: false),
+                    SendingGroupId = table.Column<int>(type: "INTEGER", nullable: false),
                     TemplatesId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_EmailTemplateSendingGroup", x => new { x.SendingGroupsId, x.TemplatesId });
+                    table.PrimaryKey("PK_EmailTemplateSendingGroup", x => new { x.SendingGroupId, x.TemplatesId });
                     table.ForeignKey(
                         name: "FK_EmailTemplateSendingGroup_EmailTemplates_TemplatesId",
                         column: x => x.TemplatesId,
                         principalTable: "EmailTemplates",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_EmailTemplateSendingGroup_SendingGroups_SendingGroupsId",
-                        column: x => x.SendingGroupsId,
+                        name: "FK_EmailTemplateSendingGroup_SendingGroups_SendingGroupId",
+                        column: x => x.SendingGroupId,
                         principalTable: "SendingGroups",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -291,9 +294,12 @@ namespace UZonMailService.Migrations
                     Subject = table.Column<string>(type: "TEXT", nullable: true),
                     Content = table.Column<string>(type: "TEXT", nullable: true),
                     IsSendingBatch = table.Column<bool>(type: "INTEGER", nullable: false),
+                    ProxyId = table.Column<int>(type: "INTEGER", nullable: false),
+                    SendDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Status = table.Column<int>(type: "INTEGER", nullable: false),
-                    FailedReason = table.Column<string>(type: "TEXT", nullable: true),
+                    SendResult = table.Column<string>(type: "TEXT", nullable: true),
                     TriedCount = table.Column<int>(type: "INTEGER", nullable: false),
+                    ReceiptId = table.Column<string>(type: "TEXT", nullable: true),
                     CreateDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
                     IsHidden = table.Column<bool>(type: "INTEGER", nullable: false)
@@ -336,6 +342,36 @@ namespace UZonMailService.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "FileUsages",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    OwnerUserId = table.Column<int>(type: "INTEGER", nullable: false),
+                    UniqueName = table.Column<string>(type: "TEXT", nullable: true),
+                    FileName = table.Column<string>(type: "TEXT", nullable: false),
+                    FileObjectId = table.Column<int>(type: "INTEGER", nullable: false),
+                    IsPublic = table.Column<bool>(type: "INTEGER", nullable: false),
+                    CreateDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
+                    IsHidden = table.Column<bool>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FileUsages", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_FileUsages_FileObjects_FileObjectId",
+                        column: x => x.FileObjectId,
+                        principalTable: "FileObjects",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_FileUsages_Users_OwnerUserId",
+                        column: x => x.OwnerUserId,
+                        principalTable: "Users",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "UserRoles",
                 columns: table => new
                 {
@@ -363,42 +399,6 @@ namespace UZonMailService.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "FileUsages",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    OwnerUserId = table.Column<int>(type: "INTEGER", nullable: false),
-                    UniqueName = table.Column<string>(type: "TEXT", nullable: true),
-                    FileName = table.Column<string>(type: "TEXT", nullable: false),
-                    FileObjectId = table.Column<int>(type: "INTEGER", nullable: false),
-                    IsPublic = table.Column<bool>(type: "INTEGER", nullable: false),
-                    SendingItemId = table.Column<int>(type: "INTEGER", nullable: true),
-                    CreateDate = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
-                    IsHidden = table.Column<bool>(type: "INTEGER", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_FileUsages", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_FileUsages_FileObjects_FileObjectId",
-                        column: x => x.FileObjectId,
-                        principalTable: "FileObjects",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_FileUsages_SendingItems_SendingItemId",
-                        column: x => x.SendingItemId,
-                        principalTable: "SendingItems",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_FileUsages_Users_OwnerUserId",
-                        column: x => x.OwnerUserId,
-                        principalTable: "Users",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Inboxes",
                 columns: table => new
                 {
@@ -407,6 +407,7 @@ namespace UZonMailService.Migrations
                     EmailGroupId = table.Column<int>(type: "INTEGER", nullable: false),
                     UserId = table.Column<int>(type: "INTEGER", nullable: false),
                     Email = table.Column<string>(type: "TEXT", nullable: false),
+                    Domain = table.Column<string>(type: "TEXT", nullable: true),
                     Name = table.Column<string>(type: "TEXT", nullable: true),
                     Description = table.Column<string>(type: "TEXT", nullable: true),
                     Remark = table.Column<string>(type: "TEXT", nullable: true),
@@ -417,7 +418,7 @@ namespace UZonMailService.Migrations
                     SmtpPort = table.Column<int>(type: "INTEGER", nullable: true),
                     Password = table.Column<string>(type: "TEXT", nullable: true),
                     EnableSSL = table.Column<bool>(type: "INTEGER", nullable: true),
-                    SystemProxyId = table.Column<int>(type: "INTEGER", nullable: true),
+                    ProxyId = table.Column<int>(type: "INTEGER", nullable: true),
                     MaxSendCountPerDay = table.Column<int>(type: "INTEGER", nullable: true),
                     CreateDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
@@ -431,11 +432,54 @@ namespace UZonMailService.Migrations
                         column: x => x.EmailGroupId,
                         principalTable: "EmailGroups",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "FileUsageSendingGroup",
+                columns: table => new
+                {
+                    AttachmentsId = table.Column<int>(type: "INTEGER", nullable: false),
+                    SendingGroupId = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FileUsageSendingGroup", x => new { x.AttachmentsId, x.SendingGroupId });
                     table.ForeignKey(
-                        name: "FK_Inboxes_UserProxies_SystemProxyId",
-                        column: x => x.SystemProxyId,
-                        principalTable: "UserProxies",
-                        principalColumn: "Id");
+                        name: "FK_FileUsageSendingGroup_FileUsages_AttachmentsId",
+                        column: x => x.AttachmentsId,
+                        principalTable: "FileUsages",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_FileUsageSendingGroup_SendingGroups_SendingGroupId",
+                        column: x => x.SendingGroupId,
+                        principalTable: "SendingGroups",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "FileUsageSendingItem",
+                columns: table => new
+                {
+                    AttachmentsId = table.Column<int>(type: "INTEGER", nullable: false),
+                    SendingItemId = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FileUsageSendingItem", x => new { x.AttachmentsId, x.SendingItemId });
+                    table.ForeignKey(
+                        name: "FK_FileUsageSendingItem_FileUsages_AttachmentsId",
+                        column: x => x.AttachmentsId,
+                        principalTable: "FileUsages",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_FileUsageSendingItem_SendingItems_SendingItemId",
+                        column: x => x.SendingItemId,
+                        principalTable: "SendingItems",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -443,21 +487,23 @@ namespace UZonMailService.Migrations
                 columns: table => new
                 {
                     OutboxesId = table.Column<int>(type: "INTEGER", nullable: false),
-                    SendingGroupsId = table.Column<int>(type: "INTEGER", nullable: false)
+                    SendingGroupId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_OutboxSendingGroup", x => new { x.OutboxesId, x.SendingGroupsId });
+                    table.PrimaryKey("PK_OutboxSendingGroup", x => new { x.OutboxesId, x.SendingGroupId });
                     table.ForeignKey(
                         name: "FK_OutboxSendingGroup_Inboxes_OutboxesId",
                         column: x => x.OutboxesId,
                         principalTable: "Inboxes",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_OutboxSendingGroup_SendingGroups_SendingGroupsId",
-                        column: x => x.SendingGroupsId,
+                        name: "FK_OutboxSendingGroup_SendingGroups_SendingGroupId",
+                        column: x => x.SendingGroupId,
                         principalTable: "SendingGroups",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -486,8 +532,13 @@ namespace UZonMailService.Migrations
                 column: "OwnerUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_FileUsages_SendingItemId",
-                table: "FileUsages",
+                name: "IX_FileUsageSendingGroup_SendingGroupId",
+                table: "FileUsageSendingGroup",
+                column: "SendingGroupId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FileUsageSendingItem_SendingItemId",
+                table: "FileUsageSendingItem",
                 column: "SendingItemId");
 
             migrationBuilder.CreateIndex(
@@ -496,14 +547,9 @@ namespace UZonMailService.Migrations
                 column: "EmailGroupId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Inboxes_SystemProxyId",
-                table: "Inboxes",
-                column: "SystemProxyId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_OutboxSendingGroup_SendingGroupsId",
+                name: "IX_OutboxSendingGroup_SendingGroupId",
                 table: "OutboxSendingGroup",
-                column: "SendingGroupsId");
+                column: "SendingGroupId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PermissionCodes_RoleId",
@@ -535,16 +581,13 @@ namespace UZonMailService.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "EmailAddress");
-
-            migrationBuilder.DropTable(
                 name: "EmailTemplateSendingGroup");
 
             migrationBuilder.DropTable(
-                name: "FileUsages");
+                name: "FileUsageSendingGroup");
 
             migrationBuilder.DropTable(
-                name: "GlobalUserSettings");
+                name: "FileUsageSendingItem");
 
             migrationBuilder.DropTable(
                 name: "OutboxSendingGroup");
@@ -556,13 +599,22 @@ namespace UZonMailService.Migrations
                 name: "RolePermissionCodes");
 
             migrationBuilder.DropTable(
+                name: "SystemSettings");
+
+            migrationBuilder.DropTable(
+                name: "UserProxies");
+
+            migrationBuilder.DropTable(
                 name: "UserRoles");
+
+            migrationBuilder.DropTable(
+                name: "UserSettings");
 
             migrationBuilder.DropTable(
                 name: "EmailTemplates");
 
             migrationBuilder.DropTable(
-                name: "FileObjects");
+                name: "FileUsages");
 
             migrationBuilder.DropTable(
                 name: "SendingItems");
@@ -571,7 +623,7 @@ namespace UZonMailService.Migrations
                 name: "Inboxes");
 
             migrationBuilder.DropTable(
-                name: "FileBuckets");
+                name: "FileObjects");
 
             migrationBuilder.DropTable(
                 name: "SendingGroups");
@@ -580,7 +632,7 @@ namespace UZonMailService.Migrations
                 name: "EmailGroups");
 
             migrationBuilder.DropTable(
-                name: "UserProxies");
+                name: "FileBuckets");
 
             migrationBuilder.DropTable(
                 name: "Users");

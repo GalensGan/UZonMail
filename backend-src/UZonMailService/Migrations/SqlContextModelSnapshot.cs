@@ -112,7 +112,6 @@ namespace UZonMailService.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("LastMessage")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("ScheduleDate")
@@ -219,6 +218,8 @@ namespace UZonMailService.Migrations
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("SendingGroupId");
 
                     b.ToTable("SendingItems");
                 });
@@ -836,6 +837,17 @@ namespace UZonMailService.Migrations
                         .HasForeignKey("SendingGroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("UZonMailService.Models.SqlLite.EmailSending.SendingItem", b =>
+                {
+                    b.HasOne("UZonMailService.Models.SqlLite.EmailSending.SendingGroup", "SendingGroup")
+                        .WithMany()
+                        .HasForeignKey("SendingGroupId")
+                        .OnDelete(DeleteBehavior.ClientNoAction)
+                        .IsRequired();
+
+                    b.Navigation("SendingGroup");
                 });
 
             modelBuilder.Entity("UZonMailService.Models.SqlLite.Emails.EmailGroup", b =>

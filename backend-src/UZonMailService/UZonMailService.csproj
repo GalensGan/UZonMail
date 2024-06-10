@@ -63,6 +63,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Migrations\20240610083907_init.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Compile>
+    <Compile Update="Migrations\SqlContextModelSnapshot.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="Quartz\quartz-sqlite.sqlite3">
     </None>
   </ItemGroup>
