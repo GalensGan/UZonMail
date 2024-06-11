@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,7 +23,7 @@ namespace UzonMailDesktop.Models
                 StartInfo = new ProcessStartInfo
                 {
                     FileName = "dotnet",
-                    Arguments = "--version",
+                    Arguments = "--list-runtimes",
                     RedirectStandardOutput = true,
                     UseShellExecute = false,
                     CreateNoWindow = true,
@@ -32,9 +33,22 @@ namespace UzonMailDesktop.Models
             process.Start();
             string output = process.StandardOutput.ReadToEnd();
             process.WaitForExit();
+            string[] outputs = output.Split('\n');
 
-            if (output.StartsWith("8."))
+            if (outputs.Any(x=>x.StartsWith("Microsoft.AspNetCore.App 8.")))
                 return true;
+
+            // 若没有时，判断路径
+            string dotnetDir = "C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App";
+            // 获取子文件夹名
+            var dirs = System.IO.Directory.GetDirectories(dotnetDir);
+            if (dirs.Length == 0)
+                return false;
+
+            // 转成版本号
+            var versions = dirs.Select(x => Path.GetFileName(x)).Select(x=> new Version(x));
+            var needVersion = new Version("8.0.0");
+            if (versions.Any(x => x >= needVersion)) return true;
 
             return false;
         }

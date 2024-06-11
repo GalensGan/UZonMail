@@ -25,6 +25,11 @@ namespace UzonMailDesktop
 
         public MainWindowViewModel()
         {
+            SetURL();
+        }
+        
+        public void SetURL()
+        {
             // 获取配置
             URL = ConfigurationManager.AppSettings["url"];
         }

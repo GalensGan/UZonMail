@@ -23,11 +23,13 @@ namespace UzonMailDesktop
     /// </summary>
     public partial class MainWindow : Window
     {
+        private MainWindowViewModel ViewModel { get; }
         public MainWindow()
         {
             InitializeComponent();
 
-            this.DataContext = new MainWindowViewModel();
+            ViewModel = new MainWindowViewModel();
+            this.DataContext = ViewModel;
 
             this.Loaded += MainWindow_Loaded;
             this.Closing += MainWindow_Closing;
@@ -54,7 +56,7 @@ namespace UzonMailDesktop
                 new DotnetCoreEnvDetection(),
                 new Webview2EnvDetection()
             };
-            for(int i = 0; i < envs.Count; i++)
+            for (int i = 0; i < envs.Count; i++)
             {
                 var env = envs[i];
                 if (!env.DetectEnv())
@@ -80,12 +82,19 @@ namespace UzonMailDesktop
             Process.Start(startInfo);
         }
 
-        private void MainWebview2_CoreWebView2InitializationCompleted(object sender, Microsoft.Web.WebView2.Core.CoreWebView2InitializationCompletedEventArgs e)
+        private void MainWebview2_CoreWebView2InitializationCompleted(object sender, CoreWebView2InitializationCompletedEventArgs e)
         {
             var core = MainWebview2.CoreWebView2;
             core.Settings.AreDefaultContextMenusEnabled = true;
             core.Settings.IsScriptEnabled = true;
-            core.SetVirtualHostNameToFolderMapping("desktop.uzonmail.com", "wwwroot", Microsoft.Web.WebView2.Core.CoreWebView2HostResourceAccessKind.Allow);
+            core.SetVirtualHostNameToFolderMapping("desktop.uzonmail.com", "wwwroot", CoreWebView2HostResourceAccessKind.DenyCors);
+            core.NavigationStarting += Core_NavigationStarting;
+        }
+
+        private void Core_NavigationStarting(object sender, CoreWebView2NavigationStartingEventArgs e)
+        {
+            if (e.Uri.Equals(ViewModel.URL)) return;
+            e.Cancel = true;
         }
 
         /// <summary>
