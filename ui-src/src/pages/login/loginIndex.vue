@@ -1,12 +1,13 @@
 <template>
-  <div class="column justify-center login-container bg-grey-12">
+  <div class="column justify-center login-container bg-white">
     <div class="row justify-center items-center q-mb-xl animated fadeIn slower">
-      <q-icon :name="resolveSvgFullName('undraw_mailbox_re_dvds')" size="220px"
-        class="q-ma-lg animated fadeInUp"></q-icon>
+      <q-icon :name="resolveSvgFullName('undraw_mention_re_k5xc')" size="220px"
+        class="q-pa-lg animated fadeInUp"></q-icon>
 
-      <q-card class="q-ma-md q-pa-lg column justify-center items-center border-radius-8 animated fadeInDown"
+      <div
+        class="q-ma-md q-pa-lg column justify-center items-center border-radius-8 animated fadeInDown hover-card card-like"
         style="min-width: 400px;" @keyup.enter="onUserLogin">
-        <div class="self-center q-mb-lg text-h5 text-secondary">Welcome to UZonMail</div>
+        <div class="self-center q-mb-lg text-h5 text-secondary welcome-to-uzon-mail">Welcome to UZonMail</div>
 
         <q-input outlined class="full-width q-mb-md" standout v-model="userId" label="用户名">
           <template v-slot:prepend>
@@ -25,7 +26,7 @@
         </q-input>
 
         <q-btn class="full-width border-radius-8" color="primary" label="登 陆" @click="onUserLogin" />
-      </q-card>
+      </div>
     </div>
   </div>
 </template>
@@ -81,5 +82,12 @@ async function onUserLogin () {
   left: 0;
   right: 0;
   bottom: 0;
+
+  .welcome-to-uzon-mail {
+    background: -webkit-linear-gradient(315deg, #42d392 25%, #857bf0);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
 }
 </style>
