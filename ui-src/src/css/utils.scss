@@ -31,15 +31,6 @@
   }
 }
 
-.hover-scale {
-  cursor: pointer;
-  transition: all 0.3s;
-  &:hover {
-    // 绕中心放大
-    transform: scale(1.15);
-  }
-}
-
 // 卡片样式
 .card-like {
   border-radius: 4px;

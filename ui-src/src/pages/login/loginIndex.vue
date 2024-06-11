@@ -6,7 +6,7 @@
 
       <div
         class="q-ma-md q-pa-lg column justify-center items-center border-radius-8 animated fadeInDown hover-card card-like"
-        style="min-width: 400px;" @keyup.enter="onUserLogin">
+        style="width: 400px;" @keyup.enter="onUserLogin">
         <div class="self-center q-mb-lg text-h5 text-secondary welcome-to-uzon-mail">Welcome to UZonMail</div>
 
         <q-input outlined class="full-width q-mb-md" standout v-model="userId" label="用户名">
