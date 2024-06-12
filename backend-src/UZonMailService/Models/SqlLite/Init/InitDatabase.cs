@@ -66,7 +66,7 @@ namespace UZonMailService.Models.SqlLite.Init
                 {
                     UserId = "admin",
                     UserName = "admin",
-                    // 密码是进行了 Sha256 二次加密的
+                    // 密码是进行了 Sha256 二次加密
                     Password = "admin1234".Sha256(1),
                     IsSuperAdmin = true,
                     IsHidden = true,

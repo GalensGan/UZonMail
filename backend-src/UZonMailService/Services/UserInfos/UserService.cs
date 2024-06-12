@@ -186,12 +186,8 @@ namespace UZonMailService.Services.UserInfos
         /// <exception cref="KnownException"></exception>
         public async Task<bool> ResetUserPassword(string userId)
         {
-            var user = await db.Users.FirstOrDefaultAsync(x => x.UserId == userId);
-            if (user == null)
-            {
-                throw new KnownException("用户不存在");
-            }
-            user.Password = appConfig.Value.User.DefaultPassword.MD5(1);
+            var user = await db.Users.FirstOrDefaultAsync(x => x.UserId == userId) ?? throw new KnownException("用户不存在");
+            user.Password = appConfig.Value.User.DefaultPassword.Sha256(1);
             await db.SaveChangesAsync();
             return true;
         }

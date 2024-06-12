@@ -85,6 +85,7 @@ namespace Uamazing.Utils.Extensions
         /// 计算字符串的 SHA256 值
         /// </summary>
         /// <param name="plainText"></param>
+        /// <param name="cycle">循环的次数</param>
         /// <returns></returns>
         public static string Sha256(this string plainText, int cycle = 0)
         {
