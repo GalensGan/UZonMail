@@ -1,0 +1,142 @@
+{
+  // Place your UI workspace snippets here. Each snippet is defined under a snippet name and has a scope, prefix, body and
+  // description. Add comma separated ids of the languages where the snippet is applicable in the scope field. If scope
+  // is left empty or omitted, the snippet gets applied to all languages. The prefix is what is
+  // used to trigger the snippet and the body will be expanded and inserted. Possible variables are:
+  // $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders.
+  // Placeholders with the same ids are connected.
+  // Example:
+  // "Print to console": {
+  // 	"scope": "javascript,typescript",
+  // 	"prefix": "log",
+  // 	"body": [
+  // 		"console.log('$1');",
+  // 		"$2"
+  // 	],
+  // 	"description": "Log output to console"
+  // }
+  "vue3": {
+    "prefix": "setup",
+    "body": [
+      "<template>",
+      "  <div>",
+      "$1",
+      "  </div>",
+      "</template>\n",
+      "<script lang=\"ts\" setup>",
+      "    $2",
+      "</script>\n",
+      "<style lang=\"scss\" scoped>",
+      "$3",
+      "</style>"
+    ],
+    "description": "vue3"
+  },
+
+  "dialog":{
+    "prefix": "dialog",
+    "body":[
+      "<template>",
+      "  <q-dialog ref='dialogRef' @hide=\"onDialogHide\" :persistent='true'>",
+      "    <q-card class='column items-center items-start'>",
+      "",
+      "    </q-card>",
+      "  </q-dialog>",
+      "</template>",
+      "",
+      "<script lang='ts' setup>",
+      "/**",
+      " * warning: 该组件是一个弹窗的示例，不可直接使用",
+      " * 参考：http://www.quasarchs.com/quasar-plugins/dialog#composition-api-variant",
+      " */",
+      "",
+      "import { useDialogPluginComponent } from 'quasar'",
+      "defineEmits([",
+      "  // 必需；需要指定一些事件",
+      "  // （组件将通过useDialogPluginComponent()发出）",
+      "  ...useDialogPluginComponent.emits",
+      "])",
+      "const { dialogRef, onDialogHide/* , onDialogOK, onDialogCancel */ } = useDialogPluginComponent()",
+      "</script>",
+      "",
+      "<style lang='scss' scoped></style>",
+    ]
+  },
+
+  "table":{
+    "prefix": "table",
+    "scope": "vue",
+    "body": [
+      "<template>",
+      "  <q-table class=\"full-height\" :rows=\"rows\" :columns=\"columns\" row-key=\"id\" v-model:pagination=\"pagination\" dense",
+      "    :loading=\"loading\" :filter=\"filter\" binary-state-sort @request=\"onTableRequest\">",
+      "    <template v-slot:top-left>",
+      "      <CreateBtn />",
+      "    </template>",
+      "",
+      "    <template v-slot:top-right>",
+      "      <SearchInput v-model=\"filter\" />",
+      "    </template>",
+      "",
+      "    <template v-slot:body-cell-id=\"props\">",
+      "      <QTableIndex :props=\"props\" />",
+      "    </template>",
+      "",
+      "    <template v-slot:body-cell-userId=\"props\">",
+      "      <q-td :props=\"props\">",
+      "        {{ props.value }}",
+      "      </q-td>",
+      "    </template>",
+      "  </q-table>",
+      "</template>",
+      "",
+      "<script lang=\"ts\" setup>",
+      "import { QTableColumn } from 'quasar'",
+      "import { useQTable, useQTableIndex } from 'src/compositions/qTableUtils'",
+      "import { IRequestPagination, TTableFilterObject } from 'src/compositions/types'",
+      "import SearchInput from 'src/components/searchInput/SearchInput.vue'",
+      "",
+      "const { indexColumn, QTableIndex } = useQTableIndex()",
+      "const columns: QTableColumn[] = [",
+      "  indexColumn,",
+      "  {",
+      "    name: 'userId',",
+      "    required: true,",
+      "    label: '用户名',",
+      "    align: 'left',",
+      "    field: 'userId',",
+      "    sortable: true",
+      "  },",
+      "  {",
+      "    name: 'createDate',",
+      "    required: false,",
+      "    label: '注册日期',",
+      "    align: 'left',",
+      "    field: 'createDate',",
+      "    format: (val: string) => {",
+      "      return val ? new Date(val).toLocaleString() : ''",
+      "    },",
+      "    sortable: true",
+      "  }",
+      "]",
+      "// eslint-disable-next-line @typescript-eslint/no-unused-vars",
+      "async function getRowsNumberCount (filterObj: TTableFilterObject) {",
+      "  return 0",
+      "}",
+      "// eslint-disable-next-line @typescript-eslint/no-unused-vars",
+      "async function onRequest (filterObj: TTableFilterObject, pagination: IRequestPagination) {",
+      "  return []",
+      "}",
+      "",
+      "const { pagination, rows, filter, onTableRequest, loading } = useQTable({",
+      "  getRowsNumberCount,",
+      "  // eslint-disable-next-line @typescript-eslint/no-explicit-any",
+      "  onRequest",
+      "})",
+      "</script>",
+      "",
+      "<style lang=\"scss\" scoped></style>",
+      ""
+    ]
+  }
+}

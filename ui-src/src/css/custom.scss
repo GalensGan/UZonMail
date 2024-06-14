@@ -1,0 +1,104 @@
+// tooltip 带有箭头
+.q-tooltip--style {
+  overflow-x: visible;
+  overflow-y: visible;
+  &::before {
+    content: ' ';
+    width: 0;
+    height: 0;
+    border-top: 5px solid transparent;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    position: absolute;
+  }
+  &.arrow-top::before {
+    border-bottom-color: $tooltip-background;
+    left: 50%;
+    top: -10px;
+    margin-left: -5px;
+  }
+  &.arrow-left::before {
+    border-right-color: $tooltip-background;
+    top: 50%;
+    left: -10px;
+    margin-top: -5px;
+  }
+  &.arrow-right::before {
+    border-left-color: $tooltip-background;
+    top: 50%;
+    right: -10px;
+    margin-top: -5px;
+  }
+  &.arrow-bottom::before {
+    border-top-color: $tooltip-background;
+    left: 50%;
+    bottom: -10px;
+    margin-left: -5px;
+  }
+}
+
+// 表格行 hover
+main table tbody tr:hover {
+  font-weight: bold;
+  height: 35px !important;
+}
+
+main table tbody tr.table-row__keep-hover {
+  font-weight: bold;
+  height: 35px !important;
+}
+
+// 消除弹出对话框最大宽度限制
+@media (min-width: 600px) {
+  .q-dialog__inner--minimized > div {
+    max-width: min(80%, 700px);
+  }
+}
+
+// 表格头部固定
+.q-table__container {
+  /* height or max-height is important */
+  // height: 310px;
+
+  .q-table__top,
+  // .q-table__bottom,
+  thead tr:first-child th {
+    /* bg color is important for th; just specify one */
+    background-color: white;
+  }
+  thead tr th {
+    position: sticky;
+    z-index: 1;
+  }
+  thead tr:first-child th {
+    top: 0;
+  }
+  /* this is when the loading indicator appears */
+  &.q-table--loading thead tr:last-child th {
+    /* height of all previous header rows */
+    top: 48px;
+  }
+}
+
+.q-table__container {
+  /* specifying max-width so the example can
+    highlight the sticky column on any browser window */
+  // max-width: 600px;
+
+  thead tr:first-child th:first-child {
+    /* bg color is important for th; just specify one */
+    background-color: white;
+  }
+
+  td:first-child {
+    background-color: white;
+  }
+
+  th:first-child,
+  td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+  }
+}

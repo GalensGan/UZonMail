@@ -1,0 +1,155 @@
+<div class="sme-body" style="display: flex; flex-direction: column; align-items: center;">
+  <div class="title" style="margin: 20px; color: #0081cc; font-size: large; font-weight: 400;">{{月份}}工资明细表</div>
+  <table border="1" style="table-layout: fixed; border-collapse: collapse; border: 1px solid #0081cc; margin: 10px;">
+    <tbody>
+      <tr>
+        <td style="padding: 5px;">人员编号</td>
+        <td style="padding: 5px;">{{人员编号}}</td>
+        <td style="padding: 5px;">姓名</td>
+        <td style="padding: 5px;">{{userName}}</td>
+      </tr>
+      <tr>
+        <td class="text-center" style="padding: 5px; text-align: center;" align="center">项</td>
+        <td style="padding: 5px;">类别</td>
+        <td style="padding: 5px;">金额</td>
+        <td style="padding: 5px;">合计</td>
+      </tr>
+      <tr>
+        <td rowspan="18" class="text-center should-pay-items" style="padding: 5px; text-align: center;" align="center">应发</td>
+        <td style="padding: 5px;">基本工资</td>
+        <td style="padding: 5px;">{{基本工资}}</td>
+        <td rowspan="18" style="padding: 5px;">{{应发合计}}</td>
+      </tr>
+      <tr>
+        <td style="padding: 5px;">工龄工资</td>
+        <td style="padding: 5px;">{{工龄工资}}</td>
+      </tr>
+      <tr>
+        <td style="padding: 5px;">双休加班小时</td>
+        <td style="padding: 5px;">{{双休加班小时}}</td>
+      </tr>
+      <tr>
+        <td style="padding: 5px;">晚上加班小时</td>
+        <td style="padding: 5px;">{{晚上加班小时}}</td>
+      </tr>
+      <tr>
+        <td style="padding: 5px;">加班工资</td>
+        <td style="padding: 5px;">{{加班工资}}</td>
+      </tr>
+      <tr>
+        <td style="padding: 5px;">住房补贴</td>
+        <td style="padding: 5px;">{{住房补贴}}</td>
+      </tr>
+      <tr>
+        <td style="padding: 5px;">通讯补贴</td>
+        <td style="padding: 5px;">{{通讯补贴}}</td>
+      </tr>
+      <tr>
+        <td style="padding: 5px;">交通补贴</td>
+        <td style="padding: 5px;">{{交通补贴}}</td>
+      </tr>
+      <tr>
+        <td style="padding: 5px;">预支奖金</td>
+        <td style="padding: 5px;">{{预支奖金}}</td>
+      </tr>
+      <tr>
+        <td style="padding: 5px;">计生费及卫生费</td>
+        <td style="padding: 5px;">{{计生费及卫生费}}</td>
+      </tr>
+      <tr>
+        <td style="padding: 5px;">增项其他</td>
+        <td style="padding: 5px;">{{增项其他}}</td>
+      </tr>
+      <tr>
+        <td style="padding: 5px;">年奖金</td>
+        <td style="padding: 5px;">{{年奖金}}</td>
+      </tr>
+      <tr>
+        <td style="padding: 5px;">非事假小时</td>
+        <td style="padding: 5px;">{{非事假小时}}</td>
+      </tr>
+      <tr>
+        <td style="padding: 5px;">事假小时</td>
+        <td style="padding: 5px;">{{事假小时}}</td>
+      </tr>
+      <tr>
+        <td style="padding: 5px;">年假</td>
+        <td style="padding: 5px;">{{年假}}</td>
+      </tr>
+      <tr>
+        <td style="padding: 5px;">请假扣款工资</td>
+        <td style="padding: 5px;">{{请假扣款工资}}</td>
+      </tr>
+      <tr>
+        <td style="padding: 5px;">请假扣款奖金</td>
+        <td style="padding: 5px;">{{请假扣款奖金}}</td>
+      </tr>
+      <tr>
+        <td style="padding: 5px;">减项其他</td>
+        <td style="padding: 5px;">{{减项其他}}</td>
+      </tr>
+
+      <tr>
+        <td rowspan="6" class="text-center withhold-items" style="padding: 5px; text-align: center;" align="center">扣款</td>
+        <td style="padding: 5px;">养老</td>
+        <td style="padding: 5px;">{{养老}}</td>
+        <td rowspan="6" style="padding: 5px;">{{扣款合计}}</td>
+      </tr>
+      <tr>
+        <td style="padding: 5px;">医疗</td>
+        <td style="padding: 5px;">{{医疗}}</td>
+      </tr>
+      <tr>
+        <td style="padding: 5px;">失业</td>
+        <td style="padding: 5px;">{{失业}}</td>
+      </tr>
+      <tr>
+        <td style="padding: 5px;">住房公积金</td>
+        <td style="padding: 5px;">{{住房公积金}}</td>
+      </tr>
+      <tr>
+        <td style="padding: 5px;">年金</td>
+        <td style="padding: 5px;">{{年金}}</td>
+      </tr>
+      <tr>
+        <td style="padding: 5px;">代扣税</td>
+        <td style="padding: 5px;">{{代扣税}}</td>
+      </tr>
+      <tr>
+        <td rowspan="6" class="text-center other-items" style="padding: 5px; text-align: center;" align="center">其它</td>
+        <td style="padding: 5px;">税前工资</td>
+        <td style="padding: 5px;">-</td>
+        <td style="padding: 5px;">{{税前工资}}</td>
+      </tr>
+      <tr>
+        <td style="padding: 5px;">子女教育</td>
+        <td style="padding: 5px;">-</td>
+        <td style="padding: 5px;">{{子女教育}}</td>
+      </tr>
+      <tr>
+        <td style="padding: 5px;">继续教育</td>
+        <td style="padding: 5px;">-</td>
+        <td style="padding: 5px;">{{继续教育}}</td>
+      </tr>
+      <tr>
+        <td style="padding: 5px;">住房租金</td>
+        <td style="padding: 5px;">-</td>
+        <td style="padding: 5px;">{{住房租金}}</td>
+      </tr>
+      <tr>
+        <td style="padding: 5px;">住房贷款利息</td>
+        <td style="padding: 5px;">-</td>
+        <td style="padding: 5px;">{{住房贷款利息}}</td>
+      </tr>
+      <tr>
+        <td style="padding: 5px;">老人赡养费</td>
+        <td style="padding: 5px;">-</td>
+        <td style="padding: 5px;">{{老人赡养费}}</td>
+      </tr>
+      <tr class="result-row" style="color: turquoise; font-weight: 700;">
+        <td colspan="3" class="text-center" style="padding: 5px; text-align: center;" align="center">实发合计</td>
+        <td style="padding: 5px;">¥ {{实发合计}}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

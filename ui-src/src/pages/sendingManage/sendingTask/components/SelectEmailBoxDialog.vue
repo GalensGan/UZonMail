@@ -1,0 +1,182 @@
+<template>
+  <q-dialog ref='dialogRef' @hide="onDialogHide" :persistent='true'>
+    <q-card class='column no-wrap q-pa-sm height-0' style="min-width: 500px; min-height: 400px;">
+      <div class="col row items-start">
+        <EmailGroupList v-model="emailGroupRef" :extra-items="categoryTopItems" readonly :groupType="groupType"
+          class="q-mr-sm card-like" style="width: 160px;" />
+
+        <q-table class="col full-height" :rows="rows" :columns="columns" row-key="id" v-model:pagination="pagination"
+          dense :loading="loading" :filter="filter" binary-state-sort @request="onTableRequest" selection="multiple"
+          v-model:selected="selected">
+          <template v-slot:top-left>
+            <div class="row justify-start q-gutter-sm">
+              <CreateBtn tooltip="新增临时收件箱" @click="onNewTempInboxClick" v-if="showNewTempInboxBtn" />
+            </div>
+          </template>
+
+          <template v-slot:top-right>
+            <SearchInput v-model="filter" />
+          </template>
+
+          <template v-slot:body-cell-index="props">
+            <QTableIndex :props="props" />
+          </template>
+        </q-table>
+      </div>
+
+      <div class="row justify-end items-center q-mt-md">
+        <CancelBtn class="q-mr-sm" @click="onDialogCancel" />
+        <OkBtn @click="onOKClick" />
+      </div>
+    </q-card>
+  </q-dialog>
+</template>
+
+<script lang='ts' setup>
+import { IInbox, IOutbox, getBoxesCount, getBoxesData } from 'src/api/emailBox'
+// props 定义
+const props = defineProps({
+  emailBoxType: {
+    // 0-发件箱 1-收件箱
+    type: Number as PropType<0 | 1>,
+    default: 0
+  },
+  initEmailBoxes: {
+    type: Array as PropType<IInbox[]>,
+    default: () => []
+  }
+})
+const { emailBoxType } = toRefs(props)
+const groupType = computed(() => {
+  return emailBoxType.value + 1 as 1 | 2
+})
+
+/**
+ * warning: 该组件一个弹窗的示例，不可直接使用
+ * 参考：http://www.quasarchs.com/quasar-plugins/dialog#composition-api-variant
+ */
+
+import { QTableColumn, useDialogPluginComponent } from 'quasar'
+defineEmits([
+  // 必需；需要指定一些事件
+  // （组件将通过useDialogPluginComponent()发出）
+  ...useDialogPluginComponent.emits
+])
+const { dialogRef, onDialogHide, onDialogOK, onDialogCancel } = useDialogPluginComponent()
+
+// 分类列表
+import EmailGroupList from 'pages/emailManage/components/EmailGroupList.vue'
+import { IEmailGroupListItem } from 'src/pages/emailManage/components/types'
+const emailGroupRef: Ref<IEmailGroupListItem> = ref({
+  name: 'selected',
+  order: 0,
+  label: '已选中'
+})
+const showNewTempInboxBtn = computed(() => {
+  return emailBoxType.value === 1 && emailGroupRef.value.name === 'selected'
+})
+const categoryTopItems: Ref<IEmailGroupListItem[]> = ref([
+  {
+    name: 'selected',
+    order: -1,
+    icon: 'task_alt',
+    label: '已选中'
+  }
+])
+
+// 表格定义与数据请求
+import { useQTable, useQTableIndex } from 'src/compositions/qTableUtils'
+const { indexColumn, QTableIndex } = useQTableIndex()
+const columns: QTableColumn[] = [
+  indexColumn,
+  {
+    name: 'email',
+    required: true,
+    label: '邮箱',
+    align: 'left',
+    field: 'email',
+    sortable: true
+  },
+  {
+    name: 'description',
+    required: true,
+    label: '描述',
+    align: 'left',
+    field: 'description',
+    sortable: true
+  }
+]
+import { IRequestPagination, TTableFilterObject } from 'src/compositions/types'
+// 选择结果
+const selected: Ref<IInbox[]> = ref([])
+// 初始化选择结果
+selected.value.push(...props.initEmailBoxes)
+
+// 若是选择已选中，需要单独处理
+async function getRowsNumberCount (filterObj: TTableFilterObject) {
+  if (emailGroupRef.value.name === 'selected') {
+    if (!filterObj.filter) return selected.value.length
+    // eslint-disable-next-line prefer-regex-literals
+    const regex = new RegExp(filterObj.filter, 'i')
+    return selected.value.filter(x => x.email.match(regex)).length
+  }
+
+  const { data } = await getBoxesCount(emailGroupRef.value.id, props.emailBoxType, filterObj.filter)
+  return data
+}
+async function onRequest (filterObj: TTableFilterObject, pagination: IRequestPagination) {
+  if (emailGroupRef.value.name === 'selected') {
+    let results = selected.value
+    if (filterObj.filter) {
+      // eslint-disable-next-line prefer-regex-literals
+      const regex = new RegExp(filterObj.filter, 'i')
+      results = results.filter(x => x.email.match(regex))
+    }
+
+    // 排序并分页
+    return results.slice(pagination.skip, pagination.skip + pagination.limit)
+  }
+
+  const { data } = await getBoxesData<IOutbox>(emailGroupRef.value.id, props.emailBoxType, filterObj.filter, pagination)
+  return data
+}
+const { pagination, rows, filter, onTableRequest, loading, refreshTable, addNewRow } = useQTable({
+  getRowsNumberCount,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onRequest
+})
+watch(emailGroupRef, () => {
+  // 组切换时，触发更新
+  refreshTable()
+})
+
+// 新增收件箱
+import { showNewInboxDialog } from 'pages/emailManage/inbox/headerFunctions'
+import { notifyError } from 'src/utils/dialog'
+async function onNewTempInboxClick () {
+  // 打开输入框
+  const { ok, data } = await showNewInboxDialog('临时收件')
+  if (!ok) return
+  data.id = Date.now()
+
+  // 若在选择集中，提示错误
+  if (selected.value.some(x => x.email === data.email)) {
+    notifyError('已存在相同邮箱')
+    return
+  }
+
+  // 向当前数据中添加
+  addNewRow(data)
+  // 向当选择集中添加
+  selected.value.push(data)
+}
+
+// 底部确认
+import CancelBtn from 'src/components/componentWrapper/buttons/CancelBtn.vue'
+import OkBtn from 'src/components/componentWrapper/buttons/OkBtn.vue'
+function onOKClick () {
+  onDialogOK(selected.value)
+}
+</script>
+
+<style lang='scss' scoped></style>

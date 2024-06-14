@@ -1,0 +1,182 @@
+// #region 边框样式
+.border-radius-4 {
+  border-radius: 4px;
+}
+
+.border-radius-8 {
+  border-radius: 8px;
+}
+
+.border-radius-16 {
+  border-radius: 16px;
+}
+
+.hover-underline {
+  cursor: pointer;
+  border-bottom: 1px solid transparent;
+  padding-bottom: 1px; // 调整这个值来控制线和文字的距离
+  &:hover {
+    border-bottom: 1px solid currentColor;
+  }
+}
+
+// 鼠标悬停时以卡片状态显示
+.hover-card {
+  cursor: pointer;
+  transition: all 0.3s;
+  &:hover {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.3);
+    // 绕中心放大
+    transform: scale(1.03);
+  }
+}
+
+// 卡片样式
+.card-like {
+  border-radius: 4px;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+}
+
+// 卡片样式，没见有圆角
+.card-like-borderless {
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+}
+// #endregion
+
+// y轴滚动条
+.scroll-y {
+  overflow-y: auto;
+}
+
+.scroll-y_pretty {
+  // 优化滚动条显示
+  //滚动条
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgb(239, 239, 239);
+    border-radius: 2px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #bfbfbf;
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #bfbfbf;
+  }
+
+  &::-webkit-scrollbar-corner {
+    background: #bfbfbf;
+  }
+}
+
+// #region 尺寸
+.half-height {
+  height: 50%;
+}
+
+.half-width {
+  width: 50%;
+}
+
+// 设定高度为 0
+// 在 flex 某些场景中需要用到
+.height-0 {
+  height: 0px;
+}
+
+.height-200 {
+  height: 200px;
+}
+.height-300 {
+  height: 300px;
+}
+.height-400 {
+  height: 400px;
+}
+.height-500 {
+  height: 500px;
+}
+.height-600 {
+  height: 600px;
+}
+
+.width-200 {
+  width: 200px;
+}
+.width-300 {
+  width: 300px;
+}
+.width-400 {
+  width: 400px;
+}
+.width-500 {
+  width: 500px;
+}
+.width-600 {
+  width: 600px;
+}
+.width-700 {
+  width: 600px;
+}
+.width-800 {
+  width: 600px;
+}
+
+.max-width-200 {
+  max-width: 200px;
+}
+.max-width-300 {
+  max-width: 300px;
+}
+// #endregion
+
+// 透明背景
+.bg-transparent {
+  background-color: transparent;
+}
+
+// warning: 使用该css时，需要将文本包裹在 <span dir="ltr">{{ props.value }}</span> 里，否则数字+空格开头会粘在文本的末尾
+.ellipsis-left {
+  /* Standard CSS ellipsis */
+  white-space: nowrap; // 让文字显示成一行
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  /* Beginning of string */
+  direction: rtl;
+  text-align: left;
+}
+
+.ellipsis {
+  /* Standard CSS ellipsis */
+  white-space: nowrap; // 让文字显示成一行
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// 实现placeholder效果
+[contentEditable='true']:empty:before {
+  content: attr(placeholder);
+  color: #b3b3b3;
+  cursor: text;
+}
+
+// #region flex 布局
+// 默认一列，大于 600 时，两列
+.flex-auto-column {
+  width: 0px; // echarts 需要这个属性来触发变化
+  flex: 1 1 100%;
+
+  @media screen and (min-width: 600px) {
+    flex: 1 1 50%;
+  }
+}
+// #endregion

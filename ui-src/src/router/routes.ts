@@ -1,0 +1,277 @@
+import { ExtendedRouteRecordRaw } from './types'
+import NormalLayout from 'layouts/normalLayout/normalLayout.vue'
+
+/**
+ * 使用说明
+ * 1- name 应与组件名一样，在 setup 中与文件名一样，才会有缓存
+ * 2- noCache: true 不缓存
+ */
+
+// 根据权限显示的 routes
+export const dynamicRoutes: ExtendedRouteRecordRaw[] = [
+  {
+    name: 'IndexHome',
+    path: '/',
+    component: NormalLayout,
+    meta: {
+      label: '首页',
+      icon: 'home',
+      // 不缓存
+      noCache: false
+    },
+    // 填绝对路径，若是相对路径，则相对于当前路由
+    redirect: '/index',
+    children: [
+      {
+        name: 'IndexPage',
+        path: 'index',
+        meta: {
+          label: '首页',
+          icon: 'home'
+        },
+        component: () => import('pages/dashboard/DashboardIndex.vue')
+      }
+    ]
+  },
+  {
+    name: 'User',
+    path: '/user',
+    component: NormalLayout,
+    meta: {
+      label: '用户信息',
+      icon: 'info',
+      noTag: true,
+      noMenu: true
+    },
+    redirect: '/user/profile',
+    children: [
+      {
+        name: 'profileIndex',
+        path: 'profile',
+        meta: {
+          icon: 'menu',
+          label: '个人资料'
+        },
+        component: () => import('pages/user/profileIndex.vue')
+      }
+    ]
+  },
+  {
+    name: 'EmailManage',
+    path: '/email-manage',
+    component: NormalLayout,
+    meta: {
+      label: '邮箱管理',
+      icon: 'alternate_email'
+    },
+    redirect: '/email-manage/out-box',
+    children: [
+      {
+        name: 'outboxManage',
+        path: 'out-box',
+        meta: {
+          icon: 'forward_to_inbox',
+          label: '发件箱'
+        },
+        component: () => import('pages/emailManage/outbox/outboxManage.vue')
+      },
+      {
+        name: 'inboxManage',
+        path: 'in-box',
+        meta: {
+          icon: 'mark_email_unread',
+          label: '收件箱'
+        },
+        component: () => import('pages/emailManage/inbox/inboxManage.vue')
+      }
+    ]
+  },
+  {
+    name: 'TemplateManage',
+    path: '/template',
+    component: NormalLayout,
+    meta: {
+      label: '模板管理',
+      icon: 'article'
+    },
+    redirect: '/template-manage/view',
+    children: [
+      {
+        name: 'emailTemplates',
+        path: 'index',
+        meta: {
+          icon: 'article',
+          label: '模板管理',
+          noCache: true
+        },
+        component: () => import('pages/templateManage/emailTemplates.vue')
+      },
+      {
+        name: 'templateEditor',
+        path: 'editor',
+        meta: {
+          icon: 'article',
+          label: '模板编辑',
+          noMenu: true
+        },
+        component: () => import('pages/templateManage/templateEditor.vue')
+      }
+    ]
+  },
+  {
+    name: 'SendManage',
+    path: '/send-management',
+    component: NormalLayout,
+    meta: {
+      label: '发件管理',
+      icon: 'send'
+    },
+    redirect: '/send-management/new-task',
+    children: [
+      {
+        name: 'sendingTask',
+        path: 'new-task',
+        meta: {
+          icon: 'add_box',
+          label: '新建发件'
+        },
+        component: () => import('pages/sendingManage/sendingTask/sendingTask.vue')
+      },
+      {
+        name: 'SendHistory',
+        path: 'history',
+        meta: {
+          icon: 'schedule_send',
+          label: '历史发件'
+        },
+        component: () => import('pages/sendingManage/sendHistory/sendHistory.vue')
+      },
+      {
+        name: 'SendDetailTable',
+        path: 'task-detail',
+        meta: {
+          noMenu: true,
+          icon: 'schedule_send',
+          label: '发件明细'
+        },
+        component: () => import('pages/sendingManage/sendHistory/SendDetailTable.vue')
+      }
+    ]
+  },
+  {
+    name: 'System',
+    path: '/system',
+    component: NormalLayout,
+    meta: {
+      label: '系统设置',
+      icon: 'settings_suggest'
+    },
+    redirect: '/system/user-manage',
+    children: [
+      {
+        name: 'UserManage',
+        path: 'user-manage',
+        meta: {
+          icon: 'manage_accounts',
+          label: '用户管理'
+        },
+        component: () => import('pages/systemSetting/userManage.vue')
+      },
+      {
+        name: 'BasicSetting',
+        path: 'basicSetting',
+        meta: {
+          icon: 'tune',
+          label: '基础设置'
+        },
+        component: () => import('pages/systemSetting/basicSetting/BasicSettings.vue')
+      },
+      {
+        name: 'ProxyManager',
+        path: 'proxy',
+        meta: {
+          icon: 'public',
+          label: '代理管理'
+        },
+        component: () => import('pages/systemSetting/proxyManage/ProxyManager.vue')
+      }
+    ]
+  },
+  {
+    name: 'Sponsor',
+    path: '/sponsor',
+    component: NormalLayout,
+    meta: {
+      label: '支持作者',
+      icon: 'thumb_up'
+    },
+    redirect: '/sponsor/author',
+    children: [
+      {
+        name: 'SponsorAuthor',
+        path: 'author',
+        meta: {
+          icon: 'thumb_up',
+          label: '支持作者',
+          noTag: true
+        },
+        component: () => import('pages/sponsor/sponsorAuthor.vue')
+      }
+    ]
+  },
+  {
+    name: 'Help',
+    path: '/help',
+    component: NormalLayout,
+    meta: {
+      label: '帮助文档',
+      icon: 'settings_suggest'
+    },
+    redirect: '/help/start-guide',
+    children: [
+      {
+        name: 'StartGuide',
+        path: 'start-guide',
+        component: () => import('pages/help/StartGuide.vue'),
+        meta: {
+          icon: 'tips_and_updates',
+          label: '使用说明',
+          noTag: true
+        }
+      }
+    ]
+  }
+]
+
+// 静态 routes
+export const constantRoutes: ExtendedRouteRecordRaw[] = [
+  {
+    name: 'Login',
+    path: '/login',
+    component: () => import('src/pages/login/loginIndex.vue'),
+    meta: {
+      label: '用户登录',
+      icon: 'login',
+      noMenu: true, // 在菜单中隐藏
+      noTag: true // 在标签中隐藏
+    }
+  }
+]
+
+// 放到最后添加
+export const exceptionRoutes: ExtendedRouteRecordRaw[] = [
+  // Always leave this as last one,
+  // but you can also remove it
+  // 异常处理
+  {
+    name: 'exception',
+    path: '/:catchAll(.*)*',
+    meta: {
+      label: '异常',
+      icon: 'error',
+      noMenu: true, // 在菜单中隐藏
+      noTag: true // 在标签中隐藏
+    },
+    component: () => import('pages/ErrorNotFound.vue')
+  }
+]
