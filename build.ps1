@@ -17,47 +17,49 @@ foreach ($subDir in $subDirs) {
         return
     }
 }
+Write-Host "脚本位置检测通过！" -ForegroundColor Green
 
 # 检查是否有 yarn 环境
 if (-not (Get-Command yarn -ErrorAction SilentlyContinue)) {
     Write-Host "请先安装 yarn 环境！" -ForegroundColor Red
     return
 }
+Write-Host "yarn 环境检测通过！" -ForegroundColor Green
 
 # 检查是否有 node 环境
 if (-not (Get-Command node -ErrorAction SilentlyContinue)) {
     Write-Host "请先安装 node 环境！" -ForegroundColor Red
     return
 }
+Write-Host "node 环境检测通过！" -ForegroundColor Green
 
 # 检查是否有 dotnet 环境
 if (-not (Get-Command dotnet -ErrorAction SilentlyContinue)) {
     Write-Host "请先安装 dotnet 环境！" -ForegroundColor Red
     return
 }
+Write-Host "dotnet 环境检测通过！" -ForegroundColor Green
 
 # 检测 msbuild 环境
 if (-not (Get-Command MSBuild -ErrorAction SilentlyContinue)) {
     Write-Host "请将 msbuild 添加到环境变量！" -ForegroundColor Red
     return
 }
+Write-Host "MSBuild 环境检测通过！" -ForegroundColor Green
 
 # 检测 7z
-if(Get-Command 7z.exe -ErrorAction SilentlyContinue) {
-    Write-Host "7z 环境检验通过"
-}
-else {
+if (-not (Get-Command 7z.exe -ErrorAction SilentlyContinue)) {
     Write-Host "7z 未安装，请从 https://www.7-zip.org/download.html 下载并安装" -ForegroundColor Red
     return
 }
+Write-Host "7z 环境检测通过！" -ForegroundColor Green
 
-Write-Host "环境检测通过！" -ForegroundColor Green
 
 # 开始编译项目
 Write-Host "开始编译项目..." -ForegroundColor Yellow
 
 # 编译前端
-Write-Host "开始编译前端..." -ForegroundColor Yellow
+Write-Host "前端编译中..." -ForegroundColor Yellow
 $uiSrc = Join-Path -Path $scriptRoot -ChildPath "ui-src"
 # 判断是否已经执行过 yarn install
 $nodeModules = Join-Path -Path $uiSrc -ChildPath "node_modules"
@@ -74,7 +76,7 @@ yarn build
 Write-Host "前端编译完成！" -ForegroundColor Green
 
 # 编译后端
-Write-Host "开始编译后端..." -ForegroundColor Yellow
+Write-Host "后端编译中..." -ForegroundColor Yellow
 $backendSrc = Join-Path -Path $scriptRoot -ChildPath "backend-src"
 $serviceSr = Join-Path -Path $backendSrc -ChildPath "UZonMailService"
 # 使用 dotnet 编译
@@ -91,7 +93,7 @@ Copy-Item -Path "$serviceSr/Quartz/quartz-sqlite.sqlite3" -Destination "$service
 Write-Host "后端编译完成！" -ForegroundColor Green
 
 # 编译桌面端
-Write-Host "开始编译桌面端..." -ForegroundColor Yellow
+Write-Host "桌面端编译中..." -ForegroundColor Yellow
 $desktopSrc = Join-Path -Path $backendSrc -ChildPath "UzonMailDesktop"
 Set-Location -Path $desktopSrc
 $desktopCsproj = Get-ChildItem -Path $desktopSrc -Filter "*.csproj" -Recurse | Select-Object -First 1
