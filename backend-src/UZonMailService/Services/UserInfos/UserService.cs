@@ -43,7 +43,7 @@ namespace UZonMailService.Services.UserInfos
             var user = new User()
             {
                 UserId = userId,
-                Password = password.Sha256()
+                Password = password.Sha256(1)
             };
             db.Add(user);
             await db.SaveChangesAsync();

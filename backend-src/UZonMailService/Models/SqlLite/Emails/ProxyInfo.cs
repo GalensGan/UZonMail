@@ -74,11 +74,7 @@ namespace UZonMailService.Models.SqlLite.Emails
         {
             if (_proxyClient != null) return _proxyClient;
 
-            NetworkCredential networkCredential = null;
-            if(!string.IsNullOrEmpty(Username) && !string.IsNullOrEmpty(Password))
-            {
-                networkCredential = new NetworkCredential(Username, Password);
-            }
+            NetworkCredential networkCredential = new(Username, Password);
             switch (Schema.ToLower())
             {
                 case "socket5":

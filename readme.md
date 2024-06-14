@@ -2,7 +2,7 @@
 
 ## 🥝简介
 
-![image-20240611212011864](https://obs.uamazing.cn:52443/public/files/images/image-20240611212011864.png)
+![uzon-mail-login-2](https://obs.uamazing.cn:52443/public/files/images/uzon-mail-login-2.png)
 
 本软件名为 “宇正群邮 (UZonMail)"，是一款开源免费的邮件群发软件。它具有非常强大的邮件正文定制能力，可快速实现 "千人千面" 式地批量群发，使每一封邮件都让人觉得很温暖。
 
@@ -17,7 +17,7 @@
 
 ## 🍎特点
 
-![image-20240611221021519](https://obs.uamazing.cn:52443/public/files/images/image-20240611221021519.png)
+![image-20240614121857800](https://obs.uamazing.cn:52443/public/files/images/image-20240614121857800.png)
 
 1. 支持多个发件人同时发件
 
@@ -61,14 +61,14 @@
 
 ## 🍇环境要求
 
-1. windows 10 及以上
+1. windows 7 及以上
 2. .NET Framework 4.6.2 及以上，下载地址：[dotnet-framework](https://dotnet.microsoft.com/download/dotnet-framework)
 3. webview2 环境，下载地址：[microsoft-edge/webview2/](https://developer.microsoft.com/zh-cn/microsoft-edge/webview2/)
 4. ASP.NET Core 环境，下载地址：[runtime-aspnetcore-8.0.6-windows-hosting-bundle-installer](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-aspnetcore-8.0.6-windows-hosting-bundle-installer)
 
-## 😃软件安装
+## 🌱安装方式
 
-### 安装包下载
+### 安装包
 
 [UZonMail-gitee](https://gitee.com/galensgan/UZonMail/releases/latest)
 
@@ -86,8 +86,7 @@
 
 > 手动编译时，会自动检测环境，若没有相关环境，请根据提示进行安装。
 
-
-## 🍇详细说明
+## 🍇更多帮助
 
 详细文档已迁移至：[https://galens.uamazing.cn/posts/2020/2QMK677.html](https://galens.uamazing.cn/posts/2020/2QMK677.html)
 

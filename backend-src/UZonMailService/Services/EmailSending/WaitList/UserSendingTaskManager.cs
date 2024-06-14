@@ -69,7 +69,7 @@ namespace UZonMailService.Services.EmailSending.WaitList
                 if (usableCount != 0) continue;
 
                 // 取消任务
-                task.MarkCancelled("发件箱用尽").Wait();
+                task.MarkCancelled("发件箱用尽", SendingGroupStatus.Finish).Wait();
                 this.Remove(task);
             }
         }

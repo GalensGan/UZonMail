@@ -39,6 +39,8 @@ namespace UZonMailService.Services.EmailSending.Sender
 
             if (sendingItem.Attachments != null)
                 AttachmentIds = sendingItem.Attachments.Select(x => x.Id).ToList();
+
+            
         }
 
         /// <summary>
@@ -163,14 +165,18 @@ namespace UZonMailService.Services.EmailSending.Sender
             return originText;
         }
 
+        private string _subject;
         /// <summary>
         /// 获取主题
         /// </summary>
         /// <returns></returns>
         public string GetSubject()
         {
+            if (!string.IsNullOrEmpty(_subject)) return _subject;
+
             // 主题中可能有变量
-            return ComputedVariables(Subject);
+            _subject = ComputedVariables(Subject);
+            return _subject;
         }
 
         #region 重发逻辑，该部分仅在主服务器上使用，后期考虑抽象出来
@@ -224,7 +230,7 @@ namespace UZonMailService.Services.EmailSending.Sender
             var data = await db.SendingItems.FirstOrDefaultAsync(x => x.Id == SendingItem.Id);
             // 更新数据
             data.FromEmail = Outbox.Email;
-            data.Subject = Subject;
+            data.Subject = GetSubject();
             data.Content = GetBody();
             data.Inboxes = Inboxes;
             data.CC = CC;

@@ -168,7 +168,7 @@ namespace UZonMailService.Models.SqlLite.EmailSending
         /// 若有多个主题，则获取随机主题
         /// </summary>
         /// <returns></returns>
-        public string GetSubject()
+        public string GetRandSubject()
         {
             SplitSubjects();
 

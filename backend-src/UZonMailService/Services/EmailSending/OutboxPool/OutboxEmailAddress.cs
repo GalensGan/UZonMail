@@ -96,7 +96,7 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
             _isCooldown = true;
             // 若已经达到发送上限，则不再发送
             _sentCountToday++;
-            if (_sentCountToday > _userSetting.MaxSendCountPerEmailDay)
+            if (_userSetting.MaxSendCountPerEmailDay > 0 && _sentCountToday > _userSetting.MaxSendCountPerEmailDay)
             {
                 ShouldDispose = true;
                 return;

@@ -98,6 +98,11 @@ namespace UZonMailService.Services.EmailSending.WaitList
         /// </summary>
         public bool Cancelled { get; private set; } = false;
 
+        /// <summary>
+        /// 取消后赋予组的状态
+        /// </summary>
+        public SendingGroupStatus CancelledStatus { get; private set; } = SendingGroupStatus.Cancel;
+
         #region 初始化
         private SqlContext Db => sqlContext;
 
@@ -185,7 +190,7 @@ namespace UZonMailService.Services.EmailSending.WaitList
                 toSendingItems = await Db.SendingItems.Where(x => x.SendingGroupId == sendingGroup.Id
                     && (x.Status == SendingItemStatus.Failed || x.Status == SendingItemStatus.Created)
                     && sendingItemIds.Contains(x.Id))
-                    .Include(x=>x.Attachments)
+                    .Include(x => x.Attachments)
                     .ToListAsync();
             }
             else
@@ -216,7 +221,12 @@ namespace UZonMailService.Services.EmailSending.WaitList
                 // 生成正文
                 sendItem.HtmlBody = GetSendingItemOriginBody(sendItem, templates);
                 // 生成主题
-                sendItem.Subject = sendingGroup.GetSubject();
+                // 若本身有主题，则使用自身的主题
+                if (sendItem.BodyData!=null && !string.IsNullOrEmpty(sendItem.BodyData.Subject))
+                {
+                    sendItem.Subject = sendItem.BodyData.Subject;
+                }
+                else sendItem.Subject = sendingGroup.GetRandSubject();
                 Enqueue(sendItem);
             }
 
@@ -501,7 +511,7 @@ namespace UZonMailService.Services.EmailSending.WaitList
             if (Cancelled)
             {
                 Status = SendingObjectStatus.ShouldDispose;
-                newSendingGroup.Status = SendingGroupStatus.Cancel;
+                newSendingGroup.Status = CancelledStatus;
                 newSendingGroup.SendEndDate = DateTime.Now;
                 newSendingGroup.LastMessage = CancelReason;
 
@@ -525,10 +535,11 @@ namespace UZonMailService.Services.EmailSending.WaitList
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        public async Task MarkCancelled(string message = "手动取消")
+        public async Task MarkCancelled(string message = "手动取消", SendingGroupStatus sendingGroupStatus = SendingGroupStatus.Cancel)
         {
             Cancelled = true;
             CancelReason = message;
+            CancelledStatus = sendingGroupStatus;
 
             // 通知前端发送结束
             var client = hub.GetUserClient(sendingGroup.UserId);
