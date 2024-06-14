@@ -65,6 +65,7 @@ async function onSelectExcel () {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const hasInbox = data.every((item: Record<string, any>) => item.inbox && item.inbox.indexOf('@') > 0)
   if (!hasInbox) {
+    console.log('exce data:', data)
     notifyError('请确保每条数据都有 inbox')
     return
   }

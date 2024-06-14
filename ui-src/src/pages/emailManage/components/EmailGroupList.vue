@@ -11,13 +11,15 @@
 
     <q-separator />
 
-    <q-item class="plain-list__item q-ma-xs" v-for="item in sortedItems" :key="item.name" clickable v-ripple
+    <q-item class="plain-list__item q-my-xs" v-for="item in sortedItems" :key="item.name" clickable v-ripple
       :active="item.active" active-class="text-secondary" @click="onItemClick(item)">
-      <q-item-section v-if="item.icon" avatar class="q-pr-none">
-        <q-icon :name="item.icon || 'contact_mail'" />
-      </q-item-section>
-      <q-item-section class="q-px-lg" v-if="item.label">{{ item.label }}</q-item-section>
-      <q-item-section side v-if="item.side">{{ item.side }}</q-item-section>
+      <div class="row justify-between no-wrap items-center full-width">
+        <q-icon v-if="item.icon" :name="item.icon || 'contact_mail'" size="sm" />
+        <div v-if="item.label">{{ item.label }}
+          <AsyncTooltip :tooltip="item.label" />
+        </div>
+        <div side v-if="item.side">{{ item.side }}</div>
+      </div>
 
       <ContextMenu v-if="!readonly" :items="itemContextMenuItems" :value="item"></ContextMenu>
     </q-item>
@@ -28,6 +30,7 @@
 import { PropType } from 'vue'
 import { IEmailGroupListItem, IFlatHeader } from './types'
 import ContextMenu from 'src/components/contextMenu/ContextMenu.vue'
+import AsyncTooltip from 'src/components/asyncTooltip/AsyncTooltip.vue'
 import { IContextMenuItem } from 'src/components/contextMenu/types'
 
 const modelValue = defineModel<IEmailGroupListItem>()

@@ -1,6 +1,6 @@
 <template>
-  <q-tooltip ref="tooltipRef" :anchor="anchor" :self="self" transition-show="rotate" transition-hide="rotate"
-    @before-show="onTooltipBeforeShow" v-model="tooltipModel">
+  <q-tooltip ref="tooltipRef" class="bg-primary" :anchor="anchor" :self="self" transition-show="rotate"
+    transition-hide="rotate" @before-show="onTooltipBeforeShow" v-model="tooltipModel">
     <div v-for="tip in tooltips" :key="tip">{{ tip }}</div>
   </q-tooltip>
 </template>
@@ -99,7 +99,7 @@ async function onTooltipBeforeShow () {
   // 过滤掉空值
   tooltips.value = tooltipsResult.filter(item => item)
   // console.log('tooltips is empty', tooltips.value)
-  if (tooltip.value.length === 0) {
+  if (!tooltip.value || tooltip.value.length === 0) {
     // 隐藏不显示
     tooltipModel.value = false
   }
