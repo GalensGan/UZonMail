@@ -23,7 +23,12 @@ function encryptPassword (smtpPasswordSecretKeys: string[], password: string) {
 export async function getOutboxFields (smtpPasswordSecretKeys: string[]): Promise<IPopupDialogField[]> {
   // 获取所有的代理
   const { data: proxyOptions } = await getUsableProxies()
-
+  proxyOptions.unshift({
+    id: 0,
+    name: '无',
+    isActive: true,
+    proxy: ''
+  })
   return [
     {
       name: 'email',
@@ -166,11 +171,12 @@ export function UseHeaderFunction (emailGroup: Ref<IEmailGroupListItem>,
     const data: any[] = [
       {
         email: '填写邮箱(导入时，请删除该行数据)',
+        name: '填写发件人名称(可选)',
         password: '填写 smtp 密码',
         smtpHost: '填写 smtp 地址',
         smtpPort: 25,
-        description: '',
-        proxy: ''
+        description: '描述(可选)',
+        proxy: '格式为：http://username:password@domain:port(可选)'
       }
     ]
     await writeExcel(data, {
