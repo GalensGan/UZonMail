@@ -16,8 +16,8 @@ namespace UZonMailService.Controllers.Sponsor
         [HttpGet("content")]
         public async Task<ResponseResult<string>> GetSponsorPageHtml()
         {
-            // 从 https://gitee.com/galensgan/UZonMail/raw/master/docs/sponsor.md 读取内容
-            string url = "https://gitee.com/galensgan/UZonMail/raw/master/docs/sponsor.md";
+            // 从 https://gitee.com/galensgan/SendMultipleEmails/raw/master/docs/sponsor.md 读取内容
+            string url = "https://gitee.com/galensgan/SendMultipleEmails/raw/master/docs/sponsor.md";
             var httpClient = httpClientFactory.CreateClient();
             var content = await httpClient.GetStringAsync(url);
             return content.ToSuccessResponse();
