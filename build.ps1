@@ -107,10 +107,19 @@ Write-Host "桌面端编译完成！" -ForegroundColor Green
 
 # 整合环境
 Write-Host "合并编译结果..." -ForegroundColor Yellow
-# 复制前端编译结果
+
+# 复制前端编译结果到桌面端指定位置
 $uiDist = Join-Path -Path $desktopDist -ChildPath "wwwroot"
 New-Item -Path $uiDist -ItemType Directory -ErrorAction SilentlyContinue
 Copy-Item -Path $uiSrc/dist/spa/* -Destination $uiDist -Recurse -Force
+
+# 复制前端编译结果到服务端指定位置
+$serviceWwwroot = Join-Path -Path $serviceDist -ChildPath "wwwroot"
+# 目录不存在时，创建
+if (-not (Test-Path -Path $serviceWwwroot -PathType Container)) {
+    New-Item -Path $serviceWwwroot -ItemType Directory -Force
+}
+Copy-Item -Path $uiSrc/dist/spa/* -Destination $serviceWwwroot -Recurse -Force
 
 # 复制服务端
 $svrDis = Join-Path -Path $desktopDist -ChildPath "service"

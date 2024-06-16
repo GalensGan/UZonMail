@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,7 +14,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 using UzonMailDesktop.Models;
 
 namespace UzonMailDesktop
@@ -87,13 +87,41 @@ namespace UzonMailDesktop
             var core = MainWebview2.CoreWebView2;
             core.Settings.AreDefaultContextMenusEnabled = true;
             core.Settings.IsScriptEnabled = true;
+
             core.SetVirtualHostNameToFolderMapping("desktop.uzonmail.com", "wwwroot", CoreWebView2HostResourceAccessKind.DenyCors);
-            core.NavigationStarting += Core_NavigationStarting;
+            core.NavigationStarting += Core_NavigationStarting;            
+        }
+
+        private void Core_WebResourceResponseReceived(object sender, CoreWebView2WebResourceResponseReceivedEventArgs e)
+        {
+            // 若域名是 desktop.uzonmail.com，则拦截请求到 index.html
+            if (!e.Request.Uri.Contains("desktop.uzonmail.com")) return;
+
+            var dirs = Directory.GetDirectories("wwwroot");
+            var files = Directory.GetFiles("wwwroot");
+            List<string>names = new List<string>();
+            names.AddRange(dirs.Select(x => Path.GetFileName(x)));
+            names.AddRange(files.Select(x => Path.GetFileName(x)));
+
+            var uri = e.Request.Uri;
+            string path = uri.Replace("https://desktop.uzonmail.com/", "");
+            if (string.IsNullOrEmpty(path)) return;
+
+            string firstName = path.Split('/')[0];
+
+            if (names.Contains(firstName)) return;
+
+            var core = sender as CoreWebView2;
+            
+            e.Request.Content = File.OpenRead("wwwroot/index.html");
         }
 
         private void Core_NavigationStarting(object sender, CoreWebView2NavigationStartingEventArgs e)
         {
+            // 只针对指定的 URL 进行拦截
+            if (!e.Uri.Contains("desktop.uzonmail.com")) return;
             if (e.Uri.Equals(ViewModel.URL)) return;
+            if (e.Uri.EndsWith(".html")) return;
             e.Cancel = true;
         }
 
