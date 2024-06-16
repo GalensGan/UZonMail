@@ -153,6 +153,7 @@ services.Configure<FormOptions>(options =>
 });
 
 // 配置 Kestrel 服务器
+// 默认监听地址通过 Urls 配置 
 builder.WebHost.ConfigureKestrel(options =>
 {
     bool listenAnyIP = builder.Configuration.GetSection("Http:ListenAnyIP").Get<bool>();
