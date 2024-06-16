@@ -19,8 +19,19 @@ using UZonMailService.Services.HostedServices;
 using Quartz;
 using System.Configuration;
 using UZonMailService.Utils.ASPNETCore.Filters;
+using System.Reflection;
+using Uamazing.Utils.Helpers;
+using UZonMailService.Middlewares;
 
-var builder = WebApplication.CreateBuilder(args);
+var appOptions = new WebApplicationOptions
+{
+    ApplicationName = typeof(Program).Assembly.FullName,
+    ContentRootPath = Path.GetFullPath(AppDomain.CurrentDomain.BaseDirectory),
+    WebRootPath = "wwwroot",
+    Args = args
+};
+var builder = WebApplication.CreateBuilder(appOptions);
+
 var services = builder.Services;
 
 // 日志
@@ -112,9 +123,17 @@ services.Configure<ApiBehaviorOptions>(o =>
 // 跨域
 services.AddCors(options =>
 {
+    var configuration = builder.Configuration;
     // 获取跨域配置
-    string[]? corsConfig = builder.Configuration.GetSection("Cors").Get<string[]>();
-    List<string> cors = ["http://localhost:9000"];
+    string[]? corsConfig = configuration.GetSection("Cors").Get<string[]>();
+
+    // 获取当前主机的地址
+    var hostIPs = NetworkHelper.GetCurrentHostIPs();
+    var port = configuration.GetSection("Http:Port").Get<int>();
+    var hostUrls = hostIPs.Select(x => $"http://{x}:{port}").ToList();
+    List<string> cors = [$"http://127.0.0.1:{port}", $"http://localhost:{port}", "http://localhost:9000"];
+    cors.AddRange(hostUrls);
+
     if (corsConfig?.Length > 0) cors.AddRange(corsConfig);
 
     options.AddDefaultPolicy(
@@ -132,12 +151,19 @@ services.Configure<FormOptions>(options =>
     options.ValueLengthLimit = int.MaxValue;
     options.MultipartBodyLengthLimit = int.MaxValue;
 });
+
 // 配置 Kestrel 服务器
 builder.WebHost.ConfigureKestrel(options =>
 {
+    bool listenAnyIP = builder.Configuration.GetSection("Http:ListenAnyIP").Get<bool>();
+    int port = builder.Configuration.GetSection("Http:Port").Get<int>();
+    if (listenAnyIP)
+        options.ListenAnyIP(port);
+    else
+        options.ListenLocalhost(port);
+
     options.Limits.MaxRequestBodySize = int.MaxValue;
 });
-
 
 var app = builder.Build();
 
@@ -145,6 +171,8 @@ var app = builder.Build();
 app.UseDefaultFiles();
 // 设置网站的根目录
 app.UseStaticFiles();
+
+// 设置 public 目录为静态文件目录
 app.UseStaticFiles(new StaticFileOptions()
 {
     FileProvider = new PhysicalFileProvider(Path.Combine(builder.Environment.ContentRootPath, "public")),
@@ -165,6 +193,9 @@ if (app.Environment.IsDevelopment())
 app.UseAuthentication();
 app.UseAuthorization();
 
+// vue 单页面应用中间件
+app.UseVueASP();
+
 // http 路由
 app.MapControllers();
 
@@ -176,5 +207,5 @@ app.MapHub<UzonMailHub>($"/hubs/{nameof(UzonMailHub).ToCamelCase()}");
 //{
 //    app.UseDeveloperExceptionPage();
 //}
-
 app.Run();
+
