@@ -292,6 +292,7 @@ async function onOKClick () {
 
     @media screen and (min-width: 600px) {
       flex: 1 1 50%;
+      max-width: 50%;
     }
   }
 }

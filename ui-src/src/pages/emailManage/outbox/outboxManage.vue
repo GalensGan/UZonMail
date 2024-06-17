@@ -91,7 +91,7 @@ const columns: QTableColumn[] = [
   {
     name: 'email',
     required: true,
-    label: '邮箱',
+    label: '发件箱',
     align: 'left',
     field: 'email',
     sortable: true
@@ -117,6 +117,14 @@ const columns: QTableColumn[] = [
     label: 'smtp端口',
     align: 'left',
     field: 'smtpPort',
+    sortable: true
+  },
+  {
+    name: 'userName',
+    required: true,
+    label: 'smtp用户名',
+    align: 'left',
+    field: 'userName',
     sortable: true
   },
   {

@@ -33,7 +33,7 @@ export async function getOutboxFields (smtpPasswordSecretKeys: string[]): Promis
     {
       name: 'email',
       type: PopupDialogFieldType.email,
-      label: 'smtp邮箱',
+      label: 'smtp发件邮箱',
       value: '',
       required: true
     },
@@ -41,20 +41,6 @@ export async function getOutboxFields (smtpPasswordSecretKeys: string[]): Promis
       name: 'name',
       type: PopupDialogFieldType.text,
       label: '发件人名称',
-      value: '',
-      required: true
-    },
-    {
-      name: 'password',
-      label: 'smtp密码',
-      type: PopupDialogFieldType.password,
-      required: true,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      parser: async (value: any) => {
-        const pwd = String(value)
-        // 对密码进行加密
-        return encryptPassword(smtpPasswordSecretKeys, pwd)
-      },
       value: ''
     },
     {
@@ -72,11 +58,24 @@ export async function getOutboxFields (smtpPasswordSecretKeys: string[]): Promis
       required: true
     },
     {
-      name: 'enableSSL',
-      label: '启用 SSL',
-      type: PopupDialogFieldType.boolean,
-      value: true,
-      required: true
+      name: 'userName',
+      type: PopupDialogFieldType.text,
+      label: 'smtp用户名',
+      placeholder: '可为空，若为空，则使用发件邮箱作用用户名',
+      value: ''
+    },
+    {
+      name: 'password',
+      label: 'smtp密码',
+      type: PopupDialogFieldType.password,
+      required: true,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      parser: async (value: any) => {
+        const pwd = String(value)
+        // 对密码进行加密
+        return encryptPassword(smtpPasswordSecretKeys, pwd)
+      },
+      value: ''
     },
     {
       name: 'description',
@@ -94,6 +93,13 @@ export async function getOutboxFields (smtpPasswordSecretKeys: string[]): Promis
       optionTooltip: 'description',
       mapOptions: true,
       emitValue: true
+    },
+    {
+      name: 'enableSSL',
+      label: '启用 SSL',
+      type: PopupDialogFieldType.boolean,
+      value: true,
+      required: true
     }
   ]
 }
@@ -108,6 +114,10 @@ function getOutboxExcelDataMapper (): IExcelColumnMapper[] {
     {
       headerName: '发件人名称',
       fieldName: 'name'
+    },
+    {
+      headerName: 'smtp用户名',
+      fieldName: 'userName'
     },
     {
       headerName: 'smtp密码',
@@ -170,8 +180,9 @@ export function UseHeaderFunction (emailGroup: Ref<IEmailGroupListItem>,
   async function onExportOutboxTemplateClick () {
     const data: any[] = [
       {
-        email: '填写邮箱(导入时，请删除该行数据)',
+        email: '填写发件邮箱(导入时，请删除该行数据)',
         name: '填写发件人名称(可选)',
+        userName: '填写 smtp 用户名，若与邮箱一致，则设置不填写',
         password: '填写 smtp 密码',
         smtpHost: '填写 smtp 地址',
         smtpPort: 25,

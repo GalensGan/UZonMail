@@ -51,6 +51,9 @@ export function useContextMenu (deleteRowById: (id?: number) => void) {
         case 'name':
           field.value = outbox.name
           break
+        case 'userName':
+          field.value = outbox.userName
+          break
         case 'password':
           field.value = getSmtpPassword(outbox, userInfoStore.smtpPasswordSecretKeys)
           break
