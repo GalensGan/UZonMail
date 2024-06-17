@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,8 +14,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 using UzonMailDesktop.Models;
+using UzonMailDesktop.Utils;
 
 namespace UzonMailDesktop
 {
@@ -38,7 +39,7 @@ namespace UzonMailDesktop
 
         private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            CloseBackService();
+            new BackService().OnWindowsClosing();
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -69,17 +70,7 @@ namespace UzonMailDesktop
             }
 
             // 启动后端服务
-            CloseBackService();
-
-            var startInfo = new ProcessStartInfo
-            {
-                FileName = "service/UZonMailService.exe",
-                WorkingDirectory = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "service"),
-                UseShellExecute = false,
-                CreateNoWindow = true,
-                WindowStyle = ProcessWindowStyle.Hidden
-            };
-            Process.Start(startInfo);
+            new BackService().StartBackService();
         }
 
         private void MainWebview2_CoreWebView2InitializationCompleted(object sender, CoreWebView2InitializationCompletedEventArgs e)
@@ -87,27 +78,18 @@ namespace UzonMailDesktop
             var core = MainWebview2.CoreWebView2;
             core.Settings.AreDefaultContextMenusEnabled = true;
             core.Settings.IsScriptEnabled = true;
+
             core.SetVirtualHostNameToFolderMapping("desktop.uzonmail.com", "wwwroot", CoreWebView2HostResourceAccessKind.DenyCors);
-            core.NavigationStarting += Core_NavigationStarting;
+            core.NavigationStarting += Core_NavigationStarting;            
         }
 
         private void Core_NavigationStarting(object sender, CoreWebView2NavigationStartingEventArgs e)
         {
+            // 只针对指定的 URL 进行拦截
+            if (!e.Uri.Contains("desktop.uzonmail.com")) return;
             if (e.Uri.Equals(ViewModel.URL)) return;
+            if (e.Uri.EndsWith(".html")) return;
             e.Cancel = true;
-        }
-
-        /// <summary>
-        /// 关闭后台服务
-        /// </summary>
-        private void CloseBackService()
-        {
-            // 查找进程名为 UZonMailService 的进程并杀死
-            var process = Process.GetProcesses().Where(x => x.ProcessName == "UZonMailService").ToList();
-            foreach (var item in process)
-            {
-                item.Kill();
-            }
         }
     }
 }
