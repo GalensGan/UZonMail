@@ -15,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using UzonMailDesktop.Models;
+using UzonMailDesktop.Utils;
 
 namespace UzonMailDesktop
 {
@@ -38,7 +39,7 @@ namespace UzonMailDesktop
 
         private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            CloseBackService();
+            new BackService().CloseBackServiceIfNotSelf();
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -69,17 +70,7 @@ namespace UzonMailDesktop
             }
 
             // 启动后端服务
-            CloseBackService();
-
-            var startInfo = new ProcessStartInfo
-            {
-                FileName = "service/UZonMailService.exe",
-                WorkingDirectory = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "service"),
-                UseShellExecute = false,
-                CreateNoWindow = true,
-                WindowStyle = ProcessWindowStyle.Hidden
-            };
-            Process.Start(startInfo);
+            new BackService().StartBackService();
         }
 
         private void MainWebview2_CoreWebView2InitializationCompleted(object sender, CoreWebView2InitializationCompletedEventArgs e)
@@ -123,19 +114,6 @@ namespace UzonMailDesktop
             if (e.Uri.Equals(ViewModel.URL)) return;
             if (e.Uri.EndsWith(".html")) return;
             e.Cancel = true;
-        }
-
-        /// <summary>
-        /// 关闭后台服务
-        /// </summary>
-        private void CloseBackService()
-        {
-            // 查找进程名为 UZonMailService 的进程并杀死
-            var process = Process.GetProcesses().Where(x => x.ProcessName == "UZonMailService").ToList();
-            foreach (var item in process)
-            {
-                item.Kill();
-            }
         }
     }
 }
