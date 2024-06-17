@@ -39,7 +39,7 @@ namespace UzonMailDesktop
 
         private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            new BackService().CloseBackServiceIfNotSelf();
+            new BackService().OnWindowsClosing();
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -81,30 +81,6 @@ namespace UzonMailDesktop
 
             core.SetVirtualHostNameToFolderMapping("desktop.uzonmail.com", "wwwroot", CoreWebView2HostResourceAccessKind.DenyCors);
             core.NavigationStarting += Core_NavigationStarting;            
-        }
-
-        private void Core_WebResourceResponseReceived(object sender, CoreWebView2WebResourceResponseReceivedEventArgs e)
-        {
-            // 若域名是 desktop.uzonmail.com，则拦截请求到 index.html
-            if (!e.Request.Uri.Contains("desktop.uzonmail.com")) return;
-
-            var dirs = Directory.GetDirectories("wwwroot");
-            var files = Directory.GetFiles("wwwroot");
-            List<string>names = new List<string>();
-            names.AddRange(dirs.Select(x => Path.GetFileName(x)));
-            names.AddRange(files.Select(x => Path.GetFileName(x)));
-
-            var uri = e.Request.Uri;
-            string path = uri.Replace("https://desktop.uzonmail.com/", "");
-            if (string.IsNullOrEmpty(path)) return;
-
-            string firstName = path.Split('/')[0];
-
-            if (names.Contains(firstName)) return;
-
-            var core = sender as CoreWebView2;
-            
-            e.Request.Content = File.OpenRead("wwwroot/index.html");
         }
 
         private void Core_NavigationStarting(object sender, CoreWebView2NavigationStartingEventArgs e)

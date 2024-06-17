@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -85,6 +86,23 @@ namespace UzonMailDesktop.Utils
             foreach (var item in processes)
             {
                 item.Kill();
+            }
+        }
+
+        /// <summary>
+        /// 当窗口关闭时调用
+        /// </summary>
+        public void OnWindowsClosing()
+        {
+            // 获取配置
+            var keepBackService = ConfigurationManager.AppSettings["keepBackService"];
+            if(bool.TryParse(keepBackService, out bool keep) && keep)
+            {
+                CloseBackServiceIfNotSelf();
+            }
+            else
+            {
+                CloseAllBackService();
             }
         }
     }
