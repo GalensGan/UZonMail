@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { QTableColumn, QTableProps } from 'quasar'
 import { IQTableInitParams, TTableFilterObject, IQTablePagination, IRequestPagination } from './types'
-import QTableIndex from './qTableIndex.vue'
+import QTableIndex from 'src/components/tableComponents/TableIndex.vue'
 
 /**
  * 返回一个QTable的配置对象
@@ -12,7 +12,7 @@ export function useQTable (initParams: IQTableInitParams) {
   // 分页
   const pagination: Ref<IQTablePagination> = ref({
     sortBy: initParams.sortBy || 'id',
-    descending: initParams.descending || false,
+    descending: initParams.descending !== undefined ? initParams.descending : true,
     page: 1,
     rowsPerPage: 10,
     rowsNumber: 10

@@ -8,6 +8,7 @@
 
 <script lang="ts" setup>
 const props = defineProps({
+  // 进度值，范围 0-1
   value: {
     type: Number,
     default: 0

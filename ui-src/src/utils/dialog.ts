@@ -121,3 +121,7 @@ export function showHtmlDialog (title: string, html: string) {
     })
   })
 }
+
+// #region 对 components/popupDialog/PopupDialog.ts 进行导出，统一弹窗调用位置
+export { showDialog, showComponentDialog } from 'src/components/popupDialog/PopupDialog'
+// #endregion

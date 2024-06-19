@@ -10,6 +10,7 @@ export interface ISelectFileResult {
   data: string | ArrayBuffer | undefined | null,
   files?: FileList
 }
+
 /**
  * 选择文件
  * @param multiple

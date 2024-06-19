@@ -1,4 +1,6 @@
+import { AxiosProgressEvent } from 'axios'
 import { httpClient } from 'src/api//base/httpClient'
+import { IRequestPagination } from 'src/compositions/types'
 
 /**
  * 上传文件到静态目录
@@ -40,12 +42,54 @@ export function GetFileUsageId (sha256: string, fileName: string) {
  * @param fileName
  * @returns
  */
-export function uploadFileObject (sha256: string, file: File) {
+export function uploadFileObject (sha256: string, file: File, onUploadProgress?: (progressEvent: AxiosProgressEvent) => void) {
   const form = new FormData()
   form.append('sha256', sha256)
   form.append('file', file, file.name)
 
   return httpClient.post<number>('/file/upload-file-object', {
-    data: form
+    data: form,
+    onUploadProgress
+  })
+}
+
+export interface IFileUsage {
+  id: number,
+  fileName: string
+  createDate: string,
+  displayName: string,
+  fileObjectId: number,
+  fileObject: {
+    sha256: string,
+    linkCount: number,
+    size: number
+  }
+}
+
+/**
+ * 获取文件使用列表数量
+ * @param filter
+ * @returns
+ */
+export function getFileUsagesCount (filter?: string) {
+  return httpClient.get<number>('/file/file-usages/filtered-count', {
+    params: {
+      filter
+    }
+  })
+}
+
+/**
+ * 获取文件使用列表数据
+ * @param filter
+ * @param pagination
+ * @returns
+ */
+export function getFileUsagesData (filter: string | undefined, pagination: IRequestPagination) {
+  return httpClient.post<IFileUsage[]>('/file/file-usages/filtered-data', {
+    params: {
+      filter
+    },
+    data: pagination
   })
 }
