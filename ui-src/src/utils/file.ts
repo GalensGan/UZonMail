@@ -459,8 +459,17 @@ export function fileSha256 (file: File, callback?: (params: FileSha256Callback) 
 export async function saveStringToFile (fileName: string, content: string) {
   const blob = new Blob([content], { type: 'text/plain' })
   const url = URL.createObjectURL(blob)
+  await saveUrlToFile(fileName, url)
+}
+
+/**
+ * 保存 url 到文件
+ * @param fileName
+ * @param fileUrl
+ */
+export async function saveUrlToFile (fileName: string, fileUrl: string) {
   const aLink = document.createElement('a')
-  aLink.href = url
+  aLink.href = fileUrl
   aLink.download = fileName
   aLink.click()
   // 删除 alink

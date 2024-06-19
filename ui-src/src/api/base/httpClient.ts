@@ -59,6 +59,12 @@ export default class HttpClient {
   // 添加响应拦截器
   private setResponseInterceptors (axiosInstance: AxiosInstance) {
     axiosInstance.interceptors.response.use(async (response) => {
+      // 有可能后端返回的是流
+      if (response.headers['content-type'] === 'application/octet-stream') {
+        console.log('response is stream:', response)
+        return response
+      }
+
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const data = response.data as IResponseData<any>
       if (data.code !== StatusCode.SuccessOK) {
@@ -108,8 +114,19 @@ export default class HttpClient {
 
   // #region 对请求返回值的data进行解构，方便前端使用
   private destructureAxiosResponse<R> (response: AxiosResponse<IResponseData<R>>): IResponseData<R> {
-    const data = response.data
+    let data = response.data
+    // console.log('destructureAxiosResponse:', response)
+    // 如果是流，要单独处理
+    if (response.headers['content-type'] === 'application/octet-stream') {
+      data = {
+        data: response.data as unknown as R,
+        code: StatusCode.SuccessOK,
+        message: 'ok',
+        ok: true
+      }
+    }
     data.axiosResponse = response
+
     return data
   }
 
@@ -142,8 +159,8 @@ export default class HttpClient {
       }
     }
 
-    const responseData = await this._axios.get<R, AxiosResponse<IResponseData<R>, D>, D>(url, config)
-    const dataResult = this.destructureAxiosResponse(responseData)
+    const response = await this._axios.get<R, AxiosResponse<IResponseData<R>, D>, D>(url, config)
+    const dataResult = this.destructureAxiosResponse(response)
 
     // 添加到缓存
     setDataToCache(url, config, dataResult.data)

@@ -3,7 +3,7 @@
     v-model:pagination="pagination" dense :loading="loading" :filter="filter" binary-state-sort
     @request="onTableRequest">
     <template v-slot:top-left>
-      <CreateBtn label="上传" icon="upload" tooltip="上传附件" @click="open" />
+      <CreateBtn label="上传" icon="upload" tooltip="上传附件" @click="openFileDialog" />
     </template>
 
     <template v-slot:top-right>
@@ -12,7 +12,7 @@
 
     <template v-slot:body-cell-index="props">
       <QTableIndex :props="props" />
-      <ContextMenu :items="attachmentCtxMenuItems" />
+      <ContextMenu :items="attachmentCtxMenuItems" :value="props.row" />
     </template>
 
     <template v-slot:body-cell-userId="props">
@@ -101,10 +101,10 @@ const { pagination, rows, filter, onTableRequest, loading, refreshTable } = useQ
 
 import { notifySuccess, showComponentDialog } from 'src/utils/dialog'
 import FilesUploaderPopup from 'src/components/uploader/FilesUploaderPopup.vue'
-import { useDropZone, useFileDialog } from '@vueuse/core'
+import { useDropZone, useFileDialog, useFileSystemAccess } from '@vueuse/core'
 
 // #region 上传文件
-const { open, onChange } = useFileDialog({
+const { open: openFileDialog, onChange } = useFileDialog({
   multiple: true,
   // accept: 'image/*', // Set to accept only image files
   directory: false // Select directories instead of files if set true
@@ -165,7 +165,7 @@ const attachmentCtxMenuItems: IContextMenuItem[] = [
     label: '重命名',
     tooltip: '重命名为有规律的名称，方便在发件时使用',
     // 当返回 false 时，右键菜单不会退出
-    onClick: onDownloadAttachment
+    onClick: renameAttachment
   },
   {
     name: 'delete',
@@ -173,12 +173,60 @@ const attachmentCtxMenuItems: IContextMenuItem[] = [
     color: 'negative',
     tooltip: '删除该条记录,但不会真正删除文件',
     // 当返回 false 时，右键菜单不会退出
-    onClick: onDownloadAttachment
+    onClick: removeAttachment
   }
 ]
+
+import { useConfig } from 'src/config'
+import { getFileReaderId, getFileStreamByReaderId } from 'src/api/fileReader'
+import { saveUrlToFile } from 'src/utils/file'
+const config = useConfig()
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function onDownloadAttachment (row: Record<string, any>) {
-  console.log('onDownloadAttachment:', row)
+  const { data: fileReaderId } = await getFileReaderId(row.id)
+  const extension = row.fileName.split('.').pop() as string
+  const dataType = ref('ArrayBuffer') as Ref<'Text' | 'ArrayBuffer' | 'Blob'>
+  const fsa = useFileSystemAccess({
+    dataType,
+    types: [{
+      description: `${extension} 文件`,
+      accept: {
+        '*/*': [`.${extension}`]
+      }
+    }],
+    excludeAcceptAllOption: true
+  })
+  if (fsa.isSupported.value) {
+    await fsa.create({
+      suggestedName: row.displayName || row.fileName
+    })
+    // 开始下载文件
+    const { data: arrayBuffer } = await getFileStreamByReaderId(fileReaderId)
+    fsa.data.value = arrayBuffer
+    await fsa.save()
+    notifySuccess('下载成功')
+    return
+  }
+
+  // 使用旧式的下载方式
+  const baseUrl = `${config.baseUrl}${config.api}` as string
+  const fileUrl = `${baseUrl}/file-reader/${fileReaderId}/stream`
+  saveUrlToFile(row.displayName || row.fileName, fileUrl)
+  notifySuccess('下载成功')
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function renameAttachment (row: Record<string, any>) {
+  console.log(row)
+
+  // 打开重命名的
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function removeAttachment (row: Record<string, any>) {
+  console.log(row)
+
+  // 打开重命名的
 }
 // #endregion
 </script>
