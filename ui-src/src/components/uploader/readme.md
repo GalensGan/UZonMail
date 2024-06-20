@@ -6,3 +6,7 @@
 
 1. 计算 hash 值
 2. 若已经上传，则标记状态，并返回实际文件地址
+
+## FilesUploaderPopup
+
+  弹窗组件

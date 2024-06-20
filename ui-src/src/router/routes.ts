@@ -155,6 +155,15 @@ export const dynamicRoutes: ExtendedRouteRecordRaw[] = [
           label: '发件明细'
         },
         component: () => import('pages/sendingManage/sendHistory/SendDetailTable.vue')
+      },
+      {
+        name: 'AttachmentManager',
+        path: 'attachment-manager',
+        meta: {
+          icon: 'cloud_upload',
+          label: '附件管理'
+        },
+        component: () => import('pages/sendingManage/fileManager/AttachmentManager.vue')
       }
     ]
   },

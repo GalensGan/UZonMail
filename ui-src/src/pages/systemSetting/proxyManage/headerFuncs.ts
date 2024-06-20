@@ -4,6 +4,22 @@ import { showDialog } from 'src/components/popupDialog/PopupDialog'
 import { IPopupDialogField, IPopupDialogParams, PopupDialogFieldType } from 'src/components/popupDialog/types'
 import { useUserInfoStore } from 'src/stores/user'
 import { notifySuccess } from 'src/utils/dialog'
+import { URL } from 'url'
+
+/**
+ * 代替 URL.canParse 方法
+ * @param urlStr
+ * @returns
+ */
+function canParseUrl (urlStr: string) {
+  try {
+    const url = new URL(urlStr)
+    return !!url
+  } catch {
+    return false
+  }
+}
+if (!URL.canParse) URL.canParse = canParseUrl
 
 export function getCommonProxyFields (): IPopupDialogField[] {
   return [
@@ -35,6 +51,7 @@ export function getCommonProxyFields (): IPopupDialogField[] {
         if (!value.includes('http://') && !value.includes('https://')) {
           value = `https://${value}`
         }
+
         if (!URL.canParse(value)) {
           return {
             ok: false,

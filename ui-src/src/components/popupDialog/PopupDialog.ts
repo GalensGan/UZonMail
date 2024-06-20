@@ -1,6 +1,6 @@
 import { IDialogResult, IPopupDialogParams, PopupDialogFieldType } from './types'
 import { Dialog } from 'quasar'
-import lowCodeForm from './lowCodeForm.vue'
+import LowCodeForm from './LowCodeForm.vue'
 
 /**
  * 弹出对话框
@@ -17,7 +17,7 @@ export async function showDialog<T = Record<string, any>> (dialogParams: IPopupD
   */
   return new Promise((resolve) => {
     Dialog.create({
-      component: lowCodeForm,
+      component: LowCodeForm,
       componentProps: dialogParams
     }).onOk((model) => {
       // console.log('OK', model)
