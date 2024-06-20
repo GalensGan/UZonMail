@@ -222,14 +222,15 @@ async function renameAttachment (row: Record<string, any>) {
 
   // 打开重命名弹窗
   const result = await showDialog({
-    title: '重命名文件',
+    title: '重命名',
     fields: [
       {
         name: 'displayName',
         label: '原文件名',
         type: PopupDialogFieldType.text,
         required: true,
-        value: row.displayName || row.fileName
+        value: row.displayName || row.fileName,
+        disable: true
       },
       {
         name: 'newDisplayName',
