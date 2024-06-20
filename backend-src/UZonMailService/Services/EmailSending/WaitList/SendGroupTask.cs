@@ -304,12 +304,17 @@ namespace UZonMailService.Services.EmailSending.WaitList
         /// <returns></returns>
         private SendingItemExcelData? GetExcelData(SendingItem sendingItem)
         {
-            if (sendingItem.IsSendingBatch) return null;
-            if (sendingGroup.Data == null || sendingGroup.Data.Count == 0) return null;
-            // 查找
-            var data = sendingGroup.Data.FirstOrDefault(x => x.SelectTokenOrDefault("inbox", string.Empty) == sendingItem.Inboxes[0].Email);
-            if (data == null) return null;
-            return new SendingItemExcelData(data as JObject);
+            // 原版：从组中获取数据
+            //if (sendingItem.IsSendingBatch) return null;
+            //if (sendingGroup.Data == null || sendingGroup.Data.Count == 0) return null;
+            //// 查找
+            //var data = sendingGroup.Data.FirstOrDefault(x => x.SelectTokenOrDefault("inbox", string.Empty) == sendingItem.Inboxes[0].Email);
+            //if (data == null) return null;
+            //return new SendingItemExcelData(data as JObject);
+
+            // 新版：从发送项中获取数据
+            // 不兼容新版本
+            return new SendingItemExcelData(sendingItem.Data);
         }
 
         /// <summary>
