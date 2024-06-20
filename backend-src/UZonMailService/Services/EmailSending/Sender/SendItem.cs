@@ -38,9 +38,7 @@ namespace UZonMailService.Services.EmailSending.Sender
             IsSendingBatch = sendingItem.IsSendingBatch;
 
             if (sendingItem.Attachments != null)
-                AttachmentIds = sendingItem.Attachments.Select(x => x.Id).ToList();
-
-            
+                FileUsageIds = sendingItem.Attachments.Select(x => x.Id).ToList();
         }
 
         /// <summary>
@@ -84,9 +82,9 @@ namespace UZonMailService.Services.EmailSending.Sender
         public SendingItemExcelData? BodyData { get; set; }
 
         /// <summary>
-        /// 附件 FileObjectId 列表
+        /// 附件 FileUsageId 列表
         /// </summary>
-        public List<int> AttachmentIds { get; set; }
+        public List<int> FileUsageIds { get; set; }
 
         /// <summary>
         /// 批量发送
@@ -113,12 +111,12 @@ namespace UZonMailService.Services.EmailSending.Sender
             return true;
         }
 
-        private List<string> _attachments;
+        private List<Tuple<string, string>> _attachments;
         /// <summary>
         /// 获取附件
         /// </summary>
         /// <returns></returns>
-        public async Task<List<string>> GetAttachments()
+        public async Task<List<Tuple<string, string>>> GetAttachments()
         {
             if (_attachments != null)
             {
@@ -126,11 +124,16 @@ namespace UZonMailService.Services.EmailSending.Sender
             }
 
             // 查找文件
-            _attachments = await Db.FileObjects.Where(f => AttachmentIds.Contains(f.Id))
-               .Include(x => x.FileBucket)
-               .Select(x => $"{x.FileBucket.RootDir}/{x.Path}")
+            var attachments = await Db.FileUsages.Where(f => FileUsageIds.Contains(f.Id))
+               .Include(x => x.FileObject)
+               .ThenInclude(x => x.FileBucket)
+               .Select(x => new { fullPath = $"{x.FileObject.FileBucket.RootDir}/{x.FileObject.Path}", fileName = x.DisplayName ?? x.FileName })
                .ToListAsync();
-
+            _attachments = [];
+            foreach(var item in attachments)
+            {
+                _attachments.Add(new Tuple<string, string>(item.fullPath, item.fileName));
+            }
 
             return _attachments;
         }

@@ -8,7 +8,7 @@ namespace UZonMailService.Services.EmailSending.Sender
     /// <summary>
     /// 本机发件
     /// </summary>
-    public class LocalSender: SendMethod
+    public class LocalSender : SendMethod
     {
         private SendItem sendItem;
         public LocalSender(SendItem sendItem)
@@ -24,7 +24,7 @@ namespace UZonMailService.Services.EmailSending.Sender
             ArgumentNullException.ThrowIfNull(sendItem);
 
             if (!sendItem.Validate())
-            {                
+            {
                 await UpdateSendingStatus(false, "发件项数据不满足要求");
                 return SentStatus.Failed;
             }
@@ -38,7 +38,7 @@ namespace UZonMailService.Services.EmailSending.Sender
             // 收件人、抄送、密送           
             foreach (var address in sendItem.Inboxes)
             {
-                if(string.IsNullOrEmpty(address.Email))
+                if (string.IsNullOrEmpty(address.Email))
                     continue;
                 message.To.Add(new MailboxAddress(address.Name, address.Email));
             }
@@ -64,10 +64,15 @@ namespace UZonMailService.Services.EmailSending.Sender
                 HtmlBody = sendItem.GetBody()
             };
             // 附件
-            List<string> attachments = await sendItem.GetAttachments();
+            var attachments = await sendItem.GetAttachments();
             foreach (var attachment in attachments)
             {
-                bodyBuilder.Attachments.Add(attachment);
+                // 添加附件                
+                bodyBuilder.Attachments.Add(attachment.Item1);
+                // 修改文件名
+                var lastOne = bodyBuilder.Attachments.Last();
+                lastOne.ContentType.Name = attachment.Item2;
+                lastOne.ContentDisposition.FileName = attachment.Item2;
             }
             message.Body = bodyBuilder.ToMessageBody();
 
@@ -80,7 +85,9 @@ namespace UZonMailService.Services.EmailSending.Sender
                     client.ProxyClient = sendItem.ProxyInfo?.GetProxyClient(sendItem.Logger);
                 }
                 client.Connect(sendItem.Outbox.SmtpHost, sendItem.Outbox.SmtpPort, sendItem.Outbox.EnableSSL);
+
                 // Note: only needed if the SMTP server requires authentication
+                // 进行鉴权
                 if (!string.IsNullOrEmpty(sendItem.Outbox.AuthPassword)) client.Authenticate(sendItem.Outbox.AuthUserName, sendItem.Outbox.AuthPassword);
 
                 //client.MessageSent += (sender, args) =>

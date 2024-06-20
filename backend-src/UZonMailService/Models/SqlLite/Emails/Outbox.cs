@@ -26,6 +26,12 @@ namespace UZonMailService.Models.SqlLite.Emails
         public int SmtpPort { get; set; }
 
         /// <summary>
+        /// Smtp 的用户名
+        /// 与 smtp 的发件邮箱可能不一致
+        /// </summary>
+        public string? UserName { get; set; }
+
+        /// <summary>
         /// smtp 密码，需要加密保存
         /// smpt 密码 = 原始密码  > aes (sha256 作为 key)
         /// </summary>
@@ -47,6 +53,12 @@ namespace UZonMailService.Models.SqlLite.Emails
         /// </summary>
         public int MaxSendCountPerDay { get; set; }
 
+        ///// <summary>
+        ///// 是否有效
+        ///// 用于向前端展示发件箱是否可用
+        ///// </summary>
+        //public bool IsValid { get; set; }
+
         /// <summary>
         /// 转成发件地址
         /// </summary>
@@ -61,7 +73,7 @@ namespace UZonMailService.Models.SqlLite.Emails
             {
                 // 对密码解密
                 AuthPassword = plainPassword,
-                AuthUserName = Email,
+                AuthUserName = UserName,
                 SmtpHost = SmtpHost,
                 SmtpPort = SmtpPort,
                 CreateDate = DateTime.Now,

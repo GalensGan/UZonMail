@@ -6,6 +6,7 @@ using Uamazing.Utils.Web.Service;
 using UZonMailService.Jobs;
 using UZonMailService.Models.SqlLite;
 using UZonMailService.Models.SqlLite.EmailSending;
+using UZonMailService.Models.SqlLite.Settings;
 using UZonMailService.Services.EmailSending.Sender;
 using UZonMailService.Services.EmailSending.WaitList;
 using UZonMailService.Services.Settings;
@@ -72,7 +73,10 @@ namespace UZonMailService.Services.EmailSending
                 var userSettings = await UserSettingsFactory.GetUserSettings(ctx, sendingGroup.UserId);
 
                 // 将数据组装成 SendingItem 保存
-                List<SendingItem> items = sendingGroup.GenerateSendingItems(userSettings);
+                // 要确保数据已经通过验证
+                var builder = new SendingItemsBuilder(db, sendingGroup, userSettings);
+                List<SendingItem> items = await builder.Build();
+
                 ctx.SendingItems.AddRange(items);
                 // 更新发件数量
                 sendingGroup.TotalCount = items.Count;

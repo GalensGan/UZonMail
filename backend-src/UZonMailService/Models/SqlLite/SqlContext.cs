@@ -63,6 +63,7 @@ namespace UZonMailService.Models.SqlLite
         public DbSet<Files.FileBucket> FileBuckets { get; set; }
         public DbSet<Files.FileObject> FileObjects { get; set; }
         public DbSet<Files.FileUsage> FileUsages { get; set; }
+        public DbSet<Files.FileReader> FileReaders { get; set; }
 
         public DbSet<EmailGroup> EmailGroups { get; set; }
         public DbSet<EmailTemplate> EmailTemplates { get; set; }

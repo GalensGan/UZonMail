@@ -1,6 +1,7 @@
 ﻿using Innofactor.EfCoreJsonValueConverter;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Newtonsoft.Json.Linq;
 using System.ComponentModel.DataAnnotations.Schema;
 using UZonMailService.Models.SqlLite.Base;
 using UZonMailService.Models.SqlLite.Emails;
@@ -19,6 +20,7 @@ namespace UZonMailService.Models.SqlLite.EmailSending
     //[EntityTypeConfiguration(typeof(SendingItem))]
     public class SendingItem : SqlId, IEntityTypeConfiguration<SendingItem>
     {
+        #region EF 定义
         /// <summary>
         /// 所属发送任务
         /// </summary>
@@ -97,6 +99,12 @@ namespace UZonMailService.Models.SqlLite.EmailSending
         /// 发送代理
         /// </summary>
         public int ProxyId { get; set; }
+
+        [JsonField]
+        public JObject? Data { get; set; }
+
+        #endregion
+
         #region 发送结果
         /// <summary>
         /// 发送日期

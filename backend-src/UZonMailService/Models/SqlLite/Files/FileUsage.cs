@@ -27,15 +27,35 @@ namespace UZonMailService.Models.SqlLite.Files
         /// </summary>
         public string? UniqueName { get; set; }
 
+        private string _fileName;
         /// <summary>
         /// 文件名（包含后缀）
+        /// 若 DisplayName 为空，则 DisplayName = FileName
         /// </summary>
-        public string FileName { get; set; }
+        public string FileName
+        {
+            get => _fileName;
+            set
+            {
+                _fileName = value;
+                if(string.IsNullOrEmpty(DisplayName))
+                {
+                    DisplayName = value;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 显示名称，给用户展示的名称
+        /// 若要根据名称查找文件，则要求唯一
+        /// </summary>
+        public string DisplayName { get; set; } = string.Empty;
 
         /// <summary>
         /// 文件 id
         /// </summary>
         public int FileObjectId { get; set; }
+
         /// <summary>
         /// 文件对象
         /// </summary>

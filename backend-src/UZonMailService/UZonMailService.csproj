@@ -48,7 +48,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Migrations\" />
     <Folder Include="Models\SqlLite\EntityConfigs\Attributes\" />
     <Folder Include="Services\EmailSending\RemoteClient\" />
     <Folder Include="Utils\ASPNETCore\Service\" />
@@ -64,10 +63,13 @@
 
   <ItemGroup>
     <Compile Update="Migrations\20240610083907_init.cs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Compile>
+    <Compile Update="Migrations\20240617050459_addUserNameToOutbox.cs">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Compile>
     <Compile Update="Migrations\SqlContextModelSnapshot.cs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Compile>
   </ItemGroup>
 

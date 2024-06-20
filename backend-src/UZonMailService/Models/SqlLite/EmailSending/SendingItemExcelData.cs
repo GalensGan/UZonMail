@@ -9,9 +9,10 @@ namespace UZonMailService.Models.SqlLite.EmailSending
     /// 发件组中的 Excel 数据
     /// Excel 中的数据会覆盖 SendingGroup 中的数据
     /// </summary>
-    public class SendingItemExcelData:JObject
+    public class SendingItemExcelData : JObject
     {
-        public SendingItemExcelData(JObject row):base(row)
+        public SendingItemExcelData() { }
+        public SendingItemExcelData(JObject? row) : base(row)
         {
             // 提取数据
             if (row == null) return;
@@ -22,12 +23,13 @@ namespace UZonMailService.Models.SqlLite.EmailSending
             Inbox = row.SelectTokenOrDefault("inbox", string.Empty);
             InboxName = row.SelectTokenOrDefault("inboxName", string.Empty);
             Subject = row.SelectTokenOrDefault("subject", string.Empty);
-            CC = row.SelectTokenOrDefault("cc", string.Empty).SplitBySeparators().Where(x=>!string.IsNullOrEmpty(x)).ToList();
+            CC = row.SelectTokenOrDefault("cc", string.Empty).SplitBySeparators().Where(x => !string.IsNullOrEmpty(x)).ToList();
             BCC = row.SelectTokenOrDefault("bcc", string.Empty).SplitBySeparators().Where(x => !string.IsNullOrEmpty(x)).ToList();
             TemplateName = row.SelectTokenOrDefault("templateName", string.Empty);
             TemplateId = row.SelectTokenOrDefault("templateId", 0);
             Body = row.SelectTokenOrDefault("body", string.Empty);
             ProxyId = row.SelectTokenOrDefault("proxyId", 0);
+            AttachmentNames = row.SelectTokenOrDefault("attachmentNames", string.Empty).SplitBySeparators().Where(x=> !string.IsNullOrEmpty(x)).ToList();
 
             // 其它的数据为用户自定义数据
         }
@@ -57,5 +59,10 @@ namespace UZonMailService.Models.SqlLite.EmailSending
 
         // 代理
         public int ProxyId { get; private set; }
+
+        /// <summary>
+        /// 附件名称
+        /// </summary>
+        public List<string> AttachmentNames { get; private set; }
     }
 }

@@ -1,39 +1,42 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 using System.Net.Mail;
 using System.Xml.Linq;
 using Uamazing.Utils.Json;
+using UZonMailService.Models.SqlLite.Files;
 using UZonMailService.Models.SqlLite.Settings;
 
 namespace UZonMailService.Models.SqlLite.EmailSending
 {
     /// <summary>
     /// 用于生成发送项
+    /// 请确保数据经过验证
     /// </summary>
     /// <param name="group"></param>
     /// <param name="userSetting"></param>
-    public class SendingItemsBuilder(SendingGroup group, UserSetting userSetting)
+    public class SendingItemsBuilder(SqlContext db, SendingGroup group, UserSetting userSetting)
     {
         /// <summary>
         /// 批量发件时的大小
         /// </summary>
         private int _batchSize = userSetting.MaxSendingBatchSize;
 
-        public List<SendingItem> Build()
+        public async Task<List<SendingItem>> Build()
         {
             // 获取收件箱
-            List<EmailAddress> inboxes = GetInboxes();
+            List<EmailAddress> allInboxes = GetAllInboxes();
 
             // 根据收件箱生成发件项
-            return GenerateSendingItems(inboxes);
+            return await GenerateSendingItems(allInboxes);
         }
 
         /// <summary>
-        /// 获取收件箱
+        /// 获取收件箱：发件组和邮件数据自带的收件箱
         /// 数据关键字为: inbox,inboxName
         /// 会根据 email 去重
         /// </summary>
         /// <returns></returns>
-        private List<EmailAddress> GetInboxes()
+        private List<EmailAddress> GetAllInboxes()
         {
             if (group.Data == null) return group.Inboxes;
 
@@ -56,7 +59,7 @@ namespace UZonMailService.Models.SqlLite.EmailSending
                     Name = inboxName
                 });
             }
-            return inboxes.DistinctBy(x=>x.Email).ToList();
+            return inboxes.DistinctBy(x => x.Email).ToList();
         }
 
         /// <summary>
@@ -68,7 +71,7 @@ namespace UZonMailService.Models.SqlLite.EmailSending
         /// </summary>
         /// <param name="inboxes"></param>
         /// <returns></returns>
-        private List<SendingItem> GenerateSendingItems(List<EmailAddress> inboxes)
+        private async Task<List<SendingItem>> GenerateSendingItems(List<EmailAddress> inboxes)
         {
             if (group.SendBatch
                 && group.Outboxes.Count == 1
@@ -120,10 +123,20 @@ namespace UZonMailService.Models.SqlLite.EmailSending
             {
                 foreach (var data in group.Data)
                 {
-                    var row = new SendingItemExcelData(data as JObject);
-                    rowData.Add(row.Inbox, row);
+                    if (data is not JObject jobj) continue;
+                    var row = new SendingItemExcelData(jobj);
+                    if (!string.IsNullOrEmpty(row.Inbox))
+                        rowData.Add(row.Inbox, row);
                 }
             }
+
+            // 获取所有的附件
+            var attachFileNames = rowData.Values.SelectMany(x => x.AttachmentNames).ToList();
+            List<FileUsage> fileUsages = [];
+            if (attachFileNames.Count > 0)
+                fileUsages = await db.FileUsages.Where(x => x.IsPublic || x.OwnerUserId == group.UserId)
+                   .Where(x => attachFileNames.Contains(x.DisplayName))
+                   .ToListAsync();
 
             List<SendingItem> sendingItems = [];
             foreach (var inbox in inboxes)
@@ -136,17 +149,16 @@ namespace UZonMailService.Models.SqlLite.EmailSending
                     Inboxes = [inbox],
                     CC = group.CcBoxes,
                     BCC = group.BccBoxes,
+                    // 附件
                     Attachments = group.Attachments,
                     Status = SendingItemStatus.Created
                 };
-                // 在发送时，才会设置模板
+                // 在发送时，才会设置具体的模板
                 sendingItems.Add(sendingItem);
 
                 // 从数据中获取相关数据
                 if (!rowData.TryGetValue(inbox.Email, out var row))
-                {
                     continue;
-                }
 
                 // 设置发件箱
                 sendingItem.OutBoxId = row.OutboxId;
@@ -200,6 +212,17 @@ namespace UZonMailService.Models.SqlLite.EmailSending
 
                 // 覆盖正文
                 // 正文和模板在 SendGroupTask.Init() 中设置
+
+                // 添加附件
+                // 覆盖正文中的附件
+                if(row.AttachmentNames != null && row.AttachmentNames.Count > 0)
+                {
+                    var fileUsagesTemp = fileUsages.FindAll(x => row.AttachmentNames.Contains(x.DisplayName));
+                    sendingItem.Attachments = fileUsagesTemp;
+                }
+
+                // 保存数据
+                sendingItem.Data = row;
             }
 
             return sendingItems;

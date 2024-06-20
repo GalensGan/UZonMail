@@ -47,11 +47,11 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
         #endregion
 
         #region 设置
-        private string _authUserName;
+        private string? _authUserName;
         /// <summary>
         /// 授权用户名
         /// </summary>
-        public string AuthUserName
+        public string? AuthUserName
         {
             get { return string.IsNullOrEmpty(_authUserName) ? Email : _authUserName; }
             set { _authUserName = value; }
@@ -60,7 +60,7 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
         /// <summary>
         /// 授权密码
         /// </summary>
-        public string AuthPassword { get; set; }
+        public string? AuthPassword { get; set; }
 
         public string SmtpHost { get; set; }
 

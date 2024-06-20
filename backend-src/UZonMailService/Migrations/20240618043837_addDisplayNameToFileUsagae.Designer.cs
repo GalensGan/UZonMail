@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using UZonMailService.Models.SqlLite;
 
@@ -10,9 +11,11 @@ using UZonMailService.Models.SqlLite;
 namespace UZonMailService.Migrations
 {
     [DbContext(typeof(SqlContext))]
-    partial class SqlContextModelSnapshot : ModelSnapshot
+    [Migration("20240618043837_addDisplayNameToFileUsagae")]
+    partial class addDisplayNameToFileUsagae
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.4");
@@ -166,9 +169,6 @@ namespace UZonMailService.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("CreateDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Data")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("EmailTemplateId")
@@ -404,41 +404,6 @@ namespace UZonMailService.Migrations
                     b.HasIndex("FileBucketId");
 
                     b.ToTable("FileObjects");
-                });
-
-            modelBuilder.Entity("UZonMailService.Models.SqlLite.Files.FileReader", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("CreateDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("ExpireDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("FileName")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("FileObjectId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("IsHidden")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FileObjectId");
-
-                    b.ToTable("FileReaders");
                 });
 
             modelBuilder.Entity("UZonMailService.Models.SqlLite.Files.FileUsage", b =>
@@ -924,17 +889,6 @@ namespace UZonMailService.Migrations
                         .IsRequired();
 
                     b.Navigation("FileBucket");
-                });
-
-            modelBuilder.Entity("UZonMailService.Models.SqlLite.Files.FileReader", b =>
-                {
-                    b.HasOne("UZonMailService.Models.SqlLite.Files.FileObject", "FileObject")
-                        .WithMany()
-                        .HasForeignKey("FileObjectId")
-                        .OnDelete(DeleteBehavior.ClientNoAction)
-                        .IsRequired();
-
-                    b.Navigation("FileObject");
                 });
 
             modelBuilder.Entity("UZonMailService.Models.SqlLite.Files.FileUsage", b =>

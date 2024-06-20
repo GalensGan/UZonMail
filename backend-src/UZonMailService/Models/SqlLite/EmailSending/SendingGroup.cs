@@ -272,20 +272,6 @@ namespace UZonMailService.Models.SqlLite.EmailSending
         }
         #endregion
 
-        #region 生成发件项逻辑
-        /// <summary>
-        /// 生成发送项
-        /// 该接口未进行数据验证，调用前请确保数据已经验证
-        /// </summary>
-        /// <param name="userSetting"></param>
-        /// <returns></returns>
-        public List<SendingItem> GenerateSendingItems(UserSetting userSetting)
-        {
-            var builder = new SendingItemsBuilder(this, userSetting);
-            return builder.Build();
-        }
-        #endregion
-
         public void Configure(EntityTypeBuilder<SendingGroup> builder)
         {
             builder.HasMany(x => x.Templates).WithMany();

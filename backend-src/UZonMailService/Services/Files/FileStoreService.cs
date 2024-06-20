@@ -114,10 +114,11 @@ namespace UZonMailService.Services.Files
         }
 
         /// <summary>
-        /// 删除文件，该接口仅在文件引用小于等于 1 时有效
+        /// 删除文件，该接口仅在文件引用小于等于 maxLinkCount 时有效
         /// </summary>
         /// <param name="sha256"></param>
-        private async Task DeleteFileObject(string sha256, int maxLinkCount = 1)
+        /// <param name="maxLinkCount">最大引用数量</param>
+        public async Task DeleteFileObject(string sha256, int maxLinkCount = 1)
         {
             // 移除文件
             FileObject? fileObject = await db.FileObjects.Where(x => x.Sha256 == sha256 && x.LinkCount <= maxLinkCount)
@@ -152,7 +153,21 @@ namespace UZonMailService.Services.Files
             // 拼接文件路径
             if (onlyPublic && !fileUsage.IsPublic) throw new KnownException("无权访问该文件");
 
-            string fullPath = Path.Combine(fileUsage.FileObject.FileBucket.RootDir, fileUsage.FileObject.Path);
+            return GetFileFullPath(fileUsage.FileObject);
+        }
+
+        /// <summary>
+        /// 获取文件全路径
+        /// fileObject 必须要 include FileBucket
+        /// </summary>
+        /// <param name="fileObject"></param>
+        /// <returns></returns>
+        public string GetFileFullPath(FileObject fileObject)
+        {
+            if (fileObject == null) throw new KnownException("FileObject 对象为空");
+            if (fileObject.FileBucket == null) throw new KnownException("fileObject 必须要 include FileBucket");
+
+            string fullPath = Path.Combine(fileObject.FileBucket.RootDir, fileObject.Path);
             return fullPath;
         }
 
