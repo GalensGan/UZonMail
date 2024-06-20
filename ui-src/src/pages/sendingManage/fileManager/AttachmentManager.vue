@@ -37,7 +37,7 @@ const columns: QTableColumn[] = [
     required: true,
     label: '文件名',
     align: 'left',
-    field: v => v.fileName || v.displayName,
+    field: v => v.displayName || v.fileName,
     sortable: true
   },
   {
@@ -81,7 +81,7 @@ const columns: QTableColumn[] = [
     sortable: true
   }
 ]
-import { getFileUsagesCount, getFileUsagesData } from 'src/api/file'
+import { getFileUsagesCount, getFileUsagesData, deleteFileUsage, updateDisplayName } from 'src/api/file'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function getRowsNumberCount (filterObj: TTableFilterObject) {
   const { data } = await getFileUsagesCount(filterObj.filter)
@@ -93,13 +93,13 @@ async function onRequest (filterObj: TTableFilterObject, pagination: IRequestPag
   return data
 }
 
-const { pagination, rows, filter, onTableRequest, loading, refreshTable } = useQTable({
+const { pagination, rows, filter, onTableRequest, loading, refreshTable, deleteRowById } = useQTable({
   getRowsNumberCount,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onRequest
 })
 
-import { notifySuccess, showComponentDialog } from 'src/utils/dialog'
+import { confirmOperation, notifySuccess, showComponentDialog, showDialog } from 'src/utils/dialog'
 import FilesUploaderPopup from 'src/components/uploader/FilesUploaderPopup.vue'
 import { useDropZone, useFileDialog, useFileSystemAccess } from '@vueuse/core'
 
@@ -173,13 +173,14 @@ const attachmentCtxMenuItems: IContextMenuItem[] = [
     color: 'negative',
     tooltip: '删除该条记录,但不会真正删除文件',
     // 当返回 false 时，右键菜单不会退出
-    onClick: removeAttachment
+    onClick: onRemoveAttachment
   }
 ]
 
 import { useConfig } from 'src/config'
 import { getFileReaderId, getFileStreamByReaderId } from 'src/api/fileReader'
 import { saveUrlToFile } from 'src/utils/file'
+import { PopupDialogFieldType } from 'src/components/popupDialog/types'
 const config = useConfig()
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function onDownloadAttachment (row: Record<string, any>) {
@@ -219,14 +220,48 @@ async function onDownloadAttachment (row: Record<string, any>) {
 async function renameAttachment (row: Record<string, any>) {
   console.log(row)
 
-  // 打开重命名的
+  // 打开重命名弹窗
+  const result = await showDialog({
+    title: '重命名文件',
+    fields: [
+      {
+        name: 'displayName',
+        label: '原文件名',
+        type: PopupDialogFieldType.text,
+        required: true,
+        value: row.displayName || row.fileName
+      },
+      {
+        name: 'newDisplayName',
+        label: '新文件名',
+        type: PopupDialogFieldType.text,
+        required: true,
+        value: row.displayName || row.fileName
+      }
+    ],
+    oneColumn: true
+  })
+
+  if (!result.ok) return
+
+  const displayName = result.data.newDisplayName
+  // 修改名称
+  await updateDisplayName(row.id, displayName)
+
+  row.displayName = displayName
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function removeAttachment (row: Record<string, any>) {
-  console.log(row)
+async function onRemoveAttachment (row: Record<string, any>) {
+  const confirm = await confirmOperation('删除确认', `即将删除文件：${row.displayName || row.fileName}，是否继续？`)
+  if (!confirm) return
 
-  // 打开重命名的
+  // 进行删除操作
+  await deleteFileUsage(row.id)
+
+  deleteRowById(row.id)
+
+  notifySuccess('删除成功')
 }
 // #endregion
 </script>

@@ -93,3 +93,26 @@ export function getFileUsagesData (filter: string | undefined, pagination: IRequ
     data: pagination
   })
 }
+
+/**
+ * 删除文件使用
+ * @param fileUsageId
+ * @returns
+ */
+export function deleteFileUsage (fileUsageId: number) {
+  return httpClient.delete<boolean[]>(`/file/file-usages/${fileUsageId}`)
+}
+
+/**
+ * 更新文件使用表中的显示名称
+ * @param fileUsageId
+ * @param displayName
+ * @returns
+ */
+export function updateDisplayName (fileUsageId: number, displayName: string) {
+  return httpClient.put<boolean[]>(`/file/file-usages/${fileUsageId}/display-name`, {
+    params: {
+      displayName
+    }
+  })
+}

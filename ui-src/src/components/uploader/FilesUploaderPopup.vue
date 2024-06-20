@@ -17,7 +17,7 @@ import LinearProgress from 'src/components/Progress/LinearProgress.vue'
  * 参考：http://www.quasarchs.com/quasar-plugins/dialog#composition-api-variant
  */
 
-import { useDialogPluginComponent, format, debounce } from 'quasar'
+import { useDialogPluginComponent, format, throttle } from 'quasar'
 import { PropType } from 'vue'
 defineEmits([
   // 必需；需要指定一些事件
@@ -84,7 +84,7 @@ function labelClass (index: number) {
   }
 }
 
-const updateProgressInfo = debounce((index: number, message: string, transferredBytes: number, totalBytes: number, virtualFile: boolean = false) => {
+const updateProgressInfo = throttle((index: number, message: string, transferredBytes: number, totalBytes: number, virtualFile: boolean = false) => {
   if (progressInfos.value.length <= index) {
     // 添加新的进度信息
     progressInfos.value.push({
