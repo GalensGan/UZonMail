@@ -80,7 +80,9 @@ namespace UZonMailService.Services.EmailSending.Sender
                     client.ProxyClient = sendItem.ProxyInfo?.GetProxyClient(sendItem.Logger);
                 }
                 client.Connect(sendItem.Outbox.SmtpHost, sendItem.Outbox.SmtpPort, sendItem.Outbox.EnableSSL);
+
                 // Note: only needed if the SMTP server requires authentication
+                // 进行鉴权
                 if (!string.IsNullOrEmpty(sendItem.Outbox.AuthPassword)) client.Authenticate(sendItem.Outbox.AuthUserName, sendItem.Outbox.AuthPassword);
 
                 //client.MessageSent += (sender, args) =>

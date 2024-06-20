@@ -54,7 +54,6 @@ if (-not (Get-Command 7z.exe -ErrorAction SilentlyContinue)) {
 }
 Write-Host "7z 环境检测通过！" -ForegroundColor Green
 
-
 # 开始编译项目
 Write-Host "开始编译项目..." -ForegroundColor Yellow
 
@@ -130,10 +129,9 @@ Copy-Item -Path $serviceDist/* -Destination $svrDis -Recurse -Force
 $desktopExePath = Join-Path -Path $desktopDist -ChildPath "UzonMailDesktop.exe"
 $desktopVersion = [System.Diagnostics.FileVersionInfo]::GetVersionInfo($desktopExePath).FileVersion
 # 生成文件路径
-$zipDist = Join-Path -Path $scriptRoot -ChildPath "build\uzonmail-desktop-$desktopVersion.7z"
-
+$zipDist = Join-Path -Path $scriptRoot -ChildPath "build\uzonmail-desktop-$desktopVersion.zip"
 # 打包文件
-7z a -t7z $zipDist "$desktopDist\*"
+7z a -tzip $zipDist "$desktopDist\*"
 
 # 回到根目录
 Set-Location -Path $scriptRoot

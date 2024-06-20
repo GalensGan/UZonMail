@@ -48,6 +48,7 @@ namespace UZonMailService.Controllers.Emails
                 existOne.EmailGroupId = entity.EmailGroupId;
                 existOne.SmtpPort = entity.SmtpPort;
                 existOne.Password = entity.Password;
+                existOne.UserName = entity.UserName;
                 existOne.Description = entity.Description;
                 existOne.ProxyId = entity.ProxyId;
                 existOne.SetStatusNormal();
@@ -108,6 +109,7 @@ namespace UZonMailService.Controllers.Emails
                 {
                     entity.EmailGroupId = newEntity.EmailGroupId;
                     entity.SmtpPort = newEntity.SmtpPort;
+                    entity.UserName = newEntity.UserName;
                     entity.Password = newEntity.Password;
                     entity.EnableSSL = newEntity.EnableSSL;
                     entity.Description = newEntity.Description;
@@ -216,6 +218,7 @@ namespace UZonMailService.Controllers.Emails
                  .SetProperty(y => y.Name, entity.Name)
                  .SetProperty(y => y.SmtpHost, entity.SmtpHost)
                  .SetProperty(y => y.SmtpPort, entity.SmtpPort)
+                 .SetProperty(y=>y.UserName,entity.UserName)
                  .SetProperty(y => y.Password, entity.Password)
                  .SetProperty(y => y.EnableSSL, entity.EnableSSL)
                  .SetProperty(y => y.Description, entity.Description)
