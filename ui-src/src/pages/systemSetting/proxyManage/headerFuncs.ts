@@ -4,7 +4,6 @@ import { showDialog } from 'src/components/popupDialog/PopupDialog'
 import { IPopupDialogField, IPopupDialogParams, PopupDialogFieldType } from 'src/components/popupDialog/types'
 import { useUserInfoStore } from 'src/stores/user'
 import { notifySuccess } from 'src/utils/dialog'
-import { URL } from 'url'
 
 /**
  * 代替 URL.canParse 方法
