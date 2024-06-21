@@ -188,7 +188,7 @@ namespace UZonMailService.Services.EmailSending
                         .Build();
 
             var trigger = TriggerBuilder.Create()
-                .WithIdentity(jobKey.Name)
+                .ForJob(jobKey)
                 .StartAt(new DateTimeOffset(sendingGroup.ScheduleDate))
                 .Build();
 
