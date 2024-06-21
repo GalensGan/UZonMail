@@ -12,7 +12,7 @@ namespace UZonMailService.Models.SqlLite.EmailSending
     public class SendingItemExcelData : JObject
     {
         public SendingItemExcelData() { }
-        public SendingItemExcelData(JObject? row) : base(row)
+        public SendingItemExcelData(JObject? row) : base(row ?? [])
         {
             // 提取数据
             if (row == null) return;
@@ -29,7 +29,7 @@ namespace UZonMailService.Models.SqlLite.EmailSending
             TemplateId = row.SelectTokenOrDefault("templateId", 0);
             Body = row.SelectTokenOrDefault("body", string.Empty);
             ProxyId = row.SelectTokenOrDefault("proxyId", 0);
-            AttachmentNames = row.SelectTokenOrDefault("attachmentNames", string.Empty).SplitBySeparators().Where(x=> !string.IsNullOrEmpty(x)).ToList();
+            AttachmentNames = row.SelectTokenOrDefault("attachmentNames", string.Empty).SplitBySeparators().Where(x => !string.IsNullOrEmpty(x)).ToList();
 
             // 其它的数据为用户自定义数据
         }

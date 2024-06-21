@@ -206,7 +206,7 @@ namespace UZonMailService.Services.EmailSending.Sender
                 return SentStatus.Retry;
             }
             // 保存到数据库
-            SendingItem updatedItem = await SaveToDb(success, message);
+            SendingItem updatedItem = await SaveSendItemStatus(success, message);
 
             // 通知发送结果
             var client = Hub.GetUserClient(SendingItem.UserId);
@@ -221,12 +221,11 @@ namespace UZonMailService.Services.EmailSending.Sender
         }
 
         /// <summary>
-        /// 保存到数据库
+        /// 保存 SendItem 状态
         /// </summary>
         /// <returns></returns>
-        private async Task<SendingItem> SaveToDb(bool success, string message)
+        private async Task<SendingItem> SaveSendItemStatus(bool success, string message)
         {
-
             var db = Db;
 
             // 保存到数据库            
@@ -251,6 +250,22 @@ namespace UZonMailService.Services.EmailSending.Sender
 
             return data;
 
+        }
+
+        /// <summary>
+        /// 发件成功后，保存到数据库中
+        /// </summary>
+        /// <param name="success"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        private async Task SaveOutboxStatus(bool success, string message)
+        {
+            if (!success) return;
+            // 保存到数据库            
+            var outbox = await Db.Outboxes.FirstOrDefaultAsync(x => x.Id == Outbox.Id);
+            // 更新数据
+            outbox.SentTotalToday = Outbox.SentTotalToday;
+            await Db.SaveChangesAsync();
         }
 
         private SendGroupTask _sendGroupTask;

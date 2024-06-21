@@ -19,7 +19,7 @@ namespace UZonMailService.Models.SqlLite.Init
     /// <param name="hostEnvironment"></param>
     /// <param name="sqlContext"></param>
     /// <param name="config"></param>
-    public class InitDatabase(IWebHostEnvironment hostEnvironment, SqlContext sqlContext, AppConfig config)
+    public class DatabaseInitializer(IWebHostEnvironment hostEnvironment, SqlContext sqlContext, AppConfig config)
     {
         private readonly SqlContext _db = sqlContext;
         private IWebHostEnvironment _hostEnvironment = hostEnvironment;

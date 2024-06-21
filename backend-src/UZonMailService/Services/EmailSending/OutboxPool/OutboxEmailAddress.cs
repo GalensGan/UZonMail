@@ -8,6 +8,7 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
 {
     /// <summary>
     /// 发件箱地址
+    /// 与 Outbox 对应，不使用 outbox 的原因是防止 Outbox 上下文被释放后，操作 Outbox 出错
     /// </summary>
     public class OutboxEmailAddress : EmailAddress, IDisposable
     {
@@ -69,6 +70,18 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
         public bool EnableSSL { get; set; }
 
         /// <summary>
+        /// 单日最大发送数量
+        /// 为 0 时表示不限制
+        /// </summary>
+        public int MaxSendCountPerDay { get; set; }
+
+        /// <summary>
+        /// 当前已发送数量
+        /// 成功失败都被计算在内
+        /// </summary>
+        public int SentTotalToday { get; set; }
+
+        /// <summary>
         /// 代理 Id
         /// </summary>
         public int ProxyId { get; set; }
@@ -84,7 +97,7 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
         #endregion
 
         #region 状态
-        private int _sentCountToday = 0;
+        private DateTime _startDate = DateTime.Now;
         private bool _isCooldown = false;
         private Timer _timer = null;
         /// <summary>
@@ -94,9 +107,27 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
         public void SetCooldown(Action<int> finish)
         {
             _isCooldown = true;
+
+            // 每日重置
+            if(_startDate.Date != DateTime.Now.Date)
+            {
+                _startDate = DateTime.Now;
+                SentTotalToday = 0;
+            }
+
             // 若已经达到发送上限，则不再发送
-            _sentCountToday++;
-            if (_userSetting.MaxSendCountPerEmailDay > 0 && _sentCountToday > _userSetting.MaxSendCountPerEmailDay)
+            SentTotalToday++;
+            // 使用发件箱自定义的发送上限
+            if (MaxSendCountPerDay > 0)
+            {
+                if (SentTotalToday > MaxSendCountPerDay)
+                {
+                    ShouldDispose = true;
+                    return;
+                }
+            }
+            // 使用通用设置中的发送上限
+            else if (_userSetting.MaxSendCountPerEmailDay > 0 && SentTotalToday > _userSetting.MaxSendCountPerEmailDay)
             {
                 ShouldDispose = true;
                 return;

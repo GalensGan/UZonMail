@@ -20,6 +20,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Remove="log4net.config" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Quartz\quarts_tables_sqlite.sql" />
   </ItemGroup>
 
@@ -39,6 +43,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.4" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Log4Net.AspNetCore" Version="8.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Quartz.AspNetCore" Version="3.9.0" />
     <PackageReference Include="Quartz.Serialization.Json" Version="3.9.0" />
@@ -55,6 +60,12 @@
     <Folder Include="Utils\Helpers\" />
     <Folder Include="Utils\ASPNETCore\Configure\" />
     <Folder Include="Utils\Attributes\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="log4net.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>

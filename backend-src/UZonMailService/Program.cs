@@ -22,6 +22,7 @@ using UZonMailService.Utils.ASPNETCore.Filters;
 using System.Reflection;
 using Uamazing.Utils.Helpers;
 using UZonMailService.Middlewares;
+using Microsoft.AspNetCore.HttpLogging;
 
 var appOptions = new WebApplicationOptions
 {
@@ -36,9 +37,17 @@ var services = builder.Services;
 
 // ÈÕÖ¾
 services.AddLogging();
-//services.AddHttpLogging(option =>
-//{
-//});
+services.AddHttpLogging(logging =>
+{
+    logging.LoggingFields = HttpLoggingFields.RequestProperties
+        | HttpLoggingFields.RequestHeaders
+        | HttpLoggingFields.ResponseHeaders;
+    logging.RequestBodyLogLimit = 4096;
+    logging.ResponseBodyLogLimit = 4096;
+});
+// log4net: https://github.com/huorswords/Microsoft.Extensions.Logging.Log4Net.AspNetCore/blob/develop/samples/Net8.0/WebApi/log4net.config
+builder.Logging.ClearProviders();
+builder.Logging.AddLog4Net();
 
 // Ìí¼Ó httpClient
 services.AddHttpClient();
