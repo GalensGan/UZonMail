@@ -168,6 +168,7 @@ export async function readExcelCore (params: IExcelReaderParams): Promise<{ data
   // 打开选择框
   if (params.selectSheet && workbook.SheetNames.length > 1) {
     const { ok, data } = await showDialog<Record<string, any>>({
+      title: '指定 Sheet',
       fields: [
         {
           name: 'sheetName',
@@ -176,7 +177,8 @@ export async function readExcelCore (params: IExcelReaderParams): Promise<{ data
           value: workbook.SheetNames[0],
           options: workbook.SheetNames
         }
-      ]
+      ],
+      oneColumn: true
     })
     if (!ok) {
       return {

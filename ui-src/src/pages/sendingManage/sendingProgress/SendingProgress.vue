@@ -57,8 +57,14 @@ const sendingGroupIdRef = ref(props.sendingGroupId)
 onMounted(async () => {
   // 当有 api 时，说明是新增，先调用 api
   if (typeof props.sendingApi === 'function') {
-    const { data: groupDoc } = await props.sendingApi()
-    sendingGroupIdRef.value = groupDoc.id
+    try {
+      const { data: groupDoc } = await props.sendingApi()
+      sendingGroupIdRef.value = groupDoc.id
+    } catch (error) {
+      console.log(error)
+      // 关闭进度
+      onDialogCancel()
+    }
   }
 
   if (!sendingGroupIdRef.value) return

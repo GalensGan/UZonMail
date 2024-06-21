@@ -4,7 +4,10 @@
       <q-item-section avatar class="q-pr-none">
         <q-icon :name="header.icon" />
       </q-item-section>
-      <q-item-section class="q-px-lg q-py-sm">{{ header.label }}</q-item-section>
+      <q-item-section class="q-px-lg q-py-sm">
+        {{ header.label }}
+        <AsyncTooltip tooltip="右键可添加分组" />
+      </q-item-section>
 
       <ContextMenu v-if="!readonly" :items="headerContextMenuItems"></ContextMenu>
     </q-item>

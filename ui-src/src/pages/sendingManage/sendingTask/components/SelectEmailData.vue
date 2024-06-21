@@ -134,6 +134,10 @@ function getEmailSendingExcelDataMapper (): IExcelColumnMapper[] {
       fieldName: 'proxyId'
     },
     {
+      headerName: 'attachmentNames',
+      fieldName: 'attachmentNames'
+    },
+    {
       headerName: '自定义变量',
       fieldName: 'other'
     }
@@ -154,7 +158,8 @@ async function onDownloadEmailDataTemplate () {
       templateName: '模板名称(可选)',
       templateId: '模板id(可选)',
       proxy: '代理Id(可选)',
-      other: '可以继续增加列，作为自定义字段(可选)'
+      other: '可以继续增加列，作为自定义字段(可选)',
+      attachmentNames: '附件名称(多个逗号分隔,可选)'
     }
   ]
   await writeExcel(data, {
