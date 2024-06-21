@@ -1,17 +1,18 @@
 <template>
   <q-btn class="q-pr-sm q-py-none" :dense="dense" :color="color" :size="size" :icon="icon" :label="label"
-    v-bind="$attrs">
+    :disable="disable" v-bind="$attrs">
     <template v-for="(slot, slotName) in $slots">
       <slot :name="slotName"></slot>
     </template>
-    <AsyncTooltip :tooltip="tooltip" />
+    <AsyncTooltip :tooltip="tooltipValue" />
   </q-btn>
 </template>
 
 <script lang="ts" setup>
 import AsyncTooltip from 'src/components/asyncTooltip/AsyncTooltip.vue'
+import { PropType } from 'vue'
 
-defineProps({
+const props = defineProps({
   color: {
     type: String,
     default: 'secondary'
@@ -25,7 +26,7 @@ defineProps({
     default: '导入'
   },
   tooltip: {
-    type: [String, Array],
+    type: [String, Array] as PropType<string | string[]>,
     default: '导入数据'
   },
   size: {
@@ -35,7 +36,21 @@ defineProps({
   dense: {
     type: Boolean,
     default: true
+  },
+  disable: {
+    type: Boolean,
+    default: false
+  },
+  // 禁用时的 tooltip
+  tooltipWhenDisabled: {
+    type: String,
+    default: ''
   }
+})
+
+const tooltipValue = computed(() => {
+  if (props.disable) return props.tooltipWhenDisabled || props.tooltip
+  return props.tooltip
 })
 
 </script>
