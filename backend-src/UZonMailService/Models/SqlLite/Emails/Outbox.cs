@@ -53,11 +53,16 @@ namespace UZonMailService.Models.SqlLite.Emails
         /// </summary>
         public int MaxSendCountPerDay { get; set; }
 
-        ///// <summary>
-        ///// 是否有效
-        ///// 用于向前端展示发件箱是否可用
-        ///// </summary>
-        //public bool IsValid { get; set; }
+        /// <summary>
+        /// 当前已发送数量
+        /// </summary>
+        public int SentTotalToday { get; set; }
+
+        /// <summary>
+        /// 状态
+        /// 用于向前端展示发件箱是否可用
+        /// </summary>
+        public OutboxStatus Status { get; set; }
 
         /// <summary>
         /// 转成发件地址
@@ -65,7 +70,7 @@ namespace UZonMailService.Models.SqlLite.Emails
         /// <param name="userSetting"></param>
         /// <param name="groupId"></param>
         /// <returns></returns>
-        public OutboxEmailAddress ToOutboxEmailAddress(UserSetting userSetting, int groupId,List<string> smtpPasswordSecretKeys)
+        public OutboxEmailAddress ToOutboxEmailAddress(UserSetting userSetting, int groupId, List<string> smtpPasswordSecretKeys)
         {
             // 对密码进行解密
             var plainPassword = Password.DeAES(smtpPasswordSecretKeys[0], smtpPasswordSecretKeys[1]);
@@ -81,6 +86,9 @@ namespace UZonMailService.Models.SqlLite.Emails
                 Name = Name,
                 EnableSSL = EnableSSL,
                 Id = Id,
+                MaxSendCountPerDay = MaxSendCountPerDay,
+                SentTotalToday = SentTotalToday,
+
                 SendingGroupIds = [groupId],
                 ProxyId = ProxyId
             };

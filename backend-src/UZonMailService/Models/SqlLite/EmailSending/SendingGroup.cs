@@ -118,6 +118,7 @@ namespace UZonMailService.Models.SqlLite.EmailSending
         /// 最后一条邮件的消息
         /// </summary>
         public string? LastMessage { get; set; }
+
         #region 定时发件相关
         /// <summary>
         /// 发件类型

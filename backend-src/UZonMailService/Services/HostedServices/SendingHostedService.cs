@@ -56,9 +56,13 @@ namespace UZonMailService.Services.HostedServices
 
             #region 重置每日发件限制
             var jobKey = new JobKey($"schduleTask-resetSentCountToday");
+            bool exist = await scheduler.CheckExists(jobKey);
+            if (exist) return;
+
             var job = JobBuilder.Create<SentCountReseter>()
                 .WithIdentity(jobKey)
                 .Build();
+            
             var trigger = TriggerBuilder.Create()
                 .ForJob(jobKey)
                 .StartAt(new DateTimeOffset(DateTime.Now.AddDays(1).Date)) // 明天凌晨开始
