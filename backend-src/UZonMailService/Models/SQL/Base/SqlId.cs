@@ -12,6 +12,7 @@ namespace UZonMailService.Models.SqlLite.Base
         /// Id 值
         /// </summary>
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         /// <summary>

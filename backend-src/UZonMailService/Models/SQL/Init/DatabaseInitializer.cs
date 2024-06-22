@@ -28,7 +28,7 @@ namespace UZonMailService.Models.SqlLite.Init
         /// <summary>
         /// 开始执行初始化
         /// </summary>
-        public async void Init()
+        public async Task Init()
         {
             await InitUser();
             await InitPermission();
