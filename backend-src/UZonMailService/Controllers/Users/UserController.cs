@@ -8,7 +8,7 @@ using Uamazing.ConfValidatation.Core.Validators;
 using Uamazing.Utils.Extensions;
 using Uamazing.Utils.Web.Extensions;
 using Uamazing.Utils.Web.ResponseModel;
-using UZonMailService.Models.SQL.UserInfos;
+using UZonMailService.Models.SQL.MultiTenant;
 using UZonMailService.Services.Settings;
 using UZonMailService.Services.UserInfos;
 using UZonMailService.Utils.ASPNETCore.PagingQuery;

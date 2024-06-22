@@ -8,6 +8,7 @@ using UZonMailService.Models.SQL.Init;
 using Microsoft.EntityFrameworkCore;
 using UZonMailService.Jobs;
 using UZonMailService.Models.SQL.EmailSending;
+using UZonMailService.Models.SQL.Updater;
 
 namespace UZonMailService.Services.HostedServices
 {
@@ -42,6 +43,10 @@ namespace UZonMailService.Services.HostedServices
             // 初始数据
             var initDb = new DatabaseInitializer(nv, context, appConfig.Value);
             await initDb.Init();
+
+            // 数据升级
+            var dataUpdater = new DataUpdaterManager(context);
+            await dataUpdater.Update();
         }
 
         /// <summary>

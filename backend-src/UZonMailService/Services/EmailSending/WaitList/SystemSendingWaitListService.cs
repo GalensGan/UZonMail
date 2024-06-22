@@ -5,7 +5,7 @@ using System.Collections.Concurrent;
 using Uamazing.Utils.Web.Service;
 using UZonMailService.Models.SQL;
 using UZonMailService.Models.SQL.EmailSending;
-using UZonMailService.Models.SQL.UserInfos;
+using UZonMailService.Models.SQL.MultiTenant;
 using UZonMailService.Services.EmailSending.OutboxPool;
 using UZonMailService.Services.EmailSending.Sender;
 using UZonMailService.Services.Settings;

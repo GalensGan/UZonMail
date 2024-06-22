@@ -1,5 +1,5 @@
 ﻿using UZonMailService.Models.SQL.Base;
-using UZonMailService.Models.SQL.UserInfos;
+using UZonMailService.Models.SQL.MultiTenant;
 
 namespace UZonMailService.Models.SQL.Permission
 {

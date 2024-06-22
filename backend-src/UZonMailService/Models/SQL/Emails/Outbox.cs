@@ -8,7 +8,7 @@ namespace UZonMailService.Models.SQL.Emails
     /// <summary>
     /// 发件箱
     /// </summary>
-    public class Outbox : Inbox
+    public class Outbox : EmailBox
     {
         public Outbox()
         {

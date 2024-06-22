@@ -7,7 +7,7 @@ using Uamazing.Utils.Web.RequestModel;
 using Uamazing.Utils.Web.ResponseModel;
 using UZonMailService.Models.SQL;
 using UZonMailService.Models.SQL.Emails;
-using UZonMailService.Models.SQL.UserInfos;
+using UZonMailService.Models.SQL.MultiTenant;
 using UZonMailService.Services.Emails;
 using UZonMailService.Services.Settings;
 using UZonMailService.Services.UserInfos;

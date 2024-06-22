@@ -17,7 +17,7 @@ using Microsoft.AspNetCore.SignalR;
 using UZonMailService.SignalRHubs;
 using UZonMailService.SignalRHubs.Extensions;
 using System.Threading.Tasks;
-using UZonMailService.Models.SQL.UserInfos;
+using UZonMailService.Models.SQL.MultiTenant;
 using UZonMailService.Utils.Database;
 
 namespace UZonMailService.Services.EmailSending.WaitList

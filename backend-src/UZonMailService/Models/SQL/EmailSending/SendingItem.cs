@@ -8,7 +8,7 @@ using UZonMailService.Models.SQL.Emails;
 using UZonMailService.Models.SQL.Files;
 using UZonMailService.Models.SQL.NoEntity;
 using UZonMailService.Models.SQL.Templates;
-using UZonMailService.Models.SQL.UserInfos;
+using UZonMailService.Models.SQL.MultiTenant;
 using UZonMailService.Services.EmailSending.Sender;
 
 namespace UZonMailService.Models.SQL.EmailSending

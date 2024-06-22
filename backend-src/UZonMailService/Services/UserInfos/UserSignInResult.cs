@@ -1,4 +1,4 @@
-﻿using UZonMailService.Models.SQL.UserInfos;
+﻿using UZonMailService.Models.SQL.MultiTenant;
 
 namespace UZonMailService.Services.UserInfos
 {
