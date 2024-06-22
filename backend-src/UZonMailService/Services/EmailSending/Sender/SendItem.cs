@@ -84,7 +84,7 @@ namespace UZonMailService.Services.EmailSending.Sender
         /// <summary>
         /// 附件 FileUsageId 列表
         /// </summary>
-        public List<int> FileUsageIds { get; set; }
+        public List<long> FileUsageIds { get; set; }
 
         /// <summary>
         /// 批量发送

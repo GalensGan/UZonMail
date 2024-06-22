@@ -82,7 +82,7 @@ namespace UZonMailService.Services.EmailSending.WaitList
         /// <summary>
         /// 组 id
         /// </summary>
-        public int GroupId => sendingGroup.Id;
+        public long GroupId => sendingGroup.Id;
 
         /// <summary>
         /// 是否暂停
@@ -152,7 +152,7 @@ namespace UZonMailService.Services.EmailSending.WaitList
         }
 
         // 将新的发件箱添加到发件池中,自动去重了
-        private async Task AddOutboxToPool(List<int> outBoxIds)
+        private async Task AddOutboxToPool(List<long> outBoxIds)
         {
             if (outBoxIds.Count == 0) return;
 
@@ -181,7 +181,7 @@ namespace UZonMailService.Services.EmailSending.WaitList
         /// 有可能会被多次调用
         /// </summary>
         /// <returns></returns>
-        public async Task<bool> InitSendingItems(List<int>? sendingItemIds)
+        public async Task<bool> InitSendingItems(List<long>? sendingItemIds)
         {
             // 获取待发件
             List<SendingItem> toSendingItems;
@@ -204,7 +204,7 @@ namespace UZonMailService.Services.EmailSending.WaitList
             if (toSendingItems.Count == 0) return false;
 
             // 更新待发件列表中的发件箱
-            List<int> outboxIdsFromSendingItems = toSendingItems.Select(x => x.OutBoxId).Where(x => x > 0).ToList();
+            List<long> outboxIdsFromSendingItems = toSendingItems.Select(x => x.OutBoxId).Where(x => x > 0).ToList();
             await AddOutboxToPool(outboxIdsFromSendingItems);
 
             // 生成发件列表
@@ -250,7 +250,7 @@ namespace UZonMailService.Services.EmailSending.WaitList
         private async Task<List<EmailTemplate>> PullEmailTemplates()
         {
             var sharedTemplateIds = sendingGroup.Templates?.Select(x => x.Id).ToList() ?? [];
-            List<int> privateTemplateIds = [];
+            List<long> privateTemplateIds = [];
             // 从数据中获取模板
             if (sendingGroup.Data != null && sendingGroup.Data.Count > 0)
             {
@@ -262,7 +262,7 @@ namespace UZonMailService.Services.EmailSending.WaitList
                 }
             }
 
-            var templateIds = new List<int>();
+            var templateIds = new List<long>();
             templateIds.AddRange(sharedTemplateIds);
             templateIds.AddRange(privateTemplateIds);
             templateIds = templateIds.Distinct().ToList();
@@ -437,7 +437,7 @@ namespace UZonMailService.Services.EmailSending.WaitList
         /// <param name="outbox"></param>
         /// <param name="proxyId"></param>
         /// <returns></returns>
-        private ProxyInfo? GetMatchedProxy(OutboxEmailAddress outbox, int proxyId = 0)
+        private ProxyInfo? GetMatchedProxy(OutboxEmailAddress outbox, long proxyId = 0)
         {
             if (proxyId == 0) proxyId = outbox.ProxyId;
 

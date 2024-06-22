@@ -4,7 +4,7 @@ namespace UZonMailService.Controllers.Emails.Models
 {
     public class RunningSendingGroupResult
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
         public string Subjects { get; set; }
 
         public double Progress { get; set; }

@@ -74,8 +74,8 @@ namespace UZonMailService.Controllers.Emails
             }.ToSuccessResponse();
         }
 
-        [HttpPost("sending-groups/{sendingGroupId:int}/pause")]
-        public async Task<ResponseResult<bool>> PauseSending(int sendingGroupId)
+        [HttpPost("sending-groups/{sendingGroupId:long}/pause")]
+        public async Task<ResponseResult<bool>> PauseSending(long sendingGroupId)
         {
             // 查找发件组
             var sendingGroup = await db.SendingGroups.FirstOrDefaultAsync(x => x.Id == sendingGroupId);
@@ -99,8 +99,8 @@ namespace UZonMailService.Controllers.Emails
         /// </summary>
         /// <param name="sendingGroupId"></param>
         /// <returns></returns>
-        [HttpPost("sending-groups/{sendingGroupId:int}/restart")]
-        public async Task<ResponseResult<bool>> RestartSending(int sendingGroupId)
+        [HttpPost("sending-groups/{sendingGroupId:long}/restart")]
+        public async Task<ResponseResult<bool>> RestartSending(long sendingGroupId)
         {
             // 查找发件组
             var sendingGroup = await db.SendingGroups.FirstOrDefaultAsync(x => x.Id == sendingGroupId);
@@ -122,8 +122,8 @@ namespace UZonMailService.Controllers.Emails
         /// </summary>
         /// <param name="sendingGroupId"></param>
         /// <returns></returns>
-        [HttpPost("sending-groups/{sendingGroupId:int}/cancel")]
-        public async Task<ResponseResult<bool>> CancelSending(int sendingGroupId)
+        [HttpPost("sending-groups/{sendingGroupId:long}/cancel")]
+        public async Task<ResponseResult<bool>> CancelSending(long sendingGroupId)
         {
             // 查找发件组
             var sendingGroup = await db.SendingGroups.FirstOrDefaultAsync(x => x.Id == sendingGroupId);
@@ -151,8 +151,8 @@ namespace UZonMailService.Controllers.Emails
         /// </summary>
         /// <param name="sendingItemId"></param>
         /// <returns></returns>
-        [HttpPost("sending-items/{sendingItemId:int}/resend")]
-        public async Task<ResponseResult<bool>> ResendSendingItem(int sendingItemId, [FromBody] SmtpSecretKeysModel smtpSecretKeys)
+        [HttpPost("sending-items/{sendingItemId:long}/resend")]
+        public async Task<ResponseResult<bool>> ResendSendingItem(long sendingItemId, [FromBody] SmtpSecretKeysModel smtpSecretKeys)
         {
             var sendingItem = await db.SendingItems.Where(x => x.Id == sendingItemId)
                 .Include(x => x.SendingGroup)
@@ -185,8 +185,8 @@ namespace UZonMailService.Controllers.Emails
         /// </summary>
         /// <param name="sendingGroupId"></param>
         /// <returns></returns>
-        [HttpPost("sending-groups/{sendingGroupId:int}/resend")]
-        public async Task<ResponseResult<bool>> ResendSendingGroup(int sendingGroupId, [FromBody] SmtpSecretKeysModel smtpSecretKeys)
+        [HttpPost("sending-groups/{sendingGroupId:long}/resend")]
+        public async Task<ResponseResult<bool>> ResendSendingGroup(long sendingGroupId, [FromBody] SmtpSecretKeysModel smtpSecretKeys)
         {
             // 查找发件项
             var sendingGroup = await db.SendingGroups.FirstOrDefaultAsync(x => x.Id == sendingGroupId);

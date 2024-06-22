@@ -22,7 +22,7 @@ namespace UZonMailService.Controllers.Settings
         [HttpGet]
         public async Task<ResponseResult<UserSetting>> GetUserSettings()
         {
-            var userId = tokenService.GetIntUserId();
+            var userId = tokenService.GetUserDataId();
             UserSetting? userSetting = await db.UserSettings.OfType<UserSetting>().FirstOrDefaultAsync(x => x.UserId == userId);
             if (userSetting == null)
             {
@@ -44,7 +44,7 @@ namespace UZonMailService.Controllers.Settings
         [HttpPut]
         public async Task<ResponseResult<bool>> UpsertUserSetting([FromBody] UserSetting userSetting)
         {
-            var userId = tokenService.GetIntUserId();
+            var userId = tokenService.GetUserDataId();
             UserSetting? exist = await db.UserSettings.FirstOrDefaultAsync(x => x.UserId == userId);
             if (exist == null)
             {

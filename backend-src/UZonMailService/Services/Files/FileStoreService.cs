@@ -58,7 +58,7 @@ namespace UZonMailService.Services.Files
         /// <param name="formFile"></param>
         /// <param name="lastModifyDate"></param>
         /// <returns></returns>
-        public async Task<FileUsage> UploadFileObject(int userId, ObjectFileUploaderBody fileParams)
+        public async Task<FileUsage> UploadFileObject(long userId, ObjectFileUploaderBody fileParams)
         {
             if (!string.IsNullOrEmpty(fileParams.UniqueName))
             {
@@ -142,7 +142,7 @@ namespace UZonMailService.Services.Files
         /// <param name="onlyPublic">仅返回public文件</param>
         /// <returns></returns>
         /// <exception cref="KnownException"></exception>
-        public async Task<string> GetFileFullPath(int fileUsageId, bool onlyPublic = true)
+        public async Task<string> GetFileFullPath(long fileUsageId, bool onlyPublic = true)
         {
             FileUsage? fileUsage = await db.FileUsages
                 .Include(x => x.FileObject)
@@ -178,7 +178,7 @@ namespace UZonMailService.Services.Files
         /// <param name="fileName"></param>
         /// <param name="sha256">传入时，必须要保证 sha256 是存在的</param>
         /// <returns></returns>
-        public async Task<FileUsage> GetOrCreateFileUsage(int userId, string fileName, string sha256)
+        public async Task<FileUsage> GetOrCreateFileUsage(long userId, string fileName, string sha256)
         {
             // 判断 sha256 是否存在
             FileObject? fileObject = await GetExistFileObject(sha256) ?? throw new FileNotFoundException();

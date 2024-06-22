@@ -40,7 +40,7 @@ namespace UZonMailService.Controllers.Emails
             // 设置默认端口
             if (entity.SmtpPort == 0) entity.SmtpPort = 25; // 默认端口
 
-            int userId = tokenService.GetIntUserId();
+            var userId = tokenService.GetUserDataId();
             // 验证发件箱是否存在，若存在，则复用原来的发件箱
             Outbox? existOne = db.Outboxes.SingleOrDefault(x => x.UserId == userId && x.Email == entity.Email && x.BoxType == EmailBoxType.Outbox);
             if (existOne != null)
@@ -73,7 +73,7 @@ namespace UZonMailService.Controllers.Emails
         [HttpPost("outboxes")]
         public async Task<ResponseResult<List<Outbox>>> CreateOutboxes([FromBody] List<Outbox> entities)
         {
-            int userId = tokenService.GetIntUserId();
+            var userId = tokenService.GetUserDataId();
             foreach (var entity in entities)
             {
                 entity.Validate(new VdObj()
@@ -134,7 +134,7 @@ namespace UZonMailService.Controllers.Emails
         public async Task<ResponseResult<Inbox>> CreateInbox([FromBody] Inbox entity)
         {
             if (string.IsNullOrEmpty(entity.Email)) throw new KnownException("请输入邮箱地址");
-            int userId = tokenService.GetIntUserId();
+            var userId = tokenService.GetUserDataId();
             entity.UserId = userId;
 
             // 验证发件箱是否存在，若存在，则复用原来的发件箱
@@ -165,7 +165,7 @@ namespace UZonMailService.Controllers.Emails
         [HttpPost("inboxes")]
         public async Task<ResponseResult<List<Inbox>>> CreateInboxes([FromBody] List<Inbox> entities)
         {
-            int userId = tokenService.GetIntUserId();
+            var userId = tokenService.GetUserDataId();
             foreach (var entity in entities)
             {
                 if (string.IsNullOrEmpty(entity.Email)) throw new KnownException("请输入邮箱地址");
@@ -210,8 +210,8 @@ namespace UZonMailService.Controllers.Emails
         /// <param name="outboxId"></param>
         /// <param name="entity"></param>
         /// <returns></returns>
-        [HttpPut("outbox/{outboxId:int}")]
-        public async Task<ResponseResult<bool>> UpdateOutbox(int outboxId, [FromBody] Outbox entity)
+        [HttpPut("outbox/{outboxId:long}")]
+        public async Task<ResponseResult<bool>> UpdateOutbox(long outboxId, [FromBody] Outbox entity)
         {
             await db.Outboxes.UpdateAsync(x => x.Id == outboxId,
                  x => x.SetProperty(y => y.Email, entity.Email)
@@ -233,8 +233,8 @@ namespace UZonMailService.Controllers.Emails
         /// <param name="inboxId"></param>
         /// <param name="entity"></param>
         /// <returns></returns>
-        [HttpPut("inbox/{inboxId:int}")]
-        public async Task<ResponseResult<bool>> UpdateInbox(int inboxId, [FromBody] Inbox entity)
+        [HttpPut("inbox/{inboxId:long}")]
+        public async Task<ResponseResult<bool>> UpdateInbox(long inboxId, [FromBody] Inbox entity)
         {
             await db.Inboxes.UpdateAsync(x => x.Id == inboxId,
                  x => x.SetProperty(y => y.Email, entity.Email)
@@ -252,9 +252,9 @@ namespace UZonMailService.Controllers.Emails
         /// <param name="filter"></param>
         /// <returns></returns>
         [HttpGet("filtered-count")]
-        public async Task<ResponseResult<int>> GetBoxesCount(int groupId, EmailBoxType emailBoxType, string filter)
+        public async Task<ResponseResult<int>> GetBoxesCount(long groupId, EmailBoxType emailBoxType, string filter)
         {
-            int userId = tokenService.GetIntUserId();
+            var userId = tokenService.GetUserDataId();
             // 收件箱
             var dbSet = db.Inboxes.Where(x => x.BoxType == emailBoxType && x.UserId == userId && !x.IsDeleted && !x.IsHidden);
             if (groupId > 0)
@@ -278,9 +278,9 @@ namespace UZonMailService.Controllers.Emails
         /// <param name="pagination"></param>
         /// <returns></returns>
         [HttpPost("filtered-data")]
-        public async Task<ResponseResult<List<Inbox>>> GetBoxesData(int groupId, EmailBoxType emailBoxType, string filter, [FromBody] Pagination pagination)
+        public async Task<ResponseResult<List<Inbox>>> GetBoxesData(long groupId, EmailBoxType emailBoxType, string filter, [FromBody] Pagination pagination)
         {
-            int userId = tokenService.GetIntUserId();
+            var userId = tokenService.GetUserDataId();
             var dbSet = db.Inboxes.Where(x => x.BoxType == emailBoxType && x.UserId == userId && !x.IsDeleted && !x.IsHidden);
             if (groupId > 0)
             {
@@ -300,8 +300,8 @@ namespace UZonMailService.Controllers.Emails
         /// </summary>
         /// <param name="groupId"></param>
         /// <returns></returns>
-        [HttpDelete("{emailBoxId:int}")]
-        public async Task<ResponseResult<bool>> DeleteEmailBoxById(int emailBoxId)
+        [HttpDelete("{emailBoxId:long}")]
+        public async Task<ResponseResult<bool>> DeleteEmailBoxById(long emailBoxId)
         {
             var emailBox = await db.Inboxes.FirstOrDefaultAsync(x => x.Id == emailBoxId);
             if (emailBox == null) throw new KnownException("邮箱不存在");

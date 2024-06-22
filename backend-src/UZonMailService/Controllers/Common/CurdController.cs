@@ -31,16 +31,16 @@ namespace UZonMailService.Controllers.Common
         /// <param name="id"></param>
         /// <param name="entity"></param>
         /// <returns></returns>
-        [HttpPut("{id:int}")]
-        public abstract Task<ResponseResult<T>> Update(int id, [FromBody] T entity);
+        [HttpPut("{id:long}")]
+        public abstract Task<ResponseResult<T>> Update(long id, [FromBody] T entity);
 
         /// <summary>
         /// 删除
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpDelete("{id:int}")]
-        public virtual async Task<ResponseResult<bool>> Delete(int id)
+        [HttpDelete("{id:long}")]
+        public virtual async Task<ResponseResult<bool>> Delete(long id)
         {
             var result = await curdService.DeleteById(id);
             return result.ToSuccessResponse();
@@ -51,8 +51,8 @@ namespace UZonMailService.Controllers.Common
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpGet("{id:int}")]
-        public virtual async Task<ResponseResult<T?>> FindOneById(int id)
+        [HttpGet("{id:long}")]
+        public virtual async Task<ResponseResult<T?>> FindOneById(long id)
         {
             var result = await curdService.FindOneById(id);
             return result.ToSuccessResponse();

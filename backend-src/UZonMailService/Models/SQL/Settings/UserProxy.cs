@@ -14,7 +14,7 @@ namespace UZonMailService.Models.SQL.Settings
         /// 所属用户
         /// 若为 0,则表示为系统代理
         /// </summary>
-        public int UserId { get; set; }
+        public long UserId { get; set; }
 
         /// <summary>
         /// 代理名称

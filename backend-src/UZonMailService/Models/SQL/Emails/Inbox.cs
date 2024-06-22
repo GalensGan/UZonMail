@@ -17,10 +17,10 @@ namespace UZonMailService.Models.SQL.Emails
         /// <summary>
         /// 邮件组 id
         /// </summary>
-        public int EmailGroupId { get; set; }
+        public long EmailGroupId { get; set; }
 
         // 冗余用户信息
-        public int UserId { get; set; }
+        public long UserId { get; set; }
 
         private string _email = string.Empty;
         /// <summary>

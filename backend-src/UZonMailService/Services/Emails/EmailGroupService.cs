@@ -22,7 +22,7 @@ namespace UZonMailService.Services.Emails
         /// <param name="userId"></param>
         /// <param name="groupType"></param>
         /// <returns></returns>
-        public async Task<List<EmailGroup>> GetEmailGroups(int userId, EmailGroupType groupType)
+        public async Task<List<EmailGroup>> GetEmailGroups(long userId, EmailGroupType groupType)
         {
             var results = await db.EmailGroups.Where(x => x.UserId == userId && x.Type == groupType).ToListAsync();
             return results;
@@ -57,7 +57,7 @@ namespace UZonMailService.Services.Emails
         {
             ; if (string.IsNullOrEmpty(name)) throw new KnownException("组名不允许为空");
             // 获取当前用户 id
-            int userId = tokenService.GetIntUserId();
+            var userId = tokenService.GetUserDataId();
             var emailGroup = new EmailGroup()
             {
                 Id = 0,
@@ -79,7 +79,7 @@ namespace UZonMailService.Services.Emails
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public override Task<bool> DeleteById(int id)
+        public override Task<bool> DeleteById(long id)
         {
             return db.RunTransaction(async (ctx) =>
              {

@@ -12,7 +12,7 @@ namespace UZonMailService.SignalRHubs.SendEmail
         /// <summary>
         /// 邮件id
         /// </summary>
-        public int SendingItemId { get; private set; } = sendingItem.Id;
+        public long SendingItemId { get; private set; } = sendingItem.Id;
 
         /// <summary>
         /// 状态

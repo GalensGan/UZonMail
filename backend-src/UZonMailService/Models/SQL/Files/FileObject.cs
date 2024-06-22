@@ -7,7 +7,7 @@ namespace UZonMailService.Models.SQL.Files
     /// </summary>
     public class FileObject:SqlId
     {
-        public int FileBucketId { get; set; }
+        public long FileBucketId { get; set; }
         public FileBucket FileBucket { get; set; }
 
         /// <summary>

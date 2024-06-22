@@ -23,7 +23,7 @@ namespace UZonMailService.Services.Settings
         {
             if (string.IsNullOrEmpty(name)) return StringResult.Fail("代理名称不能为空");
 
-            int userId = tokenService.GetIntUserId();
+            var userId = tokenService.GetUserDataId();
             bool isExist = await db.UserProxies.AnyAsync(x => x.UserId == userId && x.Name == name);
             return new StringResult(isExist, "代理名称已存在");
         }
@@ -35,7 +35,7 @@ namespace UZonMailService.Services.Settings
         /// <returns></returns>
         public async Task<UserProxy> CreateUserProxy(UserProxy userProxy)
         {
-            var userId = tokenService.GetIntUserId();
+            var userId = tokenService.GetUserDataId();
             userProxy.UserId = userId;
             userProxy.IsActive = true;
             db.UserProxies.Add(userProxy);
@@ -50,7 +50,7 @@ namespace UZonMailService.Services.Settings
         /// <returns></returns>
         public async Task<bool> UpdateUserProxy(UserProxy userProxy)
         {
-            var userId = tokenService.GetIntUserId();
+            var userId = tokenService.GetUserDataId();
             await db.UserProxies.UpdateAsync(x => x.UserId == userId && x.Id == userProxy.Id,
                 x => x.SetProperty(y => y.Name, userProxy.Name)
                     .SetProperty(y => y.Description, userProxy.Description)
@@ -68,9 +68,9 @@ namespace UZonMailService.Services.Settings
         /// <param name="proxyId"></param>
         /// <param name="statusValue"></param>
         /// <returns></returns>
-        public async Task<bool> UpdateUserProxySharedStatus(int proxyId,bool statusValue)
+        public async Task<bool> UpdateUserProxySharedStatus(long proxyId,bool statusValue)
         {
-            var userId = tokenService.GetIntUserId();
+            var userId = tokenService.GetUserDataId();
             await db.UserProxies.UpdateAsync(x => x.UserId == userId && x.Id == proxyId,
                 x => x.SetProperty(y => y.IsShared, statusValue)
                 );

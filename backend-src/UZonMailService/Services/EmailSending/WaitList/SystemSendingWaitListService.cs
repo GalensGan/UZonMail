@@ -32,7 +32,7 @@ namespace UZonMailService.Services.EmailSending.WaitList
         /// <param name="group"></param>
         /// <param name="sendingItemIds"></param>
         /// <returns></returns>
-        public async Task<bool> AddSendingGroup(SendingGroup group, List<int>? sendingItemIds = null)
+        public async Task<bool> AddSendingGroup(SendingGroup group, List<long>? sendingItemIds = null)
         {
             if (group == null)
                 return false;

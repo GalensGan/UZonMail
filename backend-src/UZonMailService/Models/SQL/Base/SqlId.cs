@@ -13,7 +13,7 @@ namespace UZonMailService.Models.SQL.Base
         /// </summary>
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         /// <summary>
         /// 创建日期

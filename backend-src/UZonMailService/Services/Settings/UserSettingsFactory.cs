@@ -16,7 +16,7 @@ namespace UZonMailService.Services.Settings
         /// <param name="db"></param>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public static async Task<UserSetting> GetUserSettings(SqlContext db, int userId)
+        public static async Task<UserSetting> GetUserSettings(SqlContext db, long userId)
         {            
             var settings = await db.UserSettings.Where(x => x.UserId==userId).FirstOrDefaultAsync();
             if(settings == null)

@@ -10,7 +10,7 @@ namespace UZonMailService.Models.SQL.Settings
         /// <summary>
         /// 用户 id
         /// </summary>
-        public int UserId { get; set; }
+        public long UserId { get; set; }
 
         /// <summary>
         /// 每日每个发件箱最大发送次数

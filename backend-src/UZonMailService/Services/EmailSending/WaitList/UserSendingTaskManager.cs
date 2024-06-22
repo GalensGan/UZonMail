@@ -58,7 +58,7 @@ namespace UZonMailService.Services.EmailSending.WaitList
         private void OutboxesPool_OutboxDisposed(OutboxEmailAddress emailAddress)
         {
             var tasksTemp = this.ToList();
-            List<int> groupIds = tasksTemp.Select(x => x.GroupId).ToList();
+            List<long> groupIds = tasksTemp.Select(x => x.GroupId).ToList();
             var intersectIds = groupIds.Intersect(emailAddress.SendingGroupIds).ToList();
             if (intersectIds.Count == 0) return;
 
@@ -77,7 +77,7 @@ namespace UZonMailService.Services.EmailSending.WaitList
         /// <summary>
         /// 用户 id
         /// </summary>
-        public int UserId { get; set; }
+        public long UserId { get; set; }
 
         public AsyncServiceScope Scope { get; private set; }
 
@@ -86,7 +86,7 @@ namespace UZonMailService.Services.EmailSending.WaitList
         /// </summary>
         /// <param name="sendingGroupId"></param>
         /// <returns></returns>
-        public async Task<bool> AddSendingGroup(int sendingGroupId, List<string> smtpPasswordSecretKeys, List<int>? sendingItemIds = null)
+        public async Task<bool> AddSendingGroup(long sendingGroupId, List<string> smtpPasswordSecretKeys, List<long>? sendingItemIds = null)
         {
             // 获取 sendingGroup
             var group = await db.SendingGroups.Where(x => x.Id == sendingGroupId)

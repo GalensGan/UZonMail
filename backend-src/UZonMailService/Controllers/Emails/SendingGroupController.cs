@@ -24,7 +24,7 @@ namespace UZonMailService.Controllers.Emails
         [HttpGet("filtered-count")]
         public async Task<ResponseResult<int>> GetSendingGroupsCount(string filter)
         {
-            int userId = tokenService.GetIntUserId();
+            var userId = tokenService.GetUserDataId();
             var dbSet = db.SendingGroups.Where(x => x.UserId == userId);
             if (!string.IsNullOrEmpty(filter))
             {
@@ -43,7 +43,7 @@ namespace UZonMailService.Controllers.Emails
         [HttpPost("filtered-data")]
         public async Task<ResponseResult<List<SendingHistoryResult>>> GetSendingGroupsData(string filter, Pagination pagination)
         {
-            int userId = tokenService.GetIntUserId();
+            var userId = tokenService.GetUserDataId();
             var dbSet = db.SendingGroups.Where(x => x.UserId == userId);
             if (!string.IsNullOrEmpty(filter))
             {
@@ -62,7 +62,7 @@ namespace UZonMailService.Controllers.Emails
         [HttpGet("running")]
         public async Task<ResponseResult<List<RunningSendingGroupResult>>> GetRunningSendingGroups()
         {
-            int userId = tokenService.GetIntUserId();
+            var userId = tokenService.GetUserDataId();
             var results = await db.SendingGroups.Where(x => x.Status == SendingGroupStatus.Sending).ToListAsync();
             return results.ConvertAll(x => new RunningSendingGroupResult(x)).ToSuccessResponse();
         }
@@ -71,10 +71,10 @@ namespace UZonMailService.Controllers.Emails
         /// 获取正在执行发送任务的邮件组
         /// </summary>
         /// <returns></returns>
-        [HttpGet("{sendingGroupId:int}/subjects")]
-        public async Task<ResponseResult<string>> GetSendingGroupSubjects(int sendingGroupId)
+        [HttpGet("{sendingGroupId:long}/subjects")]
+        public async Task<ResponseResult<string>> GetSendingGroupSubjects(long sendingGroupId)
         {
-            int userId = tokenService.GetIntUserId();
+            var userId = tokenService.GetUserDataId();
             var result = await db.SendingGroups.FirstOrDefaultAsync(x => x.Id == sendingGroupId && x.UserId == userId);
             if (result == null) return new ErrorResponse<string>("邮箱组不存在");
             return result.Subjects.ToSuccessResponse();
@@ -85,10 +85,10 @@ namespace UZonMailService.Controllers.Emails
         /// </summary>
         /// <param name="sendingGroupId"></param>
         /// <returns></returns>
-        [HttpGet("{sendingGroupId:int}/status-info")]
-        public async Task<ResponseResult<SendingGroupStatusInfo>> GetSendingGroupRunningInfo(int sendingGroupId)
+        [HttpGet("{sendingGroupId:long}/status-info")]
+        public async Task<ResponseResult<SendingGroupStatusInfo>> GetSendingGroupRunningInfo(long sendingGroupId)
         {
-            int userId = tokenService.GetIntUserId();
+            var userId = tokenService.GetUserDataId();
             var result = await db.SendingGroups.FirstOrDefaultAsync(x => x.Id == sendingGroupId && x.UserId == userId);
             if (result == null) return new ErrorResponse<SendingGroupStatusInfo>("邮箱组不存在");
             return new SendingGroupStatusInfo(result).ToSuccessResponse();

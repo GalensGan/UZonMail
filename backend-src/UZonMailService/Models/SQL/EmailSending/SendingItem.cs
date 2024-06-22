@@ -24,20 +24,20 @@ namespace UZonMailService.Models.SQL.EmailSending
         /// <summary>
         /// 所属发送任务
         /// </summary>
-        public int SendingGroupId { get; set; }
+        public long SendingGroupId { get; set; }
         public SendingGroup SendingGroup { get; set; }
 
         /// <summary>
         /// 所属用户
         /// </summary>
-        public int UserId { get; set; }
+        public long UserId { get; set; }
 
         /// <summary>
         /// 发件人
         /// 由于是多线程发件，这个值只有发送后才能确定
         /// 若一开始由数据指定，则其值 > 0
         /// </summary>
-        public int OutBoxId { get; set; }
+        public long OutBoxId { get; set; }
 
         /// <summary>
         /// 实际发件人
@@ -70,7 +70,7 @@ namespace UZonMailService.Models.SQL.EmailSending
         /// 模板是发送时，动态指定的
         /// 若一开始由数据指定，则其值 > 0
         /// </summary>
-        public int EmailTemplateId { get; set; }
+        public long EmailTemplateId { get; set; }
 
         /// <summary>
         /// 发送主题
@@ -98,7 +98,7 @@ namespace UZonMailService.Models.SQL.EmailSending
         /// <summary>
         /// 发送代理
         /// </summary>
-        public int ProxyId { get; set; }
+        public long ProxyId { get; set; }
 
         [JsonField]
         public JObject? Data { get; set; }

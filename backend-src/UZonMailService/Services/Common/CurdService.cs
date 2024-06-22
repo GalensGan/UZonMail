@@ -75,7 +75,7 @@ namespace UZonMailService.Services.Common
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public virtual async Task<bool> DeleteById(int id)
+        public virtual async Task<bool> DeleteById(long id)
         {
             await db.Set<TEntity>().Where(x=>x.Id==id).ExecuteDeleteAsync();;
             return true;
@@ -86,7 +86,7 @@ namespace UZonMailService.Services.Common
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public virtual async Task<TEntity?> FindOneById(int id)
+        public virtual async Task<TEntity?> FindOneById(long id)
         {
             return await db.FindAsync<TEntity>(id);
         }

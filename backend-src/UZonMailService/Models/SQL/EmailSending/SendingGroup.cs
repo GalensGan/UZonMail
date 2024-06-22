@@ -24,7 +24,7 @@ namespace UZonMailService.Models.SQL.EmailSending
         /// <summary>
         /// 用户名
         /// </summary>
-        public int UserId { get; set; }
+        public long UserId { get; set; }
 
         /// <summary>
         /// 主题

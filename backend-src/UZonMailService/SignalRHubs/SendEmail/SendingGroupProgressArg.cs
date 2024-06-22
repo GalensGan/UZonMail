@@ -21,7 +21,7 @@ namespace UZonMailService.SignalRHubs.SendEmail
         /// <summary>
         /// 发件组 id
         /// </summary>
-        public int SendingGroupId { get; set; }
+        public long SendingGroupId { get; set; }
 
         /// <summary>
         /// 成功的数量

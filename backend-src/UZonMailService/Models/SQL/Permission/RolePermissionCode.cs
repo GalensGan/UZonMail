@@ -7,8 +7,8 @@ namespace UZonMailService.Models.SQL.Permission
     /// </summary>
     public class RolePermissionCode : SqlId
     {
-        public int RoleId { get; set; }
+        public long RoleId { get; set; }
 
-        public int PermissionCodeId { get; set; }
+        public long PermissionCodeId { get; set; }
     }
 }

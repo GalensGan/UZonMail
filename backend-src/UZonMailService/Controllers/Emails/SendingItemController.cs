@@ -19,9 +19,9 @@ namespace UZonMailService.Controllers.Emails
         /// <param name="filter"></param>
         /// <returns></returns>
         [HttpGet("filtered-count")]
-        public async Task<ResponseResult<int>> GetEmailTemplatesCount(int sendingGroupId, string filter)
+        public async Task<ResponseResult<int>> GetEmailTemplatesCount(long sendingGroupId, string filter)
         {
-            int userId = tokenService.GetIntUserId();
+            var userId = tokenService.GetUserDataId();
             // 只能获取自己的发件历史
             var sendingGroup = await db.SendingGroups.FirstOrDefaultAsync(x => x.Id == sendingGroupId && x.UserId == userId);
             if (sendingGroup == null)
@@ -46,9 +46,9 @@ namespace UZonMailService.Controllers.Emails
         /// <param name="pagination"></param>
         /// <returns></returns>
         [HttpPost("filtered-data")]
-        public async Task<ResponseResult<List<SendingItem>>> GetEmailTemplatesData(int sendingGroupId, string filter, Pagination pagination)
+        public async Task<ResponseResult<List<SendingItem>>> GetEmailTemplatesData(long sendingGroupId, string filter, Pagination pagination)
         {
-            int userId = tokenService.GetIntUserId();
+            var userId = tokenService.GetUserDataId();
             // 只能获取自己的发件历史
             var sendingGroup = await db.SendingGroups.FirstOrDefaultAsync(x => x.Id == sendingGroupId && x.UserId == userId);
             if (sendingGroup == null)
@@ -78,10 +78,10 @@ namespace UZonMailService.Controllers.Emails
             return results.ToSuccessResponse();
         }
 
-        [HttpGet("{sendingItemId:int}/body")]
-        public async Task<ResponseResult<string?>> GetSendingItemBody(int sendingItemId)
+        [HttpGet("{sendingItemId:long}/body")]
+        public async Task<ResponseResult<string?>> GetSendingItemBody(long sendingItemId)
         {
-            int userId = tokenService.GetIntUserId();
+            var userId = tokenService.GetUserDataId();
             var sendingItem = await db.SendingItems.FirstOrDefaultAsync(x => x.Id == sendingItemId && x.UserId == userId);
             if (sendingItem == null) return "".ToErrorResponse("邮件已被删除");
             return sendingItem.Content.ToSuccessResponse();

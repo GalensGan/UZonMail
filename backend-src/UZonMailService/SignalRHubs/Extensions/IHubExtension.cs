@@ -11,7 +11,7 @@ namespace UZonMailService.SignalRHubs.Extensions
         /// <param name="hub"></param>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public static T GetUserClient<THub, T>(this IHubContext<THub, T> context, int userId)
+        public static T GetUserClient<THub, T>(this IHubContext<THub, T> context, long userId)
             where THub : Hub<T>
             where T : class
         {

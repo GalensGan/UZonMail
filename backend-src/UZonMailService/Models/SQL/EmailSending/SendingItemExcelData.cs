@@ -17,7 +17,7 @@ namespace UZonMailService.Models.SQL.EmailSending
             // 提取数据
             if (row == null) return;
 
-            OutboxId = row.SelectTokenOrDefault("outboxId", 0);
+            OutboxId = row.SelectTokenOrDefault("outboxId", 0L);
             Outbox = row.SelectTokenOrDefault("outbox", string.Empty);
             OutboxName = row.SelectTokenOrDefault("outboxName", string.Empty);
             Inbox = row.SelectTokenOrDefault("inbox", string.Empty);
@@ -26,16 +26,16 @@ namespace UZonMailService.Models.SQL.EmailSending
             CC = row.SelectTokenOrDefault("cc", string.Empty).SplitBySeparators().Where(x => !string.IsNullOrEmpty(x)).ToList();
             BCC = row.SelectTokenOrDefault("bcc", string.Empty).SplitBySeparators().Where(x => !string.IsNullOrEmpty(x)).ToList();
             TemplateName = row.SelectTokenOrDefault("templateName", string.Empty);
-            TemplateId = row.SelectTokenOrDefault("templateId", 0);
+            TemplateId = row.SelectTokenOrDefault("templateId", 0L);
             Body = row.SelectTokenOrDefault("body", string.Empty);
-            ProxyId = row.SelectTokenOrDefault("proxyId", 0);
+            ProxyId = row.SelectTokenOrDefault("proxyId", 0L);
             AttachmentNames = row.SelectTokenOrDefault("attachmentNames", string.Empty).SplitBySeparators().Where(x => !string.IsNullOrEmpty(x)).ToList();
 
             // 其它的数据为用户自定义数据
         }
 
         // 发件箱
-        public int OutboxId { get; private set; }
+        public long OutboxId { get; private set; }
         public string? Outbox { get; private set; }
         public string? OutboxName { get; private set; }
 
@@ -50,7 +50,7 @@ namespace UZonMailService.Models.SQL.EmailSending
 
         // 模板，两者选其一即可，优先 templateId
         public string? TemplateName { get; private set; }
-        public int TemplateId { get; private set; }
+        public long TemplateId { get; private set; }
 
         /// <summary>
         /// 正文内容
@@ -58,7 +58,7 @@ namespace UZonMailService.Models.SQL.EmailSending
         public string? Body { get; private set; }
 
         // 代理
-        public int ProxyId { get; private set; }
+        public long ProxyId { get; private set; }
 
         /// <summary>
         /// 附件名称

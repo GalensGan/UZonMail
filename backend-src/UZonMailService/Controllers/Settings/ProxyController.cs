@@ -76,8 +76,8 @@ namespace UZonMailService.Controllers.Settings
         /// <param name="proxyId"></param>
         /// <param name="isShared"></param>
         /// <returns></returns>
-        [HttpPut("{proxyId:int}/shared")]
-        public async Task<ResponseResult<bool>> UpdateProxySharedStatus(int proxyId, bool isShared)
+        [HttpPut("{proxyId:long}/shared")]
+        public async Task<ResponseResult<bool>> UpdateProxySharedStatus(long proxyId, bool isShared)
         {
             var result = await proxyService.UpdateUserProxySharedStatus(proxyId, isShared);
             return result.ToSuccessResponse();
@@ -88,10 +88,10 @@ namespace UZonMailService.Controllers.Settings
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpDelete("{id:int}")]
-        public async Task<ResponseResult<bool>> DeleteById(int id)
+        [HttpDelete("{id:long}")]
+        public async Task<ResponseResult<bool>> DeleteById(long id)
         {
-            var userId = tokenService.GetIntUserId();
+            var userId = tokenService.GetUserDataId();
             db.UserProxies.Remove(new UserProxy { Id = id, UserId = userId });
             await db.SaveChangesAsync();
             return true.ToSuccessResponse();
@@ -104,7 +104,7 @@ namespace UZonMailService.Controllers.Settings
         [HttpGet("filtered-count")]
         public async Task<ResponseResult<int>> GetFilteredCount(string filter)
         {
-            var userId = tokenService.GetIntUserId();
+            var userId = tokenService.GetUserDataId();
             var dbSet = db.UserProxies.Where(x => x.UserId == userId);
             if (!string.IsNullOrEmpty(filter))
             {
@@ -124,7 +124,7 @@ namespace UZonMailService.Controllers.Settings
         [HttpPost("filtered-data")]
         public async Task<ResponseResult<List<UserProxy>>> GetFilteredData(string filter, [FromBody] Pagination pagination)
         {
-            var userId = tokenService.GetIntUserId();
+            var userId = tokenService.GetUserDataId();
             var dbSet = db.UserProxies.Where(x => x.UserId == userId);
             if (!string.IsNullOrEmpty(filter))
             {
@@ -141,7 +141,7 @@ namespace UZonMailService.Controllers.Settings
         [HttpGet("usable")]
         public async Task<ResponseResult<List<UserProxy>>> GetAllUsableProxies()
         {
-            var userId = tokenService.GetIntUserId();
+            var userId = tokenService.GetUserDataId();
             var dbSet = db.UserProxies.Where(x => x.UserId == userId || x.IsShared).Where(x => x.IsActive);
             var results = await dbSet.ToListAsync();
             return results.ToSuccessResponse();

@@ -13,12 +13,12 @@ namespace UZonMailService.Models.SQL.Files
         /// 为了提取前端上传的附件
         /// </summary>
         [NotMapped]
-        public int __fileUsageId { get; set; }
+        public long __fileUsageId { get; set; }
 
         /// <summary>
         /// 拥有者的用户ID
         /// </summary>
-        public int OwnerUserId { get; set; }
+        public long OwnerUserId { get; set; }
         public User OwnerUser { get; set; }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace UZonMailService.Models.SQL.Files
         /// <summary>
         /// 文件 id
         /// </summary>
-        public int FileObjectId { get; set; }
+        public long FileObjectId { get; set; }
 
         /// <summary>
         /// 文件对象

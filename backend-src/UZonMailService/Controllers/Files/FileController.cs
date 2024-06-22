@@ -23,13 +23,13 @@ namespace UZonMailService.Controllers.Files
         /// </summary>
         /// <returns></returns>
         [HttpGet("file-id")]
-        public async Task<ResponseResult<int>> GetFileId(string sha256, string fileName)
+        public async Task<ResponseResult<long>> GetFileId(string sha256, string fileName)
         {
             // 判断是否存在 fileObject
             FileObject? fileObject = await fileStoreService.GetExistFileObject(sha256);
-            if (fileObject == null) return (-1).ToSuccessResponse();
+            if (fileObject == null) return (-1L).ToSuccessResponse();
 
-            int userId = tokenService.GetIntUserId();
+            var userId = tokenService.GetUserDataId();
 
             // 获取 fileUsageId
             FileUsage fileUsage = await fileStoreService.GetOrCreateFileUsage(userId, fileName, sha256);
@@ -42,9 +42,9 @@ namespace UZonMailService.Controllers.Files
         /// <param name="fileParams"></param>
         /// <returns></returns>
         [HttpPost("upload-file-object")]
-        public async Task<ResponseResult<int>> UploadFileObject(ObjectFileUploaderBody fileParams)
+        public async Task<ResponseResult<long>> UploadFileObject(ObjectFileUploaderBody fileParams)
         {
-            int userId = tokenService.GetIntUserId();
+            var userId = tokenService.GetUserDataId();
             fileParams.File ??= Request.Form.Files.FirstOrDefault();
             FileUsage fileUsage = await fileStoreService.UploadFileObject(userId, fileParams);
             return fileUsage.Id.ToSuccessResponse();
@@ -56,8 +56,8 @@ namespace UZonMailService.Controllers.Files
         /// </summary>
         /// <returns></returns>
         [AllowAnonymous]
-        [HttpGet("public-file-stream/{fileUsageId}")]
-        public async Task<IActionResult> GetPublicFileStream(int fileUsageId)
+        [HttpGet("public-file-stream/{fileUsageId:long}")]
+        public async Task<IActionResult> GetPublicFileStream(long fileUsageId)
         {
             // 获取文件流
             string fullPath = await fileStoreService.GetFileFullPath(fileUsageId, true);
@@ -74,8 +74,8 @@ namespace UZonMailService.Controllers.Files
         /// </summary>
         /// <param name="fileUsageId"></param>
         /// <returns></returns>
-        [HttpGet("file-stream/{fileUsageId}")]
-        public async Task<IActionResult> GetFileStream(int fileUsageId)
+        [HttpGet("file-stream/{fileUsageId:long}")]
+        public async Task<IActionResult> GetFileStream(long fileUsageId)
         {
             // 获取文件流
             string fullPath = await fileStoreService.GetFileFullPath(fileUsageId, false);
@@ -95,7 +95,7 @@ namespace UZonMailService.Controllers.Files
         [HttpPost("upload-static-file")]
         public ResponseResult<string> UploadToStaticFile(StaticFileUploaderBody fileParams)
         {
-            int userId = tokenService.GetIntUserId();
+            var userId = tokenService.GetUserDataId();
             var (fullPath, relativePath) = fileStoreService.GenerateStaticFilePath(userId.ToString(), fileParams.SubPath, fileParams.File.FileName);
 
             using var stream = new FileStream(fullPath, FileMode.Create);
@@ -111,7 +111,7 @@ namespace UZonMailService.Controllers.Files
         [HttpGet("file-usages/filtered-count")]
         public async Task<ResponseResult<int>> GetFileUsagesCount(string? filter)
         {
-            int userId = tokenService.GetIntUserId();
+            var userId = tokenService.GetUserDataId();
             // 收件箱
             var dbSet = db.FileUsages.Where(x => x.OwnerUserId == userId);
             if (!string.IsNullOrEmpty(filter))
@@ -131,7 +131,7 @@ namespace UZonMailService.Controllers.Files
         [HttpPost("file-usages/filtered-data")]
         public async Task<ResponseResult<List<FileUsage>>> GetFileUsagesData(string? filter, [FromBody] Pagination pagination)
         {
-            int userId = tokenService.GetIntUserId();
+            var userId = tokenService.GetUserDataId();
             // 收件箱
             var dbSet = db.FileUsages.Where(x => x.OwnerUserId == userId);
             if (!string.IsNullOrEmpty(filter))
@@ -147,8 +147,8 @@ namespace UZonMailService.Controllers.Files
         /// </summary>
         /// <param name="fileUsageId"></param>
         /// <returns></returns>
-        [HttpDelete("file-usages/{fileUsageId:int}")]
-        public async Task<ResponseResult<bool>> DeleteFileUsage(int fileUsageId)
+        [HttpDelete("file-usages/{fileUsageId:long}")]
+        public async Task<ResponseResult<bool>> DeleteFileUsage(long fileUsageId)
         {
             var fileUsage = await db.FileUsages.FirstOrDefaultAsync(x => x.Id == fileUsageId);
             if (fileUsage == null) return true.ToSuccessResponse();
@@ -171,8 +171,8 @@ namespace UZonMailService.Controllers.Files
         /// <param name="fileUsageId"></param>
         /// <param name="displayName"></param>
         /// <returns></returns>
-        [HttpPut("file-usages/{fileUsageId:int}/display-name")]
-        public async Task<ResponseResult<bool>> UpdateDisplayName(int fileUsageId, [FromQuery]string displayName)
+        [HttpPut("file-usages/{fileUsageId:long}/display-name")]
+        public async Task<ResponseResult<bool>> UpdateDisplayName(long fileUsageId, [FromQuery]string displayName)
         {
             var fileUsage = await db.FileUsages.FirstOrDefaultAsync(x => x.Id == fileUsageId);
             if (fileUsage == null) return false.ToErrorResponse("文件不存在");

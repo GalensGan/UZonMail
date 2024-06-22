@@ -6,7 +6,7 @@
     /// </summary>
     public class DataRef : IDataRef
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
 
@@ -18,7 +18,7 @@
         /// <param name="id"></param>
         /// <param name="name"></param>
         /// <param name="description"></param>
-        public DataRef(int id, string name, string description = "")
+        public DataRef(long id, string name, string description = "")
         {
             Id = id;
             Name = name;

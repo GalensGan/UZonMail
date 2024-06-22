@@ -25,7 +25,7 @@ namespace UZonMailService.Models.SQL.Files
         /// <summary>
         /// 文件对象的 Id
         /// </summary>
-        public int FileObjectId { get; set; }
+        public long FileObjectId { get; set; }
 
         /// <summary>
         /// 文件对象导航属性
@@ -40,6 +40,6 @@ namespace UZonMailService.Models.SQL.Files
         /// <summary>
         /// 用户 Id
         /// </summary>
-        public int UserId { get; set; }
+        public long UserId { get; set; }
     }
 }

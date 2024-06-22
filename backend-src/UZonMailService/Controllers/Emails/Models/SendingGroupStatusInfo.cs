@@ -5,7 +5,7 @@ namespace UZonMailService.Controllers.Emails.Models
     public class SendingGroupStatusInfo
     {
 
-        public int Id { get; set; }        
+        public long Id { get; set; }        
         public double TotalCount { get; set; }
         public int SentCount { get; set; }
         public int SuccessCount { get; set; }

@@ -12,7 +12,7 @@ namespace UZonMailService.Models.SQL.Templates
         /// <summary>
         /// 用户 id
         /// </summary>
-        public int UserId { get; set; }
+        public long UserId { get; set; }
 
         /// <summary>
         /// 模板名称

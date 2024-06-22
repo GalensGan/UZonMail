@@ -10,7 +10,7 @@ namespace UZonMailService.Models.SQL.Emails
     /// </summary>
     public class EmailGroup:SqlId
     {
-        public int UserId { get; set; }
+        public long UserId { get; set; }
         public User User { get; set; }
 
         /// <summary>

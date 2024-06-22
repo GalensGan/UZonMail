@@ -199,7 +199,7 @@ namespace UZonMailService.Services.UserInfos
         /// <param name="oldPassword">这个值在前端通过 Sha256 加密过</param>
         /// <param name="newPassword">这个值在前端通过 Sha256 加密过</param>
         /// <returns></returns>
-        public async Task<bool> ChangeUserPassword(int userId, string oldPassword, string newPassword)
+        public async Task<bool> ChangeUserPassword(long userId, string oldPassword, string newPassword)
         {
             if (userId <= 0 || string.IsNullOrEmpty(oldPassword) || string.IsNullOrEmpty(newPassword))
             {

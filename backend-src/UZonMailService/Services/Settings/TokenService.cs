@@ -43,12 +43,12 @@ namespace UZonMailService.Services.Settings
         /// 获取 token 中的 userId
         /// </summary>
         /// <returns></returns>
-        public int GetIntUserId()
+        public long GetUserDataId()
         {
             var token = GetToken();
             var userId = appConfig.Value.TokenParams.GetTokenPayloads(token).SelectTokenOrDefault("userId", "");
-            if(int.TryParse(userId, out int intUserId)) return intUserId;
-            return 0;
+            if(long.TryParse(userId, out long intUserId)) return intUserId;
+            return 0L;
         }
     }
 }

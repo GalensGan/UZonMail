@@ -16,7 +16,7 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
         /// <summary>
         /// 所属的发件箱组 id
         /// </summary>
-        public HashSet<int> SendingGroupIds = [];
+        public HashSet<long> SendingGroupIds = [];
         #endregion
 
         #region 构造
@@ -84,7 +84,7 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
         /// <summary>
         /// 代理 Id
         /// </summary>
-        public int ProxyId { get; set; }
+        public long ProxyId { get; set; }
 
         public bool ShouldDispose { get; private set; } = false;
         /// <summary>
