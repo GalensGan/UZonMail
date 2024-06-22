@@ -74,13 +74,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Migrations\20240610083907_init.cs">
+    <Compile Update="Migrations\SqLite\20240610083907_init.cs">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Compile>
-    <Compile Update="Migrations\20240617050459_addUserNameToOutbox.cs">
+    <Compile Update="Migrations\SqLite\20240617050459_addUserNameToOutbox.cs">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Compile>
-    <Compile Update="Migrations\SqlContextModelSnapshot.cs">
+    <Compile Update="Migrations\SqLite\SqLiteContextModelSnapshot.cs">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Compile>
   </ItemGroup>

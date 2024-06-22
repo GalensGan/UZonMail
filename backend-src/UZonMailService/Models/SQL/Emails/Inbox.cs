@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-using UZonMailService.Models.SqlLite.Base;
-using UZonMailService.Models.SqlLite.UserInfos;
+using UZonMailService.Models.SQL.Base;
+using UZonMailService.Models.SQL.UserInfos;
 
-namespace UZonMailService.Models.SqlLite.Emails
+namespace UZonMailService.Models.SQL.Emails
 {
     /// <summary>
     /// 收件箱

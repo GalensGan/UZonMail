@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 
-namespace UZonMailService.Models.SqlLite.EmailSending
+namespace UZonMailService.Models.SQL.EmailSending
 {
     internal class ExcelDataInfo
     {

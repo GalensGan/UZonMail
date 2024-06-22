@@ -3,15 +3,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Newtonsoft.Json.Linq;
 using System.ComponentModel.DataAnnotations.Schema;
-using UZonMailService.Models.SqlLite.Base;
-using UZonMailService.Models.SqlLite.Emails;
-using UZonMailService.Models.SqlLite.Files;
-using UZonMailService.Models.SqlLite.NoEntity;
-using UZonMailService.Models.SqlLite.Templates;
-using UZonMailService.Models.SqlLite.UserInfos;
+using UZonMailService.Models.SQL.Base;
+using UZonMailService.Models.SQL.Emails;
+using UZonMailService.Models.SQL.Files;
+using UZonMailService.Models.SQL.NoEntity;
+using UZonMailService.Models.SQL.Templates;
+using UZonMailService.Models.SQL.UserInfos;
 using UZonMailService.Services.EmailSending.Sender;
 
-namespace UZonMailService.Models.SqlLite.EmailSending
+namespace UZonMailService.Models.SQL.EmailSending
 {
     /// <summary>
     /// 邮件项

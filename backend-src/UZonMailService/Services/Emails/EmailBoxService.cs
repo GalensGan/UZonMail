@@ -1,5 +1,5 @@
-﻿using UZonMailService.Models.SqlLite;
-using UZonMailService.Models.SqlLite.Emails;
+﻿using UZonMailService.Models.SQL;
+using UZonMailService.Models.SQL.Emails;
 using UZonMailService.Services.Common;
 
 namespace UZonMailService.Services.Emails

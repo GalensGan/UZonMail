@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-using UZonMailService.Models.SqlLite.Base;
-using UZonMailService.Models.SqlLite.EmailSending;
+using UZonMailService.Models.SQL.Base;
+using UZonMailService.Models.SQL.EmailSending;
 
-namespace UZonMailService.Models.SqlLite.Templates
+namespace UZonMailService.Models.SQL.Templates
 {
     /// <summary>
     /// 邮箱模板

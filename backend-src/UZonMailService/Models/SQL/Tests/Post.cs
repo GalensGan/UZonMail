@@ -1,4 +1,4 @@
-﻿namespace UZonMailService.Models.SqlLite.Tests
+﻿namespace UZonMailService.Models.SQL.Tests
 {
     public class Post
     {

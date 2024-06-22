@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Uamazing.Utils.Web.Extensions;
 using Uamazing.Utils.Web.ResponseModel;
 using UZonMailService.Controllers.Common;
-using UZonMailService.Models.SqlLite.Emails;
+using UZonMailService.Models.SQL.Emails;
 using UZonMailService.Services.Common;
 using UZonMailService.Services.Emails;
 using UZonMailService.Services.Settings;

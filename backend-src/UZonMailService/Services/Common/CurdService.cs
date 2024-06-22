@@ -2,8 +2,8 @@
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System.Linq.Expressions;
 using Uamazing.Utils.Web.Service;
-using UZonMailService.Models.SqlLite;
-using UZonMailService.Models.SqlLite.Base;
+using UZonMailService.Models.SQL;
+using UZonMailService.Models.SQL.Base;
 using UZonMailService.Utils.Database;
 
 namespace UZonMailService.Services.Common

@@ -1,8 +1,8 @@
 ﻿using System.Text.RegularExpressions;
-using UZonMailService.Models.SqlLite.Base;
-using UZonMailService.Models.SqlLite.Emails;
+using UZonMailService.Models.SQL.Base;
+using UZonMailService.Models.SQL.Emails;
 
-namespace UZonMailService.Models.SqlLite.Settings
+namespace UZonMailService.Models.SQL.Settings
 {
     /// <summary>
     /// 邮件代理

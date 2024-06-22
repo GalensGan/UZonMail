@@ -2,13 +2,13 @@
 using UZonMailService.Config;
 using UZonMailService.Config.SubConfigs;
 using Uamazing.Utils.Extensions;
-using UZonMailService.Models.SqlLite.Files;
+using UZonMailService.Models.SQL.Files;
 using Microsoft.EntityFrameworkCore;
-using UZonMailService.Models.SqlLite.Settings;
-using UZonMailService.Models.SqlLite.EmailSending;
+using UZonMailService.Models.SQL.Settings;
+using UZonMailService.Models.SQL.EmailSending;
 using UZonMailService.Utils.Database;
 
-namespace UZonMailService.Models.SqlLite.Init
+namespace UZonMailService.Models.SQL.Init
 {
     /// <summary>
     /// 初始化数据库

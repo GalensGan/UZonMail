@@ -8,14 +8,14 @@ using Uamazing.ConfValidatation.Core.Validators;
 using Uamazing.Utils.Extensions;
 using Uamazing.Utils.Web.Extensions;
 using Uamazing.Utils.Web.ResponseModel;
-using UZonMailService.Models.SqlLite.UserInfos;
+using UZonMailService.Models.SQL.UserInfos;
 using UZonMailService.Services.Settings;
 using UZonMailService.Services.UserInfos;
 using UZonMailService.Utils.ASPNETCore.PagingQuery;
 using UZonMailService.Utils.DotNETCore.Exceptions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using UZonMailService.Services.Files;
-using UZonMailService.Models.SqlLite;
+using UZonMailService.Models.SQL;
 using Microsoft.EntityFrameworkCore;
 using UZonMailService.Utils.Database;
 

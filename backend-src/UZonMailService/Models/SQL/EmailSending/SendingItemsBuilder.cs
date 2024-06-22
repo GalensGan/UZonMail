@@ -3,10 +3,10 @@ using Newtonsoft.Json.Linq;
 using System.Net.Mail;
 using System.Xml.Linq;
 using Uamazing.Utils.Json;
-using UZonMailService.Models.SqlLite.Files;
-using UZonMailService.Models.SqlLite.Settings;
+using UZonMailService.Models.SQL.Files;
+using UZonMailService.Models.SQL.Settings;
 
-namespace UZonMailService.Models.SqlLite.EmailSending
+namespace UZonMailService.Models.SQL.EmailSending
 {
     /// <summary>
     /// 用于生成发送项

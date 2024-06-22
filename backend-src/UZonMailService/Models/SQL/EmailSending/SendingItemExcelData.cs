@@ -3,7 +3,7 @@ using Newtonsoft.Json.Linq;
 using Uamazing.Utils.Json;
 using Uamazing.Utils.Extensions;
 
-namespace UZonMailService.Models.SqlLite.EmailSending
+namespace UZonMailService.Models.SQL.EmailSending
 {
     /// <summary>
     /// 发件组中的 Excel 数据

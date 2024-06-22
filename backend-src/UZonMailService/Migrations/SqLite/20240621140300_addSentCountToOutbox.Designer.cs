@@ -4,15 +4,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using UZonMailService.Models.SqlLite;
+using UZonMailService.Models.SQL;
 
 #nullable disable
 
 namespace UZonMailService.Migrations
 {
     [DbContext(typeof(SqlContext))]
-    [Migration("20240610083907_init")]
-    partial class init
+    [Migration("20240621140300_addPropsToOutbox")]
+    partial class addPropsToOutbox
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -169,6 +169,9 @@ namespace UZonMailService.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("CreateDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Data")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("EmailTemplateId")
@@ -406,6 +409,41 @@ namespace UZonMailService.Migrations
                     b.ToTable("FileObjects");
                 });
 
+            modelBuilder.Entity("UZonMailService.Models.SqlLite.Files.FileReader", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("ExpireDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("FileObjectId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsHidden")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FileObjectId");
+
+                    b.ToTable("FileReaders");
+                });
+
             modelBuilder.Entity("UZonMailService.Models.SqlLite.Files.FileUsage", b =>
                 {
                     b.Property<int>("Id")
@@ -413,6 +451,10 @@ namespace UZonMailService.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("CreateDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DisplayName")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("FileName")
@@ -772,12 +814,21 @@ namespace UZonMailService.Migrations
                     b.Property<int>("ProxyId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("SentTotalToday")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("SmtpHost")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<int>("SmtpPort")
                         .HasColumnType("INTEGER");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("TEXT");
 
                     b.HasDiscriminator().HasValue("Outbox");
                 });
@@ -882,6 +933,17 @@ namespace UZonMailService.Migrations
                         .IsRequired();
 
                     b.Navigation("FileBucket");
+                });
+
+            modelBuilder.Entity("UZonMailService.Models.SqlLite.Files.FileReader", b =>
+                {
+                    b.HasOne("UZonMailService.Models.SqlLite.Files.FileObject", "FileObject")
+                        .WithMany()
+                        .HasForeignKey("FileObjectId")
+                        .OnDelete(DeleteBehavior.ClientNoAction)
+                        .IsRequired();
+
+                    b.Navigation("FileObject");
                 });
 
             modelBuilder.Entity("UZonMailService.Models.SqlLite.Files.FileUsage", b =>

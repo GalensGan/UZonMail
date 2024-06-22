@@ -1,4 +1,4 @@
-﻿using UZonMailService.Models.SqlLite.EmailSending;
+﻿using UZonMailService.Models.SQL.EmailSending;
 
 namespace UZonMailService.SignalRHubs.SendEmail
 {

@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using Uamazing.Utils.Web.Extensions;
 using Uamazing.Utils.Web.ResponseModel;
 using UZonMailService.Controllers.Statistics.Model;
-using UZonMailService.Models.SqlLite;
-using UZonMailService.Models.SqlLite.Emails;
-using UZonMailService.Models.SqlLite.EmailSending;
+using UZonMailService.Models.SQL;
+using UZonMailService.Models.SQL.Emails;
+using UZonMailService.Models.SQL.EmailSending;
 using UZonMailService.Services.Settings;
 
 namespace UZonMailService.Controllers.Statistics

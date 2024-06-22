@@ -1,7 +1,7 @@
-﻿using UZonMailService.Models.SqlLite.Base;
-using UZonMailService.Models.SqlLite.Permission;
+﻿using UZonMailService.Models.SQL.Base;
+using UZonMailService.Models.SQL.Permission;
 
-namespace UZonMailService.Models.SqlLite.UserInfos
+namespace UZonMailService.Models.SQL.UserInfos
 {
     /// <summary>
     /// 用户上下文

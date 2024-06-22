@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using UZonMailService.Models.SqlLite;
-using UZonMailService.Models.SqlLite.Settings;
+using UZonMailService.Models.SQL;
+using UZonMailService.Models.SQL.Settings;
 
 namespace UZonMailService.Services.Settings
 {

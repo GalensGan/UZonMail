@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using Uamazing.Utils.Web.Extensions;
 using Uamazing.Utils.Web.ResponseModel;
 using UZonMailService.Controllers.Emails.Models;
-using UZonMailService.Models.SqlLite;
-using UZonMailService.Models.SqlLite.EmailSending;
-using UZonMailService.Models.SqlLite.Templates;
+using UZonMailService.Models.SQL;
+using UZonMailService.Models.SQL.EmailSending;
+using UZonMailService.Models.SQL.Templates;
 using UZonMailService.Services.Settings;
 using UZonMailService.Utils.ASPNETCore.PagingQuery;
 

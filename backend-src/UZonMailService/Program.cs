@@ -3,7 +3,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi.Models;
 using UZonMailService.Config;
 using UZonMailService.Utils.DotNETCore;
-using UZonMailService.Models.SqlLite;
+using UZonMailService.Models.SQL;
 using UZonMailService.Utils.DotNETCore.Filters;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http.Features;
@@ -85,7 +85,7 @@ services.SetupSlugifyCaseRoute();
 // 绑定配置
 services.Configure<AppConfig>(builder.Configuration);
 // 注入数据库
-services.AddDbContext<SqlContext>();
+services.UseSql();
 // 注入 liteDB
 //services.AddLiteDB();
 // 添加 HttpContextAccessor，以供 service 获取当前请求的用户信息

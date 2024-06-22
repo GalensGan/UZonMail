@@ -2,14 +2,14 @@
 using Microsoft.EntityFrameworkCore.Storage.Json;
 using System.Reflection.Metadata;
 using UZonMailService.Models.MySql;
-using UZonMailService.Models.SqlLite.Emails;
-using UZonMailService.Models.SqlLite.EmailSending;
-using UZonMailService.Models.SqlLite.EntityConfigs;
-using UZonMailService.Models.SqlLite.Settings;
-using UZonMailService.Models.SqlLite.Templates;
-using UZonMailService.Models.SqlLite.Tests;
+using UZonMailService.Models.SQL.Emails;
+using UZonMailService.Models.SQL.EmailSending;
+using UZonMailService.Models.SQL.EntityConfigs;
+using UZonMailService.Models.SQL.Settings;
+using UZonMailService.Models.SQL.Templates;
+using UZonMailService.Models.SQL.Tests;
 
-namespace UZonMailService.Models.SqlLite
+namespace UZonMailService.Models.SQL
 {
     /// <summary>
     /// Sql 上下文
@@ -25,80 +25,6 @@ namespace UZonMailService.Models.SqlLite
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             new EntityTypeConfig().Configure(modelBuilder);
-        }
-        #endregion
-
-        #region 构造函数
-        private ILogger<SqlContext> _logger;
-
-        private readonly string _sqliteConnectionString;
-        private readonly MySqlConnectionConfig _mysqlConnectionConfig;
-
-        public SqlContext(IConfiguration configuration, ILogger<SqlContext> logger)
-        {
-            _logger = logger;
-
-            // sqlLite
-            var path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            var sqlPath = configuration.GetValue<string>("Database:SqlLite");
-            if (string.IsNullOrEmpty(sqlPath))
-            {
-                sqlPath = "UZonMail\\uzon-mail.db";
-            }
-            string sqlLiteFilePath;
-            if (sqlPath.StartsWith("Data"))
-            {
-                // 说明是完整数据库路径
-                _sqliteConnectionString = sqlPath;
-                sqlLiteFilePath = sqlPath.Split('=').Last();
-            }
-            else
-            {
-                sqlLiteFilePath = Path.Join(path, sqlPath);
-                _sqliteConnectionString = $"Data Source={sqlLiteFilePath}";
-            }
-            if (!string.IsNullOrEmpty(sqlLiteFilePath))
-            {
-                var directory = Path.GetDirectoryName(sqlLiteFilePath);
-                if (!string.IsNullOrEmpty(directory)) Directory.CreateDirectory(directory);
-            }
-
-            // mysql
-            _mysqlConnectionConfig = new();
-            configuration.GetSection("Database:MySql").Bind(_mysqlConnectionConfig);
-
-            // 开启时，会自动创建表，会导致无法升级数据库
-            // 可以开启用于调试
-            //Database.EnsureCreated();
-        }
-        /// <summary>
-        /// The following configures EF to create a Sqlite database file in the
-        /// special "local" folder for your platform.
-        /// </summary>
-        /// <param name="options"></param>
-        protected override void OnConfiguring(DbContextOptionsBuilder options)
-        {
-            if (CanConnectToMysql())
-                options.UseMySql(_mysqlConnectionConfig.ConnectionString, new MySqlServerVersion(_mysqlConnectionConfig.MysqlVersion));
-            else
-                options.UseSqlite(_sqliteConnectionString);
-
-        }
-
-        private bool CanConnectToMysql()
-        {
-            if (string.IsNullOrEmpty(_mysqlConnectionConfig.Host)) return false;
-            try
-            {
-                var context = new DbContext(new DbContextOptionsBuilder().UseMySql(_mysqlConnectionConfig.ConnectionString, new MySqlServerVersion(_mysqlConnectionConfig.MysqlVersion)).Options);
-                return context.Database.CanConnect();
-            }
-            catch (Exception error)
-            {
-                _logger.LogError(error, error.Message);
-                _logger.LogInformation("无法连接到 mysql，启用 sqlLite");
-                return false;
-            }
         }
         #endregion
 

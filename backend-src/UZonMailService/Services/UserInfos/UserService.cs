@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Uamazing.Utils.Web.Service;
-using UZonMailService.Models.SqlLite;
-using UZonMailService.Models.SqlLite.UserInfos;
+using UZonMailService.Models.SQL;
+using UZonMailService.Models.SQL.UserInfos;
 using Uamazing.Utils.Extensions;
 using Uamazing.Utils.Web.Extensions;
 using UZonMailService.Utils.DotNETCore.Exceptions;

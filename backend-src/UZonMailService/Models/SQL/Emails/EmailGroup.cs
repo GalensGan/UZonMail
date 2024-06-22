@@ -1,8 +1,8 @@
-﻿using UZonMailService.Models.SqlLite.Base;
-using UZonMailService.Models.SqlLite.UserInfos;
+﻿using UZonMailService.Models.SQL.Base;
+using UZonMailService.Models.SQL.UserInfos;
 using Uamazing.Utils.Extensions;
 
-namespace UZonMailService.Models.SqlLite.Emails
+namespace UZonMailService.Models.SQL.Emails
 {
     /// <summary>
     /// 邮箱组

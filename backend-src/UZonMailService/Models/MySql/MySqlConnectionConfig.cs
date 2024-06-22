@@ -5,6 +5,7 @@
     /// </summary>
     public class MySqlConnectionConfig
     {
+        public bool Enable { get; set; } = false;
         public string Version { get; set; }
         public string Host { get; set; }
         public int Port { get; set; }

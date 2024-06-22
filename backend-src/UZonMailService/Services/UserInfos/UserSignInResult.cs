@@ -1,4 +1,4 @@
-﻿using UZonMailService.Models.SqlLite.UserInfos;
+﻿using UZonMailService.Models.SQL.UserInfos;
 
 namespace UZonMailService.Services.UserInfos
 {

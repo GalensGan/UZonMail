@@ -1,7 +1,7 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using System.Collections.Concurrent;
 using Uamazing.Utils.Web.Service;
-using UZonMailService.Models.SqlLite.Emails;
+using UZonMailService.Models.SQL.Emails;
 
 namespace UZonMailService.Services.EmailSending.OutboxPool
 {

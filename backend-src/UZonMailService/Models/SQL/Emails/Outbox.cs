@@ -1,9 +1,9 @@
-﻿using UZonMailService.Models.SqlLite.EmailSending;
+﻿using UZonMailService.Models.SQL.EmailSending;
 using UZonMailService.Services.EmailSending.OutboxPool;
 using Uamazing.Utils.Extensions;
-using UZonMailService.Models.SqlLite.Settings;
+using UZonMailService.Models.SQL.Settings;
 
-namespace UZonMailService.Models.SqlLite.Emails
+namespace UZonMailService.Models.SQL.Emails
 {
     /// <summary>
     /// 发件箱

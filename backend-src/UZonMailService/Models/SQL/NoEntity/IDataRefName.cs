@@ -1,4 +1,4 @@
-﻿namespace UZonMailService.Models.SqlLite.NoEntity
+﻿namespace UZonMailService.Models.SQL.NoEntity
 {
     /// <summary>
     /// 仅有 Name 的数据引用

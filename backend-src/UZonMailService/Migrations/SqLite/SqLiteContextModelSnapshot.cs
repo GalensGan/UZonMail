@@ -2,20 +2,18 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using UZonMailService.Models.SqlLite;
+using UZonMailService.Models.SQL;
+using UZonMailService.Models.SqLite;
 
 #nullable disable
 
 namespace UZonMailService.Migrations
 {
-    [DbContext(typeof(SqlContext))]
-    [Migration("20240617050459_addUserNameToOutbox")]
-    partial class addUserNameToOutbox
+    [DbContext(typeof(SqLiteContext))]
+    partial class SqLiteContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.4");
@@ -32,7 +30,7 @@ namespace UZonMailService.Migrations
 
                     b.HasIndex("TemplatesId");
 
-                    b.ToTable("EmailTemplateSendingGroup");
+                    b.ToTable("EmailTemplateSendingGroup", (string)null);
                 });
 
             modelBuilder.Entity("FileUsageSendingGroup", b =>
@@ -47,7 +45,7 @@ namespace UZonMailService.Migrations
 
                     b.HasIndex("SendingGroupId");
 
-                    b.ToTable("FileUsageSendingGroup");
+                    b.ToTable("FileUsageSendingGroup", (string)null);
                 });
 
             modelBuilder.Entity("FileUsageSendingItem", b =>
@@ -62,7 +60,7 @@ namespace UZonMailService.Migrations
 
                     b.HasIndex("SendingItemId");
 
-                    b.ToTable("FileUsageSendingItem");
+                    b.ToTable("FileUsageSendingItem", (string)null);
                 });
 
             modelBuilder.Entity("OutboxSendingGroup", b =>
@@ -77,7 +75,7 @@ namespace UZonMailService.Migrations
 
                     b.HasIndex("SendingGroupId");
 
-                    b.ToTable("OutboxSendingGroup");
+                    b.ToTable("OutboxSendingGroup", (string)null);
                 });
 
             modelBuilder.Entity("UZonMailService.Models.SqlLite.EmailSending.SendingGroup", b =>
@@ -95,7 +93,8 @@ namespace UZonMailService.Migrations
                     b.Property<string>("CcBoxes")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("CreateDate")
+                    b.Property<string>("CreateDate")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Data")
@@ -105,25 +104,28 @@ namespace UZonMailService.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<bool>("IsDeleted")
+                    b.Property<int>("IsDeleted")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsDistributed")
+                    b.Property<int>("IsDistributed")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsHidden")
+                    b.Property<int>("IsHidden")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("LastMessage")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("ScheduleDate")
+                    b.Property<string>("ScheduleDate")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("SendEndDate")
+                    b.Property<string>("SendEndDate")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("SendStartDate")
+                    b.Property<string>("SendStartDate")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<int>("SendingType")
@@ -150,7 +152,7 @@ namespace UZonMailService.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("SendingGroups");
+                    b.ToTable("SendingGroups", (string)null);
                 });
 
             modelBuilder.Entity("UZonMailService.Models.SqlLite.EmailSending.SendingItem", b =>
@@ -168,7 +170,11 @@ namespace UZonMailService.Migrations
                     b.Property<string>("Content")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("CreateDate")
+                    b.Property<string>("CreateDate")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Data")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("EmailTemplateId")
@@ -181,13 +187,13 @@ namespace UZonMailService.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<bool>("IsDeleted")
+                    b.Property<int>("IsDeleted")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsHidden")
+                    b.Property<int>("IsHidden")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsSendingBatch")
+                    b.Property<int>("IsSendingBatch")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("OutBoxId")
@@ -199,7 +205,8 @@ namespace UZonMailService.Migrations
                     b.Property<string>("ReceiptId")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("SendDate")
+                    b.Property<string>("SendDate")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("SendResult")
@@ -224,7 +231,7 @@ namespace UZonMailService.Migrations
 
                     b.HasIndex("SendingGroupId");
 
-                    b.ToTable("SendingItems");
+                    b.ToTable("SendingItems", (string)null);
                 });
 
             modelBuilder.Entity("UZonMailService.Models.SqlLite.Emails.EmailGroup", b =>
@@ -233,7 +240,8 @@ namespace UZonMailService.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime>("CreateDate")
+                    b.Property<string>("CreateDate")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Description")
@@ -242,17 +250,17 @@ namespace UZonMailService.Migrations
                     b.Property<string>("Icon")
                         .HasColumnType("TEXT");
 
-                    b.Property<bool>("IsDeleted")
+                    b.Property<int>("IsDeleted")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsHidden")
+                    b.Property<int>("IsHidden")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<long>("Order")
+                    b.Property<int>("Order")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("ParentId")
@@ -268,7 +276,7 @@ namespace UZonMailService.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("EmailGroups");
+                    b.ToTable("EmailGroups", (string)null);
                 });
 
             modelBuilder.Entity("UZonMailService.Models.SqlLite.Emails.Inbox", b =>
@@ -280,7 +288,8 @@ namespace UZonMailService.Migrations
                     b.Property<int>("BoxType")
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime>("CreateDate")
+                    b.Property<string>("CreateDate")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Description")
@@ -301,10 +310,10 @@ namespace UZonMailService.Migrations
                     b.Property<int>("EmailGroupId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsDeleted")
+                    b.Property<int>("IsDeleted")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsHidden")
+                    b.Property<int>("IsHidden")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("LinkCount")
@@ -323,7 +332,7 @@ namespace UZonMailService.Migrations
 
                     b.HasIndex("EmailGroupId");
 
-                    b.ToTable("Inboxes");
+                    b.ToTable("Inboxes", (string)null);
 
                     b.HasDiscriminator<string>("Discriminator").HasValue("Inbox");
 
@@ -340,19 +349,20 @@ namespace UZonMailService.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("CreateDate")
+                    b.Property<string>("CreateDate")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Description")
                         .HasColumnType("TEXT");
 
-                    b.Property<bool>("IsDefault")
+                    b.Property<int>("IsDefault")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsDeleted")
+                    b.Property<int>("IsDeleted")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsHidden")
+                    b.Property<int>("IsHidden")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("RootDir")
@@ -361,7 +371,7 @@ namespace UZonMailService.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("FileBuckets");
+                    b.ToTable("FileBuckets", (string)null);
                 });
 
             modelBuilder.Entity("UZonMailService.Models.SqlLite.Files.FileObject", b =>
@@ -370,19 +380,21 @@ namespace UZonMailService.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime>("CreateDate")
+                    b.Property<string>("CreateDate")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<int>("FileBucketId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsDeleted")
+                    b.Property<int>("IsDeleted")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsHidden")
+                    b.Property<int>("IsHidden")
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime>("LastModifyDate")
+                    b.Property<string>("LastModifyDate")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<int>("LinkCount")
@@ -396,23 +408,28 @@ namespace UZonMailService.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<long>("Size")
+                    b.Property<int>("Size")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
                     b.HasIndex("FileBucketId");
 
-                    b.ToTable("FileObjects");
+                    b.ToTable("FileObjects", (string)null);
                 });
 
-            modelBuilder.Entity("UZonMailService.Models.SqlLite.Files.FileUsage", b =>
+            modelBuilder.Entity("UZonMailService.Models.SqlLite.Files.FileReader", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime>("CreateDate")
+                    b.Property<string>("CreateDate")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ExpireDate")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("FileName")
@@ -422,13 +439,50 @@ namespace UZonMailService.Migrations
                     b.Property<int>("FileObjectId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsDeleted")
+                    b.Property<int>("IsDeleted")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsHidden")
+                    b.Property<int>("IsHidden")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsPublic")
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FileObjectId");
+
+                    b.ToTable("FileReaders", (string)null);
+                });
+
+            modelBuilder.Entity("UZonMailService.Models.SqlLite.Files.FileUsage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("CreateDate")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DisplayName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("FileObjectId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("IsHidden")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("IsPublic")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("OwnerUserId")
@@ -443,7 +497,7 @@ namespace UZonMailService.Migrations
 
                     b.HasIndex("OwnerUserId");
 
-                    b.ToTable("FileUsages");
+                    b.ToTable("FileUsages", (string)null);
                 });
 
             modelBuilder.Entity("UZonMailService.Models.SqlLite.Permission.PermissionCode", b =>
@@ -456,17 +510,18 @@ namespace UZonMailService.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("CreateDate")
+                    b.Property<string>("CreateDate")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<bool>("IsDeleted")
+                    b.Property<int>("IsDeleted")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsHidden")
+                    b.Property<int>("IsHidden")
                         .HasColumnType("INTEGER");
 
                     b.Property<int?>("RoleId")
@@ -476,7 +531,7 @@ namespace UZonMailService.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("PermissionCodes");
+                    b.ToTable("PermissionCodes", (string)null);
                 });
 
             modelBuilder.Entity("UZonMailService.Models.SqlLite.Permission.Role", b =>
@@ -485,13 +540,14 @@ namespace UZonMailService.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime>("CreateDate")
+                    b.Property<string>("CreateDate")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<bool>("IsDeleted")
+                    b.Property<int>("IsDeleted")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsHidden")
+                    b.Property<int>("IsHidden")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
@@ -500,7 +556,7 @@ namespace UZonMailService.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Roles");
+                    b.ToTable("Roles", (string)null);
                 });
 
             modelBuilder.Entity("UZonMailService.Models.SqlLite.Permission.RolePermissionCode", b =>
@@ -509,13 +565,14 @@ namespace UZonMailService.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime>("CreateDate")
+                    b.Property<string>("CreateDate")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<bool>("IsDeleted")
+                    b.Property<int>("IsDeleted")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsHidden")
+                    b.Property<int>("IsHidden")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("PermissionCodeId")
@@ -526,7 +583,7 @@ namespace UZonMailService.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("RolePermissionCodes");
+                    b.ToTable("RolePermissionCodes", (string)null);
                 });
 
             modelBuilder.Entity("UZonMailService.Models.SqlLite.Permission.UserRole", b =>
@@ -535,13 +592,14 @@ namespace UZonMailService.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime>("CreateDate")
+                    b.Property<string>("CreateDate")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<bool>("IsDeleted")
+                    b.Property<int>("IsDeleted")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsHidden")
+                    b.Property<int>("IsHidden")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("RoleId")
@@ -556,7 +614,7 @@ namespace UZonMailService.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserRoles");
+                    b.ToTable("UserRoles", (string)null);
                 });
 
             modelBuilder.Entity("UZonMailService.Models.SqlLite.Settings.SystemSetting", b =>
@@ -565,16 +623,17 @@ namespace UZonMailService.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime>("CreateDate")
+                    b.Property<string>("CreateDate")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<bool>("InitializedQuartz")
+                    b.Property<int>("InitializedQuartz")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsDeleted")
+                    b.Property<int>("IsDeleted")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsHidden")
+                    b.Property<int>("IsHidden")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
@@ -583,7 +642,7 @@ namespace UZonMailService.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("SystemSettings");
+                    b.ToTable("SystemSettings", (string)null);
                 });
 
             modelBuilder.Entity("UZonMailService.Models.SqlLite.Settings.UserProxy", b =>
@@ -592,22 +651,23 @@ namespace UZonMailService.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime>("CreateDate")
+                    b.Property<string>("CreateDate")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Description")
                         .HasColumnType("TEXT");
 
-                    b.Property<bool>("IsActive")
+                    b.Property<int>("IsActive")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsDeleted")
+                    b.Property<int>("IsDeleted")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsHidden")
+                    b.Property<int>("IsHidden")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsShared")
+                    b.Property<int>("IsShared")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("MatchRegex")
@@ -629,7 +689,7 @@ namespace UZonMailService.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserProxies");
+                    b.ToTable("UserProxies", (string)null);
                 });
 
             modelBuilder.Entity("UZonMailService.Models.SqlLite.Settings.UserSetting", b =>
@@ -638,13 +698,14 @@ namespace UZonMailService.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime>("CreateDate")
+                    b.Property<string>("CreateDate")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<bool>("IsDeleted")
+                    b.Property<int>("IsDeleted")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsHidden")
+                    b.Property<int>("IsHidden")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("MaxOutboxCooldownSecond")
@@ -664,7 +725,7 @@ namespace UZonMailService.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserSettings");
+                    b.ToTable("UserSettings", (string)null);
                 });
 
             modelBuilder.Entity("UZonMailService.Models.SqlLite.Templates.EmailTemplate", b =>
@@ -677,16 +738,17 @@ namespace UZonMailService.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("CreateDate")
+                    b.Property<string>("CreateDate")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Description")
                         .HasColumnType("TEXT");
 
-                    b.Property<bool>("IsDeleted")
+                    b.Property<int>("IsDeleted")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsHidden")
+                    b.Property<int>("IsHidden")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
@@ -701,7 +763,7 @@ namespace UZonMailService.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("EmailTemplates");
+                    b.ToTable("EmailTemplates", (string)null);
                 });
 
             modelBuilder.Entity("UZonMailService.Models.SqlLite.UserInfos.User", b =>
@@ -716,22 +778,23 @@ namespace UZonMailService.Migrations
                     b.Property<string>("ConnectionId")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("CreateDate")
+                    b.Property<string>("CreateDate")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<bool>("ForbiddenToLogin")
+                    b.Property<int>("ForbiddenToLogin")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsDeleted")
+                    b.Property<int>("IsDeleted")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsHidden")
+                    b.Property<int>("IsHidden")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsSuperAdmin")
+                    b.Property<int>("IsSuperAdmin")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsSystemUser")
+                    b.Property<int>("IsSystemUser")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Password")
@@ -752,14 +815,14 @@ namespace UZonMailService.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("UZonMailService.Models.SqlLite.Emails.Outbox", b =>
                 {
                     b.HasBaseType("UZonMailService.Models.SqlLite.Emails.Inbox");
 
-                    b.Property<bool>("EnableSSL")
+                    b.Property<int>("EnableSSL")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("MaxSendCountPerDay")
@@ -772,11 +835,17 @@ namespace UZonMailService.Migrations
                     b.Property<int>("ProxyId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("SentTotalToday")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("SmtpHost")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<int>("SmtpPort")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Status")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("UserName")
@@ -885,6 +954,17 @@ namespace UZonMailService.Migrations
                         .IsRequired();
 
                     b.Navigation("FileBucket");
+                });
+
+            modelBuilder.Entity("UZonMailService.Models.SqlLite.Files.FileReader", b =>
+                {
+                    b.HasOne("UZonMailService.Models.SqlLite.Files.FileObject", "FileObject")
+                        .WithMany()
+                        .HasForeignKey("FileObjectId")
+                        .OnDelete(DeleteBehavior.ClientNoAction)
+                        .IsRequired();
+
+                    b.Navigation("FileObject");
                 });
 
             modelBuilder.Entity("UZonMailService.Models.SqlLite.Files.FileUsage", b =>
