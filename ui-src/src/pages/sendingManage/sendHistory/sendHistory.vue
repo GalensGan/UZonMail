@@ -171,7 +171,6 @@ const { openSendDetailDialog, sendingHistoryContextItems } = useContextMenu()
 // 注册进度获取回调
 import { subscribeOne } from 'src/signalR/signalR'
 import { ISendingGroupProgressArg, SendingGroupProgressType, UzonMailClientMethods } from 'src/signalR/types'
-import { notifySuccess } from 'src/utils/dialog'
 // 进度变化
 function onSendingGroupProgressChanged (arg: ISendingGroupProgressArg) {
   const row = rows.value.find(r => r.id === arg.sendingGroupId)
@@ -182,7 +181,8 @@ function onSendingGroupProgressChanged (arg: ISendingGroupProgressArg) {
   if (arg.progressType === SendingGroupProgressType.end) {
     row.status = SendingGroupStatus.Finish
     row.progress = 1
-    notifySuccess(`邮件组 ${arg.sendingGroupId} 发送完成`)
+    // 不提示成功，因为全局进度条也在监听事件，由全局发出通知即可
+    // notifySuccess(`邮件组 ${arg.sendingGroupId} 发送完成`)
     return
   }
 

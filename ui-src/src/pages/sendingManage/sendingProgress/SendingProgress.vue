@@ -88,8 +88,8 @@ async function onEmailGroupSendingProgressChanged (progress: ISendingGroupProgre
   if (progress.sendingGroupId !== sendingGroupIdRef.value) return
   if (progress.progressType === SendingGroupProgressType.end) {
     onDialogCancel()
-
-    notifySuccess(`邮件组 ${progress.sendingGroupId} 发送完成`)
+    // 不提示成功，因为全局进度条也在监听事件，由全局发出通知即可
+    // notifySuccess(`邮件任务: ${progress.sendingGroupId} 发送完成`)
     return
   }
 

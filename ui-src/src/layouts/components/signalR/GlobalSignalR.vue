@@ -96,7 +96,7 @@ async function onSendingGroupProgressChanged (arg: ISendingGroupProgressArg) {
     // 移除
     sendingGroups.value.splice(index, 1)
 
-    notifySuccess(`邮件组 ${arg.sendingGroupId} 发送完成`)
+    notifySuccess(`邮件任务：${arg.sendingGroupId} 发送完成`)
     return
   }
 

@@ -10,7 +10,7 @@
           v-model:selected="selected">
           <template v-slot:top-left>
             <div class="row justify-start q-gutter-sm">
-              <CreateBtn tooltip="新增临时收件箱" @click="onNewTempInboxClick" v-if="showNewTempInboxBtn" />
+              <CreateBtn v-if="showNewTempInboxBtn" tooltip="新增临时收件箱" @click="onNewTempInboxClick" />
             </div>
           </template>
 
@@ -33,7 +33,7 @@
 </template>
 
 <script lang='ts' setup>
-import { IInbox, IOutbox, getBoxesCount, getBoxesData } from 'src/api/emailBox'
+import { IInbox, getInboxesCount, getInboxesData, getOutboxesCount, getOutboxesData } from 'src/api/emailBox'
 // props 定义
 const props = defineProps({
   emailBoxType: {
@@ -120,8 +120,12 @@ async function getRowsNumberCount (filterObj: TTableFilterObject) {
     const regex = new RegExp(filterObj.filter, 'i')
     return selected.value.filter(x => x.email.match(regex)).length
   }
+  if (props.emailBoxType === 0) {
+    const { data } = await getOutboxesCount(emailGroupRef.value.id, filterObj.filter)
+    return data
+  }
 
-  const { data } = await getBoxesCount(emailGroupRef.value.id, props.emailBoxType, filterObj.filter)
+  const { data } = await getInboxesCount(emailGroupRef.value.id, filterObj.filter)
   return data
 }
 async function onRequest (filterObj: TTableFilterObject, pagination: IRequestPagination) {
@@ -137,7 +141,12 @@ async function onRequest (filterObj: TTableFilterObject, pagination: IRequestPag
     return results.slice(pagination.skip, pagination.skip + pagination.limit)
   }
 
-  const { data } = await getBoxesData<IOutbox>(emailGroupRef.value.id, props.emailBoxType, filterObj.filter, pagination)
+  if (props.emailBoxType === 0) {
+    const { data } = await getOutboxesData(emailGroupRef.value.id, filterObj.filter, pagination)
+    return data
+  }
+
+  const { data } = await getInboxesData(emailGroupRef.value.id, filterObj.filter, pagination)
   return data
 }
 const { pagination, rows, filter, onTableRequest, loading, refreshTable, addNewRow } = useQTable({

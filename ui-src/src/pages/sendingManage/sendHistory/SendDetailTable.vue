@@ -165,15 +165,14 @@ function onSendingItemStatusChanged (arg: ISendingItemStatusChangedArg) {
 }
 subscribeOne(UzonMailClientMethods.sendingItemStatusChanged, onSendingItemStatusChanged)
 // 注册由件组的发送进度
-import { notifySuccess } from 'src/utils/dialog'
 function onSendingGroupProgressChanged (arg: ISendingGroupProgressArg) {
   // 更新总进度
   if (arg.sendingGroupId !== sendingGroupId.value) return
   if (arg.progressType === SendingGroupProgressType.end) {
     if (arg.sendingGroupId !== sendingGroupId.value) return
     sendingGroupProgressValue.value = -1
-
-    notifySuccess(`邮件组 ${arg.sendingGroupId} 发送完成`)
+    // 不提示成功，因为全局进度条也在监听事件，由全局发出通知即可
+    // notifySuccess(`邮件组 ${arg.sendingGroupId} 发送完成`)
     return
   }
   sendingGroupProgressValue.value = arg.current / arg.total
