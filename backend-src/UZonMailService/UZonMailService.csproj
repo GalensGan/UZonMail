@@ -45,6 +45,7 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Log4Net.AspNetCore" Version="8.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.2" />
     <PackageReference Include="Quartz.AspNetCore" Version="3.9.0" />
     <PackageReference Include="Quartz.Serialization.Json" Version="3.9.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
@@ -53,7 +54,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\SqlLite\EntityConfigs\Attributes\" />
+    <Folder Include="Models\SQL\EntityConfigs\Attributes\" />
     <Folder Include="Services\EmailSending\RemoteClient\" />
     <Folder Include="Utils\ASPNETCore\Service\" />
     <Folder Include="Utils\Extensions\" />

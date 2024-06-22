@@ -41,7 +41,7 @@ namespace UZonMailService.Services.HostedServices
             var appConfig = serviceProvider.GetRequiredService<IOptions<AppConfig>>();
             // 初始数据
             var initDb = new DatabaseInitializer(nv, context, appConfig.Value);
-            initDb.Init();
+            await initDb.Init();
         }
 
         /// <summary>
