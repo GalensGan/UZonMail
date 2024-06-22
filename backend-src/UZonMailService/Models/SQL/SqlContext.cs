@@ -44,9 +44,6 @@ namespace UZonMailService.Models.SQL
         public DbSet<EmailGroup> EmailGroups { get; set; }
         public DbSet<EmailTemplate> EmailTemplates { get; set; }
         public DbSet<Inbox> Inboxes { get; set; }
-        /// <summary>
-        /// 可以通过 Inbox 进行查找
-        /// </summary>
         public DbSet<Outbox> Outboxes { get; set; }
 
         public DbSet<SendingGroup> SendingGroups { get; set; }

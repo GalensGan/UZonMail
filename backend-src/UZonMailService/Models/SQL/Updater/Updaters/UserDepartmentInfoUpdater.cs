@@ -11,7 +11,7 @@ namespace UZonMailService.Models.SQL.Updater.Updaters
         /// <summary>
         /// 版本号
         /// </summary>
-        public Version Version => new(1, 0, 0, 0);
+        public Version Version => new(0, 7, 0, 0);
 
         /// <summary>
         /// 开始更新数据

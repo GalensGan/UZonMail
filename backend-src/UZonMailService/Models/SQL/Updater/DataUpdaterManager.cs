@@ -6,7 +6,7 @@ namespace UZonMailService.Models.SQL.Updater
 {
     public class DataUpdaterManager(SqlContext db)
     {
-        private readonly Version _currentVersion = new(1, 0, 0);
+        private readonly Version _currentVersion = new("0.7.0.0");
         private string _settingKey = "DataVersion";
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace UZonMailService.Models.SQL.Updater
                 versionSetting = new SystemSetting
                 {
                     Key = _settingKey,
-                    StringValue = "0.0.0..0"
+                    StringValue = "0.0.0.0"
                 };
                 db.SystemSettings.Add(versionSetting);
             }

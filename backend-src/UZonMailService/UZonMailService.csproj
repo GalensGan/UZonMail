@@ -54,6 +54,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Migrations\MySql\" />
+    <Folder Include="Migrations\SqLite\" />
     <Folder Include="Models\SQL\EntityConfigs\Attributes\" />
     <Folder Include="Services\EmailSending\RemoteClient\" />
     <Folder Include="Utils\ASPNETCore\Service\" />
@@ -74,12 +76,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Migrations\SqLite\20240610083907_init.cs">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Compile>
-    <Compile Update="Migrations\SqLite\20240617050459_addUserNameToOutbox.cs">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Compile>
     <Compile Update="Migrations\SqLite\SqLiteContextModelSnapshot.cs">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Compile>
