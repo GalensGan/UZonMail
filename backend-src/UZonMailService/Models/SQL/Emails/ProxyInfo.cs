@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Net;
 
-namespace UZonMailService.Models.SqlLite.Emails
+namespace UZonMailService.Models.SQL.Emails
 {
     /// <summary>
     /// 代理类

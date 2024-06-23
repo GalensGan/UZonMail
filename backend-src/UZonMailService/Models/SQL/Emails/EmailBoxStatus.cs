@@ -1,4 +1,4 @@
-﻿namespace UZonMailService.Models.SqlLite.Emails
+﻿namespace UZonMailService.Models.SQL.Emails
 {
     /// <summary>
     /// 邮箱状态

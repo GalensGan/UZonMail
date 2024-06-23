@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Uamazing.Utils.Web.Service;
-using UZonMailService.Models.SqlLite;
-using UZonMailService.Models.SqlLite.UserInfos;
+using UZonMailService.Models.SQL;
+using UZonMailService.Models.SQL.MultiTenant;
 using Uamazing.Utils.Extensions;
 using Uamazing.Utils.Web.Extensions;
 using UZonMailService.Utils.DotNETCore.Exceptions;
@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Claims;
+using UZonMailService.Services.Settings;
 
 namespace UZonMailService.Services.UserInfos
 {
@@ -130,16 +131,7 @@ namespace UZonMailService.Services.UserInfos
             {
                 Secret = appConfig.Value.TokenParams.Secret,
                 Expire = appConfig.Value.TokenParams.Expire
-            }, new Dictionary<string, string>()
-            {
-                { "userId",userInfo.Id.ToString()},
-                {"userName",userInfo.UserId },
-                { ClaimTypes.Role,userInfo.IsSuperAdmin?"admin":"user"},
-                // signalR 需要使用此处的 Name
-                { ClaimTypes.Name,userInfo.Id.ToString() },
-                // 参考:https://learn.microsoft.com/zh-cn/aspnet/core/signalr/groups?view=aspnetcore-8.0
-                { ClaimTypes.NameIdentifier,userInfo.Id.ToString() }
-            });
+            }, new TokenPayloads(userInfo));
             return token;
         }
 
@@ -199,7 +191,7 @@ namespace UZonMailService.Services.UserInfos
         /// <param name="oldPassword">这个值在前端通过 Sha256 加密过</param>
         /// <param name="newPassword">这个值在前端通过 Sha256 加密过</param>
         /// <returns></returns>
-        public async Task<bool> ChangeUserPassword(int userId, string oldPassword, string newPassword)
+        public async Task<bool> ChangeUserPassword(long userId, string oldPassword, string newPassword)
         {
             if (userId <= 0 || string.IsNullOrEmpty(oldPassword) || string.IsNullOrEmpty(newPassword))
             {

@@ -1,13 +1,13 @@
-﻿using UZonMailService.Models.SqlLite.Base;
+﻿using UZonMailService.Models.SQL.Base;
 
-namespace UZonMailService.Models.SqlLite.Files
+namespace UZonMailService.Models.SQL.Files
 {
     /// <summary>
     /// 文件类
     /// </summary>
     public class FileObject:SqlId
     {
-        public int FileBucketId { get; set; }
+        public long FileBucketId { get; set; }
         public FileBucket FileBucket { get; set; }
 
         /// <summary>

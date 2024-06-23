@@ -1,7 +1,7 @@
-﻿using UZonMailService.Models.SqlLite.Base;
-using UZonMailService.Models.SqlLite.UserInfos;
+﻿using UZonMailService.Models.SQL.Base;
+using UZonMailService.Models.SQL.MultiTenant;
 
-namespace UZonMailService.Models.SqlLite.Files
+namespace UZonMailService.Models.SQL.Files
 {
     /// <summary>
     /// 文件存储桶

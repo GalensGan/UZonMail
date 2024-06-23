@@ -2,8 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using Uamazing.Utils.Web.Extensions;
 using Uamazing.Utils.Web.ResponseModel;
-using UZonMailService.Models.SqlLite;
-using UZonMailService.Models.SqlLite.Settings;
+using UZonMailService.Models.SQL;
+using UZonMailService.Models.SQL.Settings;
 using UZonMailService.Services.Settings;
 
 namespace UZonMailService.Controllers.Settings
@@ -22,7 +22,7 @@ namespace UZonMailService.Controllers.Settings
         [HttpGet]
         public async Task<ResponseResult<UserSetting>> GetUserSettings()
         {
-            var userId = tokenService.GetIntUserId();
+            var userId = tokenService.GetUserDataId();
             UserSetting? userSetting = await db.UserSettings.OfType<UserSetting>().FirstOrDefaultAsync(x => x.UserId == userId);
             if (userSetting == null)
             {
@@ -44,7 +44,7 @@ namespace UZonMailService.Controllers.Settings
         [HttpPut]
         public async Task<ResponseResult<bool>> UpsertUserSetting([FromBody] UserSetting userSetting)
         {
-            var userId = tokenService.GetIntUserId();
+            var userId = tokenService.GetUserDataId();
             UserSetting? exist = await db.UserSettings.FirstOrDefaultAsync(x => x.UserId == userId);
             if (exist == null)
             {
@@ -58,8 +58,12 @@ namespace UZonMailService.Controllers.Settings
                 exist.MaxOutboxCooldownSecond = userSetting.MaxOutboxCooldownSecond;
                 exist.MinOutboxCooldownSecond = userSetting.MinOutboxCooldownSecond;
                 exist.MaxSendingBatchSize = userSetting.MaxSendingBatchSize;
+                exist.MinInboxCooldownHours = userSetting.MinInboxCooldownHours;
             }
             await db.SaveChangesAsync();
+
+            // 更新到缓存
+            await UserSettingsCache.UpdateUserSettings(exist);
 
             return true.ToSuccessResponse();
         }

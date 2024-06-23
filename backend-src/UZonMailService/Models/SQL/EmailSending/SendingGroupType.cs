@@ -1,4 +1,4 @@
-﻿namespace UZonMailService.Models.SqlLite.EmailSending
+﻿namespace UZonMailService.Models.SQL.EmailSending
 {
     /// <summary>
     /// 发件组的类型

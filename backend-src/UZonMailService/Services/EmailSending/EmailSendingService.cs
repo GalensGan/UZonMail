@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Uamazing.Utils.Web.Service;
-using UZonMailService.Models.SqlLite;
-using UZonMailService.Models.SqlLite.EmailSending;
+using UZonMailService.Models.SQL;
+using UZonMailService.Models.SQL.EmailSending;
 using UZonMailService.Services.EmailSending.Sender;
 using UZonMailService.Services.EmailSending.WaitList;
 

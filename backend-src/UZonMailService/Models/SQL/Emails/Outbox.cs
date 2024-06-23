@@ -1,20 +1,15 @@
-﻿using UZonMailService.Models.SqlLite.EmailSending;
+﻿using UZonMailService.Models.SQL.EmailSending;
 using UZonMailService.Services.EmailSending.OutboxPool;
 using Uamazing.Utils.Extensions;
-using UZonMailService.Models.SqlLite.Settings;
+using UZonMailService.Models.SQL.Settings;
 
-namespace UZonMailService.Models.SqlLite.Emails
+namespace UZonMailService.Models.SQL.Emails
 {
     /// <summary>
     /// 发件箱
     /// </summary>
-    public class Outbox : Inbox
+    public class Outbox : EmailBox
     {
-        public Outbox()
-        {
-            BoxType = EmailBoxType.Outbox;
-        }
-
         /// <summary>
         /// SMTP 服务器地址
         /// </summary>
@@ -45,7 +40,7 @@ namespace UZonMailService.Models.SqlLite.Emails
         /// <summary>
         /// 代理 Id
         /// </summary>
-        public int ProxyId { get; set; }
+        public long ProxyId { get; set; }
 
         /// <summary>
         /// 单日最大发送数量
@@ -70,7 +65,7 @@ namespace UZonMailService.Models.SqlLite.Emails
         /// <param name="userSetting"></param>
         /// <param name="groupId"></param>
         /// <returns></returns>
-        public OutboxEmailAddress ToOutboxEmailAddress(UserSetting userSetting, int groupId, List<string> smtpPasswordSecretKeys)
+        public OutboxEmailAddress ToOutboxEmailAddress(UserSetting userSetting, long groupId, List<string> smtpPasswordSecretKeys)
         {
             // 对密码进行解密
             var plainPassword = Password.DeAES(smtpPasswordSecretKeys[0], smtpPasswordSecretKeys[1]);

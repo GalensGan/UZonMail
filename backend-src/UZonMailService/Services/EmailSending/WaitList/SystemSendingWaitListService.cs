@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Concurrent;
 using Uamazing.Utils.Web.Service;
-using UZonMailService.Models.SqlLite;
-using UZonMailService.Models.SqlLite.EmailSending;
-using UZonMailService.Models.SqlLite.UserInfos;
+using UZonMailService.Models.SQL;
+using UZonMailService.Models.SQL.EmailSending;
+using UZonMailService.Models.SQL.MultiTenant;
 using UZonMailService.Services.EmailSending.OutboxPool;
 using UZonMailService.Services.EmailSending.Sender;
 using UZonMailService.Services.Settings;
@@ -32,7 +32,7 @@ namespace UZonMailService.Services.EmailSending.WaitList
         /// <param name="group"></param>
         /// <param name="sendingItemIds"></param>
         /// <returns></returns>
-        public async Task<bool> AddSendingGroup(SendingGroup group, List<int>? sendingItemIds = null)
+        public async Task<bool> AddSendingGroup(SendingGroup group, List<long>? sendingItemIds = null)
         {
             if (group == null)
                 return false;

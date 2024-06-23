@@ -1,6 +1,6 @@
-﻿using UZonMailService.Models.SqlLite.Base;
+﻿using UZonMailService.Models.SQL.Base;
 
-namespace UZonMailService.Models.SqlLite.Emails
+namespace UZonMailService.Models.SQL.Emails
 {
     /// <summary>
     /// 发件箱设置

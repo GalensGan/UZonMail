@@ -4,9 +4,9 @@ using Quartz;
 using Uamazing.Utils.Json;
 using Uamazing.Utils.Web.Service;
 using UZonMailService.Jobs;
-using UZonMailService.Models.SqlLite;
-using UZonMailService.Models.SqlLite.EmailSending;
-using UZonMailService.Models.SqlLite.Settings;
+using UZonMailService.Models.SQL;
+using UZonMailService.Models.SQL.EmailSending;
+using UZonMailService.Models.SQL.Settings;
 using UZonMailService.Services.EmailSending.Sender;
 using UZonMailService.Services.EmailSending.WaitList;
 using UZonMailService.Services.Settings;
@@ -20,8 +20,8 @@ namespace UZonMailService.Services.EmailSending
     public class SendingGroupService(SqlContext db
         , TokenService tokenService
         , SystemTasksService tasksService
-        , SystemSendingWaitListService waitList,
-        ISchedulerFactory schedulerFactory
+        , SystemSendingWaitListService waitList
+        , ISchedulerFactory schedulerFactory
         ) : IScopedService
     {
         /// <summary>
@@ -31,7 +31,7 @@ namespace UZonMailService.Services.EmailSending
         /// <returns></returns>
         public async Task<SendingGroup> CreateSendingGroup(SendingGroup sendingGroup)
         {
-            int userId = tokenService.GetIntUserId();
+            var userId = tokenService.GetUserDataId();
             // 格式化 Excel 数据
             sendingGroup.Data = await FormatExcelData(sendingGroup.Data, userId);
 
@@ -67,17 +67,17 @@ namespace UZonMailService.Services.EmailSending
                 sendingGroup.UserId = userId;
 
                 ctx.SendingGroups.Add(sendingGroup);
+                // 保存 group，从而获取 Id
                 await ctx.SaveChangesAsync();
 
                 // 获取用户设置
-                var userSettings = await UserSettingsFactory.GetUserSettings(ctx, sendingGroup.UserId);
+                var userSettings = await UserSettingsCache.GetUserSettings(ctx, sendingGroup.UserId);
 
                 // 将数据组装成 SendingItem 保存
                 // 要确保数据已经通过验证
-                var builder = new SendingItemsBuilder(db, sendingGroup, userSettings);
-                List<SendingItem> items = await builder.Build();
+                var builder = new SendingItemsBuilder(db, sendingGroup, userSettings, tokenService);
+                List<SendingItem> items = await builder.GenerateAndSave();
 
-                ctx.SendingItems.AddRange(items);
                 // 更新发件数量
                 sendingGroup.TotalCount = items.Count;
 
@@ -101,7 +101,7 @@ namespace UZonMailService.Services.EmailSending
         /// <param name="data"></param>
         /// <param name="userId"></param>
         /// <returns></returns>
-        private async Task<JArray?> FormatExcelData(JArray? data, int userId)
+        private async Task<JArray?> FormatExcelData(JArray? data, long userId)
         {
             if (data == null || data.Count == 0)
             {
@@ -109,11 +109,11 @@ namespace UZonMailService.Services.EmailSending
             }
 
             // 获取发件箱,只能使用自己名下的发件箱
-            var outboxEmails = data.Select(x => x.SelectTokenOrDefault<string>("outbox", "")).Where(x => !string.IsNullOrEmpty(x)).ToList();
+            var outboxEmails = data.Select(x => x.SelectTokenOrDefault("outbox", "")).Where(x => !string.IsNullOrEmpty(x)).ToList();
             var outboxes = await db.Outboxes.Where(x => x.UserId == userId && outboxEmails.Contains(x.Email)).ToListAsync();
 
-            var templateIds = data.Select(x => x.SelectTokenOrDefault<int>("templateId", 0)).Where(x => x > 0).ToList();
-            var templateNames = data.Select(x => x.SelectTokenOrDefault<string>("templateName", "")).Where(x => !string.IsNullOrEmpty(x)).ToList();
+            var templateIds = data.Select(x => x.SelectTokenOrDefault("templateId", 0L)).Where(x => x > 0).ToList();
+            var templateNames = data.Select(x => x.SelectTokenOrDefault("templateName", "")).Where(x => !string.IsNullOrEmpty(x)).ToList();
             var templates = await db.EmailTemplates.Where(x => x.UserId == userId && (templateIds.Contains(x.Id) || templateNames.Contains(x.Name))).ToListAsync();
 
             // 重新更新数据
@@ -160,7 +160,7 @@ namespace UZonMailService.Services.EmailSending
         /// <param name="sendingGroup"></param>
         /// <param name="sendItemIds">若有值，则只会发送这部分邮件</param>
         /// <returns></returns>
-        public async Task SendNow(SendingGroup sendingGroup, List<int>? sendItemIds = null)
+        public async Task SendNow(SendingGroup sendingGroup, List<long>? sendItemIds = null)
         {
             // 添加到发件列表
             await waitList.AddSendingGroup(sendingGroup, sendItemIds);

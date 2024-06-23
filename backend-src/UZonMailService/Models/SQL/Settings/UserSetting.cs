@@ -1,6 +1,6 @@
-﻿using UZonMailService.Models.SqlLite.Base;
+﻿using UZonMailService.Models.SQL.Base;
 
-namespace UZonMailService.Models.SqlLite.Settings
+namespace UZonMailService.Models.SQL.Settings
 {
     /// <summary>
     /// 用户设置
@@ -10,7 +10,7 @@ namespace UZonMailService.Models.SqlLite.Settings
         /// <summary>
         /// 用户 id
         /// </summary>
-        public int UserId { get; set; }
+        public long UserId { get; set; }
 
         /// <summary>
         /// 每日每个发件箱最大发送次数
@@ -32,6 +32,11 @@ namespace UZonMailService.Models.SqlLite.Settings
         /// 最大批量发件数
         /// </summary>
         public int MaxSendingBatchSize { get; set; } = 20;
+
+        /// <summary>
+        /// 收件箱最小收件间隔时间，单位小时
+        /// </summary>
+        public int MinInboxCooldownHours { get; set; }
 
         /// <summary>
         /// 获取冷却时间

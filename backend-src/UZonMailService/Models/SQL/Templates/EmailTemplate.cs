@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-using UZonMailService.Models.SqlLite.Base;
-using UZonMailService.Models.SqlLite.EmailSending;
+using UZonMailService.Models.SQL.Base;
+using UZonMailService.Models.SQL.EmailSending;
 
-namespace UZonMailService.Models.SqlLite.Templates
+namespace UZonMailService.Models.SQL.Templates
 {
     /// <summary>
     /// 邮箱模板
@@ -12,7 +12,7 @@ namespace UZonMailService.Models.SqlLite.Templates
         /// <summary>
         /// 用户 id
         /// </summary>
-        public int UserId { get; set; }
+        public long UserId { get; set; }
 
         /// <summary>
         /// 模板名称

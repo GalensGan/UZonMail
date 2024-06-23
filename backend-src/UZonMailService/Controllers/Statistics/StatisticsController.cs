@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using Uamazing.Utils.Web.Extensions;
 using Uamazing.Utils.Web.ResponseModel;
 using UZonMailService.Controllers.Statistics.Model;
-using UZonMailService.Models.SqlLite;
-using UZonMailService.Models.SqlLite.Emails;
-using UZonMailService.Models.SqlLite.EmailSending;
+using UZonMailService.Models.SQL;
+using UZonMailService.Models.SQL.Emails;
+using UZonMailService.Models.SQL.EmailSending;
 using UZonMailService.Services.Settings;
 
 namespace UZonMailService.Controllers.Statistics
@@ -19,7 +19,7 @@ namespace UZonMailService.Controllers.Statistics
         [HttpGet("outbox")]
         public async Task<ResponseResult<List<EmailCount>>> GetOutboxEmailCountInfo()
         {
-            int userId = tokenService.GetIntUserId();
+            var userId = tokenService.GetUserDataId();
             var emailCounts = await db.Outboxes.OfType<Outbox>()
                 .Where(x => x.UserId == userId)
                 .Where(x => !x.IsDeleted)
@@ -41,9 +41,8 @@ namespace UZonMailService.Controllers.Statistics
         [HttpGet("inbox")]
         public async Task<ResponseResult<List<EmailCount>>> GetInboxesEmailCountInfo()
         {
-            int userId = tokenService.GetIntUserId();
+            var userId = tokenService.GetUserDataId();
             var emailCounts = await db.Inboxes
-                .Where(x => x.BoxType == EmailBoxType.Inbox)
                 .Where(x => x.UserId == userId)
                 .Where(x => !x.IsDeleted)
                 .GroupBy(x => x.Domain)
@@ -63,7 +62,7 @@ namespace UZonMailService.Controllers.Statistics
         [HttpGet("monthly-sending")]
         public async Task<ResponseResult<List<MonthlySendingInfo>>> GetMonthlySendingCountInfo()
         {
-            int userId = tokenService.GetIntUserId();
+            var userId = tokenService.GetUserDataId();
             var monthlySendingInfos = await db.SendingItems.OfType<SendingItem>()
                 .Where(x => x.UserId == userId)
                 .Where(x => !x.IsDeleted)

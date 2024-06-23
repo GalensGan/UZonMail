@@ -1,4 +1,4 @@
-﻿using UZonMailService.Models.SqlLite.EmailSending;
+﻿using UZonMailService.Models.SQL.EmailSending;
 
 namespace UZonMailService.SignalRHubs.SendEmail
 {
@@ -13,7 +13,7 @@ namespace UZonMailService.SignalRHubs.SendEmail
         }
 
         public DateTime StartDate { get; set; }
-        public int SendingGroupId { get; set; }
+        public long SendingGroupId { get; set; }
         public int Total { get; set; }
         public int Success { get; set; }
         public string Message { get; set;}

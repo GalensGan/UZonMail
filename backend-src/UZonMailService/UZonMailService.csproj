@@ -42,18 +42,22 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.4" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Log4Net.AspNetCore" Version="8.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.2" />
     <PackageReference Include="Quartz.AspNetCore" Version="3.9.0" />
     <PackageReference Include="Quartz.Serialization.Json" Version="3.9.0" />
+    <PackageReference Include="StackExchange.Redis" Version="2.7.33" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.5.1" />
     <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Migrations\MySql\" />
+    <Folder Include="Migrations\SqLite\" />
     <Folder Include="Models\SQL\EntityConfigs\Attributes\" />
     <Folder Include="Services\EmailSending\RemoteClient\" />
     <Folder Include="Utils\ASPNETCore\Service\" />
@@ -74,13 +78,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Migrations\20240610083907_init.cs">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Compile>
-    <Compile Update="Migrations\20240617050459_addUserNameToOutbox.cs">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Compile>
-    <Compile Update="Migrations\SqlContextModelSnapshot.cs">
+    <Compile Update="Migrations\SqLite\SqLiteContextModelSnapshot.cs">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Compile>
   </ItemGroup>

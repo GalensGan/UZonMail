@@ -1,23 +1,23 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Collections.Concurrent;
 using System.Linq;
-using UZonMailService.Models.SqlLite;
-using UZonMailService.Models.SqlLite.EmailSending;
-using UZonMailService.Models.SqlLite.Templates;
+using UZonMailService.Models.SQL;
+using UZonMailService.Models.SQL.EmailSending;
+using UZonMailService.Models.SQL.Templates;
 using UZonMailService.Services.EmailSending.OutboxPool;
 using UZonMailService.Services.EmailSending.Sender;
 using UZonMailService.Services.Settings;
 using Uamazing.Utils.Json;
 using Newtonsoft.Json.Linq;
 using UZonMailService.SignalRHubs.SendEmail;
-using UZonMailService.Models.SqlLite.Settings;
-using UZonMailService.Models.SqlLite.Emails;
+using UZonMailService.Models.SQL.Settings;
+using UZonMailService.Models.SQL.Emails;
 using Uamazing.Utils.Web.Service;
 using Microsoft.AspNetCore.SignalR;
 using UZonMailService.SignalRHubs;
 using UZonMailService.SignalRHubs.Extensions;
 using System.Threading.Tasks;
-using UZonMailService.Models.SqlLite.UserInfos;
+using UZonMailService.Models.SQL.MultiTenant;
 using UZonMailService.Utils.Database;
 
 namespace UZonMailService.Services.EmailSending.WaitList
@@ -82,7 +82,7 @@ namespace UZonMailService.Services.EmailSending.WaitList
         /// <summary>
         /// 组 id
         /// </summary>
-        public int GroupId => sendingGroup.Id;
+        public long GroupId => sendingGroup.Id;
 
         /// <summary>
         /// 是否暂停
@@ -152,7 +152,7 @@ namespace UZonMailService.Services.EmailSending.WaitList
         }
 
         // 将新的发件箱添加到发件池中,自动去重了
-        private async Task AddOutboxToPool(List<int> outBoxIds)
+        private async Task AddOutboxToPool(List<long> outBoxIds)
         {
             if (outBoxIds.Count == 0) return;
 
@@ -160,7 +160,7 @@ namespace UZonMailService.Services.EmailSending.WaitList
             var newBoxIds = outBoxIds.Except(existOutboxes.Select(x => x.Id)).ToList();
             if (newBoxIds.Count > 0)
             {
-                var setting = await UserSettingsFactory.GetUserSettings(Db, sendingGroup.UserId);
+                var setting = await UserSettingsCache.GetUserSettings(Db, sendingGroup.UserId);
                 var outboxes = await Db.Outboxes.Where(x => outBoxIds.Contains(x.Id)).ToListAsync();
                 foreach (var outbox in outboxes)
                 {
@@ -181,7 +181,7 @@ namespace UZonMailService.Services.EmailSending.WaitList
         /// 有可能会被多次调用
         /// </summary>
         /// <returns></returns>
-        public async Task<bool> InitSendingItems(List<int>? sendingItemIds)
+        public async Task<bool> InitSendingItems(List<long>? sendingItemIds)
         {
             // 获取待发件
             List<SendingItem> toSendingItems;
@@ -204,7 +204,7 @@ namespace UZonMailService.Services.EmailSending.WaitList
             if (toSendingItems.Count == 0) return false;
 
             // 更新待发件列表中的发件箱
-            List<int> outboxIdsFromSendingItems = toSendingItems.Select(x => x.OutBoxId).Where(x => x > 0).ToList();
+            List<long> outboxIdsFromSendingItems = toSendingItems.Select(x => x.OutBoxId).Where(x => x > 0).ToList();
             await AddOutboxToPool(outboxIdsFromSendingItems);
 
             // 生成发件列表
@@ -250,7 +250,7 @@ namespace UZonMailService.Services.EmailSending.WaitList
         private async Task<List<EmailTemplate>> PullEmailTemplates()
         {
             var sharedTemplateIds = sendingGroup.Templates?.Select(x => x.Id).ToList() ?? [];
-            List<int> privateTemplateIds = [];
+            List<long> privateTemplateIds = [];
             // 从数据中获取模板
             if (sendingGroup.Data != null && sendingGroup.Data.Count > 0)
             {
@@ -262,7 +262,7 @@ namespace UZonMailService.Services.EmailSending.WaitList
                 }
             }
 
-            var templateIds = new List<int>();
+            var templateIds = new List<long>();
             templateIds.AddRange(sharedTemplateIds);
             templateIds.AddRange(privateTemplateIds);
             templateIds = templateIds.Distinct().ToList();
@@ -394,6 +394,11 @@ namespace UZonMailService.Services.EmailSending.WaitList
             OutboxEmailAddress? outboxEmailAddress = outboxesPool.GetOutbox(sendingGroup.UserId, sendingGroup.Id, sendItem.SendingItem.OutBoxId, out int status);
             if (status == 0)
             {
+                // 更新邮件状态
+                await Db.SendingItems.UpdateAsync(x => x.Id == sendItem.SendingItem.Id, x => x.SetProperty(y => y.Status, SendingItemStatus.Failed)
+                    .SetProperty(y => y.SendDate, DateTime.Now)
+                    .SetProperty(y => y.SendResult, "未匹配到发件箱")
+                );
                 // 说明未匹配到发件箱，需要将当前发件移除
                 await EmailItemSendCompleted(false, "未匹配到发件箱");
                 return null;
@@ -403,6 +408,20 @@ namespace UZonMailService.Services.EmailSending.WaitList
             {
                 // 重新放回去
                 _sendItemsQueue.Enqueue(sendItem);
+                return null;
+            }
+
+            // 判断收件箱是否牌冷却中
+            // 从数据库中判断
+            var (isCooling,message) = await IsInboxICooling(sendItem.Inboxes.ConvertAll(x => x.Id));
+            if (isCooling)
+            {
+                // 更新邮件状态
+                await Db.SendingItems.UpdateAsync(x => x.Id == sendItem.SendingItem.Id, x => x.SetProperty(y=>y.Status,SendingItemStatus.Failed)
+                    .SetProperty(y=>y.SendDate,DateTime.Now)
+                    .SetProperty(y=>y.SendResult, message)
+                );
+                await EmailItemSendCompleted(false, message);
                 return null;
             }
 
@@ -431,13 +450,43 @@ namespace UZonMailService.Services.EmailSending.WaitList
             return sendItem;
         }
 
+        private async Task<Tuple<bool,string>> IsInboxICooling(List<long> inboxIds)
+        {
+            // 获取收件箱信息
+            var inboxes = await Db.Inboxes.Where(x => inboxIds.Contains(x.Id))
+                .ToListAsync();
+            if(inboxes.Count==0) return Tuple.Create(false, "");
+
+            // 自身有冷却设置
+            var inboxesWithSelfCooling = inboxes.Where(x => x.MinInboxCooldownHours >= 0).ToList();
+            var coolingInbox = inboxesWithSelfCooling.FirstOrDefault(x => x.LastSuccessDeliveryDate.AddHours(x.MinInboxCooldownHours) > DateTime.Now);
+            if (coolingInbox != null)
+            {
+                return Tuple.Create(true, $"收件箱 {coolingInbox.Email} 正在冷却中");
+            }
+
+            // 从缓存中读取设置数据
+            var setting = await UserSettingsCache.GetUserSettings(Db, sendingGroup.UserId);
+            if(setting.MinInboxCooldownHours<=0)return Tuple.Create(false, "");
+
+            var inboxesWhithGlobalCooling = inboxes.Where(x => x.MinInboxCooldownHours < 0).ToList();
+            coolingInbox = inboxesWhithGlobalCooling.FirstOrDefault(x => x.LastSuccessDeliveryDate.AddHours(setting.MinInboxCooldownHours) > DateTime.Now);
+            if (coolingInbox != null)
+            {
+                return Tuple.Create(true, $"收件箱 {coolingInbox.Email} 正在冷却中");
+            }
+
+            // 从数据库中判断
+            return Tuple.Create(false, "");
+        }
+
         /// <summary>
         /// 匹配代理
         /// </summary>
         /// <param name="outbox"></param>
         /// <param name="proxyId"></param>
         /// <returns></returns>
-        private ProxyInfo? GetMatchedProxy(OutboxEmailAddress outbox, int proxyId = 0)
+        private ProxyInfo? GetMatchedProxy(OutboxEmailAddress outbox, long proxyId = 0)
         {
             if (proxyId == 0) proxyId = outbox.ProxyId;
 
