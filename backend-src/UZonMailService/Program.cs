@@ -15,6 +15,7 @@ using UZonMailService.Utils.ASPNETCore.Filters;
 using Uamazing.Utils.Helpers;
 using UZonMailService.Middlewares;
 using Microsoft.AspNetCore.HttpLogging;
+using UZonMailService.Cache;
 
 var appOptions = new WebApplicationOptions
 {
@@ -85,9 +86,12 @@ services.SetupSlugifyCaseRoute();
 // 绑定配置
 services.Configure<AppConfig>(builder.Configuration);
 // 注入数据库
-services.UseSql();
+services.AddSqlContext();
 // 注入 liteDB
 //services.AddLiteDB();
+// 添加数据缓存
+services.AddCache();
+
 // 添加 HttpContextAccessor，以供 service 获取当前请求的用户信息
 services.AddHttpContextAccessor();
 // 批量注册服务

@@ -20,8 +20,8 @@ namespace UZonMailService.Services.EmailSending
     public class SendingGroupService(SqlContext db
         , TokenService tokenService
         , SystemTasksService tasksService
-        , SystemSendingWaitListService waitList,
-        ISchedulerFactory schedulerFactory
+        , SystemSendingWaitListService waitList
+        , ISchedulerFactory schedulerFactory
         ) : IScopedService
     {
         /// <summary>
@@ -67,17 +67,17 @@ namespace UZonMailService.Services.EmailSending
                 sendingGroup.UserId = userId;
 
                 ctx.SendingGroups.Add(sendingGroup);
+                // 保存 group，从而获取 Id
                 await ctx.SaveChangesAsync();
 
                 // 获取用户设置
-                var userSettings = await UserSettingsFactory.GetUserSettings(ctx, sendingGroup.UserId);
+                var userSettings = await UserSettingsCache.GetUserSettings(ctx, sendingGroup.UserId);
 
                 // 将数据组装成 SendingItem 保存
                 // 要确保数据已经通过验证
-                var builder = new SendingItemsBuilder(db, sendingGroup, userSettings);
-                List<SendingItem> items = await builder.Build();
+                var builder = new SendingItemsBuilder(db, sendingGroup, userSettings, tokenService);
+                List<SendingItem> items = await builder.GenerateAndSave();
 
-                ctx.SendingItems.AddRange(items);
                 // 更新发件数量
                 sendingGroup.TotalCount = items.Count;
 

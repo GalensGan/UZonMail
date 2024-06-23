@@ -5,7 +5,7 @@ namespace UZonMailService.Models.SQL
 {
     public static class UseSqlExtension
     {
-        public static IServiceCollection? UseSql(this IServiceCollection? services)
+        public static IServiceCollection? AddSqlContext(this IServiceCollection? services)
         {
             if(services == null) return null;
 

@@ -58,8 +58,12 @@ namespace UZonMailService.Controllers.Settings
                 exist.MaxOutboxCooldownSecond = userSetting.MaxOutboxCooldownSecond;
                 exist.MinOutboxCooldownSecond = userSetting.MinOutboxCooldownSecond;
                 exist.MaxSendingBatchSize = userSetting.MaxSendingBatchSize;
+                exist.MinInboxCooldownHours = userSetting.MinInboxCooldownHours;
             }
             await db.SaveChangesAsync();
+
+            // 更新到缓存
+            await UserSettingsCache.UpdateUserSettings(exist);
 
             return true.ToSuccessResponse();
         }

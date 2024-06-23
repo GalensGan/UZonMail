@@ -34,6 +34,11 @@ namespace UZonMailService.Models.SQL.Settings
         public int MaxSendingBatchSize { get; set; } = 20;
 
         /// <summary>
+        /// 收件箱最小收件间隔时间，单位小时
+        /// </summary>
+        public int MinInboxCooldownHours { get; set; }
+
+        /// <summary>
         /// 获取冷却时间
         /// 随机
         /// </summary>

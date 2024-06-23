@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Claims;
+using UZonMailService.Services.Settings;
 
 namespace UZonMailService.Services.UserInfos
 {
@@ -130,16 +131,7 @@ namespace UZonMailService.Services.UserInfos
             {
                 Secret = appConfig.Value.TokenParams.Secret,
                 Expire = appConfig.Value.TokenParams.Expire
-            }, new Dictionary<string, string>()
-            {
-                { "userId",userInfo.Id.ToString()},
-                {"userName",userInfo.UserId },
-                { ClaimTypes.Role,userInfo.IsSuperAdmin?"admin":"user"},
-                // signalR 需要使用此处的 Name
-                { ClaimTypes.Name,userInfo.Id.ToString() },
-                // 参考:https://learn.microsoft.com/zh-cn/aspnet/core/signalr/groups?view=aspnetcore-8.0
-                { ClaimTypes.NameIdentifier,userInfo.Id.ToString() }
-            });
+            }, new TokenPayloads(userInfo));
             return token;
         }
 

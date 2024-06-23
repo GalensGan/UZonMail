@@ -1,14 +1,19 @@
-﻿using UZonMailService.Models.SQL.Base;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.ComponentModel.DataAnnotations.Schema;
+using UZonMailService.Models.SQL.Base;
+using UZonMailService.Models.SQL.EmailSending;
 
 namespace UZonMailService.Models.SQL.Emails
 {
     /// <summary>
     /// EmailBox 基类
     /// </summary>
+    [Index(nameof(Email), IsUnique = true)]
     public class EmailBox : SqlId
     {
         /// <summary>
-        /// 邮件组 id
+        /// 邮件组 Id
         /// </summary>
         public long EmailGroupId { get; set; }
 
@@ -54,12 +59,6 @@ namespace UZonMailService.Models.SQL.Emails
         /// 备注
         /// </summary>
         public string? Remark { get; set; }
-
-        /// <summary>
-        /// 类型
-        /// 由于 inbox 和 outbox 位于同一张表，所以需要区分
-        /// </summary>
-        public EmailBoxType BoxType { get; set; }
 
         /// <summary>
         /// 关联数

@@ -5,6 +5,7 @@ using Uamazing.Utils.Web.Service;
 using UZonMailService.Config;
 using Uamazing.Utils.Web.Token;
 using Uamazing.Utils.Json;
+using Newtonsoft.Json.Linq;
 
 namespace UZonMailService.Services.Settings
 {
@@ -49,6 +50,17 @@ namespace UZonMailService.Services.Settings
             var userId = appConfig.Value.TokenParams.GetTokenPayloads(token).SelectTokenOrDefault("userId", "");
             if(long.TryParse(userId, out long intUserId)) return intUserId;
             return 0L;
+        }
+
+        /// <summary>
+        /// 获取 token 中的数据
+        /// </summary>
+        /// <returns></returns>
+        public TokenPayloads GetTokenPayloads()
+        {
+            var token = GetToken();
+            var paylods = appConfig.Value.TokenParams.GetTokenPayloads(token);
+            return new TokenPayloads(paylods);
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Xml.Linq;
 using Uamazing.Utils.Json;
 using UZonMailService.Models.SQL.Files;
 using UZonMailService.Models.SQL.Settings;
+using UZonMailService.Services.Settings;
 
 namespace UZonMailService.Models.SQL.EmailSending
 {
@@ -14,20 +15,80 @@ namespace UZonMailService.Models.SQL.EmailSending
     /// </summary>
     /// <param name="group"></param>
     /// <param name="userSetting"></param>
-    public class SendingItemsBuilder(SqlContext db, SendingGroup group, UserSetting userSetting)
+    public class SendingItemsBuilder(SqlContext db, SendingGroup group, UserSetting userSetting,TokenService tokenService)
     {
         /// <summary>
         /// 批量发件时的大小
         /// </summary>
         private int _batchSize = userSetting.MaxSendingBatchSize;
 
-        public async Task<List<SendingItem>> Build()
+        /// <summary>
+        /// 生成并保存
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<SendingItem>> GenerateAndSave()
         {
             // 获取收件箱
             List<EmailAddress> allInboxes = GetAllInboxes();
 
-            // 根据收件箱生成发件项
-            return await GenerateSendingItems(allInboxes);
+            // 生成发件项与收件箱对应关系
+            var sendingIitemes = await GenerateSendingItems(allInboxes);
+            // 保存到数据库中
+            db.SendingItems.AddRange(sendingIitemes);
+            await db.SaveChangesAsync();
+
+            var tokenPayloads = tokenService.GetTokenPayloads();
+            // 保存关系
+            var sendingItemInboxRelations = new List<SendingItemInbox>();
+            foreach (var sendingItem in sendingIitemes)
+            {
+                // 添加组织 id
+                sendingItem.OrganizationId = tokenPayloads.OrganizationId;
+
+                var temps = new List<SendingItemInbox>();
+                sendingItem.Inboxes?.ForEach(inbox =>
+                    {
+                        var sendingItemInbox = new SendingItemInbox()
+                        {
+                            SendingItemId = sendingItem.Id,
+                            InboxId = inbox.Id,
+                            ToEmail = inbox.Email,
+                            Role = InboxRole.Recipient
+                        };
+                        temps.Add(sendingItemInbox);
+                    });
+
+                sendingItem.CC?.ForEach(inbox =>
+                {
+                    var sendingItemInbox = new SendingItemInbox()
+                    {
+                        SendingItemId = sendingItem.Id,
+                        InboxId = inbox.Id,
+                        ToEmail = inbox.Email,
+                        Role = InboxRole.CC
+                    };
+                    temps.Add(sendingItemInbox);
+                });
+
+                sendingItem.BCC?.ForEach(inbox =>
+                {
+                    var sendingItemInbox = new SendingItemInbox()
+                    {
+                        SendingItemId = sendingItem.Id,
+                        InboxId = inbox.Id,
+                        ToEmail = inbox.Email,
+                        Role = InboxRole.BCC
+                    };
+                    temps.Add(sendingItemInbox);
+                });
+
+                // 更新搜索关键字
+                sendingItem.ToEmails = string.Join(",", temps.Select(x => x.ToEmail));
+                sendingItemInboxRelations.AddRange(temps);
+            }
+            db.SendingItemInboxes.AddRange(sendingItemInboxRelations);
+
+            return sendingIitemes;
         }
 
         /// <summary>
@@ -215,7 +276,7 @@ namespace UZonMailService.Models.SQL.EmailSending
 
                 // 添加附件
                 // 覆盖正文中的附件
-                if(row.AttachmentNames != null && row.AttachmentNames.Count > 0)
+                if (row.AttachmentNames != null && row.AttachmentNames.Count > 0)
                 {
                     var fileUsagesTemp = fileUsages.FindAll(x => row.AttachmentNames.Contains(x.DisplayName));
                     sendingItem.Attachments = fileUsagesTemp;

@@ -10,11 +10,6 @@ namespace UZonMailService.Models.SQL.Emails
     /// </summary>
     public class Outbox : EmailBox
     {
-        public Outbox()
-        {
-            BoxType = EmailBoxType.Outbox;
-        }
-
         /// <summary>
         /// SMTP 服务器地址
         /// </summary>

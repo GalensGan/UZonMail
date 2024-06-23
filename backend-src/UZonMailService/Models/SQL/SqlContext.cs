@@ -48,6 +48,7 @@ namespace UZonMailService.Models.SQL
 
         public DbSet<SendingGroup> SendingGroups { get; set; }
         public DbSet<SendingItem> SendingItems { get; set; }
+        public DbSet<SendingItemInbox> SendingItemInboxes { get; set; }
 
         public DbSet<UserProxy> UserProxies { get; set; }
         public DbSet<UserSetting> UserSettings { get; set; }

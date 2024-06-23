@@ -21,7 +21,6 @@ namespace Uamazing.Utils.Web.Token
         /// <returns></returns>
         public static string CreateToken(this TokenParams tokenParam, Dictionary<string, string> payload)
         {
-
             // 定义用户信息
             var claims = new List<Claim>();
             if (payload != null)

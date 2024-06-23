@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using UZonMailService.Models.SqLite;
 
@@ -10,9 +11,11 @@ using UZonMailService.Models.SqLite;
 namespace UZonMailService.Migrations.SqLite
 {
     [DbContext(typeof(SqLiteContext))]
-    partial class SqLiteContextModelSnapshot : ModelSnapshot
+    [Migration("20240623100427_addInboxCooldown")]
+    partial class addInboxCooldown
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.4");
@@ -243,6 +246,7 @@ namespace UZonMailService.Migrations.SqLite
                         .HasColumnType("TEXT");
 
                     b.Property<string>("FromEmail")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<long>("InboxId")
@@ -267,6 +271,7 @@ namespace UZonMailService.Migrations.SqLite
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("ToEmail")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");

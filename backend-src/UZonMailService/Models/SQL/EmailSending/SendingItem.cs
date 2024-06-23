@@ -18,7 +18,7 @@ namespace UZonMailService.Models.SQL.EmailSending
     /// 实体配置参考：https://learn.microsoft.com/zh-cn/ef/core/modeling/#grouping-configuration
     /// </summary>
     //[EntityTypeConfiguration(typeof(SendingItem))]
-    public class SendingItem : SqlId, IEntityTypeConfiguration<SendingItem>
+    public class SendingItem : OrgId, IEntityTypeConfiguration<SendingItem>
     {
         #region EF 定义
         /// <summary>
@@ -51,18 +51,22 @@ namespace UZonMailService.Models.SQL.EmailSending
         /// </summary>
         [JsonField]
         public List<EmailAddress> Inboxes { get; set; }
-
         /// <summary>
         /// 抄送人
         /// </summary>
         [JsonField]
         public List<EmailAddress>? CC { get; set; }
-
         /// <summary>
         /// 密送人
         /// </summary>
         [JsonField]
         public List<EmailAddress>? BCC { get; set; }
+
+        /// <summary>
+        /// 收件人、抄送人、密送人的邮箱地址，使用逗号分隔
+        /// 方便查询
+        /// </summary>
+        public string? ToEmails { get; set; }
 
         /// <summary>
         /// 邮件模板 Id
@@ -150,16 +154,6 @@ namespace UZonMailService.Models.SQL.EmailSending
         public void Configure(EntityTypeBuilder<SendingItem> builder)
         {
             builder.HasMany(x => x.Attachments).WithMany();
-
-            //builder.Property(x => x.Attachments)
-            //        .HasConversion(
-            //            v => JsonConvert.SerializeObject(v),
-            //            v => JsonConvert.DeserializeObject<List<FileUsage>>(v));
-
-            //builder.OwnsMany(x => x.Attachments, cb =>
-            //{
-            //    cb.ToJson();
-            //});
         }
     }
 }

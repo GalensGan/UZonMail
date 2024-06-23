@@ -32,7 +32,7 @@ namespace UZonMailService.Controllers.Emails
             var dbSet = db.SendingItems.Where(x => x.SendingGroupId == sendingGroupId);
             if (!string.IsNullOrEmpty(filter))
             {
-                dbSet = dbSet.Where(x => x.Subject.Contains(filter) || x.Inboxes.Any(y => y.Email.Contains(filter)));
+                dbSet = dbSet.Where(x => x.Subject.Contains(filter) || x.ToEmails.Contains(filter) || x.FromEmail.Contains(filter));
             }
             var count = await dbSet.CountAsync();
             return count.ToSuccessResponse();
@@ -59,7 +59,7 @@ namespace UZonMailService.Controllers.Emails
             var dbSet = db.SendingItems.Where(x => x.SendingGroupId == sendingGroupId);
             if (!string.IsNullOrEmpty(filter))
             {
-                dbSet = dbSet.Where(x => x.Subject.Contains(filter) || x.Inboxes.Any(y => y.Email.Contains(filter)));
+                dbSet = dbSet.Where(x => x.Subject.Contains(filter) || x.ToEmails.Contains(filter) || x.FromEmail.Contains(filter));
             }
 
             var results = await dbSet.Page(pagination)
@@ -73,6 +73,7 @@ namespace UZonMailService.Controllers.Emails
                     Status = x.Status,
                     CreateDate = x.CreateDate,
                     SendDate = x.SendDate,
+                    SendResult = x.SendResult
                 })
                 .ToListAsync();
             return results.ToSuccessResponse();

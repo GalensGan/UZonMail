@@ -29,6 +29,35 @@ namespace UZonMailService.Services.Emails
         }
 
         /// <summary>
+        /// 获取默认的邮箱分组
+        /// </summary>
+        /// <param name="groupType"></param>
+        /// <returns></returns>
+        public async Task<EmailGroup> GetDefaultEmailGroup(EmailGroupType groupType = EmailGroupType.InBox)
+        {
+            var tokenPayloads = tokenService.GetTokenPayloads();
+            if (tokenPayloads.Count == 0) throw new KnownException("无法获取用户信息");
+
+            var defaultGroup = await db.EmailGroups.Where(x => x.IsDefault && x.UserId == tokenPayloads.UserId)
+                .FirstOrDefaultAsync();
+            if (defaultGroup == null)
+            {
+                defaultGroup = new EmailGroup()
+                {
+                    IsDefault = true,
+                    Name = EmailGroup.DefaultGroupName,
+                    Description = "默认邮箱组",
+                    Order = 0,
+                    Type = groupType,
+                    UserId = tokenPayloads.UserId,
+                };
+                await db.EmailGroups.AddAsync(defaultGroup);
+            }
+            await db.SaveChangesAsync();
+            return defaultGroup;
+        }
+
+        /// <summary>
         /// 新建邮箱组
         /// 特别注意要修改表中的 type 字段
         /// </summary>

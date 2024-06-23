@@ -43,7 +43,6 @@ namespace UZonMailService.Controllers.Statistics
         {
             var userId = tokenService.GetUserDataId();
             var emailCounts = await db.Inboxes
-                .Where(x => x.BoxType == EmailBoxType.Inbox)
                 .Where(x => x.UserId == userId)
                 .Where(x => !x.IsDeleted)
                 .GroupBy(x => x.Domain)

@@ -49,23 +49,24 @@ namespace UZonMailService.Models.SQL.EmailSending
         /// </summary>
         public List<Outbox> Outboxes { get; set; }
 
+        #region 用于前端传递参数
         /// <summary>
         /// 收件箱
         /// </summary>
         [JsonField]
         public List<EmailAddress> Inboxes { get; set; }
-
         /// <summary>
         /// 抄送箱
         /// </summary>
         [JsonField]
         public List<EmailAddress>? CcBoxes { get; set; }
-
         /// <summary>
         /// 密送
         /// </summary>
         [JsonField]
         public List<EmailAddress>? BccBoxes { get; set; }
+        #endregion
+
 
         /// <summary>
         /// 附件
