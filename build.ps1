@@ -75,13 +75,13 @@ yarn build
 Write-Host "前端编译完成！" -ForegroundColor Green
 
 # 编译后端
-Write-Host "后端编译中..." -ForegroundColor Yellow
+Write-Host "后端服务编译中..." -ForegroundColor Yellow
 $backendSrc = Join-Path -Path $scriptRoot -ChildPath "backend-src"
 $serviceSr = Join-Path -Path $backendSrc -ChildPath "UZonMailService"
 # 使用 dotnet 编译
 Set-Location -Path $serviceSr
 $serviceDist = "$scriptRoot/build/service"
-dotnet publish -c Release -o $serviceDist
+dotnet publish -c Release -o $serviceDist -r win-x64 --self-contained false
 # 创建 public 目录
 New-Item -Path "$serviceDist/public" -ItemType Directory -Force
 # 创建 wwwwroot 目录
@@ -89,7 +89,7 @@ New-Item -Path "$serviceDist/wwwroot" -ItemType Directory -Force
 # 复制 Quartz/quartz-sqlite.sqlite3 到 Quartz 目录中
 New-Item -Path "$serviceDist/Quartz" -ItemType Directory  -ErrorAction SilentlyContinue
 Copy-Item -Path "$serviceSr/Quartz/quartz-sqlite.sqlite3" -Destination "$serviceDist/Quartz/quartz-sqlite.sqlite3" -Force
-Write-Host "后端编译完成！" -ForegroundColor Green
+Write-Host "后端服务编译完成！" -ForegroundColor Green
 
 # 编译桌面端
 Write-Host "桌面端编译中..." -ForegroundColor Yellow
