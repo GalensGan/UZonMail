@@ -37,7 +37,7 @@
 
 <script lang="ts" setup>
 import { QTableColumn } from 'quasar'
-import dayjs from 'dayjs'
+import { formatDateStr } from 'src/utils/format'
 
 import SearchInput from 'src/components/searchInput/SearchInput.vue'
 import CreateBtn from 'src/components/componentWrapper/buttons/CreateBtn.vue'
@@ -49,7 +49,7 @@ import ContextMenu from 'components/contextMenu/ContextMenu.vue'
 
 import { useQTable, useQTableIndex } from 'src/compositions/qTableUtils'
 import { IRequestPagination, TTableFilterObject } from 'src/compositions/types'
-import { getBoxesCount, getBoxesData, IOutbox } from 'src/api/emailBox'
+import { getInboxesCount, getInboxesData } from 'src/api/emailBox'
 import { IEmailGroupListItem } from '../components/types'
 
 // 左侧分组开关
@@ -95,20 +95,27 @@ const columns: QTableColumn[] = [
     sortable: true
   },
   {
-    name: 'createDate',
-    label: '创建日期',
+    name: 'minInboxCooldownHours',
+    label: '最小发件间隔(h)',
     align: 'left',
-    field: 'createDate',
-    format: v => dayjs(v).format('YYYY-MM-DD'),
+    field: 'minInboxCooldownHours',
+    sortable: true
+  },
+  {
+    name: 'lastSuccessDeliveryDate',
+    label: '最近发件日期',
+    align: 'left',
+    field: 'lastSuccessDeliveryDate',
+    format: v => formatDateStr(v),
     sortable: true
   }
 ]
 async function getRowsNumberCount (filterObj: TTableFilterObject) {
-  const { data } = await getBoxesCount(emailGroupRef.value.id, 1, filterObj.filter)
+  const { data } = await getInboxesCount(emailGroupRef.value.id, filterObj.filter)
   return data
 }
 async function onRequest (filterObj: TTableFilterObject, pagination: IRequestPagination) {
-  const { data } = await getBoxesData<IOutbox>(emailGroupRef.value.id, 1, filterObj.filter, pagination)
+  const { data } = await getInboxesData(emailGroupRef.value.id, filterObj.filter, pagination)
   return data
 }
 const { pagination, rows, filter, onTableRequest, loading, refreshTable, addNewRow, deleteRowById } = useQTable({

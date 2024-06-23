@@ -56,7 +56,7 @@ import ContextMenu from 'components/contextMenu/ContextMenu.vue'
 
 import { useQTable } from 'src/compositions/qTableUtils'
 import { IRequestPagination, TTableFilterObject } from 'src/compositions/types'
-import { getBoxesCount, getBoxesData, IOutbox } from 'src/api/emailBox'
+import { getOutboxesCount, getOutboxesData, IOutbox } from 'src/api/emailBox'
 import { IEmailGroupListItem } from '../components/types'
 
 // 左侧分组开关
@@ -159,11 +159,11 @@ const columns: QTableColumn[] = [
   }
 ]
 async function getRowsNumberCount (filterObj: TTableFilterObject) {
-  const { data } = await getBoxesCount(emailGroupRef.value.id, 0, filterObj.filter)
+  const { data } = await getOutboxesCount(emailGroupRef.value.id, filterObj.filter)
   return data
 }
 async function onRequest (filterObj: TTableFilterObject, pagination: IRequestPagination) {
-  const { data } = await getBoxesData<IOutbox>(emailGroupRef.value.id, 0, filterObj.filter, pagination)
+  const { data } = await getOutboxesData(emailGroupRef.value.id, filterObj.filter, pagination)
   return data
 }
 const { pagination, rows, filter, onTableRequest, loading, refreshTable, addNewRow, deleteRowById } = useQTable({

@@ -10,6 +10,7 @@ export interface IInbox {
   userId?: number,
   email: string,
   name?: string,
+  minInboxCooldownHours: number,
   description?: string,
 }
 
@@ -63,33 +64,30 @@ export function updateOutbox (outboxId: number, outbox: IOutbox) {
 }
 
 /**
- * 获取邮箱数量
+ * 获取发件邮箱数量
  * @param groupId
- * @param groupType
+ * @param filter
  */
-export function getBoxesCount (groupId: number | undefined, emailBoxType: 0 | 1, filter?: string) {
-  return httpClient.get<number>('/email-box/filtered-count', {
+export function getOutboxesCount (groupId: number | undefined, filter?: string) {
+  return httpClient.get<number>('/email-box/outbox/filtered-count', {
     params: {
       groupId,
-      emailBoxType,
       filter
     }
   })
 }
 
 /**
- * 获取邮箱数据
+ * 获取发件邮箱数据
  * @param groupId
- * @param groupType
  * @param filter
  * @param pagination
  * @returns
  */
-export function getBoxesData<T> (groupId: number | undefined, emailBoxType: 0 | 1, filter: string | undefined, pagination: IRequestPagination) {
-  return httpClient.post<T[]>('/email-box/filtered-data', {
+export function getOutboxesData (groupId: number | undefined, filter: string | undefined, pagination: IRequestPagination) {
+  return httpClient.post<IOutbox[]>('/email-box/outbox/filtered-data', {
     params: {
       groupId,
-      emailBoxType,
       filter
     },
     data: pagination
@@ -101,8 +99,48 @@ export function getBoxesData<T> (groupId: number | undefined, emailBoxType: 0 | 
  * @param emailBoxId
  * @returns
  */
-export function deleteEmailBoxById<T> (emailBoxId: number) {
-  return httpClient.delete<T[]>(`/email-box/${emailBoxId}`)
+export function deleteOutboxById (emailBoxId: number) {
+  return httpClient.delete<boolean>(`/email-box/outboxes/${emailBoxId}`)
+}
+
+/**
+ * 获取收件邮箱数量
+ * @param groupId
+ * @param filter
+ */
+export function getInboxesCount (groupId: number | undefined, filter?: string) {
+  return httpClient.get<number>('/email-box/inbox/filtered-count', {
+    params: {
+      groupId,
+      filter
+    }
+  })
+}
+
+/**
+ * 获取收件邮箱数据
+ * @param groupId
+ * @param filter
+ * @param pagination
+ * @returns
+ */
+export function getInboxesData (groupId: number | undefined, filter: string | undefined, pagination: IRequestPagination) {
+  return httpClient.post<IInbox[]>('/email-box/inbox/filtered-data', {
+    params: {
+      groupId,
+      filter
+    },
+    data: pagination
+  })
+}
+
+/**
+ * 通过 id 删除邮箱
+ * @param emailBoxId
+ * @returns
+ */
+export function deleteInboxById (emailBoxId: number) {
+  return httpClient.delete<boolean>(`/email-box/inboxes/${emailBoxId}`)
 }
 
 /**
@@ -111,7 +149,18 @@ export function deleteEmailBoxById<T> (emailBoxId: number) {
  * @returns
  */
 export function createInbox (outbox: IInbox) {
-  return httpClient.post<IInbox[]>('/email-box/inbox', {
+  return httpClient.post<IInbox>('/email-box/inbox', {
+    data: outbox
+  })
+}
+
+/**
+ * 添加未分组的发件箱
+ * @param outbox
+ * @returns
+ */
+export function createUngroupedInbox (outbox: IInbox) {
+  return httpClient.post<IInbox>('/email-box/inbox/ungrouped', {
     data: outbox
   })
 }

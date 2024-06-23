@@ -23,6 +23,12 @@ export function getInboxFields () {
       label: '收件人名称'
     },
     {
+      name: 'minInboxCooldownHours',
+      type: PopupDialogFieldType.number,
+      label: '最小收件间隔(小时)',
+      value: 0
+    },
+    {
       name: 'description',
       label: '描述'
     }
@@ -39,6 +45,10 @@ function getInboxExcelDataMapper (): IExcelColumnMapper[] {
     {
       headerName: '收件人名称',
       fieldName: 'name'
+    },
+    {
+      headerName: '最小收件间隔(小时)',
+      fieldName: 'minInboxCooldownHours'
     },
     {
       headerName: '描述',
@@ -88,7 +98,9 @@ export function UseHeaderFunction (emailGroup: Ref<IEmailGroupListItem>,
   async function onExportInboxTemplateClick () {
     const data: any[] = [
       {
+        name: '收件人名称',
         email: '邮箱(导入时，请删除该行数据)',
+        minInboxCooldownHours: '最小收件间隔(小时)',
         description: ''
       }
     ]

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { IOutbox, deleteEmailBoxById, updateOutbox } from 'src/api/emailBox'
+import { IOutbox, deleteOutboxById, updateOutbox } from 'src/api/emailBox'
 
 import { IContextMenuItem } from 'src/components/contextMenu/types'
 import { IPopupDialogParams } from 'src/components/popupDialog/types'
@@ -29,7 +29,7 @@ export function useContextMenu (deleteRowById: (id?: number) => void) {
     const confirm = await confirmOperation('删除发件箱', `是否删除发件箱: ${outbox.email}？`)
     if (!confirm) return
 
-    await deleteEmailBoxById(outbox.id as number)
+    await deleteOutboxById(outbox.id as number)
 
     // 开始删除
     deleteRowById(outbox.id)
