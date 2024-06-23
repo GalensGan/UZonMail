@@ -50,6 +50,8 @@ const vueProps = defineProps({
 const sendingGroupId = ref(vueProps.sendingGroupId)
 
 import { QTableColumn } from 'quasar'
+import { formatDateStr } from 'src/utils/format'
+
 import { useQTable, useQTableIndex } from 'src/compositions/qTableUtils'
 import { IRequestPagination, TTableFilterObject } from 'src/compositions/types'
 import SearchInput from 'src/components/searchInput/SearchInput.vue'
@@ -101,9 +103,7 @@ const columns: QTableColumn[] = [
     label: '发送日期',
     align: 'left',
     field: 'sendDate',
-    format: (val: string) => {
-      return val ? new Date(val).toLocaleString() : ''
-    },
+    format: v => formatDateStr(v),
     sortable: true
   }
 ]

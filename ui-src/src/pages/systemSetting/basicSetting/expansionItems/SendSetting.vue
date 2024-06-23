@@ -3,23 +3,28 @@
     header-class="text-primary card-like-borderless" @after-show="onAfterShow">
     <q-card>
       <q-card-section>
-        <q-input outlined class="q-mb-sm" standout dense v-model="outboxSettingRef.maxSendCountPerEmailDay"
-          :debounce="500" type="number" label="单个发件箱每日最大发件量" placeholder="为 0 时表示不限制">
-        </q-input>
-
-        <div class="row justify-start items-center">
-          <q-input outlined class="q-mb-sm col" standout dense v-model="outboxSettingRef.minOutboxCooldownSecond"
-            type="number" :debounce="500" label="单个发件箱最小发件间隔 (单位: 秒)" placeholder="为 0 时表示不限制">
+        <div class="row justify-start items-center q-mb-sm ">
+          <q-input outlined class="col" standout dense v-model="outboxSettingRef.maxSendCountPerEmailDay"
+            :debounce="500" type="number" label="单个发件箱每日最大发件量" placeholder="为 0 时表示不限制">
           </q-input>
 
-          <q-input outlined class="q-ml-sm q-mb-sm col" standout dense
-            v-model="outboxSettingRef.maxOutboxCooldownSecond" type="number" :debounce="500" label="单个发件箱最大发件间隔 (单位: 秒)"
-            placeholder="为 0 时表示不限制">
+          <q-input outlined class="q-ml-sm col" standout dense v-model="outboxSettingRef.maxSendingBatchSize"
+            :debounce="500" type="number" label="合并发件最大数量" placeholder="为 0 时表示不合并">
           </q-input>
         </div>
 
-        <q-input outlined class="q-mb-sm" standout dense v-model="outboxSettingRef.maxSendingBatchSize" :debounce="500"
-          type="number" label="合并发件最大数量" placeholder="为 0 时表示不合并">
+        <div class="row justify-start items-center q-mb-sm ">
+          <q-input outlined class="col" standout dense v-model="outboxSettingRef.minOutboxCooldownSecond" type="number"
+            :debounce="500" label="单个发件箱最小发件间隔 (单位: 秒)" placeholder="为 0 时表示不限制">
+          </q-input>
+
+          <q-input outlined class="q-ml-sm col" standout dense v-model="outboxSettingRef.maxOutboxCooldownSecond"
+            type="number" :debounce="500" label="单个发件箱最大发件间隔 (单位: 秒)" placeholder="为 0 时表示不限制">
+          </q-input>
+        </div>
+
+        <q-input outlined class="q-mb-sm" standout dense v-model="outboxSettingRef.minInboxCooldownHours"
+          type="number" :debounce="500" label="最短收件间隔 (单位: h)" placeholder="为 0 时表示不限制">
         </q-input>
       </q-card-section>
     </q-card>
@@ -35,7 +40,8 @@ const outboxSettingRef: Ref<IUserSetting> = ref({
   maxSendCountPerEmailDay: 0,
   minOutboxCooldownSecond: 5,
   maxOutboxCooldownSecond: 10,
-  maxSendingBatchSize: 20
+  maxSendingBatchSize: 20,
+  minInboxCooldownHours: 0
 })
 // 获取设置
 let updateSettingSignal = true

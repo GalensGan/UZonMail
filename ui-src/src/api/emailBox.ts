@@ -10,6 +10,7 @@ export interface IInbox {
   userId?: number,
   email: string,
   name?: string,
+  minInboxCooldownHours: number,
   description?: string,
 }
 
@@ -148,7 +149,18 @@ export function deleteInboxById (emailBoxId: number) {
  * @returns
  */
 export function createInbox (outbox: IInbox) {
-  return httpClient.post<IInbox[]>('/email-box/inbox', {
+  return httpClient.post<IInbox>('/email-box/inbox', {
+    data: outbox
+  })
+}
+
+/**
+ * 添加未分组的发件箱
+ * @param outbox
+ * @returns
+ */
+export function createUngroupedInbox (outbox: IInbox) {
+  return httpClient.post<IInbox>('/email-box/inbox/ungrouped', {
     data: outbox
   })
 }

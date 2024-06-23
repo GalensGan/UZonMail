@@ -33,7 +33,7 @@
 </template>
 
 <script lang='ts' setup>
-import { IInbox, getInboxesCount, getInboxesData, getOutboxesCount, getOutboxesData } from 'src/api/emailBox'
+import { IInbox, getInboxesCount, getInboxesData, getOutboxesCount, getOutboxesData, createUngroupedInbox } from 'src/api/emailBox'
 // props 定义
 const props = defineProps({
   emailBoxType: {
@@ -162,11 +162,11 @@ watch(emailGroupRef, () => {
 // 新增收件箱
 import { showNewInboxDialog } from 'pages/emailManage/inbox/headerFunctions'
 import { notifyError } from 'src/utils/dialog'
+
 async function onNewTempInboxClick () {
   // 打开输入框
   const { ok, data } = await showNewInboxDialog('临时收件')
   if (!ok) return
-  data.id = Date.now()
 
   // 若在选择集中，提示错误
   if (selected.value.some(x => x.email === data.email)) {
@@ -174,10 +174,13 @@ async function onNewTempInboxClick () {
     return
   }
 
+  // 向默认组中添加邮箱
+  const { data: newInbox } = await createUngroupedInbox(data)
+
   // 向当前数据中添加
-  addNewRow(data)
+  addNewRow(newInbox)
   // 向当选择集中添加
-  selected.value.push(data)
+  selected.value.push(newInbox)
 }
 
 // 底部确认
