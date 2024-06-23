@@ -32,7 +32,7 @@ namespace Uamazing.Utils.Web.Token
             }
 
             // 和 Startup 中的配置一致
-            SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenParam.Secret));
+            SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenParam.UniqueSecret));
             JwtSecurityToken token = new JwtSecurityToken(
                 issuer: tokenParam.Issuer,
                 audience: tokenParam.Audience,
@@ -63,7 +63,7 @@ namespace Uamazing.Utils.Web.Token
                 ValidateIssuerSigningKey = true,
                 ValidIssuer = tokenParam.Issuer,
                 ValidAudience = tokenParam.Audience,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenParam.Secret))
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenParam.UniqueSecret))
             };
 
             // 校验并解析token

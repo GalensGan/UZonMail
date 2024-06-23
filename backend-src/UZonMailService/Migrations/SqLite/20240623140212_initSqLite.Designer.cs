@@ -11,8 +11,8 @@ using UZonMailService.Models.SqLite;
 namespace UZonMailService.Migrations.SqLite
 {
     [DbContext(typeof(SqLiteContext))]
-    [Migration("20240623100427_addInboxCooldown")]
-    partial class addInboxCooldown
+    [Migration("20240623140212_initSqLite")]
+    partial class initSqLite
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -246,7 +246,6 @@ namespace UZonMailService.Migrations.SqLite
                         .HasColumnType("TEXT");
 
                     b.Property<string>("FromEmail")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<long>("InboxId")
@@ -271,7 +270,6 @@ namespace UZonMailService.Migrations.SqLite
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("ToEmail")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");

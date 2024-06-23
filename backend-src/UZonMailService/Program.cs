@@ -16,6 +16,7 @@ using Uamazing.Utils.Helpers;
 using UZonMailService.Middlewares;
 using Microsoft.AspNetCore.HttpLogging;
 using UZonMailService.Cache;
+using Uamazing.Utils.Web.Token;
 
 var appOptions = new WebApplicationOptions
 {
@@ -112,8 +113,9 @@ services.AddQuartzHostedService(
     q => q.WaitForJobsToComplete = false);
 
 // 配置 jwt 验证
-var secretKey = builder.Configuration["TokenParams:Secret"];
-services.AddJWTAuthentication(secretKey);
+var tokenParams = new TokenParams();
+builder.Configuration.GetSection("TokenParams").Bind(tokenParams);
+services.AddJWTAuthentication(tokenParams.UniqueSecret);
 // 配置接口鉴权策略
 services.AddAuthorizationBuilder()
     // 超管

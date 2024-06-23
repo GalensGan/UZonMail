@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace UZonMailService.Migrations.SqLite
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class initSqLite : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -96,7 +96,6 @@ namespace UZonMailService.Migrations.SqLite
                     Name = table.Column<string>(type: "TEXT", nullable: true),
                     Description = table.Column<string>(type: "TEXT", nullable: true),
                     Remark = table.Column<string>(type: "TEXT", nullable: true),
-                    BoxType = table.Column<int>(type: "INTEGER", nullable: false),
                     LinkCount = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
@@ -222,6 +221,7 @@ namespace UZonMailService.Migrations.SqLite
                     MinOutboxCooldownSecond = table.Column<int>(type: "INTEGER", nullable: false),
                     MaxOutboxCooldownSecond = table.Column<int>(type: "INTEGER", nullable: false),
                     MaxSendingBatchSize = table.Column<int>(type: "INTEGER", nullable: false),
+                    MinInboxCooldownHours = table.Column<int>(type: "INTEGER", nullable: false),
                     CreateDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
                     IsHidden = table.Column<bool>(type: "INTEGER", nullable: false)
@@ -372,6 +372,7 @@ namespace UZonMailService.Migrations.SqLite
                     Inboxes = table.Column<string>(type: "TEXT", nullable: false),
                     CC = table.Column<string>(type: "TEXT", nullable: true),
                     BCC = table.Column<string>(type: "TEXT", nullable: true),
+                    ToEmails = table.Column<string>(type: "TEXT", nullable: true),
                     EmailTemplateId = table.Column<long>(type: "INTEGER", nullable: false),
                     Subject = table.Column<string>(type: "TEXT", nullable: true),
                     Content = table.Column<string>(type: "TEXT", nullable: true),
@@ -385,7 +386,8 @@ namespace UZonMailService.Migrations.SqLite
                     ReceiptId = table.Column<string>(type: "TEXT", nullable: true),
                     CreateDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
-                    IsHidden = table.Column<bool>(type: "INTEGER", nullable: false)
+                    IsHidden = table.Column<bool>(type: "INTEGER", nullable: false),
+                    OrganizationId = table.Column<long>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -434,6 +436,7 @@ namespace UZonMailService.Migrations.SqLite
                     Description = table.Column<string>(type: "TEXT", nullable: true),
                     ParentId = table.Column<int>(type: "INTEGER", nullable: false),
                     Order = table.Column<long>(type: "INTEGER", nullable: false),
+                    IsDefault = table.Column<bool>(type: "INTEGER", nullable: false),
                     CreateDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
                     IsHidden = table.Column<bool>(type: "INTEGER", nullable: false)
@@ -514,8 +517,10 @@ namespace UZonMailService.Migrations.SqLite
                 {
                     Id = table.Column<long>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    OrganizationId = table.Column<long>(type: "INTEGER", nullable: false),
                     LastSuccessDeliveryDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     LastBeDeliveredDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    MinInboxCooldownHours = table.Column<long>(type: "INTEGER", nullable: false),
                     CreateDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
                     IsHidden = table.Column<bool>(type: "INTEGER", nullable: false),
@@ -526,7 +531,6 @@ namespace UZonMailService.Migrations.SqLite
                     Name = table.Column<string>(type: "TEXT", nullable: true),
                     Description = table.Column<string>(type: "TEXT", nullable: true),
                     Remark = table.Column<string>(type: "TEXT", nullable: true),
-                    BoxType = table.Column<int>(type: "INTEGER", nullable: false),
                     LinkCount = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
@@ -587,6 +591,38 @@ namespace UZonMailService.Migrations.SqLite
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "SendingItemInboxes",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    SendingItemId = table.Column<long>(type: "INTEGER", nullable: false),
+                    InboxId = table.Column<long>(type: "INTEGER", nullable: false),
+                    ToEmail = table.Column<string>(type: "TEXT", nullable: true),
+                    FromEmail = table.Column<string>(type: "TEXT", nullable: true),
+                    Role = table.Column<int>(type: "INTEGER", nullable: false),
+                    SendDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    CreateDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
+                    IsHidden = table.Column<bool>(type: "INTEGER", nullable: false),
+                    OrganizationId = table.Column<long>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SendingItemInboxes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SendingItemInboxes_Inboxes_InboxId",
+                        column: x => x.InboxId,
+                        principalTable: "Inboxes",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_SendingItemInboxes_SendingItems_SendingItemId",
+                        column: x => x.SendingItemId,
+                        principalTable: "SendingItems",
+                        principalColumn: "Id");
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_EmailGroups_UserId",
                 table: "EmailGroups",
@@ -628,9 +664,21 @@ namespace UZonMailService.Migrations.SqLite
                 column: "SendingItemId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Inboxes_Email",
+                table: "Inboxes",
+                column: "Email",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Inboxes_EmailGroupId",
                 table: "Inboxes",
                 column: "EmailGroupId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Outboxes_Email",
+                table: "Outboxes",
+                column: "Email",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_OutboxSendingGroup_SendingGroupId",
@@ -641,6 +689,16 @@ namespace UZonMailService.Migrations.SqLite
                 name: "IX_PermissionCodes_RoleId",
                 table: "PermissionCodes",
                 column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SendingItemInboxes_InboxId",
+                table: "SendingItemInboxes",
+                column: "InboxId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SendingItemInboxes_SendingItemId",
+                table: "SendingItemInboxes",
+                column: "SendingItemId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SendingItems_SendingGroupId",
@@ -682,9 +740,6 @@ namespace UZonMailService.Migrations.SqLite
                 name: "FileUsageSendingItem");
 
             migrationBuilder.DropTable(
-                name: "Inboxes");
-
-            migrationBuilder.DropTable(
                 name: "OutboxSendingGroup");
 
             migrationBuilder.DropTable(
@@ -692,6 +747,9 @@ namespace UZonMailService.Migrations.SqLite
 
             migrationBuilder.DropTable(
                 name: "RolePermissionCodes");
+
+            migrationBuilder.DropTable(
+                name: "SendingItemInboxes");
 
             migrationBuilder.DropTable(
                 name: "SystemSettings");
@@ -712,25 +770,28 @@ namespace UZonMailService.Migrations.SqLite
                 name: "FileUsages");
 
             migrationBuilder.DropTable(
-                name: "SendingItems");
-
-            migrationBuilder.DropTable(
-                name: "EmailGroups");
-
-            migrationBuilder.DropTable(
                 name: "Outboxes");
+
+            migrationBuilder.DropTable(
+                name: "Inboxes");
+
+            migrationBuilder.DropTable(
+                name: "SendingItems");
 
             migrationBuilder.DropTable(
                 name: "FileObjects");
 
             migrationBuilder.DropTable(
+                name: "EmailGroups");
+
+            migrationBuilder.DropTable(
                 name: "SendingGroups");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "FileBuckets");
 
             migrationBuilder.DropTable(
-                name: "FileBuckets");
+                name: "Users");
 
             migrationBuilder.DropTable(
                 name: "Roles");

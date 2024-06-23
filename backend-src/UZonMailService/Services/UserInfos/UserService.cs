@@ -15,6 +15,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Claims;
 using UZonMailService.Services.Settings;
+using System.Net.NetworkInformation;
 
 namespace UZonMailService.Services.UserInfos
 {
@@ -127,11 +128,8 @@ namespace UZonMailService.Services.UserInfos
         /// <returns></returns>
         private string GenerateToken(User userInfo)
         {
-            string token = JWTToken.CreateToken(new TokenParams()
-            {
-                Secret = appConfig.Value.TokenParams.Secret,
-                Expire = appConfig.Value.TokenParams.Expire
-            }, new TokenPayloads(userInfo));
+            // 保证每个机器不一样
+            string token = JWTToken.CreateToken(appConfig.Value.TokenParams, new TokenPayloads(userInfo));
             return token;
         }
 
