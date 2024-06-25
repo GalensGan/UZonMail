@@ -1,13 +1,23 @@
-﻿using UZonMailService.Models.SqlLite.Base;
-using UZonMailService.Models.SqlLite.Permission;
+﻿using UZonMailService.Models.SQL.Base;
+using UZonMailService.Models.SQL.Permission;
 
-namespace UZonMailService.Models.SqlLite.UserInfos
+namespace UZonMailService.Models.SQL.MultiTenant
 {
     /// <summary>
     /// 用户上下文
     /// </summary>
     public class User : SqlId
     {
+        /// <summary>
+        /// 当前所在组织 Id
+        /// </summary>
+        public long OrganizationId { get; set; }
+
+        /// <summary>
+        /// 当前所在部门 Id
+        /// </summary>
+        public long DepartmentId { get; set; }
+
         /// <summary>
         /// 用户名
         /// </summary>

@@ -5,8 +5,8 @@ using Uamazing.ConfValidatation.Core.Validators;
 using Uamazing.Utils.Web.Extensions;
 using Uamazing.Utils.Extensions;
 using Uamazing.Utils.Web.ResponseModel;
-using UZonMailService.Models.SqlLite;
-using UZonMailService.Models.SqlLite.Templates;
+using UZonMailService.Models.SQL;
+using UZonMailService.Models.SQL.Templates;
 using UZonMailService.Services.Settings;
 using UZonMailService.Utils.ASPNETCore.PagingQuery;
 using UZonMailService.Utils.Database;
@@ -29,9 +29,9 @@ namespace UZonMailService.Controllers.Emails
         /// <param name="templateName"></param>
         /// <returns></returns>
         [HttpGet("by-id-or-name")]
-        public async Task<ResponseResult<EmailTemplate?>> GetEmailTemplateByIdOrName(int templateId, string templateName)
+        public async Task<ResponseResult<EmailTemplate?>> GetEmailTemplateByIdOrName(long templateId, string templateName)
         {
-            int userId = tokenService.GetIntUserId();
+            var userId = tokenService.GetUserDataId();
             var result = await db.EmailTemplates.FirstOrDefaultAsync(x => x.UserId == userId && (x.Id == templateId || x.Name == templateName));
             return result.ToSuccessResponse();
         }
@@ -41,10 +41,10 @@ namespace UZonMailService.Controllers.Emails
         /// </summary>
         /// <param name="emailTemplateId"></param>
         /// <returns></returns>
-        [HttpGet("{emailTemplateId:int}")]
-        public async Task<ResponseResult<EmailTemplate?>> GetEmailTemplateById(int emailTemplateId)
+        [HttpGet("{emailTemplateId:long}")]
+        public async Task<ResponseResult<EmailTemplate?>> GetEmailTemplateById(long emailTemplateId)
         {
-            int userId = tokenService.GetIntUserId();
+            var userId = tokenService.GetUserDataId();
             var result = await db.EmailTemplates.FirstOrDefaultAsync(x => x.Id == emailTemplateId && x.UserId == userId);
             return result.ToSmartResponse();
         }
@@ -58,7 +58,7 @@ namespace UZonMailService.Controllers.Emails
         public async Task<ResponseResult<EmailTemplate>> Upsert([FromBody] EmailTemplate entity)
         {
             // 添加当前用户名
-            entity.UserId = tokenService.GetIntUserId();
+            entity.UserId = tokenService.GetUserDataId();
 
             // 数据验证
             entity.Validate(new VdObj()
@@ -116,11 +116,11 @@ namespace UZonMailService.Controllers.Emails
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpDelete("{id:int}")]
-        public async Task<ResponseResult<bool>> Delete(int id)
+        [HttpDelete("{id:long}")]
+        public async Task<ResponseResult<bool>> Delete(long id)
         {
             // 通过条件删除
-            int userId = tokenService.GetIntUserId();
+            var userId = tokenService.GetUserDataId();
             var email = await db.EmailTemplates.FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId) ?? throw new KnownException("模板不存在");
             db.Remove(email);
             await db.SaveChangesAsync();
@@ -134,7 +134,7 @@ namespace UZonMailService.Controllers.Emails
         [HttpGet("filtered-count")]
         public async Task<ResponseResult<int>> GetEmailTemplatesCount(string filter)
         {
-            int userId = tokenService.GetIntUserId();
+            var userId = tokenService.GetUserDataId();
             var dbSet = db.EmailTemplates.Where(x => x.UserId == userId);
             if (!string.IsNullOrEmpty(filter))
             {
@@ -153,7 +153,7 @@ namespace UZonMailService.Controllers.Emails
         [HttpPost("filtered-data")]
         public async Task<ResponseResult<List<EmailTemplate>>> GetEmailTemplatesData(string filter, Pagination pagination)
         {
-            int userId = tokenService.GetIntUserId();
+            var userId = tokenService.GetUserDataId();
             var dbSet = db.EmailTemplates.Where(x => x.UserId == userId);
             if (!string.IsNullOrEmpty(filter))
             {

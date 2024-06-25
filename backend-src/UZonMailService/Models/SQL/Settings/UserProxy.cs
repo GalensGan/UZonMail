@@ -1,8 +1,8 @@
 ﻿using System.Text.RegularExpressions;
-using UZonMailService.Models.SqlLite.Base;
-using UZonMailService.Models.SqlLite.Emails;
+using UZonMailService.Models.SQL.Base;
+using UZonMailService.Models.SQL.Emails;
 
-namespace UZonMailService.Models.SqlLite.Settings
+namespace UZonMailService.Models.SQL.Settings
 {
     /// <summary>
     /// 邮件代理
@@ -14,7 +14,7 @@ namespace UZonMailService.Models.SqlLite.Settings
         /// 所属用户
         /// 若为 0,则表示为系统代理
         /// </summary>
-        public int UserId { get; set; }
+        public long UserId { get; set; }
 
         /// <summary>
         /// 代理名称

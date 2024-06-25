@@ -1,5 +1,5 @@
 ﻿
-using UZonMailService.Models.SqlLite.Base;
+using UZonMailService.Models.SQL.Base;
 
 namespace UZonMailService.Utils.ASPNETCore.PagingQuery
 {

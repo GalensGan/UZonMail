@@ -1,16 +1,16 @@
-﻿using UZonMailService.Models.SqlLite.Base;
-using UZonMailService.Models.SqlLite.UserInfos;
+﻿using UZonMailService.Models.SQL.Base;
+using UZonMailService.Models.SQL.MultiTenant;
 using Uamazing.Utils.Extensions;
 
-namespace UZonMailService.Models.SqlLite.Emails
+namespace UZonMailService.Models.SQL.Emails
 {
     /// <summary>
     /// 邮箱组
     /// 为了方便搜索和减少复杂度，使用扁平化的组，不使用树形结构
     /// </summary>
-    public class EmailGroup:SqlId
+    public class EmailGroup : SqlId
     {
-        public int UserId { get; set; }
+        public long UserId { get; set; }
         public User User { get; set; }
 
         /// <summary>
@@ -46,5 +46,15 @@ namespace UZonMailService.Models.SqlLite.Emails
         /// 收件箱
         /// </summary>
         public List<Inbox> Inboxes { get; set; }
+
+        /// <summary>
+        /// 是否是默认分组
+        /// </summary>
+        public bool IsDefault { get; set; }
+
+        /// <summary>
+        /// 默认的分组名
+        /// </summary>
+        public static string DefaultGroupName => "未分组";
     }
 }

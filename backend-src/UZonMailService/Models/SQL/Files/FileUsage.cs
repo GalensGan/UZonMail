@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-using UZonMailService.Models.SqlLite.Base;
-using UZonMailService.Models.SqlLite.UserInfos;
+using UZonMailService.Models.SQL.Base;
+using UZonMailService.Models.SQL.MultiTenant;
 
-namespace UZonMailService.Models.SqlLite.Files
+namespace UZonMailService.Models.SQL.Files
 {
     /// <summary>
     /// 文件使用情况
@@ -13,12 +13,12 @@ namespace UZonMailService.Models.SqlLite.Files
         /// 为了提取前端上传的附件
         /// </summary>
         [NotMapped]
-        public int __fileUsageId { get; set; }
+        public long __fileUsageId { get; set; }
 
         /// <summary>
         /// 拥有者的用户ID
         /// </summary>
-        public int OwnerUserId { get; set; }
+        public long OwnerUserId { get; set; }
         public User OwnerUser { get; set; }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace UZonMailService.Models.SqlLite.Files
         /// <summary>
         /// 文件 id
         /// </summary>
-        public int FileObjectId { get; set; }
+        public long FileObjectId { get; set; }
 
         /// <summary>
         /// 文件对象

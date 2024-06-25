@@ -5,6 +5,7 @@
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>Uamazing.Utils</RootNamespace>
+    <Platforms>x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>

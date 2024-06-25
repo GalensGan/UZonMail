@@ -1,9 +1,9 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
 using Uamazing.Utils.Web.Service;
-using UZonMailService.Models.SqlLite;
-using UZonMailService.Models.SqlLite.Base;
-using UZonMailService.Models.SqlLite.Emails;
+using UZonMailService.Models.SQL;
+using UZonMailService.Models.SQL.Base;
+using UZonMailService.Models.SQL.Emails;
 using UZonMailService.Services.Common;
 using UZonMailService.Services.Settings;
 using UZonMailService.Utils.Database;
@@ -22,10 +22,39 @@ namespace UZonMailService.Services.Emails
         /// <param name="userId"></param>
         /// <param name="groupType"></param>
         /// <returns></returns>
-        public async Task<List<EmailGroup>> GetEmailGroups(int userId, EmailGroupType groupType)
+        public async Task<List<EmailGroup>> GetEmailGroups(long userId, EmailGroupType groupType)
         {
             var results = await db.EmailGroups.Where(x => x.UserId == userId && x.Type == groupType).ToListAsync();
             return results;
+        }
+
+        /// <summary>
+        /// 获取默认的邮箱分组
+        /// </summary>
+        /// <param name="groupType"></param>
+        /// <returns></returns>
+        public async Task<EmailGroup> GetDefaultEmailGroup(EmailGroupType groupType = EmailGroupType.InBox)
+        {
+            var tokenPayloads = tokenService.GetTokenPayloads();
+            if (tokenPayloads.Count == 0) throw new KnownException("无法获取用户信息");
+
+            var defaultGroup = await db.EmailGroups.Where(x => x.IsDefault && x.UserId == tokenPayloads.UserId)
+                .FirstOrDefaultAsync();
+            if (defaultGroup == null)
+            {
+                defaultGroup = new EmailGroup()
+                {
+                    IsDefault = true,
+                    Name = EmailGroup.DefaultGroupName,
+                    Description = "默认邮箱组",
+                    Order = 0,
+                    Type = groupType,
+                    UserId = tokenPayloads.UserId,
+                };
+                await db.EmailGroups.AddAsync(defaultGroup);
+            }
+            await db.SaveChangesAsync();
+            return defaultGroup;
         }
 
         /// <summary>
@@ -57,7 +86,7 @@ namespace UZonMailService.Services.Emails
         {
             ; if (string.IsNullOrEmpty(name)) throw new KnownException("组名不允许为空");
             // 获取当前用户 id
-            int userId = tokenService.GetIntUserId();
+            var userId = tokenService.GetUserDataId();
             var emailGroup = new EmailGroup()
             {
                 Id = 0,
@@ -79,7 +108,7 @@ namespace UZonMailService.Services.Emails
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public override Task<bool> DeleteById(int id)
+        public override Task<bool> DeleteById(long id)
         {
             return db.RunTransaction(async (ctx) =>
              {

@@ -1,7 +1,7 @@
 ﻿using System.Timers;
-using UZonMailService.Models.SqlLite.Emails;
-using UZonMailService.Models.SqlLite.EmailSending;
-using UZonMailService.Models.SqlLite.Settings;
+using UZonMailService.Models.SQL.Emails;
+using UZonMailService.Models.SQL.EmailSending;
+using UZonMailService.Models.SQL.Settings;
 using Timer = System.Timers.Timer;
 
 namespace UZonMailService.Services.EmailSending.OutboxPool
@@ -16,7 +16,7 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
         /// <summary>
         /// 所属的发件箱组 id
         /// </summary>
-        public HashSet<int> SendingGroupIds = [];
+        public HashSet<long> SendingGroupIds = [];
         #endregion
 
         #region 构造
@@ -84,7 +84,7 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
         /// <summary>
         /// 代理 Id
         /// </summary>
-        public int ProxyId { get; set; }
+        public long ProxyId { get; set; }
 
         public bool ShouldDispose { get; private set; } = false;
         /// <summary>

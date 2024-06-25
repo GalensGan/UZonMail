@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace UZonMailService.Models.SqlLite.Base
+namespace UZonMailService.Models.SQL.Base
 {
     /// <summary>
     /// 所有数据库的基类
@@ -13,7 +13,7 @@ namespace UZonMailService.Models.SqlLite.Base
         /// </summary>
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         /// <summary>
         /// 创建日期

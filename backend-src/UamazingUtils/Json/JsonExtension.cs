@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +11,32 @@ namespace Uamazing.Utils.Json
 {
     public static class JsonExtension
     {
+        private readonly static JsonSerializerSettings _jsonSettings = new JsonSerializerSettings()
+        {
+            ContractResolver = new CamelCasePropertyNamesContractResolver()
+        };
+
+        /// <summary>
+        /// object 对象转换成 json
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static string ToJson<T>(this T obj)
+        {
+            return JsonConvert.SerializeObject(obj, _jsonSettings);           
+        }
+
+        /// <summary>
+        /// 将 json 转换成指定类型的值
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="json"></param>
+        /// <returns></returns>
+        public static T JsonTo<T>(this string json)
+        {
+            return JsonConvert.DeserializeObject<T>(json, _jsonSettings);
+        }
+
         /// <summary>
         /// 将 jToken 转换为指定类型的值，如果转换失败则返回默认值
         /// </summary>

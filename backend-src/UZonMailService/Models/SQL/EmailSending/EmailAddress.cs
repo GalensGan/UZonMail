@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using UZonMailService.Models.SqlLite.Base;
+using UZonMailService.Models.SQL.Base;
 
-namespace UZonMailService.Models.SqlLite.EmailSending
+namespace UZonMailService.Models.SQL.EmailSending
 {
     /// <summary>
     /// 邮件地址

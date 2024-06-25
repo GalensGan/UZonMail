@@ -2,8 +2,8 @@
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System.Linq.Expressions;
 using Uamazing.Utils.Web.Service;
-using UZonMailService.Models.SqlLite;
-using UZonMailService.Models.SqlLite.Base;
+using UZonMailService.Models.SQL;
+using UZonMailService.Models.SQL.Base;
 using UZonMailService.Utils.Database;
 
 namespace UZonMailService.Services.Common
@@ -75,7 +75,7 @@ namespace UZonMailService.Services.Common
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public virtual async Task<bool> DeleteById(int id)
+        public virtual async Task<bool> DeleteById(long id)
         {
             await db.Set<TEntity>().Where(x=>x.Id==id).ExecuteDeleteAsync();;
             return true;
@@ -86,7 +86,7 @@ namespace UZonMailService.Services.Common
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public virtual async Task<TEntity?> FindOneById(int id)
+        public virtual async Task<TEntity?> FindOneById(long id)
         {
             return await db.FindAsync<TEntity>(id);
         }

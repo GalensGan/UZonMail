@@ -5,13 +5,13 @@ using Newtonsoft.Json.Linq;
 using System.ComponentModel.DataAnnotations.Schema;
 using Uamazing.ConfValidatation.Core.Entrance;
 using Uamazing.ConfValidatation.Core.Results;
-using UZonMailService.Models.SqlLite.Base;
-using UZonMailService.Models.SqlLite.Emails;
-using UZonMailService.Models.SqlLite.Files;
-using UZonMailService.Models.SqlLite.Settings;
-using UZonMailService.Models.SqlLite.Templates;
+using UZonMailService.Models.SQL.Base;
+using UZonMailService.Models.SQL.Emails;
+using UZonMailService.Models.SQL.Files;
+using UZonMailService.Models.SQL.Settings;
+using UZonMailService.Models.SQL.Templates;
 
-namespace UZonMailService.Models.SqlLite.EmailSending
+namespace UZonMailService.Models.SQL.EmailSending
 {
     /// <summary>
     /// 发件组
@@ -24,7 +24,7 @@ namespace UZonMailService.Models.SqlLite.EmailSending
         /// <summary>
         /// 用户名
         /// </summary>
-        public int UserId { get; set; }
+        public long UserId { get; set; }
 
         /// <summary>
         /// 主题
@@ -49,23 +49,24 @@ namespace UZonMailService.Models.SqlLite.EmailSending
         /// </summary>
         public List<Outbox> Outboxes { get; set; }
 
+        #region 用于前端传递参数
         /// <summary>
         /// 收件箱
         /// </summary>
         [JsonField]
         public List<EmailAddress> Inboxes { get; set; }
-
         /// <summary>
         /// 抄送箱
         /// </summary>
         [JsonField]
         public List<EmailAddress>? CcBoxes { get; set; }
-
         /// <summary>
         /// 密送
         /// </summary>
         [JsonField]
         public List<EmailAddress>? BccBoxes { get; set; }
+        #endregion
+
 
         /// <summary>
         /// 附件

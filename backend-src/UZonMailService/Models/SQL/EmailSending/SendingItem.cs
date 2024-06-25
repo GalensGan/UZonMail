@@ -3,41 +3,41 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Newtonsoft.Json.Linq;
 using System.ComponentModel.DataAnnotations.Schema;
-using UZonMailService.Models.SqlLite.Base;
-using UZonMailService.Models.SqlLite.Emails;
-using UZonMailService.Models.SqlLite.Files;
-using UZonMailService.Models.SqlLite.NoEntity;
-using UZonMailService.Models.SqlLite.Templates;
-using UZonMailService.Models.SqlLite.UserInfos;
+using UZonMailService.Models.SQL.Base;
+using UZonMailService.Models.SQL.Emails;
+using UZonMailService.Models.SQL.Files;
+using UZonMailService.Models.SQL.NoEntity;
+using UZonMailService.Models.SQL.Templates;
+using UZonMailService.Models.SQL.MultiTenant;
 using UZonMailService.Services.EmailSending.Sender;
 
-namespace UZonMailService.Models.SqlLite.EmailSending
+namespace UZonMailService.Models.SQL.EmailSending
 {
     /// <summary>
     /// 邮件项
     /// 实体配置参考：https://learn.microsoft.com/zh-cn/ef/core/modeling/#grouping-configuration
     /// </summary>
     //[EntityTypeConfiguration(typeof(SendingItem))]
-    public class SendingItem : SqlId, IEntityTypeConfiguration<SendingItem>
+    public class SendingItem : OrgId, IEntityTypeConfiguration<SendingItem>
     {
         #region EF 定义
         /// <summary>
         /// 所属发送任务
         /// </summary>
-        public int SendingGroupId { get; set; }
+        public long SendingGroupId { get; set; }
         public SendingGroup SendingGroup { get; set; }
 
         /// <summary>
         /// 所属用户
         /// </summary>
-        public int UserId { get; set; }
+        public long UserId { get; set; }
 
         /// <summary>
         /// 发件人
         /// 由于是多线程发件，这个值只有发送后才能确定
         /// 若一开始由数据指定，则其值 > 0
         /// </summary>
-        public int OutBoxId { get; set; }
+        public long OutBoxId { get; set; }
 
         /// <summary>
         /// 实际发件人
@@ -51,13 +51,11 @@ namespace UZonMailService.Models.SqlLite.EmailSending
         /// </summary>
         [JsonField]
         public List<EmailAddress> Inboxes { get; set; }
-
         /// <summary>
         /// 抄送人
         /// </summary>
         [JsonField]
         public List<EmailAddress>? CC { get; set; }
-
         /// <summary>
         /// 密送人
         /// </summary>
@@ -65,12 +63,18 @@ namespace UZonMailService.Models.SqlLite.EmailSending
         public List<EmailAddress>? BCC { get; set; }
 
         /// <summary>
+        /// 收件人、抄送人、密送人的邮箱地址，使用逗号分隔
+        /// 方便查询
+        /// </summary>
+        public string? ToEmails { get; set; }
+
+        /// <summary>
         /// 邮件模板 Id
         /// 可以为 0，表示不使用模板
         /// 模板是发送时，动态指定的
         /// 若一开始由数据指定，则其值 > 0
         /// </summary>
-        public int EmailTemplateId { get; set; }
+        public long EmailTemplateId { get; set; }
 
         /// <summary>
         /// 发送主题
@@ -98,7 +102,7 @@ namespace UZonMailService.Models.SqlLite.EmailSending
         /// <summary>
         /// 发送代理
         /// </summary>
-        public int ProxyId { get; set; }
+        public long ProxyId { get; set; }
 
         [JsonField]
         public JObject? Data { get; set; }
@@ -150,16 +154,6 @@ namespace UZonMailService.Models.SqlLite.EmailSending
         public void Configure(EntityTypeBuilder<SendingItem> builder)
         {
             builder.HasMany(x => x.Attachments).WithMany();
-
-            //builder.Property(x => x.Attachments)
-            //        .HasConversion(
-            //            v => JsonConvert.SerializeObject(v),
-            //            v => JsonConvert.DeserializeObject<List<FileUsage>>(v));
-
-            //builder.OwnsMany(x => x.Attachments, cb =>
-            //{
-            //    cb.ToJson();
-            //});
         }
     }
 }

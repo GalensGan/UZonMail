@@ -1,7 +1,7 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using System.Collections.Concurrent;
 using Uamazing.Utils.Web.Service;
-using UZonMailService.Models.SqlLite.Emails;
+using UZonMailService.Models.SQL.Emails;
 
 namespace UZonMailService.Services.EmailSending.OutboxPool
 {
@@ -10,7 +10,7 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
     /// 每个邮箱账号共用冷却池
     /// key: 用户 id，value: 发件箱列表
     /// </summary>
-    public class UserOutboxesPool : ConcurrentDictionary<int, List<OutboxEmailAddress>>, ISingletonService
+    public class UserOutboxesPool : ConcurrentDictionary<long, List<OutboxEmailAddress>>, ISingletonService
     {
         /// <summary>
         /// 发件箱冷却时间结束
@@ -27,7 +27,7 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="outbox"></param>
-        public void AddOutbox(int userId, OutboxEmailAddress outbox)
+        public void AddOutbox(long userId, OutboxEmailAddress outbox)
         {
             if (!this.TryGetValue(userId, out var value))
             {
@@ -50,7 +50,7 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="groupId"></param>
-        public void RemoveOutbox(int userId, int groupId)
+        public void RemoveOutbox(long userId, long groupId)
         {
             if (!this.TryGetValue(userId, out var value)) return;
 
@@ -84,7 +84,7 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
         /// </summary>
         /// <param name="sendingGroupId"></param>
         /// <returns></returns>
-        public int GetOutboxesCount(int sendingGroupId)
+        public int GetOutboxesCount(long sendingGroupId)
         {
            var temps = this.ToArray();
             return temps.Sum(o => o.Value.Count(x => !x.ShouldDispose && x.SendingGroupIds.Contains(sendingGroupId)));
@@ -98,7 +98,7 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
         /// <param name="outboxId">发件箱id,若有，则只获取该发件箱来发件</param>
         /// <param name="status">0 未匹配到，1 正常, 2 冷却中</param>
         /// <returns></returns>
-        public OutboxEmailAddress? GetOutbox(int userId, int sendingGroupId, int outboxId, out int status)
+        public OutboxEmailAddress? GetOutbox(long userId, long sendingGroupId, long outboxId, out int status)
         {
             status = 2;
             var outboxes = this[userId].ToArray();
@@ -145,7 +145,7 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public List<OutboxEmailAddress> GetExistOutboxes(int userId)
+        public List<OutboxEmailAddress> GetExistOutboxes(long userId)
         {
             if (!this.TryGetValue(userId, out var value)) return [];
             return value;

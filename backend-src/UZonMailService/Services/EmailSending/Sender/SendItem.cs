@@ -2,15 +2,16 @@
 using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
 using System.Timers;
-using UZonMailService.Models.SqlLite;
-using UZonMailService.Models.SqlLite.Emails;
-using UZonMailService.Models.SqlLite.EmailSending;
+using UZonMailService.Models.SQL;
+using UZonMailService.Models.SQL.Emails;
+using UZonMailService.Models.SQL.EmailSending;
 using UZonMailService.Services.EmailSending.OutboxPool;
 using UZonMailService.Services.EmailSending.WaitList;
 using UZonMailService.SignalRHubs;
 using UZonMailService.SignalRHubs.Extensions;
 using UZonMailService.SignalRHubs.SendEmail;
 using Timer = System.Timers.Timer;
+using UZonMailService.Utils.Database;
 
 namespace UZonMailService.Services.EmailSending.Sender
 {
@@ -84,7 +85,7 @@ namespace UZonMailService.Services.EmailSending.Sender
         /// <summary>
         /// 附件 FileUsageId 列表
         /// </summary>
-        public List<int> FileUsageIds { get; set; }
+        public List<long> FileUsageIds { get; set; }
 
         /// <summary>
         /// 批量发送
@@ -130,7 +131,7 @@ namespace UZonMailService.Services.EmailSending.Sender
                .Select(x => new { fullPath = $"{x.FileObject.FileBucket.RootDir}/{x.FileObject.Path}", fileName = x.DisplayName ?? x.FileName })
                .ToListAsync();
             _attachments = [];
-            foreach(var item in attachments)
+            foreach (var item in attachments)
             {
                 _attachments.Add(new Tuple<string, string>(item.fullPath, item.fileName));
             }
@@ -206,7 +207,7 @@ namespace UZonMailService.Services.EmailSending.Sender
                 return SentStatus.Retry;
             }
             // 保存到数据库
-            SendingItem updatedItem = await SaveSendItemStatus(success, message);
+            SendingItem updatedItem = await SaveSendItemInfos(success, message);
 
             // 通知发送结果
             var client = Hub.GetUserClient(SendingItem.UserId);
@@ -224,27 +225,34 @@ namespace UZonMailService.Services.EmailSending.Sender
         /// 保存 SendItem 状态
         /// </summary>
         /// <returns></returns>
-        private async Task<SendingItem> SaveSendItemStatus(bool success, string message)
+        private async Task<SendingItem> SaveSendItemInfos(bool success, string message)
         {
             var db = Db;
 
-            // 保存到数据库            
+            // 更新 sendingItems 状态            
             var data = await db.SendingItems.FirstOrDefaultAsync(x => x.Id == SendingItem.Id);
             // 更新数据
             data.FromEmail = Outbox.Email;
             data.Subject = GetSubject();
             data.Content = GetBody();
-            data.Inboxes = Inboxes;
-            data.CC = CC;
-            data.BCC = BCC;
             // 保存发送状态
             data.Status = success ? SendingItemStatus.Success : SendingItemStatus.Failed;
             data.SendResult = message;
             data.TriedCount = _triedCount;
             data.SendDate = DateTime.Now;
-
             // 解析邮件 id
             data.ReceiptId = new ResultParser(message).GetReceiptId();
+
+            // 更新 sendingItemInbox 状态
+            await db.SendingItemInboxes.UpdateAsync(x => x.SendingItemId == SendingItem.Id,
+                x => x.SetProperty(y => y.FromEmail, Outbox.Email)
+                    .SetProperty(y => y.SendDate, DateTime.Now)
+                );
+
+            // 更新收件箱的最近收件日期
+            await db.Inboxes.UpdateAsync(x => x.OrganizationId == SendingItem.OrganizationId,
+                               x => x.SetProperty(y => y.LastBeDeliveredDate, DateTime.Now)
+                                .SetProperty(y=>y.LastSuccessDeliveryDate,DateTime.Now));
 
             await db.SaveChangesAsync();
 

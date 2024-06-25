@@ -1,5 +1,5 @@
-﻿using UZonMailService.Models.SqlLite.Emails;
-using UZonMailService.Models.SqlLite.EmailSending;
+﻿using UZonMailService.Models.SQL.Emails;
+using UZonMailService.Models.SQL.EmailSending;
 
 namespace UZonMailService.SignalRHubs.SendEmail
 {
@@ -12,7 +12,7 @@ namespace UZonMailService.SignalRHubs.SendEmail
         /// <summary>
         /// 邮件id
         /// </summary>
-        public int SendingItemId { get; private set; } = sendingItem.Id;
+        public long SendingItemId { get; private set; } = sendingItem.Id;
 
         /// <summary>
         /// 状态

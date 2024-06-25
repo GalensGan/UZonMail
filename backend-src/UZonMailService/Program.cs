@@ -3,7 +3,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi.Models;
 using UZonMailService.Config;
 using UZonMailService.Utils.DotNETCore;
-using UZonMailService.Models.SqlLite;
+using UZonMailService.Models.SQL;
 using UZonMailService.Utils.DotNETCore.Filters;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http.Features;
@@ -15,6 +15,8 @@ using UZonMailService.Utils.ASPNETCore.Filters;
 using Uamazing.Utils.Helpers;
 using UZonMailService.Middlewares;
 using Microsoft.AspNetCore.HttpLogging;
+using UZonMailService.Cache;
+using Uamazing.Utils.Web.Token;
 
 var appOptions = new WebApplicationOptions
 {
@@ -85,9 +87,12 @@ services.SetupSlugifyCaseRoute();
 // 绑定配置
 services.Configure<AppConfig>(builder.Configuration);
 // 注入数据库
-services.AddDbContext<SqlContext>();
+services.AddSqlContext();
 // 注入 liteDB
 //services.AddLiteDB();
+// 添加数据缓存
+services.AddCache();
+
 // 添加 HttpContextAccessor，以供 service 获取当前请求的用户信息
 services.AddHttpContextAccessor();
 // 批量注册服务
@@ -108,8 +113,9 @@ services.AddQuartzHostedService(
     q => q.WaitForJobsToComplete = false);
 
 // 配置 jwt 验证
-var secretKey = builder.Configuration["TokenParams:Secret"];
-services.AddJWTAuthentication(secretKey);
+var tokenParams = new TokenParams();
+builder.Configuration.GetSection("TokenParams").Bind(tokenParams);
+services.AddJWTAuthentication(tokenParams.UniqueSecret);
 // 配置接口鉴权策略
 services.AddAuthorizationBuilder()
     // 超管

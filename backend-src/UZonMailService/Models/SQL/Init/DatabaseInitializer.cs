@@ -2,13 +2,14 @@
 using UZonMailService.Config;
 using UZonMailService.Config.SubConfigs;
 using Uamazing.Utils.Extensions;
-using UZonMailService.Models.SqlLite.Files;
+using UZonMailService.Models.SQL.Files;
 using Microsoft.EntityFrameworkCore;
-using UZonMailService.Models.SqlLite.Settings;
-using UZonMailService.Models.SqlLite.EmailSending;
+using UZonMailService.Models.SQL.Settings;
+using UZonMailService.Models.SQL.EmailSending;
 using UZonMailService.Utils.Database;
+using UZonMailService.Models.SQL.MultiTenant;
 
-namespace UZonMailService.Models.SqlLite.Init
+namespace UZonMailService.Models.SQL.Init
 {
     /// <summary>
     /// 初始化数据库
@@ -41,12 +42,50 @@ namespace UZonMailService.Models.SqlLite.Init
 
         private async Task InitUser()
         {
+            // 判断是否有默认组织和部门
+            var systemDepartments = await _db.Departments.Where(x => x.IsSystem).ToListAsync();
+            string systemOrgName = Department.GetSystemOrganizationName();
+            var systemOrganization = systemDepartments.FirstOrDefault(x => x.Name == systemOrgName);
+            if (systemOrganization == null)
+            {
+                systemOrganization = new Department
+                {
+                    Id = 1,
+                    Name = systemOrgName,
+                    Description = "系统组织",
+                    FullPath = systemOrgName,
+                    IsSystem = true,
+                    IsHidden=true,
+                };
+                _db.Add(systemOrganization);
+            }
+
+            // 判断是否有系统级部门
+            string systemDpName = Department.GetSystemDepartmentName();
+            var systemDepartment = systemDepartments.FirstOrDefault(x => x.Name == systemDpName && x.ParentId == systemOrganization.Id);
+            if (systemDepartment == null)
+            {
+                systemDepartment = new Department
+                {
+                    Id = 2,
+                    Name = systemDpName,
+                    Description = "系统部门",
+                    FullPath = $"{systemOrgName}/{systemDpName}",
+                    ParentId = systemOrganization.Id,
+                    IsSystem = true,
+                    IsHidden = true,
+                };
+                _db.Add(systemDepartment);
+            }
+
             // 设置系统用户，用于挂载系统相关的数据
             var systemUser = await _db.Users.FirstOrDefaultAsync(x => x.IsSystemUser);
             if (systemUser == null)
             {
-                systemUser = new UserInfos.User
+                systemUser = new User
                 {
+                    OrganizationId = systemOrganization.Id,
+                    DepartmentId = systemDepartment.Id,
                     UserId = "system_uzon",
                     UserName = "系统用户",
                     // 系统用户无法登陆
@@ -62,8 +101,10 @@ namespace UZonMailService.Models.SqlLite.Init
             var adminUser = await _db.Users.FirstOrDefaultAsync(x => x.IsSuperAdmin);
             if (adminUser == null)
             {
-                adminUser = new UserInfos.User
+                adminUser = new MultiTenant.User
                 {
+                    OrganizationId = systemOrganization.Id,
+                    DepartmentId = systemDepartment.Id,
                     UserId = "admin",
                     UserName = "admin",
                     // 密码是进行了 Sha256 二次加密

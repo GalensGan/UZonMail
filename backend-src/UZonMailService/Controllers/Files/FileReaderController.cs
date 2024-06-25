@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Uamazing.Utils.Web.Extensions;
 using Uamazing.Utils.Web.ResponseModel;
-using UZonMailService.Models.SqlLite;
-using UZonMailService.Models.SqlLite.Files;
+using UZonMailService.Models.SQL;
+using UZonMailService.Models.SQL.Files;
 using UZonMailService.Services.Files;
 
 namespace UZonMailService.Controllers.Files
@@ -17,12 +17,12 @@ namespace UZonMailService.Controllers.Files
         /// <param name="fileId"></param>
         /// <returns></returns>
         [HttpPost()]
-        public async Task<ResponseResult<int>> GetObjectAsync(int fileUsageId)
+        public async Task<ResponseResult<long>> GetObjectAsync(long fileUsageId)
         {
             FileUsage? fileUsage = await db.FileUsages.FirstOrDefaultAsync(x => x.Id == fileUsageId);
 
             // 判断文件是否存在
-            if (fileUsage == null) return 0.ToErrorResponse("文件不存在");
+            if (fileUsage == null) return 0L.ToErrorResponse("文件不存在");
 
             // 生成临时读取链接
             FileReader fileReader = new(fileUsage);
@@ -39,8 +39,8 @@ namespace UZonMailService.Controllers.Files
         /// <param name="fileReaderId"></param>
         /// <returns></returns>
         [AllowAnonymous]
-        [HttpGet("{fileReaderId:int}/stream")]
-        public async Task<IActionResult> GetFileStream(int fileReaderId)
+        [HttpGet("{fileReaderId:long}/stream")]
+        public async Task<IActionResult> GetFileStream(long fileReaderId)
         {
             // 获取文件流
             var fileReader = await db.FileReaders.Where(x => x.Id == fileReaderId)

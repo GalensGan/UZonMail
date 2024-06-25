@@ -1,11 +1,11 @@
-﻿namespace UZonMailService.Models.SqlLite.NoEntity
+﻿namespace UZonMailService.Models.SQL.NoEntity
 {
     /// <summary>
     /// 仅有 Name 的数据引用
     /// </summary>
     public interface IDataRefName
     {
-        int Id { get; set; }
+        long Id { get; set; }
         string Name { get; set; }
     }
 }

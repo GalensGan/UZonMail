@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Uamazing.Utils.Web.Extensions;
 using Uamazing.Utils.Web.ResponseModel;
 using UZonMailService.Controllers.Common;
-using UZonMailService.Models.SqlLite.Emails;
+using UZonMailService.Models.SQL.Emails;
 using UZonMailService.Services.Common;
 using UZonMailService.Services.Emails;
 using UZonMailService.Services.Settings;
@@ -23,7 +23,7 @@ namespace UZonMailService.Controllers.Emails
         /// <returns></returns>
         public override async Task<ResponseResult<EmailGroup>> Create([FromBody] EmailGroup entity)
         {
-            int userId = tokenService.GetIntUserId();
+            var userId = tokenService.GetUserDataId();
             entity.UserId = userId;
            
             EmailGroup emailGroup = await groupService.Create(entity);
@@ -38,7 +38,7 @@ namespace UZonMailService.Controllers.Emails
         [HttpGet("all")]
         public async Task<ResponseResult<List<EmailGroup>>> GetEmailGroups([FromQuery] EmailGroupType type)
         {
-            int userId = tokenService.GetIntUserId();
+            var userId = tokenService.GetUserDataId();
             var groups = await groupService.GetEmailGroups(userId, type);
             return groups.ToSuccessResponse();
         }
@@ -49,7 +49,7 @@ namespace UZonMailService.Controllers.Emails
         /// <param name="id"></param>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public override async Task<ResponseResult<EmailGroup>> Update(int id, [FromBody] EmailGroup entity)
+        public override async Task<ResponseResult<EmailGroup>> Update(long id, [FromBody] EmailGroup entity)
         {
             // 数据验证
             if (string.IsNullOrEmpty(entity.Name)) throw new KnownException("组名不允许为空");
@@ -65,7 +65,7 @@ namespace UZonMailService.Controllers.Emails
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public override async Task<ResponseResult<bool>> Delete(int id)
+        public override async Task<ResponseResult<bool>> Delete(long id)
         {
             var result = await groupService.DeleteById(id);
             return result.ToSuccessResponse();
