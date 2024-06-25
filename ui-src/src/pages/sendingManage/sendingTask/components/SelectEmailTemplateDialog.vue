@@ -25,6 +25,10 @@
                   </div>
                   <div class="text-secondary">ID:{{ props.row.id }}</div>
                 </div>
+
+                <div v-if="isSelected(props.row)" class="absolute-full flex flex-center bg-transparent">
+                  <q-icon name="done" color="positive" size="lg"></q-icon>
+                </div>
               </template>
 
               <div class="absolute-bottom row items-center justify-center select-template__image-title">

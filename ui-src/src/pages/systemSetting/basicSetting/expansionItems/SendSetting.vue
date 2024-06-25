@@ -23,9 +23,15 @@
           </q-input>
         </div>
 
-        <q-input outlined class="q-mb-sm" standout dense v-model="outboxSettingRef.minInboxCooldownHours"
-          type="number" :debounce="500" label="最短收件间隔 (单位: h)" placeholder="为 0 时表示不限制">
-        </q-input>
+        <div class="row justify-start items-center q-mb-sm ">
+          <q-input outlined class="col" standout dense v-model="outboxSettingRef.minInboxCooldownHours" type="number"
+            :debounce="500" label="最短收件间隔 (单位: h)" placeholder="为 0 时表示不限制">
+          </q-input>
+
+          <q-input outlined class="q-ml-sm col" standout dense v-model="outboxSettingRef.replyToEmails" :debounce="500"
+            label="回信收件人" placeholder="收件箱回信后的收信邮箱,若有多个使用逗号分隔">
+          </q-input>
+        </div>
       </q-card-section>
     </q-card>
   </q-expansion-item>
@@ -41,7 +47,8 @@ const outboxSettingRef: Ref<IUserSetting> = ref({
   minOutboxCooldownSecond: 5,
   maxOutboxCooldownSecond: 10,
   maxSendingBatchSize: 20,
-  minInboxCooldownHours: 0
+  minInboxCooldownHours: 0,
+  replyToEmails: ''
 })
 // 获取设置
 let updateSettingSignal = true
