@@ -86,6 +86,14 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
         /// </summary>
         public long ProxyId { get; set; }
 
+        /// <summary>
+        /// 回复至邮箱
+        /// </summary>
+        public List<string> ReplyToEmails { get; set; } = [];
+
+        /// <summary>
+        /// 是否应释放
+        /// </summary>
         public bool ShouldDispose { get; private set; } = false;
         /// <summary>
         /// 是否可用

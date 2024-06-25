@@ -17,10 +17,10 @@ namespace UZonMailService.Services.EmailSending.Sender
         public AutoResetEventWrapper AutoResetEventWrapper { get; set; }
 
         /// <summary>
-        /// 是否处于等待状态
+        /// 构造函数
         /// </summary>
-        public bool IsPending { get; set; }
-
+        /// <param name="action"></param>
+        /// <param name="tokenSource"></param>
         public EmailSendingTask(Action action, CancellationTokenSource tokenSource) : base(action, tokenSource.Token)
         {
             CancelTokenSource = tokenSource;

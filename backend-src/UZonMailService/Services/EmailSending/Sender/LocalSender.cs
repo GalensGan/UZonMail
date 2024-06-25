@@ -25,7 +25,7 @@ namespace UZonMailService.Services.EmailSending.Sender
 
             if (!sendItem.Validate())
             {
-                await UpdateSendingStatus(false, "发件项数据不满足要求");
+                await UpdateSendingStatus(new SendCompleteResult(sendItem, false, "发件项数据不满足要求"));
                 return SentStatus.Failed;
             }
 
@@ -56,6 +56,15 @@ namespace UZonMailService.Services.EmailSending.Sender
                         continue;
                     message.Bcc.Add(new MailboxAddress(address.Name, address.Email));
                 }
+            // 回信人
+            if (sendItem.ReplyToEmails.Count>0)
+            {
+                message.ReplyTo.AddRange(sendItem.ReplyToEmails.Select(x =>
+                {
+                    return new MailboxAddress(x, x);
+                }));
+            }
+
             // 主题
             message.Subject = sendItem.GetSubject();
             // 正文
@@ -95,14 +104,17 @@ namespace UZonMailService.Services.EmailSending.Sender
                 //    sendItem.Logger.LogInformation("Message sent: {0}", args.Message.Subject);
                 //};
                 //throw new NullReferenceException("测试报错");
+#if DEBUG
+                var sendResult = "debug success";
+#else
                 string sendResult = await client.SendAsync(message);
-                //var sendResult = "test";
-                return await UpdateSendingStatus(true, sendResult);
+#endif
+                return await UpdateSendingStatus(new SendCompleteResult(sendItem, true, sendResult));
             }
             catch (Exception ex)
             {
                 sendItem.Logger.LogError(ex, ex.Message);
-                return await UpdateSendingStatus(false, ex.Message);
+                return await UpdateSendingStatus(new SendCompleteResult(sendItem, false, ex.Message));
             }
             finally
             {
@@ -116,9 +128,9 @@ namespace UZonMailService.Services.EmailSending.Sender
         /// <param name="ok"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        protected virtual async Task<SentStatus> UpdateSendingStatus(bool ok, string message)
+        protected virtual async Task<SentStatus> UpdateSendingStatus(SendCompleteResult sendCompleteResult)
         {
-            return await sendItem.UpdateSendingStatus(ok, message);
+            return await sendItem.UpdateSendingStatus(sendCompleteResult);
         }
     }
 }

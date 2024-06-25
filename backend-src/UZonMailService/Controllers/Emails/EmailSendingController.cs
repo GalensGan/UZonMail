@@ -19,6 +19,7 @@ namespace UZonMailService.Controllers.Emails
     public class EmailSendingController(SqlContext db
         , SendingGroupService sendingService
         , SystemSendingWaitListService waitList
+        , SystemTasksService tasksService
         ) : ControllerBaseV1
     {
         /// <summary>
@@ -113,6 +114,9 @@ namespace UZonMailService.Controllers.Emails
             waitList.SwitchSendTaskStatus(sendingGroup, false);
             sendingGroup.Status = SendingGroupStatus.Sending;
             await db.SaveChangesAsync();
+
+            // 开始发件
+            tasksService.StartSending();
 
             return true.ToSuccessResponse();
         }

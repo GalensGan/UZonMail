@@ -160,7 +160,7 @@ namespace UZonMailService.Services.EmailSending.WaitList
         /// 获取组中的发件项
         /// </summary>
         /// <returns></returns>
-        public async Task<SendItem?> GetSendItem()
+        public async Task<SendItem?> GetSendItem(SqlContext sqlContext)
         {
             if (outboxesPool.Count == 0)
                 return null;
@@ -172,7 +172,7 @@ namespace UZonMailService.Services.EmailSending.WaitList
             for (int index = 0; index < this.Count; index++)
             {
                 var groupTask = this[index];
-                sendItem = await groupTask.GetSendItem();
+                sendItem = await groupTask.GetSendItem(sqlContext);
                 if (sendItem != null)
                 {
                     break;
@@ -185,9 +185,9 @@ namespace UZonMailService.Services.EmailSending.WaitList
         /// <summary>
         /// 邮件项发送完成
         /// </summary>
-        /// <param name="success"></param>
+        /// <param name="sendCompleteResult"></param>
         /// <returns></returns>
-        public async Task EmailItemSendCompleted(bool success)
+        public async Task EmailItemSendCompleted(SendCompleteResult sendCompleteResult)
         {
             // 移除已经完成的任务
             // 获取需要移除的任务
@@ -200,7 +200,7 @@ namespace UZonMailService.Services.EmailSending.WaitList
             }
 
             // 向上回调
-            await waitingList.EmailItemSendCompleted(success);
+            await waitingList.EmailItemSendCompleted(sendCompleteResult);
         }
 
         /// <summary>

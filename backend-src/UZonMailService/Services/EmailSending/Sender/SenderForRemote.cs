@@ -7,17 +7,18 @@ namespace UZonMailService.Services.EmailSending.Sender
     /// </summary>
     public class SenderForRemote : LocalSender
     {
+        private SendItem sendItem;
         public SenderForRemote(SendItem sendItem) : base(sendItem)
         {
-
+            this.sendItem = sendItem;
         }
 
         public override Task<SentStatus> Send()
         {
-            return UpdateSendingStatus(true, "");
+            return UpdateSendingStatus(new SendCompleteResult(sendItem,true,""));
         }
 
-        protected override async Task<SentStatus> UpdateSendingStatus(bool ok, string message)
+        protected override async Task<SentStatus> UpdateSendingStatus(SendCompleteResult sendCompleteResult)
         {
             // 在此处将结果返回给远程机
             return SentStatus.OK;

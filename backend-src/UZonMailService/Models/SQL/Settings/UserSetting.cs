@@ -1,4 +1,6 @@
-﻿using UZonMailService.Models.SQL.Base;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using UZonMailService.Models.SQL.Base;
+using Uamazing.Utils.Extensions;
 
 namespace UZonMailService.Models.SQL.Settings
 {
@@ -37,6 +39,23 @@ namespace UZonMailService.Models.SQL.Settings
         /// 收件箱最小收件间隔时间，单位小时
         /// </summary>
         public int MinInboxCooldownHours { get; set; }
+
+        /// <summary>
+        /// 回复的邮箱地址, 多个邮箱用逗号分隔
+        /// </summary>
+        public string? ReplyToEmails { get; set; }
+
+        /// <summary>
+        /// 回复邮件地址列表
+        /// </summary>
+        [NotMapped]
+        public List<string> ReplyToEmailsList
+        {
+            get
+            {
+                return ReplyToEmails.SplitBySeparators().Distinct().ToList();
+            }
+        }
 
         /// <summary>
         /// 获取冷却时间

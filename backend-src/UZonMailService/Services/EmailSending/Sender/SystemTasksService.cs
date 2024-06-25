@@ -1,5 +1,6 @@
 ﻿using System.Timers;
 using Uamazing.Utils.Web.Service;
+using UZonMailService.Models.SQL;
 using UZonMailService.Services.EmailSending.OutboxPool;
 using UZonMailService.Services.EmailSending.WaitList;
 using Timer = System.Timers.Timer;
@@ -9,8 +10,9 @@ namespace UZonMailService.Services.EmailSending.Sender
     /// <summary>
     /// 系统级发件调度中心
     /// </summary>
-    public class SystemTasksService: ISingletonService
+    public class SystemTasksService : ISingletonService
     {
+        private IServiceScopeFactory ssf;
         private SystemSendingWaitListService waitList;
         private UserOutboxesPool outboxesPool;
 
@@ -19,9 +21,12 @@ namespace UZonMailService.Services.EmailSending.Sender
         /// </summary>
         /// <param name="waitList"></param>
         /// <param name="outboxesPool"></param>
-        public SystemTasksService(SystemSendingWaitListService waitList
-        , UserOutboxesPool outboxesPool)
+        public SystemTasksService(
+              IServiceScopeFactory ssf
+            , SystemSendingWaitListService waitList
+            , UserOutboxesPool outboxesPool)
         {
+            this.ssf = ssf;
             this.waitList = waitList;
             this.outboxesPool = outboxesPool;
 
@@ -68,10 +73,10 @@ namespace UZonMailService.Services.EmailSending.Sender
             // 创建任务
             for (int i = _sendingTasks.Count; i < tasksCount; i++)
             {
-                // 单个线程的信号
-                var autoResetEvent = new AutoResetEventWrapper(false);
+                // 每个进程一个暂停信号
+                var autoResetEvent = new AutoResetEventWrapper(false, ssf);
                 EmailSendingTask task = new(async () =>
-                {
+                {                   
                     // 任务开始
                     await DoWork(_tokenSource, autoResetEvent);
                 }, _tokenSource)
@@ -157,7 +162,7 @@ namespace UZonMailService.Services.EmailSending.Sender
             while (!tokenSource.IsCancellationRequested)
             {
                 // 激活后，从队列中取出任务
-                var sendItem =await waitList.GetSendItem();
+                var sendItem = await waitList.GetSendItem(autoResetEvent.SqlContext);
                 if (sendItem == null)
                 {
                     // 没有任务，继续等待

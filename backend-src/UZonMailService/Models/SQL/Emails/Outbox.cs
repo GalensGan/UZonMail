@@ -60,6 +60,12 @@ namespace UZonMailService.Models.SQL.Emails
         public OutboxStatus Status { get; set; }
 
         /// <summary>
+        /// 回复邮箱
+        /// 多个邮箱地址使用逗号分隔
+        /// </summary>
+        public string? ReplyToEmails { get; set; }
+
+        /// <summary>
         /// 转成发件地址
         /// </summary>
         /// <param name="userSetting"></param>
@@ -69,7 +75,7 @@ namespace UZonMailService.Models.SQL.Emails
         {
             // 对密码进行解密
             var plainPassword = Password.DeAES(smtpPasswordSecretKeys[0], smtpPasswordSecretKeys[1]);
-            return new OutboxEmailAddress(userSetting)
+            var result = new OutboxEmailAddress(userSetting)
             {
                 // 对密码解密
                 AuthPassword = plainPassword,
@@ -85,8 +91,10 @@ namespace UZonMailService.Models.SQL.Emails
                 SentTotalToday = SentTotalToday,
 
                 SendingGroupIds = [groupId],
-                ProxyId = ProxyId
+                ProxyId = ProxyId,
+                ReplyToEmails = ReplyToEmails.SplitBySeparators().Distinct().ToList()
             };
+            return result;
         }
     }
 }
