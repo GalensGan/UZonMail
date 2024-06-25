@@ -14,7 +14,7 @@ const defaultStatusStyles = [
   { status: 'sending', label: '发送中', color: 'secondary', textColor: 'white', icon: '' },
   { status: 'success', label: '成功', color: 'secondary', textColor: 'white', icon: '' },
   { status: 'failed', label: '失败', color: 'negative', textColor: 'white', icon: '' },
-  { status: 'paused', label: '暂停', color: 'orange', textColor: 'white', icon: '' },
+  { status: 'pause', label: '暂停', color: 'orange', textColor: 'white', icon: '' },
   { status: 'stopped', label: '已停止', color: 'grey', textColor: 'white', icon: '' },
   { status: 'finish', label: '完成', color: 'secondary', textColor: 'white', icon: '' },
   { status: 'cancel', label: '取消', color: 'grey', textColor: 'white', icon: '' }
@@ -60,7 +60,7 @@ const statusStyle = computed(() => {
     return {
       status: 'unknown',
       color: 'negative',
-      label: `${status} 未定义`,
+      label: status.toUpperCase(),
       textColor: 'white'
     }
   }

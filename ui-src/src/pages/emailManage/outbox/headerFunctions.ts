@@ -95,6 +95,10 @@ export async function getOutboxFields (smtpPasswordSecretKeys: string[]): Promis
       emitValue: true
     },
     {
+      name: 'replyToEmails',
+      label: '回信收件人'
+    },
+    {
       name: 'enableSSL',
       label: '启用 SSL',
       type: PopupDialogFieldType.boolean,
@@ -135,16 +139,20 @@ function getOutboxExcelDataMapper (): IExcelColumnMapper[] {
       required: true
     },
     {
-      headerName: '使用 SSL',
-      fieldName: 'EnableSSL'
-    },
-    {
       headerName: '描述',
       fieldName: 'description'
     },
     {
       headerName: '代理',
       fieldName: 'proxy'
+    },
+    {
+      headerName: '回信收件人',
+      fieldName: 'replyToEmails'
+    },
+    {
+      headerName: '使用 SSL',
+      fieldName: 'EnableSSL'
     }
   ]
 }
@@ -187,7 +195,8 @@ export function UseHeaderFunction (emailGroup: Ref<IEmailGroupListItem>,
         smtpHost: '填写 smtp 地址',
         smtpPort: 25,
         description: '描述(可选)',
-        proxy: '格式为：http://username:password@domain:port(可选)'
+        proxy: '格式为：http://username:password@domain:port(可选)',
+        replyToEmails: '回信收件人(多个使用逗号分隔)'
       }
     ]
     await writeExcel(data, {

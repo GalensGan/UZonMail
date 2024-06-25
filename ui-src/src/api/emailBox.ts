@@ -26,7 +26,8 @@ export interface IOutbox extends IInbox {
   // 是否显示密码
   showPassword?: boolean,
   // 密码已解密
-  decryptedPassword?: boolean
+  decryptedPassword?: boolean,
+  replyToEmails?: string
 }
 
 /**

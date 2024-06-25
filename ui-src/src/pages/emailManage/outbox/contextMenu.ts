@@ -69,6 +69,9 @@ export function useContextMenu (deleteRowById: (id?: number) => void) {
         case 'proxyId':
           field.value = outbox.proxyId
           break
+        case 'replyToEmails':
+          field.value = outbox.replyToEmails
+          break
         default:
           break
       }
