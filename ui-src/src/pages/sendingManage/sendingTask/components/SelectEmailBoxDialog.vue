@@ -5,9 +5,9 @@
         <EmailGroupList v-model="emailGroupRef" :extra-items="categoryTopItems" readonly :groupType="groupType"
           class="q-mr-sm card-like" style="width: 160px;" />
 
-        <q-table class="col full-height" :rows="rows" :columns="columns" row-key="id" v-model:pagination="pagination"
-          dense :loading="loading" :filter="filter" binary-state-sort @request="onTableRequest" selection="multiple"
-          v-model:selected="selected">
+        <q-table class="col full-height" :rows="rows" :columns="columns" row-key="id" virtual-scroll
+          v-model:pagination="pagination" dense :loading="loading" :filter="filter" binary-state-sort
+          @request="onTableRequest" selection="multiple" v-model:selected="selected">
           <template v-slot:top-left>
             <div class="row justify-start q-gutter-sm">
               <CreateBtn v-if="showNewTempInboxBtn" tooltip="新增临时收件箱" @click="onNewTempInboxClick" />

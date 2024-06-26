@@ -1,5 +1,5 @@
 <template>
-  <q-table ref="dropZoneRef" class="full-height" :rows="rows" :columns="columns" row-key="id"
+  <q-table ref="dropZoneRef" class="full-height" :rows="rows" :columns="columns" row-key="id" virtual-scroll
     v-model:pagination="pagination" dense :loading="loading" :filter="filter" binary-state-sort
     @request="onTableRequest">
     <template v-slot:top-left>

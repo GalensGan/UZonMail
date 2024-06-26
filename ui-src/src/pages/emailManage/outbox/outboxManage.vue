@@ -3,8 +3,9 @@
     <EmailGroupList v-show="!isCollapseGroupList" v-model="emailGroupRef" class="q-card q-mr-sm"
       style="min-width: 160px;" />
 
-    <q-table class="col full-height" :rows="rows" :columns="columns" row-key="id" v-model:pagination="pagination" dense
-      :loading="loading" :filter="filter" binary-state-sort @request="onTableRequest">
+    <q-table class="col full-height" :rows="rows" :columns="columns" row-key="id" virtual-scroll
+      v-model:pagination="pagination" dense :loading="loading" :filter="filter" binary-state-sort
+      @request="onTableRequest">
       <template v-slot:top-left>
         <div class="row justify-start q-gutter-sm">
           <CreateBtn tooltip="新增发件箱" @click="onNewOutboxClick" :disable="!isValidEmailGroup"
