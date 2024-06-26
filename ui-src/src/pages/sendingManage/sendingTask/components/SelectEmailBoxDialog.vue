@@ -1,9 +1,9 @@
 <template>
   <q-dialog ref='dialogRef' @hide="onDialogHide" :persistent='true'>
-    <q-card class='column no-wrap q-pa-sm height-0' style="min-width: 500px; min-height: 400px;">
+    <q-card class='column no-wrap q-pa-sm height-0 select-email-box-dialog'>
       <div class="col row items-start">
         <EmailGroupList v-model="emailGroupRef" :extra-items="categoryTopItems" readonly :groupType="groupType"
-          class="q-mr-sm card-like" style="width: 160px;" />
+          class="q-mr-sm card-like full-height" />
 
         <q-table class="col full-height" :rows="rows" :columns="columns" row-key="id" virtual-scroll
           v-model:pagination="pagination" dense :loading="loading" :filter="filter" binary-state-sort
@@ -191,4 +191,9 @@ function onOKClick () {
 }
 </script>
 
-<style lang='scss' scoped></style>
+<style lang='scss' scoped>
+.select-email-box-dialog {
+  min-width: min(800px, 100%);
+  min-height: min(600px, 100%);
+}
+</style>

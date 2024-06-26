@@ -50,30 +50,57 @@
   overflow-y: auto;
 }
 
-.scroll-y_pretty {
-  // 优化滚动条显示
-  //滚动条
-  &::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+.scroll_pretty {
+  &::-webkit-scrollbar-track-piece {
+    background: #d3dce6;
   }
 
-  &::-webkit-scrollbar-track {
-    background: rgb(239, 239, 239);
-    border-radius: 2px;
+  &::-webkit-scrollbar {
+    width: 6px;
   }
 
   &::-webkit-scrollbar-thumb {
-    background: #bfbfbf;
-    border-radius: 10px;
+    background: #99a9bf;
+    border-radius: 20px;
+  }
+}
+
+// 美化样式
+.hover-scroll {
+  overflow: overlay;
+
+  /* 隐藏滚动条*/
+  &::-webkit-scrollbar {
+    width: 0px;
   }
 
-  &::-webkit-scrollbar-thumb:hover {
-    background: #bfbfbf;
+  &:hover::-webkit-scrollbar {
+    width: 5px;
+    background-color: transparent;
   }
 
-  &::-webkit-scrollbar-corner {
-    background: #bfbfbf;
+  /* 鼠标未悬停时，滚动条透明 */
+  &::-webkit-scrollbar-thumb {
+    background-color: transparent;
+    transition: all 0.3s ease-in-out;
+    border-radius: 2px;
+  }
+
+  /* 鼠标悬停时，滚动条显示 */
+  &:hover::-webkit-scrollbar-thumb {
+    background-color: #e0e0e0;
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+
+  &:hover::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+
+  &:hover::-webkit-scrollbar-track-piece {
+    background-color: transparent;
   }
 }
 
@@ -180,3 +207,4 @@
   }
 }
 // #endregion
+

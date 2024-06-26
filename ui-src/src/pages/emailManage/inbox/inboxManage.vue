@@ -1,9 +1,9 @@
 <template>
   <div class="full-height full-width row items-start">
-    <EmailGroupList v-show="!isCollapseGroupList" v-model="emailGroupRef" :groupType="2" class="q-card q-mr-sm"
-      style="min-width: 160px;" />
+    <EmailGroupList v-show="!isCollapseGroupList" v-model="emailGroupRef" :groupType="2"
+      class="q-card q-mr-sm full-height" style="min-width: 160px;" />
 
-    <q-table class="col full-height" :rows="rows" :columns="columns" row-key="id" virtual-scroll
+    <q-table ref="inboxTableRef" class="col full-height" :rows="rows" :columns="columns" row-key="id" virtual-scroll
       v-model:pagination="pagination" dense :loading="loading" :filter="filter" binary-state-sort
       @request="onTableRequest">
       <template v-slot:top-left>
@@ -32,12 +32,12 @@
       </template>
     </q-table>
 
-    <CollapseLeft v-model="isCollapseGroupList" :class="collapseLeftClass" />
+    <CollapseLeft v-model="isCollapseGroupList" :style="collapseStyleRef" />
   </div>
 </template>
 
 <script lang="ts" setup>
-import { QTableColumn } from 'quasar'
+import { QTable, QTableColumn } from 'quasar'
 import { formatDateStr } from 'src/utils/format'
 
 import SearchInput from 'src/components/searchInput/SearchInput.vue'
@@ -45,7 +45,6 @@ import CreateBtn from 'src/components/componentWrapper/buttons/CreateBtn.vue'
 import ImportBtn from 'src/components/componentWrapper/buttons/ImportBtn.vue'
 import ExportBtn from 'src/components/componentWrapper/buttons/ExportBtn.vue'
 import EmailGroupList from '../components/EmailGroupList.vue'
-import CollapseLeft from 'src/components/collapseLeft/CollapseLeft.vue'
 import ContextMenu from 'components/contextMenu/ContextMenu.vue'
 
 import { useQTable, useQTableIndex } from 'src/compositions/qTableUtils'
@@ -54,13 +53,11 @@ import { getInboxesCount, getInboxesData } from 'src/api/emailBox'
 import { IEmailGroupListItem } from '../components/types'
 
 // 左侧分组开关
+// 左侧分组开关
+import { useTableCollapseLeft } from 'src/components/collapseLeft/useCollapseLeft'
+const inboxTableRef = ref<InstanceType<typeof QTable> | undefined>()
 const isCollapseGroupList = ref(false)
-const collapseLeftClass = computed(() => {
-  return {
-    'collapse-groups__open': !isCollapseGroupList.value,
-    'collapse-groups__close': isCollapseGroupList.value
-  }
-})
+const { CollapseLeft, collapseStyleRef } = useTableCollapseLeft(inboxTableRef, isCollapseGroupList)
 
 const { indexColumn, QTableIndex } = useQTableIndex()
 // 菜单项
@@ -140,16 +137,4 @@ const { inboxContextMenuItems } = useContextMenu(deleteRowById)
 // #endregion
 </script>
 
-<style lang="scss" scoped>
-.collapse-groups__open {
-  position: absolute;
-  top: 40%;
-  left: 200px;
-}
-
-.collapse-groups__close {
-  position: absolute;
-  top: 40%;
-  left: 24px;
-}
-</style>
+<style lang="scss" scoped></style>
