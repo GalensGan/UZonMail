@@ -1,5 +1,5 @@
 <template>
-  <div :class="collapseBarClass" @click="onCollapse">
+  <div class="collapse-bar" :class="collapseBarClass" @click="onCollapse">
     <q-tooltip anchor="center right" self="center left">
       {{ tooltipText }}
     </q-tooltip>
@@ -23,6 +23,10 @@ const tooltipText = computed(() => {
 </script>
 
 <style lang="scss" scoped>
+.collapse-bar {
+  z-index: 2000;
+}
+
 .collapse-bar__normal {
   position: relative;
   width: 10px;
@@ -80,7 +84,7 @@ const tooltipText = computed(() => {
     position: absolute;
     width: 50%;
     height: 50%;
-    background-color: $primary;
+    background-color: #e0e0e0;
     transition: all 0.3s linear;
   }
 
@@ -94,6 +98,11 @@ const tooltipText = computed(() => {
     border-bottom-right-radius: 2px;
     border-bottom-left-radius: 2px;
     transform: translateY(90%) rotate(25deg);
+  }
+
+  &:hover::before,
+  &:hover::after {
+    background-color: $primary;
   }
 }
 </style>

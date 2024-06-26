@@ -1,9 +1,9 @@
 <template>
   <q-dialog ref='dialogRef' @hide="onDialogHide" :persistent="true">
     <div class="column card-like half-height half-width">
-      <q-table class="col" :rows="rows" row-key="id" v-model:pagination="pagination" dense title="选择发件模板" hide-header
-        grid :loading="loading" :filter="filter" binary-state-sort @request="onTableRequest" selection="multiple"
-        v-model:selected="selected">
+      <q-table class="col" :rows="rows" row-key="id" virtual-scroll v-model:pagination="pagination" dense title="选择发件模板"
+        hide-header grid :loading="loading" :filter="filter" binary-state-sort @request="onTableRequest"
+        selection="multiple" v-model:selected="selected">
         <template v-slot:top-right>
           <SearchInput v-model="filter" />
         </template>

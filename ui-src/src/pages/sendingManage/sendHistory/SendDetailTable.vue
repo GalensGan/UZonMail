@@ -1,6 +1,7 @@
 <template>
-  <q-table class="full-height full-width" :rows="rows" :columns="columns" row-key="id" v-model:pagination="pagination"
-    dense :loading="loading" :filter="filter" binary-state-sort @request="onTableRequest">
+  <q-table class="full-height full-width" :rows="rows" :columns="columns" row-key="id" virtual-scroll
+    v-model:pagination="pagination" dense :loading="loading" :filter="filter" binary-state-sort
+    @request="onTableRequest">
     <template v-slot:top-left>
       <div class="row justify-start items-center q-gutter-sm">
         <q-btn dense icon="west" class="q-mr-sm" flat size="sm" @click="goBackToSendHistory">

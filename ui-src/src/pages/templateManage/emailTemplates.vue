@@ -1,6 +1,6 @@
 <template>
-  <q-table class="full-height" :rows="rows" row-key="id" v-model:pagination="pagination" dense hide-header grid
-    :loading="loading" :filter="filter" binary-state-sort @request="onTableRequest">
+  <q-table class="full-height" :rows="rows" row-key="id" virtual-scroll v-model:pagination="pagination" dense
+    hide-header grid :loading="loading" :filter="filter" binary-state-sort @request="onTableRequest">
     <template v-slot:top-left>
       <CreateBtn @click="onNewEmailTemplate" tooltip="新增邮件模板" />
       <ImportBtn class="q-ml-sm" @click="onImportTemplateFromHtml" :tooltip="['导入模板', '文件名为模板名']" />

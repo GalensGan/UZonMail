@@ -1,5 +1,5 @@
 <template>
-  <q-list dense>
+  <q-list dense class="column no-wrap justify-start">
     <q-item class="plain-list__item text-primary bg-grey-12" v-ripple>
       <q-item-section avatar class="q-pr-none">
         <q-icon :name="header.icon" />
@@ -8,24 +8,26 @@
         {{ header.label }}
         <AsyncTooltip tooltip="右键可添加分组" />
       </q-item-section>
-
       <ContextMenu v-if="!readonly" :items="headerContextMenuItems"></ContextMenu>
     </q-item>
-
-    <q-separator />
-
-    <q-item class="plain-list__item q-my-xs" v-for="item in sortedItems" :key="item.name" clickable v-ripple
-      :active="item.active" active-class="text-secondary" @click="onItemClick(item)">
-      <div class="row justify-between no-wrap items-center full-width">
-        <q-icon v-if="item.icon" :name="item.icon || 'contact_mail'" size="sm" />
-        <div v-if="item.label">{{ item.label }}
-          <AsyncTooltip :tooltip="item.label" />
-        </div>
-        <div side v-if="item.side">{{ item.side }}</div>
-      </div>
-
-      <ContextMenu v-if="!readonly" :items="itemContextMenuItems" :value="item"></ContextMenu>
+    <q-item class="plain-list__item q-mt-xs">
+      <SearchInput dense v-model="filter" />
     </q-item>
+
+    <q-list class="col scroll-y hover-scroll" dense>
+      <q-item class="plain-list__item q-my-xs" v-for="item in filteredItems" :key="item.name" clickable v-ripple
+        :active="item.active" active-class="text-secondary" @click="onItemClick(item)">
+        <div class="row justify-between no-wrap items-center full-width">
+          <q-icon v-if="item.icon" :name="item.icon || 'contact_mail'" size="sm" />
+          <div class="q-px-xs" v-if="item.label">{{ item.label }}
+            <AsyncTooltip :tooltip="item.label" />
+          </div>
+          <div side v-if="item.side">{{ item.side }}</div>
+        </div>
+
+        <ContextMenu v-if="!readonly" :items="itemContextMenuItems" :value="item"></ContextMenu>
+      </q-item>
+    </q-list>
   </q-list>
 </template>
 
@@ -34,6 +36,7 @@ import { PropType } from 'vue'
 import { IEmailGroupListItem, IFlatHeader } from './types'
 import ContextMenu from 'src/components/contextMenu/ContextMenu.vue'
 import AsyncTooltip from 'src/components/asyncTooltip/AsyncTooltip.vue'
+import SearchInput from 'src/components/searchInput/SearchInput.vue'
 import { IContextMenuItem } from 'src/components/contextMenu/types'
 
 const modelValue = defineModel<IEmailGroupListItem>()
@@ -72,15 +75,17 @@ const header: ComputedRef<IFlatHeader> = computed(() => {
     icon: 'group'
   }
 })
+const filter = ref('')
 const groupItems = ref<IEmailGroupListItem[]>([])
-const sortedItems = computed(() => {
+const filteredItems = computed(() => {
   const results = []
   if (props.extraItems.length > 0) {
     results.push(...props.extraItems)
   }
   results.push(...groupItems.value)
   results.sort((a, b) => a.order - b.order)
-  return results
+  if (!filter.value) return results
+  return results.filter(x => x.name.indexOf(filter.value) > -1)
 })
 
 // 初始化获取组
@@ -93,12 +98,12 @@ onMounted(async () => {
   groupItems.value = groups.map(x => ({ ...x, label: x.name, active: false, side: String(x.order) }))
 
   // 默认选中第一个
-  if (sortedItems.value.length > 0) {
-    activeGroup(sortedItems.value[0])
+  if (filteredItems.value.length > 0) {
+    activeGroup(filteredItems.value[0])
   }
 })
 function activeGroup (group: IEmailGroupListItem) {
-  sortedItems.value.forEach(x => { x.active = false })
+  filteredItems.value.forEach(x => { x.active = false })
   group.active = true
   modelValue.value = group
 }
