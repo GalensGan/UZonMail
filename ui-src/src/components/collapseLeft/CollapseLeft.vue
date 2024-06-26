@@ -1,5 +1,5 @@
 <template>
-  <div :class="collapseBarClass" @click="onCollapse">
+  <div class="collapse-bar" :class="collapseBarClass" @click="onCollapse">
     <q-tooltip anchor="center right" self="center left">
       {{ tooltipText }}
     </q-tooltip>
@@ -23,6 +23,10 @@ const tooltipText = computed(() => {
 </script>
 
 <style lang="scss" scoped>
+.collapse-bar {
+  z-index: 2000;
+}
+
 .collapse-bar__normal {
   position: relative;
   width: 10px;

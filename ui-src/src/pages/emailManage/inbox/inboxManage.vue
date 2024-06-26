@@ -1,10 +1,11 @@
 <template>
   <div class="full-height full-width row items-start">
     <EmailGroupList v-show="!isCollapseGroupList" v-model="emailGroupRef" :groupType="2" class="q-card q-mr-sm"
-      style="width: 160px;" />
+      style="min-width: 160px;" />
 
-    <q-table class="col full-height" :rows="rows" :columns="columns" row-key="id" v-model:pagination="pagination" dense
-      :loading="loading" :filter="filter" binary-state-sort @request="onTableRequest">
+    <q-table class="col full-height" :rows="rows" :columns="columns" row-key="id" virtual-scroll
+      v-model:pagination="pagination" dense :loading="loading" :filter="filter" binary-state-sort
+      @request="onTableRequest">
       <template v-slot:top-left>
         <div class="row justify-start q-gutter-sm">
           <CreateBtn tooltip="新增收件箱" @click="onNewInboxClick" :disable="!isValidEmailGroup"
@@ -143,7 +144,7 @@ const { inboxContextMenuItems } = useContextMenu(deleteRowById)
 .collapse-groups__open {
   position: absolute;
   top: 40%;
-  left: 190px;
+  left: 200px;
 }
 
 .collapse-groups__close {
