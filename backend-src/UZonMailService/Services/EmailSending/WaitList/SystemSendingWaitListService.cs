@@ -107,7 +107,7 @@ namespace UZonMailService.Services.EmailSending.WaitList
         /// 若返回空，会导致发送任务暂停
         /// </summary>
         /// <returns></returns>
-        public async Task<SendItem?> GetSendItem()
+        public async Task<SendItem?> GetSendItem(SqlContext sqlContext)
         {
             if (_userTasks.IsEmpty)
                 return null;
@@ -125,7 +125,7 @@ namespace UZonMailService.Services.EmailSending.WaitList
 
                 if (!_userTasks.TryDequeue(out var manager)) continue;
 
-                sendItem = await manager.GetSendItem();
+                sendItem = await manager.GetSendItem(sqlContext);
                 // 若为空，判断是否需要释放
                 if (sendItem == null)
                 {
@@ -150,9 +150,9 @@ namespace UZonMailService.Services.EmailSending.WaitList
         /// <summary>
         /// 邮件项发送完成回调
         /// </summary>
-        /// <param name="success"></param>
+        /// <param name="sendCompleteResult"></param>
         /// <returns></returns>
-        public async Task EmailItemSendCompleted(bool success)
+        public async Task EmailItemSendCompleted(SendCompleteResult sendCompleteResult)
         {
             // 从队列中移除某项
             // 会在出队时处理，此处暂不处理

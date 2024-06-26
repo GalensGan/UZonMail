@@ -51,6 +51,7 @@ namespace UZonMailService.Controllers.Emails
                 existOne.UserName = entity.UserName;
                 existOne.Description = entity.Description;
                 existOne.ProxyId = entity.ProxyId;
+                existOne.ReplyToEmails = entity.ReplyToEmails;
                 existOne.SetStatusNormal();
             }
             else
@@ -115,6 +116,7 @@ namespace UZonMailService.Controllers.Emails
                     entity.Description = newEntity.Description;
                     entity.ProxyId = newEntity.ProxyId;
                     entity.Name = newEntity.Name;
+                    entity.ReplyToEmails = newEntity.ReplyToEmails;
                     entity.SetStatusNormal();
                 }
             }
@@ -241,6 +243,7 @@ namespace UZonMailService.Controllers.Emails
                  .SetProperty(y => y.EnableSSL, entity.EnableSSL)
                  .SetProperty(y => y.Description, entity.Description)
                  .SetProperty(y => y.ProxyId, entity.ProxyId)
+                 .SetProperty(y=>y.ReplyToEmails,entity.ReplyToEmails)
                  );
             return true.ToSuccessResponse();
         }

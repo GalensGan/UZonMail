@@ -68,7 +68,7 @@ services.AddSwaggerGen(new OpenApiInfo()
         Url = new Uri("https://galens.uamazing.cn"),
         Email = "gmx_galens@163.com"
     }
-}, "Server.xml");
+}, "UZonMailService.xml");
 
 // 验证在 jwt 中实现
 // 添加 signalR，还需要在 app 中使用 MapHub
@@ -181,9 +181,11 @@ app.UseDefaultFiles();
 app.UseStaticFiles();
 
 // 设置 public 目录为静态文件目录
+var publicPath = Path.Combine(builder.Environment.ContentRootPath, "public");
+Directory.CreateDirectory(publicPath);
 app.UseStaticFiles(new StaticFileOptions()
 {
-    FileProvider = new PhysicalFileProvider(Path.Combine(builder.Environment.ContentRootPath, "public")),
+    FileProvider = new PhysicalFileProvider(publicPath),
     RequestPath = "/public"
 });
 

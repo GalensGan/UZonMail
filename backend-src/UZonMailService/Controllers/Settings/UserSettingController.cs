@@ -59,6 +59,7 @@ namespace UZonMailService.Controllers.Settings
                 exist.MinOutboxCooldownSecond = userSetting.MinOutboxCooldownSecond;
                 exist.MaxSendingBatchSize = userSetting.MaxSendingBatchSize;
                 exist.MinInboxCooldownHours = userSetting.MinInboxCooldownHours;
+                exist.ReplyToEmails = userSetting.ReplyToEmails;
             }
             await db.SaveChangesAsync();
 

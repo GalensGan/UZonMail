@@ -26,8 +26,10 @@ namespace Uamazing.Utils.Extensions
         /// </summary>
         /// <param name="str"></param>
         /// <returns></returns>
-        public static string[] SplitBySeparators(this string str)
+        public static string[] SplitBySeparators(this string? str)
         {
+            if (string.IsNullOrEmpty(str)) return Array.Empty<string>();
+
             // 将常见的分割符替换成逗号
             var regex = new Regex(@"[\s,;:|，；：/]+");
             return regex.Replace(str, ",").Split(",");

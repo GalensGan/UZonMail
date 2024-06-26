@@ -20,7 +20,7 @@ namespace UZonMailService.Services.EmailSending.Sender
     /// </summary>
     public class SendItem
     {
-        public SqlContext Db { get; set; }
+        public SqlContext SqlContext { get; set; }
         public IHubContext<UzonMailHub, IUzonMailClient> Hub { get; set; }
         public ILogger Logger { get; set; }
 
@@ -66,6 +66,11 @@ namespace UZonMailService.Services.EmailSending.Sender
         /// 密送人
         /// </summary>
         public List<EmailAddress>? BCC { get; set; }
+
+        /// <summary>
+        /// 回复的邮箱
+        /// </summary>
+        public List<string> ReplyToEmails { get; set; }
 
         /// <summary>
         /// 主题
@@ -125,7 +130,7 @@ namespace UZonMailService.Services.EmailSending.Sender
             }
 
             // 查找文件
-            var attachments = await Db.FileUsages.Where(f => FileUsageIds.Contains(f.Id))
+            var attachments = await SqlContext.FileUsages.Where(f => FileUsageIds.Contains(f.Id))
                .Include(x => x.FileObject)
                .ThenInclude(x => x.FileBucket)
                .Select(x => new { fullPath = $"{x.FileObject.FileBucket.RootDir}/{x.FileObject.Path}", fileName = x.DisplayName ?? x.FileName })
@@ -198,16 +203,16 @@ namespace UZonMailService.Services.EmailSending.Sender
         /// <param name="success"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        public async Task<SentStatus> UpdateSendingStatus(bool success, string message)
+        public async Task<SentStatus> UpdateSendingStatus(SendCompleteResult sendCompleteResult)
         {
             // 判断是否需要重试
-            if (!success && _triedCount < RetryMax)
+            if (!sendCompleteResult.Ok && _triedCount < RetryMax)
             {
                 _triedCount++;
                 return SentStatus.Retry;
             }
             // 保存到数据库
-            SendingItem updatedItem = await SaveSendItemInfos(success, message);
+            SendingItem updatedItem = await SaveSendItemInfos(sendCompleteResult);
 
             // 通知发送结果
             var client = Hub.GetUserClient(SendingItem.UserId);
@@ -217,17 +222,19 @@ namespace UZonMailService.Services.EmailSending.Sender
             }
 
             // 调用回调,通知上层处理结果
-            await _sendGroupTask.EmailItemSendCompleted(success, message);
-            return success ? SentStatus.OK : SentStatus.Failed;
+            await _sendGroupTask.EmailItemSendCompleted(sendCompleteResult);
+            return sendCompleteResult.Ok ? SentStatus.OK : SentStatus.Failed;
         }
 
         /// <summary>
         /// 保存 SendItem 状态
         /// </summary>
         /// <returns></returns>
-        private async Task<SendingItem> SaveSendItemInfos(bool success, string message)
+        private async Task<SendingItem> SaveSendItemInfos(SendCompleteResult sendCompleteResult)
         {
-            var db = Db;
+            var db = sendCompleteResult.SqlContext;
+            var success = sendCompleteResult.Ok;
+            var message = sendCompleteResult.Message;
 
             // 更新 sendingItems 状态            
             var data = await db.SendingItems.FirstOrDefaultAsync(x => x.Id == SendingItem.Id);
@@ -252,7 +259,7 @@ namespace UZonMailService.Services.EmailSending.Sender
             // 更新收件箱的最近收件日期
             await db.Inboxes.UpdateAsync(x => x.OrganizationId == SendingItem.OrganizationId,
                                x => x.SetProperty(y => y.LastBeDeliveredDate, DateTime.Now)
-                                .SetProperty(y=>y.LastSuccessDeliveryDate,DateTime.Now));
+                                .SetProperty(y => y.LastSuccessDeliveryDate, DateTime.Now));
 
             await db.SaveChangesAsync();
 
@@ -270,10 +277,10 @@ namespace UZonMailService.Services.EmailSending.Sender
         {
             if (!success) return;
             // 保存到数据库            
-            var outbox = await Db.Outboxes.FirstOrDefaultAsync(x => x.Id == Outbox.Id);
+            var outbox = await SqlContext.Outboxes.FirstOrDefaultAsync(x => x.Id == Outbox.Id);
             // 更新数据
             outbox.SentTotalToday = Outbox.SentTotalToday;
-            await Db.SaveChangesAsync();
+            await SqlContext.SaveChangesAsync();
         }
 
         private SendGroupTask _sendGroupTask;

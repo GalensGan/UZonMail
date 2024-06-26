@@ -454,6 +454,9 @@ namespace UZonMailService.Migrations.MySql
                     b.Property<string>("Remark")
                         .HasColumnType("longtext");
 
+                    b.Property<string>("ReplyToEmails")
+                        .HasColumnType("longtext");
+
                     b.Property<int>("SentTotalToday")
                         .HasColumnType("int");
 
@@ -986,6 +989,9 @@ namespace UZonMailService.Migrations.MySql
 
                     b.Property<int>("MinOutboxCooldownSecond")
                         .HasColumnType("int");
+
+                    b.Property<string>("ReplyToEmails")
+                        .HasColumnType("longtext");
 
                     b.Property<long>("UserId")
                         .HasColumnType("bigint");
