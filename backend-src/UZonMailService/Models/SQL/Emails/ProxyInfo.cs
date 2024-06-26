@@ -1,4 +1,5 @@
-﻿using MailKit.Net.Proxy;
+﻿using log4net;
+using MailKit.Net.Proxy;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
 
@@ -70,7 +71,7 @@ namespace UZonMailService.Models.SQL.Emails
         /// </summary>
         /// <param name="logger"></param>
         /// <returns></returns>
-        public ProxyClient? GetProxyClient(ILogger logger)
+        public ProxyClient? GetProxyClient(ILog logger)
         {
             if (_proxyClient != null) return _proxyClient;
 
@@ -89,7 +90,7 @@ namespace UZonMailService.Models.SQL.Emails
                 case "socks4a":
                     return new Socks4aClient(Host, Port, networkCredential);
                 default:
-                    logger.LogError("不支持的代理协议{Schema}", Schema);
+                    logger.Error($"不支持的代理协议{Schema}");
                     break;
             }
             return _proxyClient;

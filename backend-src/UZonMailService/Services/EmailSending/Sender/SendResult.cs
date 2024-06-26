@@ -3,11 +3,11 @@
 namespace UZonMailService.Services.EmailSending.Sender
 {
     /// <summary>
-    /// 发送完成的参数
+    /// 发送完成的结果
     /// </summary>
-    public class SendCompleteResult
+    public class SendResult
     {
-        public SendCompleteResult(SendItem sendItem, bool ok, string message)
+        public SendResult(SendItem sendItem, bool ok, string message)
         {
             SendItem = sendItem;
             Ok = ok;
@@ -25,13 +25,20 @@ namespace UZonMailService.Services.EmailSending.Sender
         /// 里面有当前进程的数据库上下文
         /// </summary>
         public SendItem SendItem { get;}
+
         /// <summary>
         /// 是否ok
         /// </summary>
         public bool Ok { get; }
+
         /// <summary>
         /// 消息
         /// </summary>
         public string Message { get;}
+
+        /// <summary>
+        /// 发送状态
+        /// </summary>
+        public SentStatus SentStatus { get; set; } = SentStatus.OK;
     }
 }

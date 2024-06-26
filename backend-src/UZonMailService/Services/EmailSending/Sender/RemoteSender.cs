@@ -6,7 +6,7 @@ namespace UZonMailService.Services.EmailSending.Sender
     /// </summary>
     public class RemoteSender : SendMethod
     {
-        public override Task<SentStatus> Send()
+        public override Task<SendResult> Send()
         {
             throw new NotImplementedException();
         }

@@ -2,6 +2,7 @@
 using MailKit.Net.Proxy;
 using MailKit.Net.Smtp;
 using MimeKit;
+using System.IO.Pipelines;
 
 namespace UZonMailService.Services.EmailSending.Sender
 {
@@ -19,14 +20,14 @@ namespace UZonMailService.Services.EmailSending.Sender
         /// 使用本机进行发件
         /// </summary>
         /// <returns></returns>
-        public override async Task<SentStatus> Send()
+        public override async Task<SendResult> Send()
         {
             ArgumentNullException.ThrowIfNull(sendItem);
 
             if (!sendItem.Validate())
             {
-                await UpdateSendingStatus(new SendCompleteResult(sendItem, false, "发件项数据不满足要求"));
-                return SentStatus.Failed;
+                await UpdateSendingStatus(new SendResult(sendItem, false, "发件项数据不满足要求"));
+                return new SendResult(sendItem, false, "发件项数据不满足要求") { SentStatus = SentStatus.Failed };
             }
 
             // 参考：https://github.com/jstedfast/MailKit/tree/master/Documentation/Examples
@@ -57,7 +58,7 @@ namespace UZonMailService.Services.EmailSending.Sender
                     message.Bcc.Add(new MailboxAddress(address.Name, address.Email));
                 }
             // 回信人
-            if (sendItem.ReplyToEmails.Count>0)
+            if (sendItem.ReplyToEmails.Count > 0)
             {
                 message.ReplyTo.AddRange(sendItem.ReplyToEmails.Select(x =>
                 {
@@ -85,19 +86,14 @@ namespace UZonMailService.Services.EmailSending.Sender
             }
             message.Body = bodyBuilder.ToMessageBody();
 
-            using var client = new SmtpClient();
             try
             {
-                // 添加代理
-                if (sendItem.ProxyInfo != null)
+                var client = await SmtpClientFactory.GetSmtpClientAsync(sendItem.Outbox, sendItem.ProxyInfo);
+                // 若返回 null,说明这个发件箱不能建立 smtp 连接，对它进行取消
+                if (client == null)
                 {
-                    client.ProxyClient = sendItem.ProxyInfo?.GetProxyClient(sendItem.Logger);
+                    return new SendResult(sendItem, false, "发件项数据不满足要求") { SentStatus = SentStatus.Retry | SentStatus.OutboxConnectError };
                 }
-                client.Connect(sendItem.Outbox.SmtpHost, sendItem.Outbox.SmtpPort, sendItem.Outbox.EnableSSL);
-
-                // Note: only needed if the SMTP server requires authentication
-                // 进行鉴权
-                if (!string.IsNullOrEmpty(sendItem.Outbox.AuthPassword)) client.Authenticate(sendItem.Outbox.AuthUserName, sendItem.Outbox.AuthPassword);
 
                 //client.MessageSent += (sender, args) =>
                 //{
@@ -109,16 +105,18 @@ namespace UZonMailService.Services.EmailSending.Sender
 #else
                 string sendResult = await client.SendAsync(message);
 #endif
-                return await UpdateSendingStatus(new SendCompleteResult(sendItem, true, sendResult));
+                var successResult = new SendResult(sendItem, true, sendResult);
+                var status = await UpdateSendingStatus(successResult);
+                successResult.SentStatus = status;
+                return successResult;
             }
             catch (Exception ex)
             {
                 sendItem.Logger.LogError(ex, ex.Message);
-                return await UpdateSendingStatus(new SendCompleteResult(sendItem, false, ex.Message));
-            }
-            finally
-            {
-                client.Disconnect(true);
+                var successResult = new SendResult(sendItem, true, ex.Message);
+                var status = await UpdateSendingStatus(new SendResult(sendItem, false, ex.Message));
+                successResult.SentStatus = status;
+                return successResult;
             }
         }
 
@@ -128,7 +126,7 @@ namespace UZonMailService.Services.EmailSending.Sender
         /// <param name="ok"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        protected virtual async Task<SentStatus> UpdateSendingStatus(SendCompleteResult sendCompleteResult)
+        protected virtual async Task<SentStatus> UpdateSendingStatus(SendResult sendCompleteResult)
         {
             return await sendItem.UpdateSendingStatus(sendCompleteResult);
         }

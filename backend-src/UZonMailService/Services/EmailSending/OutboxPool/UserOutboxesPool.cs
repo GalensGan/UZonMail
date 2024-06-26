@@ -1,5 +1,6 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using System.Collections.Concurrent;
+using System.Text.RegularExpressions;
 using Uamazing.Utils.Web.Service;
 using UZonMailService.Models.SQL.Emails;
 
@@ -56,10 +57,33 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
 
             // 建立快照，防止程序又向里面添加
             var tempBoxes = value.ToArray();
-            foreach(var box in tempBoxes)
+            foreach (var box in tempBoxes)
             {
                 box.SendingGroupIds.Remove(groupId);
                 if (box.SendingGroupIds.Count == 0)
+                {
+                    // 从原始数据中移除
+                    value.Remove(box);
+                    // 释放资源
+                    box.Dispose();
+                }
+            }
+        }
+
+        /// <summary>
+        /// 移除用户的发件箱
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="outboxEmail"></param>
+        public void RemoveOutbox(long userId, string outboxEmail)
+        {
+            if (!this.TryGetValue(userId, out var value)) return;
+
+            // 建立快照，防止程序又向里面添加
+            var tempBoxes = value.ToArray();
+            foreach (var box in tempBoxes)
+            {                
+                if (box.Email== outboxEmail)
                 {
                     // 从原始数据中移除
                     value.Remove(box);
@@ -86,7 +110,7 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
         /// <returns></returns>
         public int GetOutboxesCount(long sendingGroupId)
         {
-           var temps = this.ToArray();
+            var temps = this.ToArray();
             return temps.Sum(o => o.Value.Count(x => !x.ShouldDispose && x.SendingGroupIds.Contains(sendingGroupId)));
         }
 
@@ -113,8 +137,8 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
             {
                 result = outboxes.FirstOrDefault(o => o.Enable && o.SendingGroupIds.Contains(sendingGroupId));
             }
-           
-            if(result==null) return null;
+
+            if (result == null) return null;
 
             // 取出来后，进入冷却时间
             // 避免被其它线程取出

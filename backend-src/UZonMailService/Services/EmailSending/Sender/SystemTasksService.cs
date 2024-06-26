@@ -76,7 +76,7 @@ namespace UZonMailService.Services.EmailSending.Sender
                 // 每个进程一个暂停信号
                 var autoResetEvent = new AutoResetEventWrapper(false, ssf);
                 EmailSendingTask task = new(async () =>
-                {                   
+                {
                     // 任务开始
                     await DoWork(_tokenSource, autoResetEvent);
                 }, _tokenSource)
@@ -172,14 +172,19 @@ namespace UZonMailService.Services.EmailSending.Sender
 
                 // 发送邮件
                 var sendMethod = sendItem.ToSendMethod();
-                var status = await sendMethod.Send();
-                if (status == SentStatus.Retry)
+                var sendResult = await sendMethod.Send();
+                // 若是发件箱错误，则将发件箱从队列中移除
+                if (sendResult.SentStatus.HasFlag(SentStatus.OutboxConnectError) && sendResult.SendItem != null)
+                {
+                    outboxesPool.RemoveOutbox(sendResult.SendItem.SendingItem.UserId, sendResult.SendItem.Outbox.Email);
+                }
+
+                if (sendResult.SentStatus.HasFlag(SentStatus.Retry))
                 {
                     // 发送失败，重新加入队列，可能会分配到其它线程去执行
                     sendItem.Enqueue();
                     // 通知收件
                     StartSending(1);
-                    continue;
                 }
             }
         }

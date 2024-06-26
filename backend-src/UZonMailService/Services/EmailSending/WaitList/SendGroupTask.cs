@@ -407,7 +407,7 @@ namespace UZonMailService.Services.EmailSending.WaitList
                     .SetProperty(y => y.SendResult, "未匹配到发件箱")
                 );
                 // 说明未匹配到发件箱，需要将当前发件移除
-                await EmailItemSendCompleted(new SendCompleteResult(sendItem, false, "未匹配到发件箱"));
+                await EmailItemSendCompleted(new SendResult(sendItem, false, "未匹配到发件箱"));
                 return null;
             }
 
@@ -428,7 +428,7 @@ namespace UZonMailService.Services.EmailSending.WaitList
                     .SetProperty(y => y.SendDate, DateTime.Now)
                     .SetProperty(y => y.SendResult, message)
                 );
-                await EmailItemSendCompleted(new SendCompleteResult(sendItem, false, message));
+                await EmailItemSendCompleted(new SendResult(sendItem, false, message));
                 return null;
             }
 
@@ -528,7 +528,7 @@ namespace UZonMailService.Services.EmailSending.WaitList
         /// 只有失败或者成功才会触发，重发时不会触发
         /// </summary>
         /// <param name="sendCompleteResult">发送结果</param>
-        public async Task EmailItemSendCompleted(SendCompleteResult sendCompleteResult)
+        public async Task EmailItemSendCompleted(SendResult sendCompleteResult)
         {
             // 只有已经发送成功或者不重试了，才读入进度
             sendingItemsCounter.IncreaseSuccessCount(sendCompleteResult.Ok);

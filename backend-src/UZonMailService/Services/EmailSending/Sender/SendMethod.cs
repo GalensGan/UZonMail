@@ -9,6 +9,6 @@
         /// 发送邮件
         /// </summary>
         /// <returns></returns>
-        public abstract Task<SentStatus> Send();
+        public abstract Task<SendResult> Send();
     }
 }

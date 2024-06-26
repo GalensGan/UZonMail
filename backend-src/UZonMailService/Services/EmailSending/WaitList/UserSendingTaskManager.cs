@@ -187,7 +187,7 @@ namespace UZonMailService.Services.EmailSending.WaitList
         /// </summary>
         /// <param name="sendCompleteResult"></param>
         /// <returns></returns>
-        public async Task EmailItemSendCompleted(SendCompleteResult sendCompleteResult)
+        public async Task EmailItemSendCompleted(SendResult sendCompleteResult)
         {
             // 移除已经完成的任务
             // 获取需要移除的任务

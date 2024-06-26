@@ -152,7 +152,7 @@ namespace UZonMailService.Services.EmailSending.WaitList
         /// </summary>
         /// <param name="sendCompleteResult"></param>
         /// <returns></returns>
-        public async Task EmailItemSendCompleted(SendCompleteResult sendCompleteResult)
+        public async Task EmailItemSendCompleted(SendResult sendCompleteResult)
         {
             // 从队列中移除某项
             // 会在出队时处理，此处暂不处理

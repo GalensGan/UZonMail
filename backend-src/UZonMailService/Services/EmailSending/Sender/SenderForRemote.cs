@@ -13,12 +13,15 @@ namespace UZonMailService.Services.EmailSending.Sender
             this.sendItem = sendItem;
         }
 
-        public override Task<SentStatus> Send()
+        public override async Task<SendResult> Send()
         {
-            return UpdateSendingStatus(new SendCompleteResult(sendItem,true,""));
+            var sendResult = new SendResult(sendItem, true, "");
+            var status = await UpdateSendingStatus(sendResult);
+            sendResult.SentStatus = status;
+            return sendResult;
         }
 
-        protected override async Task<SentStatus> UpdateSendingStatus(SendCompleteResult sendCompleteResult)
+        protected override async Task<SentStatus> UpdateSendingStatus(SendResult sendCompleteResult)
         {
             // 在此处将结果返回给远程机
             return SentStatus.OK;

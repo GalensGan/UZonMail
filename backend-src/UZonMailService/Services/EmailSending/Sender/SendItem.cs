@@ -203,7 +203,7 @@ namespace UZonMailService.Services.EmailSending.Sender
         /// <param name="success"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        public async Task<SentStatus> UpdateSendingStatus(SendCompleteResult sendCompleteResult)
+        public async Task<SentStatus> UpdateSendingStatus(SendResult sendCompleteResult)
         {
             // 判断是否需要重试
             if (!sendCompleteResult.Ok && _triedCount < RetryMax)
@@ -230,7 +230,7 @@ namespace UZonMailService.Services.EmailSending.Sender
         /// 保存 SendItem 状态
         /// </summary>
         /// <returns></returns>
-        private async Task<SendingItem> SaveSendItemInfos(SendCompleteResult sendCompleteResult)
+        private async Task<SendingItem> SaveSendItemInfos(SendResult sendCompleteResult)
         {
             var db = sendCompleteResult.SqlContext;
             var success = sendCompleteResult.Ok;
