@@ -7,7 +7,7 @@
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <UserSecretsId>f2aa302e-c8fb-40d2-9a58-a6348ffd6c03</UserSecretsId>
     <Platforms>x64</Platforms>
-    <FileVersion>0.7.2.0</FileVersion>	
+    <FileVersion>0.7.3.0</FileVersion>	
   </PropertyGroup>
 
   <ItemGroup>
