@@ -49,7 +49,19 @@ namespace UZonMailService.Controllers.Emails
             {
                 dbSet = dbSet.Where(x => x.Subjects.Contains(filter));
             }
-            //dbSet = dbSet.Include(x => x.Templates).Include(x => x.Outboxes);
+            dbSet = dbSet.Include(x => x.Templates).Include(x => x.Outboxes)
+                .Select(x => new SendingGroup()
+                {
+                    Id = x.Id,
+                    Subjects = x.Subjects,
+                    SendingType = x.SendingType,
+                    Status = x.Status,
+                    Templates = x.Templates,
+                    Outboxes = x.Outboxes,
+                    SuccessCount = x.SuccessCount,
+                    CreateDate = x.CreateDate,
+                    TotalCount = x.TotalCount
+                });
 
             var results = await dbSet.Page(pagination).ToListAsync();
             return results.Select(x => new SendingHistoryResult(x)).ToList().ToSuccessResponse();

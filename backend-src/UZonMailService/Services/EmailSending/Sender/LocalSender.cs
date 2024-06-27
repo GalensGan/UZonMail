@@ -31,7 +31,6 @@ namespace UZonMailService.Services.EmailSending.Sender
             }
 
             // 参考：https://github.com/jstedfast/MailKit/tree/master/Documentation/Examples
-
             // 本机发件逻辑
             var message = new MimeMessage();
             // 发件人

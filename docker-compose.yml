@@ -6,7 +6,7 @@
 version: '3.8'
 services:
   # mysql
-  mysql:
+  uzon-mysql:
     container_name: uzon-mysql
     image: mysql:8.4.0
     ports:
@@ -26,9 +26,9 @@ services:
       - uzon-network
 
   # redis 缓存
-  redis:
+  uzon-redis:
     container_name: uzon-redis
-    image: redis:latest
+    image: redis:7.2.5
     ports:
       - 6380:6379
     volumes:
@@ -38,9 +38,9 @@ services:
       - uzon-network
 
   # 程序主体
-  uzon-mail:
-    container_name: uzon-mail
-    image: mcr.microsoft.com/dotnet/aspnet:8.0
+  uzon-mail-server:
+    container_name: uzon-mail-server
+    image: uzon-mail
     build: . # 使用当前目录下的 Dockerfile 文件构建镜像
     ports:
       - 22345:22345
@@ -48,6 +48,9 @@ services:
       - ./docker/uzon-mail/src:/app
     networks:
       - uzon-network
+    # command: ["dotnet", "UZonMailService.dll"]
+    init: true
+    command: [ "sh", "-c", "exec sleep infinity" ]
     depends_on:
       - uzon-mysql
       - uzon-redis

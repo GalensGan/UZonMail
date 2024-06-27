@@ -23,6 +23,7 @@ namespace UZonMailService.Services.EmailSending.Sender
             var key = outbox.AuthUserName;
             if(_smptClients.TryGetValue(key,out var value))
             {
+                _logger.Info($"获取 SmtpClient: {outbox.AuthUserName}");
                 // 判断是否过期
                 if (value.IsConnected) return value;
                 // 说明已经断开,进行移除
