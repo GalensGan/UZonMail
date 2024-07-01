@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using log4net;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Concurrent;
@@ -6,6 +7,8 @@ using Uamazing.Utils.Web.Service;
 using UZonMailService.Models.SQL;
 using UZonMailService.Models.SQL.Emails;
 using UZonMailService.Models.SQL.EmailSending;
+using UZonMailService.Services.EmailSending.Event;
+using UZonMailService.Services.EmailSending.Event.Commands;
 using UZonMailService.Services.EmailSending.Models;
 using UZonMailService.Services.EmailSending.OutboxPool;
 using UZonMailService.Services.EmailSending.Sender;
@@ -17,55 +20,59 @@ namespace UZonMailService.Services.EmailSending.WaitList
 {
     /// <summary>
     /// 单个用户的发件任务管理
+    /// 先添加先发送
     /// </summary>
-    public class UserSendingTaskManager : List<SendGroupTask>
+    public class UserSendingGroupsPool : ConcurrentBag<SendingGroupTask>
     {
-        private readonly SystemSendingWaitListService waitingList;
-        private readonly IHubContext<UzonMailHub, IUzonMailClient> hub;
-        private readonly UserOutboxesPool outboxesPool;
-        private readonly SqlContext db;
-        private readonly ILogger logger;
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(UserSendingGroupsPool));
 
         /// <summary>
         /// 构造函数
         /// </summary>
-        /// <param name="scope"></param>
-        /// <param name="waitingList"></param>
-        /// <param name="hub"></param>
-        /// <param name="outboxesPool"></param>
-        /// <param name="db"></param>
-        /// <param name="logger"></param>
-        public UserSendingTaskManager(
-            AsyncServiceScope scope,
-            SystemSendingWaitListService waitingList
-            , IHubContext<UzonMailHub, IUzonMailClient> hub
-            , UserOutboxesPool outboxesPool
-            , SqlContext db,
-            ILogger logger
-            )
+        /// <param name="userId"></param>
+        public UserSendingGroupsPool(long userId)
         {
-            Scope = scope;
-            this.waitingList = waitingList;
-            this.hub = hub;
-            this.outboxesPool = outboxesPool;
-            this.db = db;
-            this.logger = logger;
-
-            outboxesPool.OutboxDisposed += OutboxesPool_OutboxDisposed;
+            UserId = userId;
+            // 注册发作箱释放事件
+            EventCenter.Core.DataChanged += EventCenter_DataChanged;
         }
 
-        // 发件箱因最大发件数限制被释放
-        private void OutboxesPool_OutboxDisposed(OutboxEmailAddress emailAddress)
+        #region 事件监听
+        private async Task EventCenter_DataChanged(object? arg1, CommandBase arg2)
         {
+            switch (arg2.CommandType)
+            {
+                case CommandType.OutboxDisposed:
+                    OutboxesPool_OutboxDisposed(arg2);
+                    break;
+                default:
+                    return;
+            }
+        }
+
+        /// <summary>
+        /// 发件箱被释放了
+        /// </summary>
+        /// <param name="args"></param>
+        private void OutboxesPool_OutboxDisposed(CommandBase command)
+        {
+            if (outboxEmailAddress == null)
+            {
+                return;
+            }
+
+            // 移除发件项相关的发件项
+
+
             var tasksTemp = this.ToList();
-            List<long> groupIds = tasksTemp.Select(x => x.GroupId).ToList();
+            List<long> groupIds = tasksTemp.Select(x => x.SendingGroupId).ToList();
             var intersectIds = groupIds.Intersect(emailAddress.SendingGroupIds).ToList();
             if (intersectIds.Count == 0) return;
 
             // 判断任务是否不存在发件箱，若不存在，则移除
             foreach (var task in tasksTemp)
             {
-                int usableCount = outboxesPool.GetOutboxesCount(task.GroupId);
+                int usableCount = outboxesPool.GetOutboxesCount(task.SendingGroupId);
                 if (usableCount != 0) continue;
 
                 // 取消任务
@@ -73,7 +80,16 @@ namespace UZonMailService.Services.EmailSending.WaitList
                 this.Remove(task);
             }
         }
+        #endregion
 
+        #region 内部字段定义
+        // 所有的发件箱
+        private List<string> _outboxes = new();
+        #endregion
+
+        #region 公开属性
+
+        #endregion
         /// <summary>
         /// 用户 id
         /// </summary>
@@ -83,40 +99,32 @@ namespace UZonMailService.Services.EmailSending.WaitList
 
         /// <summary>
         /// 添加发件组任务
+        /// 若包含 sendingItemIds，则只发送这部分邮件
         /// </summary>
-        /// <param name="sendingGroupId"></param>
+        /// <param name="scopeServices"></param>
+        /// <param name="sendingGroupId">传入时请保证组一定存在</param>
+        /// <param name="smtpPasswordSecretKeys"></param>
+        /// <param name="sendingItemIds"></param>
         /// <returns></returns>
-        public async Task<bool> AddSendingGroup(long sendingGroupId, List<string> smtpPasswordSecretKeys, List<long>? sendingItemIds = null)
+        public async Task<bool> AddSendingGroup(ScopeServices scopeServices, long sendingGroupId, List<string> smtpPasswordSecretKeys, List<long>? sendingItemIds = null)
         {
-            // 获取 sendingGroup
-            var group = await db.SendingGroups.Where(x => x.Id == sendingGroupId)
-                .Include(x => x.Templates)
-                .Include(x => x.Outboxes)
-                .FirstOrDefaultAsync();
-            if (group == null) return false;
-            if (group.UserId != UserId)
-                return false;
-            // 检查是否已经存在
-            if (this.Any(t => t.GroupId == group.Id))
-                return false;
-            group.SmtpPasswordSecretKeys = smtpPasswordSecretKeys;
-
             // 有可能发件组已经存在
-            var tasks = this.ToList();
-            var existTask = tasks.FirstOrDefault(x => x.GroupId == group.Id);
+            var existTask = this.FirstOrDefault(x => x.SendingGroupId == sendingGroupId);
             if (existTask == null)
             {
                 // 重新初始化
                 // 添加到列表
-                var newTask = await SendGroupTask.Create(this, group, db, outboxesPool, hub, logger);
-                var success = await newTask.InitSendingItems(sendingItemIds);
+                var newTask = await SendingGroupTask.Create(scopeServices, sendingGroupId, smtpPasswordSecretKeys);
+                if (newTask == null) return false;
+
+                var success = await newTask.InitSendingItems(scopeServices, sendingItemIds);
                 if (!success) return false;
                 this.Add(newTask);
             }
             else
             {
                 // 复用原来的数据
-                await existTask.InitSendingItems(sendingItemIds);
+                await existTask.InitSendingItems(scopeServices, sendingItemIds);
             }
 
             return true;
@@ -131,7 +139,7 @@ namespace UZonMailService.Services.EmailSending.WaitList
         public void SwitchSendTaskStatus(SendingGroup group, bool pause)
         {
             // 查找发件组
-            var task = this.FirstOrDefault(t => t.GroupId == group.Id);
+            var task = this.FirstOrDefault(t => t.SendingGroupId == group.Id);
             if (task != null)
             {
                 // 暂停发件
@@ -146,7 +154,7 @@ namespace UZonMailService.Services.EmailSending.WaitList
         /// <returns></returns>
         public async Task CancelSending(SendingGroup group)
         {
-            var task = this.FirstOrDefault(t => t.GroupId == group.Id);
+            var task = this.FirstOrDefault(t => t.SendingGroupId == group.Id);
             if (task != null)
             {
                 await task.MarkCancelled();
@@ -157,29 +165,22 @@ namespace UZonMailService.Services.EmailSending.WaitList
         }
 
         /// <summary>
-        /// 获取组中的发件项
+        /// 获取组中可被 outboxId 发送的邮件项
         /// </summary>
         /// <returns></returns>
-        public async Task<SendItem?> GetSendItem(SqlContext sqlContext)
+        public async Task<SendItem?> GetSendItem(SqlContext sqlContext, OutboxEmailAddress outbox)
         {
-            if (outboxesPool.Count == 0)
-                return null;
-
-            if (this.Count == 0) return null;
-
             // 依次获取发件项
-            SendItem? sendItem = null;
-            for (int index = 0; index < this.Count; index++)
+            foreach (var groupTask in this)
             {
-                var groupTask = this[index];
-                sendItem = await groupTask.GetSendItem(sqlContext);
+                var sendItem = await groupTask.GetSendItem(sqlContext, outbox);
                 if (sendItem != null)
                 {
                     break;
                 }
             }
 
-            return sendItem;
+            return null;
         }
 
         /// <summary>
@@ -196,7 +197,7 @@ namespace UZonMailService.Services.EmailSending.WaitList
             foreach (var task in tasks)
             {
                 this.Remove(task);
-                outboxesPool.RemoveOutbox(UserId, task.GroupId);
+                outboxesPool.RemoveOutbox(UserId, task.SendingGroupId);
             }
 
             // 向上回调

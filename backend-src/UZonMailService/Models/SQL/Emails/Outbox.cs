@@ -66,35 +66,8 @@ namespace UZonMailService.Models.SQL.Emails
         public string? ReplyToEmails { get; set; }
 
         /// <summary>
-        /// 转成发件地址
+        /// 发件权重
         /// </summary>
-        /// <param name="userSetting"></param>
-        /// <param name="groupId"></param>
-        /// <returns></returns>
-        public OutboxEmailAddress ToOutboxEmailAddress(UserSetting userSetting, long groupId, List<string> smtpPasswordSecretKeys)
-        {
-            // 对密码进行解密
-            var plainPassword = Password.DeAES(smtpPasswordSecretKeys[0], smtpPasswordSecretKeys[1]);
-            var result = new OutboxEmailAddress(userSetting)
-            {
-                // 对密码解密
-                AuthPassword = plainPassword,
-                AuthUserName = UserName,
-                SmtpHost = SmtpHost,
-                SmtpPort = SmtpPort,
-                CreateDate = DateTime.Now,
-                Email = Email,
-                Name = Name,
-                EnableSSL = EnableSSL,
-                Id = Id,
-                MaxSendCountPerDay = MaxSendCountPerDay,
-                SentTotalToday = SentTotalToday,
-
-                SendingGroupIds = [groupId],
-                ProxyId = ProxyId,
-                ReplyToEmails = ReplyToEmails.SplitBySeparators().Distinct().ToList()
-            };
-            return result;
-        }
+        public int SendingWeight { get; set; }
     }
 }

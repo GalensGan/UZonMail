@@ -283,8 +283,8 @@ namespace UZonMailService.Services.EmailSending.Sender
             await SqlContext.SaveChangesAsync();
         }
 
-        private SendGroupTask _sendGroupTask;
-        public void SetSendGroupTask(SendGroupTask sendGroupTask)
+        private SendingGroupTask _sendGroupTask;
+        public void SetSendGroupTask(SendingGroupTask sendGroupTask)
         {
             _sendGroupTask = sendGroupTask;
         }

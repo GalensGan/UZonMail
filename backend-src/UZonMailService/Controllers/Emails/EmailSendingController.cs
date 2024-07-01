@@ -18,8 +18,8 @@ namespace UZonMailService.Controllers.Emails
     /// </summary>
     public class EmailSendingController(SqlContext db
         , SendingGroupService sendingService
-        , SystemSendingWaitListService waitList
-        , SystemTasksService tasksService
+        , UserSendingGroupsManager waitList
+        , SendingThreadManager tasksService
         ) : ControllerBaseV1
     {
         /// <summary>

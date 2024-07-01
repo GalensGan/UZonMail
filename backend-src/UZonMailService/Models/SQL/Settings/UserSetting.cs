@@ -10,6 +10,13 @@ namespace UZonMailService.Models.SQL.Settings
     public class UserSetting : SqlId
     {
         /// <summary>
+        /// 优先级
+        /// 优先级大的覆盖小的
+        /// 同等优先级，按选择顺序进行覆盖，后者覆盖前者
+        /// </summary>
+        public int Priority { get; set; }
+
+        /// <summary>
         /// 用户 id
         /// </summary>
         public long UserId { get; set; }

@@ -1,6 +1,11 @@
-﻿using System.Timers;
+﻿using log4net;
+using System.Timers;
 using Uamazing.Utils.Web.Service;
 using UZonMailService.Models.SQL;
+using UZonMailService.Services.EmailSending.Base;
+using UZonMailService.Services.EmailSending.Event;
+using UZonMailService.Services.EmailSending.Event.Commands;
+using UZonMailService.Services.EmailSending.Models;
 using UZonMailService.Services.EmailSending.OutboxPool;
 using UZonMailService.Services.EmailSending.WaitList;
 using Timer = System.Timers.Timer;
@@ -8,36 +13,50 @@ using Timer = System.Timers.Timer;
 namespace UZonMailService.Services.EmailSending.Sender
 {
     /// <summary>
-    /// 系统级发件调度中心
+    /// 系统级发件中心
     /// </summary>
-    public class SystemTasksService : ISingletonService
+    public class SendingThreadManager : ISingletonService
     {
+        private ILog _logger = LogManager.GetLogger(typeof(SendingThreadManager));
+
         private IServiceScopeFactory ssf;
-        private SystemSendingWaitListService waitList;
-        private UserOutboxesPool outboxesPool;
+        private UserSendingGroupsManager waitList;
+        private UserOutboxesPoolManager outboxesPool;
 
         /// <summary>
         /// 构造
         /// </summary>
         /// <param name="waitList"></param>
         /// <param name="outboxesPool"></param>
-        public SystemTasksService(
+        public SendingThreadManager(
               IServiceScopeFactory ssf
-            , SystemSendingWaitListService waitList
-            , UserOutboxesPool outboxesPool)
+            , UserSendingGroupsManager waitList
+            , UserOutboxesPoolManager outboxesPool)
         {
             this.ssf = ssf;
             this.waitList = waitList;
             this.outboxesPool = outboxesPool;
 
-            // 注册事件
-            outboxesPool.OutboxCoolDownFinish += OutboxesPool_OutboxCoolDownFinish;
+            EventCenter.Core.DataChanged += EventCenter_DataChanged;
+
+            // 自动激活，防止特殊情况被锁死
+            SetAutoActive();
         }
 
-        private void OutboxesPool_OutboxCoolDownFinish(int count)
+        private async Task EventCenter_DataChanged(object? arg1, CommandBase arg2)
         {
-            // 开始发件
-            StartSending(count);
+            switch (arg2.CommandType)
+            {
+                case CommandType.StartSending:
+                    {
+                        if (arg2 is not StartSendingCommand startSendingCommand)
+                            break;
+                        StartSending(startSendingCommand.Data);
+                        break;
+                    }
+                default:
+                    break;
+            }
         }
 
         private CancellationTokenSource? _tokenSource = new();
@@ -49,22 +68,15 @@ namespace UZonMailService.Services.EmailSending.Sender
         #region 外部调用的方法
         /// <summary>
         /// 外部调用该方法开始发件
-        /// 为了简化逻辑，每次调用会打开所有的线程
+        /// 每次调用会打开指定数量的线程
         /// </summary>
+        /// <param name="activeCount">若小于等于 0，则全部激活</param>
         public void StartSending(int activeCount = 0)
         {
-            // 获取需要的发件数，根据发件数，智能增加任务
-            int emailTypesCount = outboxesPool.GetOutboxesCount();
             // 获取核心数
             int coreCount = Environment.ProcessorCount;
-
-            int tasksCount = Math.Min(emailTypesCount, coreCount);
-            if (tasksCount == 0)
-            {
-                // 没有发件箱时，清理任务
-                ClearTasks();
-                return;
-            }
+            // 保证数据库查询期间有其它任务处理任务
+            int tasksCount = coreCount * 2;
 
             // 所有线程共用取消信号
             _tokenSource ??= new CancellationTokenSource();
@@ -118,6 +130,27 @@ namespace UZonMailService.Services.EmailSending.Sender
             }
         }
 
+        private Timer? _timer;
+        /// <summary>
+        /// 每隔 1 分钟激活一次，防止因特殊原因锁死
+        /// </summary>
+        public void SetAutoActive()
+        {
+            if (_timer == null)
+            {
+                _timer = new Timer(60000)
+                {
+                    AutoReset = true
+                };
+
+                _timer.Elapsed += (sender, e) =>
+                {
+                    StartSending(1);
+                };
+                _timer.Start();
+            }
+        }
+
         /// <summary>
         /// 清除现有的任务
         /// </summary>
@@ -134,25 +167,9 @@ namespace UZonMailService.Services.EmailSending.Sender
             _sendingTasks.Clear();
         }
 
-        private Timer? _timer;
-        /// <summary>
-        /// 线程动态扩容
-        /// </summary>
-        private void DynamicExendTasks()
-        {
-            // 每 1 分钟检查一次
-            _timer = new Timer(60000);
-            _timer.Elapsed += Timer_Elapsed;
-            _timer.Start();
-        }
-        private void Timer_Elapsed(object? sender, ElapsedEventArgs? e)
-        {
-            // 每隔 1 分钟激活一次线程，防止线程一直处于等待状态
-            StartSending();
-        }
-
         /// <summary>
         /// 开始任务
+        /// 以发件箱的数据为索引进行发件，提高发件箱利用率
         /// </summary>
         /// <param name="tokenSource"></param>
         /// <returns></returns>
@@ -161,8 +178,31 @@ namespace UZonMailService.Services.EmailSending.Sender
             // 当线程没有取消时
             while (!tokenSource.IsCancellationRequested)
             {
-                // 激活后，从队列中取出任务
-                var sendItem = await waitList.GetSendItem(autoResetEvent.SqlContext);
+                // 若没有数据上下文，报错
+                if (autoResetEvent.Scope == null)
+                {
+                    _logger.Error("在线程中获取作用域失败");
+                    autoResetEvent.WaitOne();
+                    continue;
+                }
+
+                // 生成服务
+                var scopeServices = new ScopeServices(autoResetEvent.Scope.ServiceProvider);
+
+                // 取出发件箱
+                // 并解析发件箱的代理信息
+                var outboxResult = await outboxesPool.GetOutboxByWeight(scopeServices);
+                if (outboxResult.NotOk)
+                {
+                    // 没有可用发件箱，继续等待
+                    // 有可能处于冷却中
+                    autoResetEvent.WaitOne();
+                    continue;
+                }
+
+                var outbox = outboxResult.Data;
+                // 取出该发件箱对应的邮件数据
+                var sendItem = await waitList.GetSendItem(scopeServices, outbox);
                 if (sendItem == null)
                 {
                     // 没有任务，继续等待
@@ -178,6 +218,8 @@ namespace UZonMailService.Services.EmailSending.Sender
                 {
                     outboxesPool.RemoveOutbox(sendResult.SendItem.SendingItem.UserId, sendResult.SendItem.Outbox.Email);
                 }
+
+                // 清理资源
 
                 if (sendResult.SentStatus.HasFlag(SentStatus.Retry))
                 {

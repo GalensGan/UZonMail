@@ -11,8 +11,8 @@ namespace UZonMailService.Services.EmailSending
     /// 为 EmailSendingController 提供服务
     /// </summary>
     public class EmailSendingService(SqlContext db
-        , SystemTasksService tasksService
-        , SystemSendingWaitListService waitList) : IScopedService
+        , SendingThreadManager tasksService
+        , UserSendingGroupsManager waitList) : IScopedService
     {
         /// <summary>
         /// 恢复中断的发件任务

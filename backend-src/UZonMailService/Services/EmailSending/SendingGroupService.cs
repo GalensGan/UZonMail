@@ -7,6 +7,7 @@ using UZonMailService.Jobs;
 using UZonMailService.Models.SQL;
 using UZonMailService.Models.SQL.EmailSending;
 using UZonMailService.Models.SQL.Settings;
+using UZonMailService.Services.EmailSending.Models;
 using UZonMailService.Services.EmailSending.Sender;
 using UZonMailService.Services.EmailSending.WaitList;
 using UZonMailService.Services.Settings;
@@ -19,9 +20,10 @@ namespace UZonMailService.Services.EmailSending
     /// </summary>
     public class SendingGroupService(SqlContext db
         , TokenService tokenService
-        , SystemTasksService tasksService
-        , SystemSendingWaitListService waitList
+        , SendingThreadManager tasksService
+        , UserSendingGroupsManager waitList
         , ISchedulerFactory schedulerFactory
+        , IServiceProvider serviceProvider
         ) : IScopedService
     {
         /// <summary>
@@ -162,8 +164,9 @@ namespace UZonMailService.Services.EmailSending
         /// <returns></returns>
         public async Task SendNow(SendingGroup sendingGroup, List<long>? sendItemIds = null)
         {
+            var scopeServices = new ScopeServices(serviceProvider);
             // 添加到发件列表
-            await waitList.AddSendingGroup(sendingGroup, sendItemIds);
+            await waitList.AddSendingGroup(scopeServices, sendingGroup, sendItemIds);
             // 开始发件
             tasksService.StartSending();
         }
