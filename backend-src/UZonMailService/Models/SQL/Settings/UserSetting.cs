@@ -53,6 +53,12 @@ namespace UZonMailService.Models.SQL.Settings
         public string? ReplyToEmails { get; set; }
 
         /// <summary>
+        /// 最大重试次数
+        /// 若为 0 则不重试
+        /// </summary>
+        public int MaxRetryCount { get; set; } = 3;
+
+        /// <summary>
         /// 回复邮件地址列表
         /// </summary>
         [NotMapped]

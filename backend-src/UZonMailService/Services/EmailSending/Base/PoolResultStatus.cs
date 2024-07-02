@@ -9,5 +9,7 @@
         EmptyError,
 
         CooldownError,
+
+        LockError
     }
 }

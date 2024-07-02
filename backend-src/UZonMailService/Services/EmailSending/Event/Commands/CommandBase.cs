@@ -1,4 +1,4 @@
-﻿using UZonMailService.Services.EmailSending.Models;
+﻿using UZonMailService.Services.EmailSending.Pipeline;
 
 namespace UZonMailService.Services.EmailSending.Event.Commands
 {
@@ -8,7 +8,7 @@ namespace UZonMailService.Services.EmailSending.Event.Commands
     /// </summary>
     public abstract class CommandBase : EventArgs
     {
-        public CommandBase(CommandType commandType, ScopeServices scopeServices)
+        public CommandBase(CommandType commandType, SendingContext scopeServices)
         {
             CommandType = commandType;
             ScopeServices = scopeServices;
@@ -19,7 +19,7 @@ namespace UZonMailService.Services.EmailSending.Event.Commands
         /// </summary>
         public CommandType CommandType { get; }
 
-        public ScopeServices ScopeServices { get; }
+        public SendingContext ScopeServices { get; }
 
         /// <summary>
         /// 上一级事件参数

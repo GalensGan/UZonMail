@@ -8,6 +8,8 @@ using UZonMailService.Models.SQL;
 using UZonMailService.Models.SQL.EmailSending;
 using UZonMailService.Models.SQL.Settings;
 using UZonMailService.Services.EmailSending.Models;
+using UZonMailService.Services.EmailSending.OutboxPool;
+using UZonMailService.Services.EmailSending.Pipeline;
 using UZonMailService.Services.EmailSending.Sender;
 using UZonMailService.Services.EmailSending.WaitList;
 using UZonMailService.Services.Settings;
@@ -22,6 +24,7 @@ namespace UZonMailService.Services.EmailSending
         , TokenService tokenService
         , SendingThreadManager tasksService
         , UserSendingGroupsManager waitList
+        , UserOutboxesPoolManager userOutboxesPoolManager
         , ISchedulerFactory schedulerFactory
         , IServiceProvider serviceProvider
         ) : IScopedService
@@ -164,7 +167,7 @@ namespace UZonMailService.Services.EmailSending
         /// <returns></returns>
         public async Task SendNow(SendingGroup sendingGroup, List<long>? sendItemIds = null)
         {
-            var scopeServices = new ScopeServices(serviceProvider);
+            var scopeServices = new SendingContext(serviceProvider);
             // 添加到发件列表
             await waitList.AddSendingGroup(scopeServices, sendingGroup, sendItemIds);
             // 开始发件
@@ -196,6 +199,16 @@ namespace UZonMailService.Services.EmailSending
                 .Build();
 
             await scheduler.ScheduleJob(job, trigger);
+        }
+
+        /// <summary>
+        /// 移除发件任务
+        /// </summary>
+        /// <returns></returns>
+        public async Task RemoveSendingGroupTask(SendingGroup sendingGroup)
+        {
+            // 找到关联的发件箱
+            userOutboxesPoolManager.
         }
     }
 }

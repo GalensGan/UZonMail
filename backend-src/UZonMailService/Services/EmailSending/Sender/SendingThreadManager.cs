@@ -7,6 +7,7 @@ using UZonMailService.Services.EmailSending.Event;
 using UZonMailService.Services.EmailSending.Event.Commands;
 using UZonMailService.Services.EmailSending.Models;
 using UZonMailService.Services.EmailSending.OutboxPool;
+using UZonMailService.Services.EmailSending.Pipeline;
 using UZonMailService.Services.EmailSending.WaitList;
 using Timer = System.Timers.Timer;
 
@@ -185,48 +186,42 @@ namespace UZonMailService.Services.EmailSending.Sender
                     autoResetEvent.WaitOne();
                     continue;
                 }
-
                 // 生成服务
-                var scopeServices = new ScopeServices(autoResetEvent.Scope.ServiceProvider);
+                var sendingContext = new SendingContext(autoResetEvent.Scope.ServiceProvider);
 
-                // 取出发件箱
-                // 并解析发件箱的代理信息
-                var outboxResult = await outboxesPool.GetOutboxByWeight(scopeServices);
-                if (outboxResult.NotOk)
+                try
                 {
-                    // 没有可用发件箱，继续等待
-                    // 有可能处于冷却中
-                    autoResetEvent.WaitOne();
-                    continue;
+                    // 取出发件箱
+                    // 并解析发件箱的代理信息
+                    // 发件箱出队必须保证线程安全
+                    var outboxResult = await outboxesPool.GetOutboxByWeight(sendingContext);
+                    if (outboxResult.NotOk)
+                    {
+                        // 没有可用发件箱，继续等待
+                        // 有可能处于冷却中
+                        sendingContext.Dispose();
+                        autoResetEvent.WaitOne();
+                        continue;
+                    }
+
+                    var outbox = outboxResult.Data;
+                    // 取出该发件箱对应的邮件数据
+                    var sendItem = await waitList.GetSendItem(sendingContext, outbox);
+                    if (sendItem == null)
+                    {
+                        // 没有任务，继续等待
+                        sendingContext.Dispose();
+                        autoResetEvent.WaitOne();
+                        continue;
+                    }
+
+                    // 发送邮件
+                    var sendMethod = sendItem.ToSendMethod();
+                    await sendMethod.Send(sendingContext);
                 }
-
-                var outbox = outboxResult.Data;
-                // 取出该发件箱对应的邮件数据
-                var sendItem = await waitList.GetSendItem(scopeServices, outbox);
-                if (sendItem == null)
+                finally
                 {
-                    // 没有任务，继续等待
-                    autoResetEvent.WaitOne();
-                    continue;
-                }
-
-                // 发送邮件
-                var sendMethod = sendItem.ToSendMethod();
-                var sendResult = await sendMethod.Send();
-                // 若是发件箱错误，则将发件箱从队列中移除
-                if (sendResult.SentStatus.HasFlag(SentStatus.OutboxConnectError) && sendResult.SendItem != null)
-                {
-                    outboxesPool.RemoveOutbox(sendResult.SendItem.SendingItem.UserId, sendResult.SendItem.Outbox.Email);
-                }
-
-                // 清理资源
-
-                if (sendResult.SentStatus.HasFlag(SentStatus.Retry))
-                {
-                    // 发送失败，重新加入队列，可能会分配到其它线程去执行
-                    sendItem.Enqueue();
-                    // 通知收件
-                    StartSending(1);
+                    sendingContext.Dispose();
                 }
             }
         }

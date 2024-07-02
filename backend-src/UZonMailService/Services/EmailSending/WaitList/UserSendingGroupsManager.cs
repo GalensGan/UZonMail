@@ -10,8 +10,8 @@ using UZonMailService.Models.SQL.MultiTenant;
 using UZonMailService.Services.EmailSending.Base;
 using UZonMailService.Services.EmailSending.Event;
 using UZonMailService.Services.EmailSending.Event.Commands;
-using UZonMailService.Services.EmailSending.Models;
 using UZonMailService.Services.EmailSending.OutboxPool;
+using UZonMailService.Services.EmailSending.Pipeline;
 using UZonMailService.Services.EmailSending.Sender;
 using UZonMailService.Services.Settings;
 using UZonMailService.SignalRHubs;
@@ -35,11 +35,11 @@ namespace UZonMailService.Services.EmailSending.WaitList
         /// 内部会自动向前端发送消息通知
         /// 内部已调用 CreateSendingGroup
         /// </summary>
-        /// <param name="scopeService">数据库上文</param>
+        /// <param name="sendingContext">数据库上文</param>
         /// <param name="group"></param>
         /// <param name="sendingItemIds"></param>
         /// <returns></returns>
-        public async Task<bool> AddSendingGroup(ScopeServices scopeService, SendingGroup group, List<long>? sendingItemIds = null)
+        public async Task<bool> AddSendingGroup(SendingContext sendingContext, SendingGroup group, List<long>? sendingItemIds = null)
         {
             if (group == null)
                 return false;
@@ -58,50 +58,8 @@ namespace UZonMailService.Services.EmailSending.WaitList
             }
 
             // 向发件管理器添加发件组
-            bool result = await taskManager.AddSendingGroup(scopeService, group.Id, group.SmtpPasswordSecretKeys, sendingItemIds);
+            bool result = await taskManager.AddSendingGroup(sendingContext, group.Id, group.SmtpPasswordSecretKeys, sendingItemIds);
             return result;
-        }
-
-        /// <summary>
-        /// 暂停发件
-        /// </summary>
-        /// <param name="group"></param>
-        /// <returns></returns>
-        public bool SwitchSendTaskStatus(SendingGroup group, bool pause)
-        {
-            if (group == null)
-                return false;
-
-            if (!_userTasks.TryGetValue(group.UserId, out var taskManager))
-            {
-                _logger.Warn($"用户 {group.UserId} 的发件管理器已被释放, 暂停操作无效");
-                return false;
-            }
-
-            taskManager.SwitchSendTaskStatus(group, pause);
-            return true;
-        }
-
-
-        /// <summary>
-        /// 取消发件
-        /// </summary>
-        /// <param name="group"></param>
-        /// <returns></returns>
-        public async Task<bool> CancelSending(SendingGroup group)
-        {
-            if (group == null)
-                return false;
-
-            // 判断是否有用户发件管理器
-            if (!_userTasks.TryGetValue(group.UserId, out var taskManager))
-            {
-                _logger.Warn($"用户 {group.UserId} 的发件管理器已被释放, 取消操作无效");
-                return false;
-            }
-
-            await taskManager.CancelSending(group);
-            return true;
         }
 
         /// <summary>
@@ -109,7 +67,7 @@ namespace UZonMailService.Services.EmailSending.WaitList
         /// 若返回空，会导致发送任务暂停
         /// </summary>
         /// <returns></returns>
-        public async Task<SendItem?> GetSendItem(ScopeServices scopeServices, OutboxEmailAddress outbox)
+        public async Task<SendItem?> GetSendItem(SendingContext sendingContext, OutboxEmailAddress outbox)
         {
             if (_userTasks.Count == 0)
                 return null;
@@ -122,7 +80,7 @@ namespace UZonMailService.Services.EmailSending.WaitList
             if (!_userTasks.TryGetValue(userId, out var sendingGroupsPool))
             {
                 // 用户已经没有发件任务，移除发件箱池
-                await new DisposeUserOutboxPoolCommand(scopeServices, userId).Execute(this);
+                await new DisposeUserOutboxPoolCommand(sendingContext, userId).Execute(this);
                 return null;
             }
 
@@ -132,35 +90,31 @@ namespace UZonMailService.Services.EmailSending.WaitList
                 // 移除自己
                 _userTasks.TryRemove(userId, out _);
                 // 移除用户发件池
-                await new DisposeUserOutboxPoolCommand(scopeServices, userId).Execute(this);
+                await new DisposeUserOutboxPoolCommand(sendingContext, userId).Execute(this);
                 return null;
             }
 
-            var sendItem = await sendingGroupsPool.GetSendItem(scopeServices, outboxId);
-            // 若为空，判断是否需要释放
-            if (sendItem == null)
-            {
-                var status = sendingGroupsPool.GetManagerStatus();
-                if (status >= SendingObjectStatus.ShouldDispose)
-                {
-                    // 不重新入队
-                    // 释放资源
-                    await sendingGroupsPool.DisposeAsync();
-                    // 释放
-                    continue;
-                }
-            }
+            // 保存当前引用
+            sendingContext.UserSendingGroupsManager = this;
+            return await sendingGroupsPool.GetSendItem(sendingContext, outbox);
         }
 
         /// <summary>
         /// 邮件项发送完成回调
         /// </summary>
-        /// <param name="sendCompleteResult"></param>
+        /// <param name="sendingContext"></param>
         /// <returns></returns>
-        public async Task EmailItemSendCompleted(SendResult sendCompleteResult)
+        public async Task EmailItemSendCompleted(SendingContext sendingContext)
         {
-            // 从队列中移除某项
-            // 会在出队时处理，此处暂不处理
+            // 清除数据
+            // 移除用户队列池
+            if (sendingContext.UserSendingGroupsPool.Count == 0)
+            {
+                _userTasks.TryRemove(sendingContext.UserSendingGroupsPool.UserId, out _);                
+            }
+
+            // 回调发件箱处理
+            sendingContext.OutboxEmailAddress.EmailItemSendCompleted(sendingContext);
         }
     }
 }

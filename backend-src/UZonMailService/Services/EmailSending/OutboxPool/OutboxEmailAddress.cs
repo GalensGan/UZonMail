@@ -12,7 +12,8 @@ using System.Net.NetworkInformation;
 using UZonMailService.Services.Settings;
 using UZonMailService.Services.EmailSending.Event;
 using UZonMailService.Services.EmailSending.Event.Commands;
-using UZonMailService.Services.EmailSending.Models;
+using System.Collections.Concurrent;
+using UZonMailService.Services.EmailSending.Pipeline;
 
 namespace UZonMailService.Services.EmailSending.OutboxPool
 {
@@ -35,7 +36,7 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
         /// <summary>
         /// 当指定收件箱时，此处有值
         /// </summary>
-        public HashSet<long> SendingItemIds { get; } = [];
+        public ConcurrentQueue<long> SendingItemIds { get; } = [];
 
         /// <summary>
         /// 用户 ID
@@ -103,19 +104,13 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
         /// </summary>
         public bool Enable
         {
-            get => !ShouldDispose && !_isCooldown;
+            get => !ShouldDispose && !_isCooldown && !_isUsing;
         }
 
         /// <summary>
         /// key 是必须项
         /// </summary>
         public string Key => Email;
-
-        /// <summary>
-        /// 程序动态设置以下属性
-        /// </summary>
-        public double MinPercent { get; set; }
-        public double MaxPercent { get; set; }
         #endregion
 
         #region 构造
@@ -133,9 +128,9 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
             Type = type;
             if (sendingItemIds != null)
             {
-                foreach (var id in sendingItemIds)
+                foreach (var id in sendingItemIds.Distinct())
                 {
-                    SendingItemIds.Add(id);
+                    SendingItemIds.Enqueue(id);
                 }
             }
 
@@ -151,6 +146,7 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
         #region 更新
         /// <summary>
         /// 更新发件地址
+        /// 非并发操作
         /// </summary>
         /// <param name="data"></param>
         public void Update(OutboxEmailAddress data)
@@ -162,49 +158,74 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
             }
 
             // 更新发送项 id
-            foreach (var id in data.SendingItemIds)
-            {
-                SendingItemIds.Add(id);
-            }
+            var existIds = data.SendingItemIds.Except(SendingItemIds).ToList();
+            existIds.ForEach(x => SendingItemIds.Enqueue(x));
 
             // 更新类型
             Type |= data.Type;
         }
         #endregion
 
-        #region 冷却状态切换
-        private readonly object _lockObject = new();
+        #region 使用和冷却状态切换
+        private readonly object _usingLock = new();
+        private bool _isUsing = false;
+
         private DateTime _startDate = DateTime.Now;
         private bool _isCooldown = false;
         private Timer? _timer = null;
+
+        /// <summary>
+        /// 锁定使用权
+        /// </summary>
+        /// <returns></returns>
+        public bool LockUsing()
+        {
+            lock (_usingLock)
+            {
+                if (_isUsing)
+                {
+                    return false;
+                }
+                _isUsing = true;
+                return true;
+            }
+        }
+
+        /// <summary>
+        /// 释放使用权
+        /// 需要在程序逻辑最后一刻才释放
+        /// </summary>
+        public void UnlockUsing()
+        {
+            lock (_usingLock)
+            {
+                _isUsing = false;
+            }
+        }
+
         /// <summary>
         /// 设置冷却
         /// 若设置失败，则返回 false
         /// </summary>
         /// <returns></returns>
-        public async Task<bool> SetCooldown(ScopeServices scopeServices)
+        public async Task SetCooldown(SendingContext sendingContext)
         {
-            // 如果本身已经冷却，则不再冷却
-            lock (_lockObject)
-            {
-                // 说明被其它线程已经使用了
-                if (_isCooldown)
-                {
-                    return false;
-                }
-                _isCooldown = true;
-            }
+            // 说明被其它线程已经使用了
+            if (_isCooldown)
+                return;
+
+            _isCooldown = true;
 
             // 启动 _timer 用于解除冷却
             // 计算随机值
             // 使用通用设置中的发送上限
-            var settingReader = await UserSettingsCache.GetUserSettingsReader(scopeServices.SqlContext, UserId);
+            var settingReader = await UserSettingsCache.GetUserSettingsReader(sendingContext.SqlContext, UserId);
             int cooldownMilliseconds = settingReader.GetCooldownMilliseconds();
             if (cooldownMilliseconds <= 0)
             {
                 _isCooldown = false;
                 // 通知可以继续发件
-                return true;
+                return;
             }
 
             _timer?.Dispose();
@@ -218,9 +239,9 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
                 _timer.Stop();
                 _isCooldown = false;
                 // 通知可以继续发件
-                await new StartSendingCommand(scopeServices, 1).Execute(this);
+                await new StartSendingCommand(sendingContext, 1).Execute(this);
             };
-            return true;
+            return;
         }
         #endregion
 
@@ -245,7 +266,7 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
         /// <summary>
         /// 更新使用记录
         /// </summary>
-        public async Task UpdateUsageInfo(ScopeServices scopeServices)
+        public async Task EmailItemSendCompleted(SendingContext sendingContext)
         {
             // 重置每日发件量
             if (_startDate.Date != DateTime.Now.Date)
@@ -259,21 +280,53 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
                 Interlocked.Increment(ref _sentTotalToday);
             }
 
-            var userSetting = await UserSettingsCache.GetUserSettingsReader(scopeServices.SqlContext, UserId);
-            // 若已经达到发送上限，则不再发送
+            var userSetting = await UserSettingsCache.GetUserSettingsReader(sendingContext.SqlContext, UserId);
+            // 本身有限制时，若已经达到发送上限，则不再发送
             if (MaxSendCountPerDay > 0)
             {
                 if (SentTotalToday > MaxSendCountPerDay)
                 {
                     ShouldDispose = true;
-                    return;
                 }
             }
+            // 本身没限制，使用系统的限制
             else if (userSetting.MaxSendCountPerEmailDay.Value > 0 && SentTotalToday >= userSetting.MaxSendCountPerEmailDay.Value)
             {
                 ShouldDispose = true;
-                return;
             }
+
+            // 判断发件箱是否需要释放
+            if (sendingContext.OutboxEmailAddress.ShouldDispose)
+            {
+                // 受影响的发件任务
+                var sendingGroupIds = sendingContext.OutboxEmailAddress.SendingGroupIds;
+                // 移除指定发件箱的发件项
+                foreach (var sendingGroupId in sendingGroupIds)
+                {
+                    if (!sendingContext.UserSendingGroupsPool.TryGetValue(sendingGroupId, out var sendingGroup)) continue;
+
+                    // 判断当前发件组是否还有发件箱
+                    var existOtherOutbox = sendingContext.UserOutboxesPool.Values.Any(x => x.Email != sendingContext.OutboxEmailAddress.Email
+                        && x.SendingGroupIds.Contains(sendingGroupId));
+                    if (!existOtherOutbox)
+                    {
+                        // 移除发件组
+                        if (sendingContext.UserSendingGroupsPool.TryRemove(sendingGroupId, out var value))
+                        {
+                            // 通知发件组发送完成
+                            await value.NotifyEnd(sendingContext, sendingGroupId);
+                        }
+
+                        continue;
+                    }
+
+                    // 移除指定发件箱的发件项
+                    await sendingGroup.RemoveSpecificSendingItems(sendingContext);
+                }
+            }
+
+            // 向上继续调用
+            sendingContext.UserOutboxesPool.EmailItemSendCompleted(sendingContext);
         }
         #endregion
     }

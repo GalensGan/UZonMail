@@ -1,4 +1,4 @@
-﻿using UZonMailService.Services.EmailSending.Models;
+﻿using UZonMailService.Services.EmailSending.Pipeline;
 
 namespace UZonMailService.Services.EmailSending.Event.Commands
 {
@@ -8,7 +8,7 @@ namespace UZonMailService.Services.EmailSending.Event.Commands
     /// <typeparam name="T"></typeparam>
     public class GenericCommand<T> : CommandBase
     {
-        public GenericCommand(CommandType eventType, ScopeServices scopeServices, T? data) : base(eventType, scopeServices)
+        public GenericCommand(CommandType eventType, SendingContext scopeServices, T? data) : base(eventType, scopeServices)
         {
             Data = data;
         }

@@ -1,4 +1,4 @@
-﻿using UZonMailService.Services.EmailSending.Models;
+﻿using UZonMailService.Services.EmailSending.Pipeline;
 
 namespace UZonMailService.Services.EmailSending.Event.Commands
 {
@@ -7,7 +7,7 @@ namespace UZonMailService.Services.EmailSending.Event.Commands
     /// </summary>
     public class SendingTaskEndCommand : GenericCommand<long>
     {
-        public SendingTaskEndCommand(ScopeServices scopeServices, long userId) : base(CommandType.SendingTaskDisposed, scopeServices, userId)
+        public SendingTaskEndCommand(SendingContext scopeServices, long userId) : base(CommandType.SendingTaskDisposed, scopeServices, userId)
         {
             UserId = userId;
         }

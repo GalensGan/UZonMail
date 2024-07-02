@@ -3,16 +3,16 @@
     public class SendingItemsCounter
     {
         #region 从数据库中读取的初始状态
-        private readonly int initSuccessCount;
-        private readonly int initSentCount;
-        private readonly int initTotal;
+        public int InitSuccessCount { get; }
+        public  int InitSentCount { get; }
+        public  int InitTotal { get; }
         #endregion
 
-        public SendingItemsCounter(int total,int sent,int success)
+        public SendingItemsCounter(int total, int sent, int success)
         {
-            initTotal = total;
-            initSentCount = sent;
-            initSuccessCount = success;
+            InitTotal = total;
+            InitSentCount = sent;
+            InitSuccessCount = success;
         }
 
         private int _currentSuccessCount;
@@ -23,6 +23,9 @@
 
         private int _currentTotal;
         public int CurrentTotal => _currentTotal;
+
+        private int _runningCount;
+        public int RunningCount => _runningCount;
 
         /// <summary>
         /// 添加发送的数量
@@ -37,20 +40,29 @@
         /// 增加发送完成的数量
         /// </summary>
         /// <param name="success"></param>
-        public void IncreaseSuccessCount(bool success)
+        public void IncreaseSentCount(bool success)
         {
             Interlocked.Increment(ref _currentSentCount);
             if (success) Interlocked.Increment(ref _currentSuccessCount);
         }
 
         /// <summary>
+        /// 增加执行数量
+        /// </summary>
+        /// <param name="count"></param>
+        public void IncreaseRunningCount(int count)
+        {
+            Interlocked.Add(ref _runningCount, count);
+        }
+
+        /// <summary>
         /// 总成功数
         /// </summary>
-        public int TotalSuccessCount => initSuccessCount + CurrentSuccessCount;
+        public int TotalSuccessCount => InitSuccessCount + CurrentSuccessCount;
 
         /// <summary>
         /// 总发送数
         /// </summary>
-        public int TotalSentCount => initSentCount + CurrentSentCount;
+        public int TotalSentCount => InitSentCount + CurrentSentCount;
     }
 }

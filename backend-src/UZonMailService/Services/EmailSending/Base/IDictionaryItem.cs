@@ -5,7 +5,7 @@ namespace UZonMailService.Services.EmailSending.Base
     /// <summary>
     /// 用户队列
     /// </summary>
-    public interface IDictionaryItem : IWeight, IDisposable
+    public interface IDictionaryItem : IWeight
     {
         /// <summary>
         /// 是否处于可用状态

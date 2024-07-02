@@ -1,4 +1,4 @@
-﻿using UZonMailService.Services.EmailSending.Models;
+﻿using UZonMailService.Services.EmailSending.Pipeline;
 
 namespace UZonMailService.Services.EmailSending.Event.Commands
 {
@@ -7,7 +7,7 @@ namespace UZonMailService.Services.EmailSending.Event.Commands
     /// </summary>
     public class DisposeUserOutboxPoolCommand : GenericCommand<long>
     {
-        public DisposeUserOutboxPoolCommand(ScopeServices scopeServices, long userId) : base(CommandType.DisposeUserOutboxPoolCommand, scopeServices, userId)
+        public DisposeUserOutboxPoolCommand(SendingContext scopeServices, long userId) : base(CommandType.DisposeUserOutboxPoolCommand, scopeServices, userId)
         {
             UserId = userId;
         }

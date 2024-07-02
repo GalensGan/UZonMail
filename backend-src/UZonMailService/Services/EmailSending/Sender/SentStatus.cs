@@ -12,7 +12,7 @@
         OK = 1,
 
         /// <summary>
-        /// 需要重试
+        /// 重试
         /// </summary>
         Retry = 2,
 
@@ -24,6 +24,11 @@
         /// <summary>
         /// 发件箱连接错误
         /// </summary>
-        OutboxConnectError = 8
+        OutboxConnectError = 8,
+
+        /// <summary>
+        /// 禁止重试
+        /// </summary>
+        ForbiddenRetring = 16
     }
 }

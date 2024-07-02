@@ -12,6 +12,8 @@ using UZonMailService.SignalRHubs.Extensions;
 using UZonMailService.SignalRHubs.SendEmail;
 using Timer = System.Timers.Timer;
 using UZonMailService.Utils.Database;
+using log4net;
+using UZonMailService.Services.EmailSending.Pipeline;
 
 namespace UZonMailService.Services.EmailSending.Sender
 {
@@ -20,17 +22,18 @@ namespace UZonMailService.Services.EmailSending.Sender
     /// </summary>
     public class SendItem
     {
-        public SqlContext SqlContext { get; set; }
-        public IHubContext<UzonMailHub, IUzonMailClient> Hub { get; set; }
-        public ILogger Logger { get; set; }
-
+        private readonly static ILog _logger = LogManager.GetLogger(typeof(SendItem));
+        public SendItemMeta SendItemMeta { get; private set; }
         public SendingItem SendingItem { get; private set; }
+
+
         /// <summary>
         /// 构造函数
         /// </summary>
         /// <param name="sendingItem"></param>
-        public SendItem(SendingItem sendingItem)
+        public SendItem(SendItemMeta itemMeta, SendingItem sendingItem)
         {
+            SendItemMeta = itemMeta;
             SendingItem = sendingItem;
 
             BCC = sendingItem.BCC;
@@ -122,7 +125,7 @@ namespace UZonMailService.Services.EmailSending.Sender
         /// 获取附件
         /// </summary>
         /// <returns></returns>
-        public async Task<List<Tuple<string, string>>> GetAttachments()
+        public async Task<List<Tuple<string, string>>> GetAttachments(SendingContext sendingContext)
         {
             if (_attachments != null)
             {
@@ -130,7 +133,7 @@ namespace UZonMailService.Services.EmailSending.Sender
             }
 
             // 查找文件
-            var attachments = await SqlContext.FileUsages.Where(f => FileUsageIds.Contains(f.Id))
+            var attachments = await sendingContext.SqlContext.FileUsages.Where(f => FileUsageIds.Contains(f.Id))
                .Include(x => x.FileObject)
                .ThenInclude(x => x.FileBucket)
                .Select(x => new { fullPath = $"{x.FileObject.FileBucket.RootDir}/{x.FileObject.Path}", fileName = x.DisplayName ?? x.FileName })
@@ -189,12 +192,10 @@ namespace UZonMailService.Services.EmailSending.Sender
         }
 
         #region 重发逻辑，该部分仅在主服务器上使用，后期考虑抽象出来
-        // 重试次数
-        private int _triedCount = 0;
         /// <summary>
         /// 最大重试次数
         /// </summary>
-        public int RetryMax = 0;
+        public int MaxRetryCount { get; set; }
 
         /// <summary>
         /// 保存发送状态
@@ -203,36 +204,58 @@ namespace UZonMailService.Services.EmailSending.Sender
         /// <param name="success"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        public async Task<SentStatus> UpdateSendingStatus(SendResult sendCompleteResult)
+        public async Task EmailItemSendCompleted(SendingContext sendingContext)
         {
-            // 判断是否需要重试
-            if (!sendCompleteResult.Ok && _triedCount < RetryMax)
-            {
-                _triedCount++;
-                return SentStatus.Retry;
-            }
-            // 保存到数据库
-            SendingItem updatedItem = await SaveSendItemInfos(sendCompleteResult);
+            // 增加重试次数
+            SendItemMeta.IncreaseTriedCount();
 
-            // 通知发送结果
-            var client = Hub.GetUserClient(SendingItem.UserId);
-            if (client != null)
+            var sendCompleteResult = sendingContext.SendResult;
+            // 判断是否需要重试，满足以下条件则重试
+            // 1. 状态码非 ForbiddenRetring
+            // 2. 重试次数未达到上限
+            // 3. 非指定发件箱
+            if (!sendCompleteResult.Ok
+                && !sendCompleteResult.SentStatus.HasFlag(SentStatus.ForbiddenRetring)
+                && SendItemMeta.TriedCount < MaxRetryCount
+                && string.IsNullOrEmpty(SendItemMeta.OutboxEmail))
             {
-                await client.SendingItemStatusChanged(new SendingItemStatusChangedArg(updatedItem));
+                // TODO: 使用其它发件箱重试
+                if (sendCompleteResult.SentStatus.HasFlag(SentStatus.OutboxConnectError))
+                {
+                    // 不再使用当前发件箱发件
+                    // 向发件箱中添加标记
+                    // 在取件时，根据标记过滤这些发件箱
+                }
+
+                // 通知上层并返回重试状态
+                sendCompleteResult.SentStatus |= SentStatus.Retry;
+            }
+            else
+            {
+
+                // 保存到数据库
+                SendingItem updatedItem = await SaveSendItemInfos(sendingContext);
+
+                // 通知发送结果
+                var client = sendingContext.HubClient.GetUserClient(SendingItem.UserId);
+                if (client != null)
+                {
+                    await client.SendingItemStatusChanged(new SendingItemStatusChangedArg(updatedItem));
+                }
             }
 
             // 调用回调,通知上层处理结果
-            await _sendGroupTask.EmailItemSendCompleted(sendCompleteResult);
-            return sendCompleteResult.Ok ? SentStatus.OK : SentStatus.Failed;
+            await sendingContext.SendingGroupTask.EmailItemSendCompleted(sendingContext);
         }
 
         /// <summary>
         /// 保存 SendItem 状态
         /// </summary>
         /// <returns></returns>
-        private async Task<SendingItem> SaveSendItemInfos(SendResult sendCompleteResult)
+        private async Task<SendingItem> SaveSendItemInfos(SendingContext sendingContext)
         {
-            var db = sendCompleteResult.SqlContext;
+            var sendCompleteResult = sendingContext.SendResult;
+            var db = sendingContext.SqlContext;
             var success = sendCompleteResult.Ok;
             var message = sendCompleteResult.Message;
 
@@ -245,7 +268,7 @@ namespace UZonMailService.Services.EmailSending.Sender
             // 保存发送状态
             data.Status = success ? SendingItemStatus.Success : SendingItemStatus.Failed;
             data.SendResult = message;
-            data.TriedCount = _triedCount;
+            data.TriedCount = SendItemMeta.TriedCount;
             data.SendDate = DateTime.Now;
             // 解析邮件 id
             data.ReceiptId = new ResultParser(message).GetReceiptId();
@@ -264,68 +287,6 @@ namespace UZonMailService.Services.EmailSending.Sender
             await db.SaveChangesAsync();
 
             return data;
-
-        }
-
-        /// <summary>
-        /// 发件成功后，保存到数据库中
-        /// </summary>
-        /// <param name="success"></param>
-        /// <param name="message"></param>
-        /// <returns></returns>
-        private async Task SaveOutboxStatus(bool success, string message)
-        {
-            if (!success) return;
-            // 保存到数据库            
-            var outbox = await SqlContext.Outboxes.FirstOrDefaultAsync(x => x.Id == Outbox.Id);
-            // 更新数据
-            outbox.SentTotalToday = Outbox.SentTotalToday;
-            await SqlContext.SaveChangesAsync();
-        }
-
-        private SendingGroupTask _sendGroupTask;
-        public void SetSendGroupTask(SendingGroupTask sendGroupTask)
-        {
-            _sendGroupTask = sendGroupTask;
-        }
-
-        public int _cooldownMilliseconds = 0;
-        /// <summary>
-        /// 重新入队
-        /// </summary>
-        public void Enqueue()
-        {
-            if (_sendGroupTask == null) return;
-
-            if (_cooldownMilliseconds > 0)
-            {
-                // 设置冷却
-                var _timer = new Timer(_cooldownMilliseconds)
-                {
-                    AutoReset = false,
-                    Enabled = true
-                };
-                _timer.Elapsed += (object? sender, ElapsedEventArgs e) =>
-                {
-                    _timer.Stop();
-                    // 重新入队
-                    _sendGroupTask.Enqueue(this);
-                };
-            }
-            else
-            {
-                _sendGroupTask.Enqueue(this);
-            }
-        }
-        #endregion
-
-        #region 发送状态变更
-        /// <summary>
-        /// 设置状态
-        /// </summary>
-        public void SetStatus()
-        {
-            // 设置状态为正在发送
 
         }
         #endregion
