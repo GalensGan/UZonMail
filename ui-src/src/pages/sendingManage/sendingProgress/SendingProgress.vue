@@ -127,10 +127,12 @@ const toggleLabel = computed(() => {
 const toggleTooltip = computed(() => {
   return isSendingPause.value ? '继续发件' : '暂停发件'
 })
+import { useUserInfoStore } from 'src/stores/user'
+const userInfoStore = useUserInfoStore()
 async function onToggleTaskSending () {
   // 向服务器发送暂停/继续请求
   if (isSendingPause.value) {
-    await restartSending(sendingGroupIdRef.value as number)
+    await restartSending(sendingGroupIdRef.value as number, userInfoStore.smtpPasswordSecretKeys)
   } else {
     await pauseSending(sendingGroupIdRef.value as number)
   }
