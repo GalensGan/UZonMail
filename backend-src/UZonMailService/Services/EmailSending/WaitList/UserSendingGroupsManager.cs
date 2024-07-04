@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Concurrent;
 using Uamazing.Utils.Web.Service;
+using UZonMailService.Controllers.SystemInfo.Model;
 using UZonMailService.Models.SQL;
 using UZonMailService.Models.SQL.EmailSending;
 using UZonMailService.Models.SQL.MultiTenant;
@@ -122,5 +123,12 @@ namespace UZonMailService.Services.EmailSending.WaitList
             if (!_userTasks.TryGetValue(userId, out var userSendingGroupsPool)) return;
             userSendingGroupsPool.TryRemove(sendingGroupId, out _);
         }
+
+        #region 统计信息
+        public List<SendingGroupInfo> GetSendingGroupInfos()
+        {
+            return _userTasks.Values.Select(x => new SendingGroupInfo(x)).ToList();
+        }
+        #endregion
     }
 }

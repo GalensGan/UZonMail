@@ -9,7 +9,7 @@ namespace UZonMailService.Models.SQL.Emails
     /// <summary>
     /// EmailBox 基类
     /// </summary>
-    [Index(nameof(Email), IsUnique = true)]
+    [Index(nameof(Email), nameof(UserId), IsUnique = true)]
     public class EmailBox : SqlId
     {
         /// <summary>

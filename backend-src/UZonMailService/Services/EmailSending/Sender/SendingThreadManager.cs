@@ -65,6 +65,7 @@ namespace UZonMailService.Services.EmailSending.Sender
         /// 发件任务
         /// </summary>
         private int _runningTasksCount = 0;
+        public int RunningTasksCount => _runningTasksCount;
 
         #region 外部调用的方法
         /// <summary>
