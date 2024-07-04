@@ -78,8 +78,12 @@ export function pauseSending (sendingGroupId: number) {
  * @param sendingGroupId
  * @returns
  */
-export function restartSending (sendingGroupId: number) {
-  return httpClient.post<boolean>(`/email-sending/sending-groups/${sendingGroupId}/restart`)
+export function restartSending (sendingGroupId: number, smtpPasswordSecretKeys: string[]) {
+  return httpClient.post<boolean>(`/email-sending/sending-groups/${sendingGroupId}/restart`, {
+    data: {
+      smtpPasswordSecretKeys
+    }
+  })
 }
 
 /**
