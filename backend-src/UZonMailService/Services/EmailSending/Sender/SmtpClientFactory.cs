@@ -21,10 +21,12 @@ namespace UZonMailService.Services.EmailSending.Sender
         /// <returns></returns>
         public static async Task<FuncResult<SmtpClient>> GetSmtpClientAsync(OutboxEmailAddress outbox, ProxyInfo? proxyInfo)
         {
+#if DEBUG
             return new FuncResult<SmtpClient>()
             {
                 Ok = true
             };
+#endif
             var key = outbox.AuthUserName;
             if (_smptClients.TryGetValue(key, out var value))
             {
