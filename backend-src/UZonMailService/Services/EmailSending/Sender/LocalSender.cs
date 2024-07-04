@@ -92,27 +92,31 @@ namespace UZonMailService.Services.EmailSending.Sender
 
             try
             {
-                var client = await SmtpClientFactory.GetSmtpClientAsync(sendItem.Outbox, sendItem.ProxyInfo);
+                var clientResult = await SmtpClientFactory.GetSmtpClientAsync(sendItem.Outbox, sendItem.ProxyInfo);
                 // 若返回 null,说明这个发件箱不能建立 smtp 连接，对它进行取消
-                if (client == null)
+                if (!clientResult)
                 {
-                    sendingContext.SetSendResult(new SendResult(false, "发件项数据不满足要求") { SentStatus = SentStatus.OutboxConnectError });
-                    return;
+                    sendingContext.SetSendResult(new SendResult(false, $"发件箱 {sendItem.Outbox.Email} 错误。{clientResult.Message}") { SentStatus = SentStatus.OutboxConnectError });
                 }
-                //throw new NullReferenceException("测试报错");
+                else
+                {
+                    //throw new NullReferenceException("测试报错");
 #if DEBUG
-                var sendResult = "debug success";
+                    var sendResult = "debug success";
 #else
-                string sendResult = await client.SendAsync(message);
+                    var client = clientResult.Data;
+                    string sendResult = await client.SendAsync(message);
 #endif
-                var successResult = new SendResult(true, sendResult);
-                sendingContext.SetSendResult(successResult);
+                    var successResult = new SendResult(true, sendResult);
+                    sendingContext.SetSendResult(successResult);
+                }
+
                 await EmailItemSendCompleted(sendingContext);
                 return;
             }
             catch (Exception ex)
             {
-                _logger.Error(ex);
+                _logger.Warn(ex);
                 var errorResult = new SendResult(false, ex.Message);
                 sendingContext.SetSendResult(errorResult);
                 await EmailItemSendCompleted(sendingContext);

@@ -68,6 +68,6 @@ namespace UZonMailService.Models.SQL.Emails
         /// <summary>
         /// 发件权重
         /// </summary>
-        public int SendingWeight { get; set; }
+        public int Weight { get; set; }
     }
 }

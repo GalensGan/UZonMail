@@ -10,6 +10,7 @@ using UZonMailService.Services.EmailSending.Base;
 using UZonMailService.Services.EmailSending.Event;
 using UZonMailService.Services.EmailSending.Event.Commands;
 using UZonMailService.Services.EmailSending.Pipeline;
+using UZonMailService.Services.EmailSending.Utils;
 
 namespace UZonMailService.Services.EmailSending.OutboxPool
 {
@@ -18,14 +19,14 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
     /// 每个邮箱账号共用冷却池
     /// key: 邮箱 userId+邮箱号 ，value: 发件箱列表
     /// </summary>
-    public class UserOutboxesPool : DictionaryManager<OutboxEmailAddress>, IDictionaryItem, ISendingComplete
+    public class UserOutboxesPool : ConcurrentDictionary<string, OutboxEmailAddress>, IWeight, ISendingComplete
     {
         private readonly IServiceScopeFactory _ssf;
-        public UserOutboxesPool(IServiceScopeFactory ssf, long userId)
+        public UserOutboxesPool(IServiceScopeFactory ssf, long userId, int weight)
         {
             _ssf = ssf;
             UserId = userId;
-            Key = userId.ToString();
+            Weight = weight > 0 ? weight : 1;
         }
 
         #region 自定义参数
@@ -36,12 +37,7 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
         /// <summary>
         /// 权重
         /// </summary>
-        public int Weight { get; set; }
-
-        /// <summary>
-        /// 字典键
-        /// </summary>
-        public string Key { get; }
+        public int Weight { get; private set; }
 
         /// <summary>
         /// 是否可用
@@ -55,7 +51,7 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
         /// <param name="outbox"></param>
         public async Task<bool> AddOutbox(OutboxEmailAddress outbox)
         {
-            if (this.TryGetValue(outbox.Key, out var existValue))
+            if (this.TryGetValue(outbox.Email, out var existValue))
             {
                 existValue.Update(outbox);
                 return true;
@@ -69,7 +65,7 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
 
 
             // 不存在则添加
-            if (this.TryAdd(outbox.Key, outbox))
+            if (this.TryAdd(outbox.Email, outbox))
             {
                 Enable = true;
             }
@@ -82,11 +78,17 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
         /// <returns></returns>
         public async Task<FuncResult<OutboxEmailAddress>> GetOutboxByWeight(SendingContext scopeServices)
         {
-            var data = GetDataByWeight();
-            if (data.NotOk) return data;
+            var data = this.GetDataByWeight();
+            if (data.NotOk) return new FuncResult<OutboxEmailAddress>()
+            {
+                Message = data.Message,
+                Ok = data.Ok,
+                Status = data.Status,
+                Data = data.Data as OutboxEmailAddress
+            };
 
             // 若有 outbox
-            var outbox = data.Data;
+            var outbox = data.Data as OutboxEmailAddress;
             if (!outbox.LockUsing())
             {
                 // 获取使用权失败
@@ -96,7 +98,7 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
                     Status = PoolResultStatus.LockError,
                     Message = "发件箱锁定失败"
                 };
-            }    
+            }
 
             // 保存当前引用
             scopeServices.UserOutboxesPool = this;
@@ -116,7 +118,7 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
             }
 
             // 回调父级
-            sendingContext.UserOutboxesPoolManager.EmailItemSendCompleted(sendingContext);
+            await sendingContext.UserOutboxesPoolManager.EmailItemSendCompleted(sendingContext);
         }
     }
 }

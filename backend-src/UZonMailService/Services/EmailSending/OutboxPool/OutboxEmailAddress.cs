@@ -14,6 +14,7 @@ using UZonMailService.Services.EmailSending.Event;
 using UZonMailService.Services.EmailSending.Event.Commands;
 using System.Collections.Concurrent;
 using UZonMailService.Services.EmailSending.Pipeline;
+using UZonMailService.Utils.Database;
 
 namespace UZonMailService.Services.EmailSending.OutboxPool
 {
@@ -22,7 +23,7 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
     /// 该地址可能仅用于部分发件箱
     /// 也有可能是用于通用发件
     /// </summary>
-    public class OutboxEmailAddress : EmailAddress, IDisposable, IDictionaryItem
+    public class OutboxEmailAddress : EmailAddress, IDisposable, IWeight
     {
         #region 分布式锁
         public readonly object SendingItemIdsLock = new();
@@ -46,7 +47,7 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
         /// <summary>
         /// 权重
         /// </summary>
-        public int Weight => _outbox.SendingWeight;
+        public int Weight { get; private set; }
 
         /// <summary>
         /// 授权用户名
@@ -106,11 +107,6 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
         {
             get => !ShouldDispose && !_isCooldown && !_isUsing;
         }
-
-        /// <summary>
-        /// key 是必须项
-        /// </summary>
-        public string Key => Email;
         #endregion
 
         #region 构造
@@ -119,7 +115,9 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
         /// </summary>
         /// <param name="outbox"></param>
         /// <param name="sendingGroupId"></param>
-        /// <param name="authPassword"></param>
+        /// <param name="smtpPasswordSecretKeys"></param>
+        /// <param name="type"></param>
+        /// <param name="sendingItemIds"></param>
         public OutboxEmailAddress(Outbox outbox, long sendingGroupId, List<string> smtpPasswordSecretKeys, OutboxEmailAddressType type, List<long> sendingItemIds = null)
         {
             _outbox = outbox;
@@ -140,6 +138,8 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
             Id = outbox.Id;
             ReplyToEmails = outbox.ReplyToEmails.SplitBySeparators().Distinct().ToList();
             _sentTotalToday = outbox.SentTotalToday;
+
+            Weight = outbox.Weight > 0 ? outbox.Weight : 1;
         }
         #endregion
 
@@ -295,6 +295,12 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
                 ShouldDispose = true;
             }
 
+            // 若是发件连接失败，则移除
+            if (sendingContext.SendResult.SentStatus.HasFlag(Sender.SentStatus.OutboxConnectError))
+            {
+                ShouldDispose = true;
+            }
+
             // 判断发件箱是否需要释放
             if (sendingContext.OutboxEmailAddress.ShouldDispose)
             {
@@ -311,10 +317,19 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
                     if (!existOtherOutbox)
                     {
                         // 移除发件组
-                        if (sendingContext.UserSendingGroupsPool.TryRemove(sendingGroupId, out var value))
+                        var removeGroupResult = await sendingContext.UserSendingGroupsPool.TryRemoveSendingGroupTask(sendingContext, sendingGroupId);
+                        if (removeGroupResult)
                         {
+                            // 修改发件项状态
+                            await sendingContext.SqlContext.SendingItems.UpdateAsync(x => x.SendingGroupId == sendingGroupId && x.Status == SendingItemStatus.Pending
+                            , x => x.SetProperty(y => y.Status, SendingItemStatus.Failed)
+                                .SetProperty(y => y.SendResult, sendingContext.SendResult.Message ?? "发件箱发件")
+                            );
+                            // 修改发件组状态
+                            await sendingContext.SqlContext.SendingGroups.UpdateAsync(x => x.Id == sendingGroupId, x => x.SetProperty(y => y.Status, SendingGroupStatus.Finish));
+
                             // 通知发件组发送完成
-                            await value.NotifyEnd(sendingContext, sendingGroupId);
+                            await removeGroupResult.Data.NotifyEnd(sendingContext, sendingGroupId);
                         }
 
                         continue;
@@ -326,7 +341,7 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
             }
 
             // 向上继续调用
-            sendingContext.UserOutboxesPool.EmailItemSendCompleted(sendingContext);
+            await sendingContext.UserOutboxesPool.EmailItemSendCompleted(sendingContext);
         }
         #endregion
     }

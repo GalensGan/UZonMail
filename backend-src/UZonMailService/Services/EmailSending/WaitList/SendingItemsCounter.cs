@@ -19,7 +19,7 @@
         public int CurrentSuccessCount => _currentSuccessCount;
 
         private int _currentSentCount;
-        public int CurrentSentCount => _currentSuccessCount;
+        public int CurrentSentCount => _currentSentCount;
 
         private int _currentTotal;
         public int CurrentTotal => _currentTotal;

@@ -9,7 +9,7 @@ namespace UZonMailService.Services.EmailSending.Base
     /// key 相当于每个用户
     /// </summary>
     /// <typeparam name="TValue"></typeparam>
-    public class DictionaryManager<TValue> : ConcurrentDictionary<string, TValue> where TValue : IDictionaryItem
+    public class DictionaryManager<TValue> : ConcurrentDictionary<string, TValue> where TValue : IWeight
     {
         /// <summary>
         /// 根据 BagData 中的 Weight 来按照权重随机获取一个对象

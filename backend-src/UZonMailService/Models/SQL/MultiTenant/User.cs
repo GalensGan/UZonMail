@@ -63,5 +63,10 @@ namespace UZonMailService.Models.SQL.MultiTenant
         /// 导航属性
         /// </summary>
         public List<UserRole> UserRoles { get; set; }
+
+        /// <summary>
+        /// 权重
+        /// </summary>
+        public int Weight { get; set; } = 1;
     }
 }

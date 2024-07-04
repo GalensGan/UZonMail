@@ -18,8 +18,6 @@ namespace UZonMailService.Controllers.Emails
     /// </summary>
     public class EmailSendingController(SqlContext db
         , SendingGroupService sendingService
-        , UserSendingGroupsManager waitList
-        , SendingThreadManager tasksService
         ) : ControllerBaseV1
     {
         /// <summary>
@@ -39,6 +37,7 @@ namespace UZonMailService.Controllers.Emails
             // 创建发件组
             sendingData.SendingType = SendingGroupType.Instant;
             var sendingGroup = await sendingService.CreateSendingGroup(sendingData);
+            db.ChangeTracker.Clear();
             await sendingService.SendNow(sendingGroup);
 
             return new SendingGroup()
@@ -86,7 +85,7 @@ namespace UZonMailService.Controllers.Emails
             }
 
             // 暂停发件
-            waitList.SwitchSendTaskStatus(sendingGroup, true);
+            await sendingService.RemoveSendingGroupTask(sendingGroup);
 
             // 更新状态
             sendingGroup.Status = SendingGroupStatus.Pause;
@@ -101,7 +100,7 @@ namespace UZonMailService.Controllers.Emails
         /// <param name="sendingGroupId"></param>
         /// <returns></returns>
         [HttpPost("sending-groups/{sendingGroupId:long}/restart")]
-        public async Task<ResponseResult<bool>> RestartSending(long sendingGroupId)
+        public async Task<ResponseResult<bool>> RestartSending(long sendingGroupId, [FromBody] SmtpSecretKeysModel smtpSecretKeys)
         {
             // 查找发件组
             var sendingGroup = await db.SendingGroups.FirstOrDefaultAsync(x => x.Id == sendingGroupId);
@@ -109,14 +108,10 @@ namespace UZonMailService.Controllers.Emails
             {
                 return false.ToErrorResponse("发件组不存在");
             }
+            sendingGroup.SmtpPasswordSecretKeys = smtpSecretKeys.SmtpPasswordSecretKeys;
 
-            // 暂停发件
-            waitList.SwitchSendTaskStatus(sendingGroup, false);
-            sendingGroup.Status = SendingGroupStatus.Sending;
-            await db.SaveChangesAsync();
-
-            // 开始发件
-            tasksService.StartSending();
+            // 重新开始发件
+            await sendingService.SendNow(sendingGroup);
 
             return true.ToSuccessResponse();
         }
@@ -140,7 +135,7 @@ namespace UZonMailService.Controllers.Emails
             if (sendingGroup.Status == SendingGroupStatus.Sending)
             {
                 // 取消发件
-                await waitList.CancelSending(sendingGroup);
+                await sendingService.RemoveSendingGroupTask(sendingGroup);
             }
 
             // 更新状态
@@ -171,7 +166,7 @@ namespace UZonMailService.Controllers.Emails
             if (sendingGroup == null)
             {
                 return false.ToErrorResponse("发件组不存在");
-            }            
+            }
             if (sendingGroup.SuccessCount == sendingGroup.TotalCount)
             {
                 return false.ToErrorResponse("发件组已全部成功，不支持重发");

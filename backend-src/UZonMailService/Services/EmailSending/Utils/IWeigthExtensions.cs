@@ -1,4 +1,6 @@
-﻿using UZonMailService.Services.EmailSending.Base;
+﻿using Newtonsoft.Json.Linq;
+using System.Collections.Concurrent;
+using UZonMailService.Services.EmailSending.Base;
 
 namespace UZonMailService.Services.EmailSending.Utils
 {
@@ -8,23 +10,39 @@ namespace UZonMailService.Services.EmailSending.Utils
         /// 根据权重随机获取一个对象
         /// 若为空，说明权重总和为0
         /// </summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="Tkey"></typeparam>
         /// <param name="datas"></param>
         /// <returns></returns>
-        public static IWeight? GetDataByWeight(this IEnumerable<IWeight>? datas)
+        public static FuncResult<IWeight> GetDataByWeight<TKey, TValue>(this IDictionary<TKey, TValue> keyValuePairs) where TValue : IWeight
         {
-            var totalWeight = datas.Sum(x => x.Weight);
-            var randomWeight = new Random().Next(0, totalWeight);
-            var currentWeight = 0;
-            foreach (var data in datas)
+            // 获取可用的项
+            var useableValues = keyValuePairs.Values.Where(x => x.Enable).ToList();
+            if (useableValues.Count == 0) return new FuncResult<IWeight>()
             {
-                currentWeight += data.Weight;
-                if (randomWeight < currentWeight)
-                {
-                    return data;
-                }
+                Ok = false,
+                Status = PoolResultStatus.EmptyError
+            };
+
+            // 计算总的权重
+            var totalWeight = useableValues.Sum(x => x.Weight);
+            if (totalWeight == 0)
+            {
+                throw new Exception("所有发件箱的权重和为 0");
             }
-            return null;
+            var randomWeight = new Random().Next(totalWeight);
+            int total = 0;
+            int index = 0;
+            while (total < randomWeight)
+            {
+                total += useableValues[total].Weight;
+                index++;
+            }
+
+            return new FuncResult<IWeight>()
+            {
+                Ok = true,
+                Data = useableValues[index]
+            };
         }
     }
 }

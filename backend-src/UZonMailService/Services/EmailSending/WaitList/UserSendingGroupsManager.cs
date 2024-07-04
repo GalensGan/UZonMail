@@ -114,7 +114,13 @@ namespace UZonMailService.Services.EmailSending.WaitList
             }
 
             // 回调发件箱处理
-            sendingContext.OutboxEmailAddress.EmailItemSendCompleted(sendingContext);
+            await sendingContext.OutboxEmailAddress.EmailItemSendCompleted(sendingContext);
+        }
+
+        public async Task RemoveSendingGroupTask(long userId,long sendingGroupId)
+        {
+            if (!_userTasks.TryGetValue(userId, out var userSendingGroupsPool)) return;
+            userSendingGroupsPool.TryRemove(sendingGroupId, out _);
         }
     }
 }

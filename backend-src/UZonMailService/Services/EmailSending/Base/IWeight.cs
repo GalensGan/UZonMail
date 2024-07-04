@@ -11,5 +11,10 @@ namespace UZonMailService.Services.EmailSending.Base
         /// 实际权重必须大于 0
         /// </summary>
         public int Weight { get; }
+
+        /// <summary>
+        /// 是否可用
+        /// </summary>
+        public bool Enable { get; }
     }
 }

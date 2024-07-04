@@ -7,6 +7,7 @@ using Uamazing.Utils.Web.Service;
 using UZonMailService.Models.SQL;
 using UZonMailService.Models.SQL.Emails;
 using UZonMailService.Models.SQL.EmailSending;
+using UZonMailService.Services.EmailSending.Base;
 using UZonMailService.Services.EmailSending.Event;
 using UZonMailService.Services.EmailSending.Event.Commands;
 using UZonMailService.Services.EmailSending.OutboxPool;
@@ -15,6 +16,7 @@ using UZonMailService.Services.EmailSending.Sender;
 using UZonMailService.SignalRHubs;
 using UZonMailService.SignalRHubs.Extensions;
 using UZonMailService.SignalRHubs.SendEmail;
+using UZonMailService.Utils.Database;
 
 namespace UZonMailService.Services.EmailSending.WaitList
 {
@@ -70,15 +72,13 @@ namespace UZonMailService.Services.EmailSending.WaitList
 
                 var success = await newTask.InitSendingItems(scopeServices, sendingItemIds);
                 if (!success) return false;
-                this.TryAdd(sendingGroupId, newTask);
+                return this.TryAdd(sendingGroupId, newTask);
             }
             else
             {
                 // 复用原来的数据
-                await existTask.InitSendingItems(scopeServices, sendingItemIds);
+               return await existTask.InitSendingItems(scopeServices, sendingItemIds);
             }
-
-            return true;
         }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace UZonMailService.Services.EmailSending.WaitList
                 {
                     // 保存用户发件组池
                     scopeServices.UserSendingGroupsPool = this;
-                    break;
+                    return sendItem;
                 }
             }
 
@@ -111,15 +111,32 @@ namespace UZonMailService.Services.EmailSending.WaitList
         public async Task EmailItemSendCompleted(SendingContext sendingContext)
         {
             // 判断邮件任务是否已经发送完成
-            if (!sendingContext.SendingGroupTask.ShouldDispose)
+            if (sendingContext.SendingGroupTask.ShouldDispose)
             {
                 // 说明已经发完了
                 // 移除当前任务
-                this.TryRemove(sendingContext.SendingGroupTask.SendingGroupId,out _);
+                await TryRemoveSendingGroupTask(sendingContext, sendingContext.SendingGroupTask.SendingGroupId);
             }
 
             // 向上回调
             await sendingContext.UserSendingGroupsManager.EmailItemSendCompleted(sendingContext);
+        }
+
+        public async Task<FuncResult<SendingGroupTask>> TryRemoveSendingGroupTask(SendingContext sendingContext,long sendingGroupId)
+        {
+            if (!this.TryRemove(sendingContext.SendingGroupTask.SendingGroupId, out var value))
+                return new FuncResult<SendingGroupTask>()
+                {
+                    Ok = false,
+                };
+
+            // 更新数据库
+            await sendingContext.SqlContext.SendingGroups.UpdateAsync(x => x.Id == sendingGroupId, x => x.SetProperty(y => y.Status, SendingGroupStatus.Finish));
+            return new FuncResult<SendingGroupTask>()
+            {
+                Ok = true,
+                Data = value,
+            };
         }
     }
 }

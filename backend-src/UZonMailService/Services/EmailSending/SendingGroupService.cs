@@ -161,6 +161,7 @@ namespace UZonMailService.Services.EmailSending
 
         /// <summary>
         /// 立即发件
+        /// sendingGroup 需要提供 SmtpPasswordSecretKeys 参数
         /// </summary>
         /// <param name="sendingGroup"></param>
         /// <param name="sendItemIds">若有值，则只会发送这部分邮件</param>
@@ -172,6 +173,9 @@ namespace UZonMailService.Services.EmailSending
             await waitList.AddSendingGroup(scopeServices, sendingGroup, sendItemIds);
             // 开始发件
             tasksService.StartSending();
+            // 更新状态
+            sendingGroup.Status = SendingGroupStatus.Sending;
+            await db.SaveChangesAsync();
         }
 
         /// <summary>
@@ -203,12 +207,15 @@ namespace UZonMailService.Services.EmailSending
 
         /// <summary>
         /// 移除发件任务
+        /// 里面不会修改发件组状态
         /// </summary>
         /// <returns></returns>
         public async Task RemoveSendingGroupTask(SendingGroup sendingGroup)
         {
-            // 找到关联的发件箱
-            userOutboxesPoolManager.
+            // 找到关联的发件箱移除
+            await userOutboxesPoolManager.RemoveOutboxesBySendingGroup(sendingGroup.UserId, sendingGroup.Id);
+            // 移除任务
+            await waitList.RemoveSendingGroupTask(sendingGroup.UserId, sendingGroup.Id);
         }
     }
 }

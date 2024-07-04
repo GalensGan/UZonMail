@@ -3,6 +3,7 @@ using MailKit.Net.Proxy;
 using MailKit.Net.Smtp;
 using System.Collections.Concurrent;
 using UZonMailService.Models.SQL.Emails;
+using UZonMailService.Services.EmailSending.Base;
 using UZonMailService.Services.EmailSending.OutboxPool;
 
 namespace UZonMailService.Services.EmailSending.Sender
@@ -18,13 +19,17 @@ namespace UZonMailService.Services.EmailSending.Sender
         /// </summary>
         /// <param name="outbox"></param>
         /// <returns></returns>
-        public static async Task<SmtpClient?> GetSmtpClientAsync(OutboxEmailAddress outbox, ProxyInfo? proxyInfo)
+        public static async Task<FuncResult<SmtpClient>> GetSmtpClientAsync(OutboxEmailAddress outbox, ProxyInfo? proxyInfo)
         {
+            return new FuncResult<SmtpClient>()
+            {
+                Ok = true
+            };
             var key = outbox.AuthUserName;
-            if(_smptClients.TryGetValue(key,out var value))
+            if (_smptClients.TryGetValue(key, out var value))
             {
                 // 判断是否过期
-                if (value.IsConnected) return value;
+                if (value.IsConnected) return new FuncResult<SmtpClient>() { Data = value };
                 // 说明已经断开,进行移除
                 await value.DisconnectAsync(true);
             }
@@ -44,14 +49,19 @@ namespace UZonMailService.Services.EmailSending.Sender
                 if (!string.IsNullOrEmpty(outbox.AuthPassword)) client.Authenticate(outbox.AuthUserName, outbox.AuthPassword);
 
                 _smptClients.TryAdd(key, client);
-                return client;
+                return new FuncResult<SmtpClient>() { Data = client };
             }
             catch (Exception ex)
             {
-                _logger.Error(ex);
+                _logger.Warn(ex);
                 client.Disconnect(true);
                 client.Dispose();
-                return null;
+                return new FuncResult<SmtpClient>()
+                {
+                    Ok = false,
+                    Message = ex.Message,
+                    Data = null,
+                };
             }
         }
     }

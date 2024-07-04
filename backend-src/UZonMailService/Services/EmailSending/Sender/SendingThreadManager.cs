@@ -1,4 +1,5 @@
 ﻿using log4net;
+using System.Threading;
 using System.Timers;
 using Uamazing.Utils.Web.Service;
 using UZonMailService.Models.SQL;
@@ -60,11 +61,10 @@ namespace UZonMailService.Services.EmailSending.Sender
             }
         }
 
-        private CancellationTokenSource? _tokenSource = new();
         /// <summary>
         /// 发件任务
         /// </summary>
-        private readonly List<EmailSendingTask> _sendingTasks = [];
+        private int _runningTasksCount = 0;
 
         #region 外部调用的方法
         /// <summary>
@@ -77,63 +77,35 @@ namespace UZonMailService.Services.EmailSending.Sender
             // 获取核心数
             int coreCount = Environment.ProcessorCount;
             // 保证数据库查询期间有其它任务处理任务
-            int tasksCount = coreCount * 2;
+            int maxTasksCount = coreCount * 2;
 
-            // 所有线程共用取消信号
-            _tokenSource ??= new CancellationTokenSource();
-
-            // 有可能任务已经存在，则只需要增量新建
-            // 创建任务
-            for (int i = _sendingTasks.Count; i < tasksCount; i++)
-            {
-                // 每个进程一个暂停信号
-                var autoResetEvent = new AutoResetEventWrapper(false, ssf);
-                EmailSendingTask task = new(async () =>
-                {
-                    // 任务开始
-                    await DoWork(_tokenSource, autoResetEvent);
-                }, _tokenSource)
-                {
-                    AutoResetEventWrapper = autoResetEvent
-                };
-
-                _sendingTasks.Add(task);
-                task.Start();
-            }
-
+            int needCount = 0;
             if (activeCount <= 0)
             {
-                // 全部激活
-                // 激活特定数量的线程,使其工作
-                for (int i = 0; i < tasksCount; i++)
-                {
-                    _sendingTasks[i].AutoResetEventWrapper.Set();
-                }
+                // 创建全部最大任务数量
+                needCount = maxTasksCount - _runningTasksCount;
             }
             else
             {
-                // 只激活指定数量的线程
-                for (int i = 0; i < tasksCount; i++)
-                {
-                    var task = _sendingTasks[i];
-                    if (task.AutoResetEventWrapper.IsWaiting)
-                    {
-                        task.AutoResetEventWrapper.Set();
-                        activeCount--;
+                needCount = Math.Min(activeCount, maxTasksCount - _runningTasksCount);
+            }
 
-                        // 激活达到指定数量后，退出
-                        if (activeCount == 0)
-                        {
-                            break;
-                        }
-                    }
-                }
+            Interlocked.Add(ref _runningTasksCount, needCount);
+            // 开始创建任务
+            for (int i = 0; i < needCount; i++)
+            {
+                var task = new Task(async () =>
+                {
+                    // 任务开始
+                    await DoWork();
+                });
+                task.Start();
             }
         }
 
         private Timer? _timer;
         /// <summary>
-        /// 每隔 1 分钟激活一次，防止因特殊原因锁死
+        /// 每隔 1 分钟激活一次，防止因特殊原因使发件任务被锁死
         /// </summary>
         public void SetAutoActive()
         {
@@ -153,42 +125,23 @@ namespace UZonMailService.Services.EmailSending.Sender
         }
 
         /// <summary>
-        /// 清除现有的任务
-        /// </summary>
-        private void ClearTasks()
-        {
-            if (_sendingTasks.Count == 0)
-            {
-                return;
-            }
-
-            // 取消所有任务
-            _tokenSource?.Cancel();
-            _tokenSource = null;
-            _sendingTasks.Clear();
-        }
-
-        /// <summary>
         /// 开始任务
         /// 以发件箱的数据为索引进行发件，提高发件箱利用率
         /// </summary>
         /// <param name="tokenSource"></param>
         /// <returns></returns>
-        private async Task DoWork(CancellationTokenSource tokenSource, AutoResetEventWrapper autoResetEvent)
+        private async Task DoWork()
         {
-            // 当线程没有取消时
-            while (!tokenSource.IsCancellationRequested)
-            {
-                // 若没有数据上下文，报错
-                if (autoResetEvent.Scope == null)
-                {
-                    _logger.Error("在线程中获取作用域失败");
-                    autoResetEvent.WaitOne();
-                    continue;
-                }
-                // 生成服务
-                var sendingContext = new SendingContext(autoResetEvent.Scope.ServiceProvider);
+            // 生成 task 的 scope
+            var scope = ssf.CreateAsyncScope();
+            // 保存进程 Id
+            ThreadContext.Properties["threadId"] = Environment.CurrentManagedThreadId;
 
+            // 当线程没有取消时
+            while (true)
+            {
+                // 生成服务
+                var sendingContext = new SendingContext(scope.ServiceProvider);
                 try
                 {
                     // 取出发件箱
@@ -197,11 +150,11 @@ namespace UZonMailService.Services.EmailSending.Sender
                     var outboxResult = await outboxesPool.GetOutboxByWeight(sendingContext);
                     if (outboxResult.NotOk)
                     {
+                        _logger.Warn(outboxResult.Message);
                         // 没有可用发件箱，继续等待
                         // 有可能处于冷却中
                         sendingContext.Dispose();
-                        autoResetEvent.WaitOne();
-                        continue;
+                        break;
                     }
 
                     var outbox = outboxResult.Data;
@@ -211,8 +164,7 @@ namespace UZonMailService.Services.EmailSending.Sender
                     {
                         // 没有任务，继续等待
                         sendingContext.Dispose();
-                        autoResetEvent.WaitOne();
-                        continue;
+                        break;
                     }
 
                     // 发送邮件
@@ -224,6 +176,9 @@ namespace UZonMailService.Services.EmailSending.Sender
                     sendingContext.Dispose();
                 }
             }
+            Interlocked.Add(ref _runningTasksCount, -1);
+            // 释放上下文
+            await scope.DisposeAsync();
         }
         #endregion
     }
