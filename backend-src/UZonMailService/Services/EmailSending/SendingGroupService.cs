@@ -168,14 +168,15 @@ namespace UZonMailService.Services.EmailSending
         /// <returns></returns>
         public async Task SendNow(SendingGroup sendingGroup, List<long>? sendItemIds = null)
         {
+            // 创建新的上下文
             var scopeServices = new SendingContext(serviceProvider);
             // 添加到发件列表
             await waitList.AddSendingGroup(scopeServices, sendingGroup, sendItemIds);
             // 开始发件
             tasksService.StartSending();
             // 更新状态
-            sendingGroup.Status = SendingGroupStatus.Sending;
-            await db.SaveChangesAsync();
+            await scopeServices.SqlContext.SendingGroups
+                .UpdateAsync(x => x.Id == sendingGroup.Id, x => x.SetProperty(y => y.Status, SendingGroupStatus.Sending));
         }
 
         /// <summary>
@@ -207,7 +208,7 @@ namespace UZonMailService.Services.EmailSending
 
         /// <summary>
         /// 移除发件任务
-        /// 里面不会修改发件组状态
+        /// 里面不会修改发件组和发件项的状态
         /// </summary>
         /// <returns></returns>
         public async Task RemoveSendingGroupTask(SendingGroup sendingGroup)

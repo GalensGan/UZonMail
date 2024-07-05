@@ -9,26 +9,31 @@
         /// <summary>
         /// 成功
         /// </summary>
-        OK = 1,
+        OK = 1 << 0,
 
         /// <summary>
         /// 重试
         /// </summary>
-        Retry = 2,
+        Retry = 1 << 1,
 
         /// <summary>
         /// 失败
         /// </summary>
-        Failed = 4,
+        Failed = 1 << 2,
 
         /// <summary>
         /// 发件箱连接错误
         /// </summary>
-        OutboxConnectError = 8,
+        OutboxConnectError = 1 << 3,
+
+        /// <summary>
+        /// 空发件组
+        /// </summary>
+        EmptySendingGroup = 1 << 4,
 
         /// <summary>
         /// 禁止重试
         /// </summary>
-        ForbiddenRetring = 16
+        ForbiddenRetring = 1 << 5
     }
 }

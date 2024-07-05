@@ -133,10 +133,10 @@ namespace UZonMailService.Services.EmailSending.Sender
         /// <returns></returns>
         private async Task DoWork()
         {
-            // 生成 task 的 scope
-            var scope = ssf.CreateAsyncScope();
             // 保存进程 Id
             ThreadContext.Properties["threadId"] = Environment.CurrentManagedThreadId;
+            // 生成 task 的 scope
+            var scope = ssf.CreateAsyncScope();
 
             // 当线程没有取消时
             while (true)
@@ -151,7 +151,7 @@ namespace UZonMailService.Services.EmailSending.Sender
                     var outboxResult = await outboxesPool.GetOutboxByWeight(sendingContext);
                     if (outboxResult.NotOk)
                     {
-                        _logger.Warn(outboxResult.Message);
+                        _logger.Info(outboxResult.Message ?? $"发件箱处于冷却中, 线程 [{Environment.CurrentManagedThreadId}] 即将退出");
                         // 没有可用发件箱，继续等待
                         // 有可能处于冷却中
                         sendingContext.Dispose();
@@ -159,13 +159,14 @@ namespace UZonMailService.Services.EmailSending.Sender
                     }
 
                     var outbox = outboxResult.Data;
+                    _logger.Debug($"线程 [{Environment.CurrentManagedThreadId}] 开始使用 {outbox.Email} 发件");
                     // 取出该发件箱对应的邮件数据
                     var sendItem = await waitList.GetSendItem(sendingContext, outbox);
                     if (sendItem == null)
                     {
                         // 没有任务，继续等待
                         sendingContext.Dispose();
-                        break;
+                        continue;
                     }
 
                     // 发送邮件
@@ -178,7 +179,6 @@ namespace UZonMailService.Services.EmailSending.Sender
                 }
             }
             Interlocked.Add(ref _runningTasksCount, -1);
-            // 释放上下文
             await scope.DisposeAsync();
         }
         #endregion

@@ -6,6 +6,7 @@ using System.Collections.Concurrent;
 using Uamazing.Utils.Web.Service;
 using UZonMailService.Controllers.SystemInfo.Model;
 using UZonMailService.Models.SQL;
+using UZonMailService.Models.SQL.Emails;
 using UZonMailService.Models.SQL.EmailSending;
 using UZonMailService.Models.SQL.MultiTenant;
 using UZonMailService.Services.EmailSending.Base;
@@ -70,9 +71,37 @@ namespace UZonMailService.Services.EmailSending.WaitList
         /// <returns></returns>
         public async Task<SendItem?> GetSendItem(SendingContext sendingContext, OutboxEmailAddress outbox)
         {
+            // 用户发件池
+            var sendingGroupsPool = GetSendingGroupPool(sendingContext.OutboxEmailAddress.UserId);
+            if (sendingGroupsPool == null)
+            {
+                // 要移除当前收件箱
+                sendingContext.SetSendResult(new SendResult(false, "发件组为空")
+                {
+                    SentStatus = SentStatus.EmptySendingGroup
+                });
+
+                // 移除当前的收件箱
+                outbox.Dispose();
+                sendingContext.UserOutboxesPool.TryRemove(outbox.Email, out _);
+
+                return null;
+            }
+
+            // 保存当前引用
+            sendingContext.UserSendingGroupsManager = this;
+            return await sendingGroupsPool.GetSendItem(sendingContext, outbox);
+        }
+
+        /// <summary>
+        /// 已经对空的发件池进行了处理
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        private UserSendingGroupsPool? GetSendingGroupPool(long userId)
+        {
             if (_userTasks.Count == 0)
                 return null;
-            var userId = outbox.UserId;
 
             // 依次获取发件项
             // 返回 null 有以下几种情况：
@@ -80,8 +109,6 @@ namespace UZonMailService.Services.EmailSending.WaitList
             // 2. 所有发件箱都在冷却中
             if (!_userTasks.TryGetValue(userId, out var sendingGroupsPool))
             {
-                // 用户已经没有发件任务，移除发件箱池
-                await new DisposeUserOutboxPoolCommand(sendingContext, userId).Execute(this);
                 return null;
             }
 
@@ -90,14 +117,10 @@ namespace UZonMailService.Services.EmailSending.WaitList
             {
                 // 移除自己
                 _userTasks.TryRemove(userId, out _);
-                // 移除用户发件池
-                await new DisposeUserOutboxPoolCommand(sendingContext, userId).Execute(this);
                 return null;
             }
 
-            // 保存当前引用
-            sendingContext.UserSendingGroupsManager = this;
-            return await sendingGroupsPool.GetSendItem(sendingContext, outbox);
+            return sendingGroupsPool;
         }
 
         /// <summary>
@@ -111,14 +134,14 @@ namespace UZonMailService.Services.EmailSending.WaitList
             // 移除用户队列池
             if (sendingContext.UserSendingGroupsPool.Count == 0)
             {
-                _userTasks.TryRemove(sendingContext.UserSendingGroupsPool.UserId, out _);                
+                _userTasks.TryRemove(sendingContext.UserSendingGroupsPool.UserId, out _);
             }
 
             // 回调发件箱处理
             await sendingContext.OutboxEmailAddress.EmailItemSendCompleted(sendingContext);
         }
 
-        public async Task RemoveSendingGroupTask(long userId,long sendingGroupId)
+        public async Task RemoveSendingGroupTask(long userId, long sendingGroupId)
         {
             if (!_userTasks.TryGetValue(userId, out var userSendingGroupsPool)) return;
             userSendingGroupsPool.TryRemove(sendingGroupId, out _);

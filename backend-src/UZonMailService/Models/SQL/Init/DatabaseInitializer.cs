@@ -169,11 +169,7 @@ namespace UZonMailService.Models.SQL.Init
         private async Task ResetSendingItemsStatus()
         {
             // 对所有的 Pending 状态的发件项重置为 Created
-            var pendingItems = await _db.SendingItems.Where(x => x.Status == SendingItemStatus.Pending).ToListAsync();
-            foreach (var item in pendingItems)
-            {
-                item.Status = SendingItemStatus.Created;
-            }
+            await _db.SendingItems.UpdateAsync(x => x.Status == SendingItemStatus.Pending, x => x.SetProperty(y => y.Status, SendingItemStatus.Created));          
         }
 
         private async Task ResetSendingGroup()

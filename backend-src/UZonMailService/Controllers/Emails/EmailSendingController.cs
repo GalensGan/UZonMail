@@ -9,6 +9,7 @@ using UZonMailService.Models.SQL.Templates;
 using UZonMailService.Services.EmailSending;
 using UZonMailService.Services.EmailSending.Sender;
 using UZonMailService.Services.EmailSending.WaitList;
+using UZonMailService.Utils.Database;
 using UZonMailService.Utils.DotNETCore.Exceptions;
 
 namespace UZonMailService.Controllers.Emails
@@ -78,7 +79,7 @@ namespace UZonMailService.Controllers.Emails
         public async Task<ResponseResult<bool>> PauseSending(long sendingGroupId)
         {
             // 查找发件组
-            var sendingGroup = await db.SendingGroups.FirstOrDefaultAsync(x => x.Id == sendingGroupId);
+            var sendingGroup = await db.SendingGroups.AsNoTracking().FirstOrDefaultAsync(x => x.Id == sendingGroupId);
             if (sendingGroup == null)
             {
                 return false.ToErrorResponse("发件组不存在");
@@ -88,8 +89,8 @@ namespace UZonMailService.Controllers.Emails
             await sendingService.RemoveSendingGroupTask(sendingGroup);
 
             // 更新状态
-            sendingGroup.Status = SendingGroupStatus.Pause;
-            await db.SaveChangesAsync();
+            await db.SendingGroups.UpdateAsync(x => x.Id == sendingGroupId, x => x.SetProperty(y => y.Status, SendingGroupStatus.Pause));
+            await db.SendingItems.UpdateAsync(x => x.SendingGroupId == sendingGroupId && x.Status == SendingItemStatus.Pending, x => x.SetProperty(y => y.Status, SendingItemStatus.Created));
 
             return true.ToSuccessResponse();
         }
@@ -103,7 +104,7 @@ namespace UZonMailService.Controllers.Emails
         public async Task<ResponseResult<bool>> RestartSending(long sendingGroupId, [FromBody] SmtpSecretKeysModel smtpSecretKeys)
         {
             // 查找发件组
-            var sendingGroup = await db.SendingGroups.FirstOrDefaultAsync(x => x.Id == sendingGroupId);
+            var sendingGroup = await db.SendingGroups.AsNoTracking().Where(x => x.Id == sendingGroupId).FirstOrDefaultAsync();
             if (sendingGroup == null)
             {
                 return false.ToErrorResponse("发件组不存在");
@@ -139,8 +140,8 @@ namespace UZonMailService.Controllers.Emails
             }
 
             // 更新状态
-            sendingGroup.Status = SendingGroupStatus.Cancel;
-            await db.SaveChangesAsync();
+            await db.SendingGroups.UpdateAsync(x => x.Id == sendingGroupId, x => x.SetProperty(y => y.Status, SendingGroupStatus.Cancel));
+            await db.SendingItems.UpdateAsync(x => x.SendingGroupId == sendingGroupId && x.Status == SendingItemStatus.Pending, x => x.SetProperty(y => y.Status, SendingItemStatus.Cancel));
 
             return true.ToSuccessResponse();
         }
