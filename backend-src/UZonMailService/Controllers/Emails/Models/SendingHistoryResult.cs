@@ -35,6 +35,7 @@ namespace UZonMailService.Controllers.Emails.Models
             ScheduleDate = sendingGroup.ScheduleDate;
             TotalCount = sendingGroup.TotalCount;
             SuccessCount = sendingGroup.SuccessCount;
+            SentCount = sendingGroup.SentCount;
         }
     }
 }
