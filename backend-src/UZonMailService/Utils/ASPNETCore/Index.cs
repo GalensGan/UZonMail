@@ -13,6 +13,7 @@ using UZonMailService.Utils.DotNETCore.Convention;
 using Uamazing.Utils.Web.Service;
 using UZonMailService.Utils.Database;
 using Microsoft.Extensions.Options;
+using System.Diagnostics;
 
 namespace UZonMailService.Utils.DotNETCore
 {
@@ -196,6 +197,27 @@ namespace UZonMailService.Utils.DotNETCore
         public static IServiceCollection AddLiteDB(this IServiceCollection services)
         {
             services.AddSingleton(typeof(ILiteRepository), typeof(LiteDBContext));
+            return services;
+        }
+
+        /// <summary>
+        /// 判断是否有同类型的进程，若有，关闭
+        /// </summary>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection UseSingleApp(this IServiceCollection services)
+        {
+            // 获取当前程序名称
+            var currentProcess = Process.GetCurrentProcess();
+            // 查找同名进程并关闭
+            var processes = Process.GetProcessesByName(currentProcess.ProcessName);
+            foreach (var process in processes)
+            {
+                if (process.Id != currentProcess.Id)
+                {
+                    process.Kill();
+                }
+            }
             return services;
         }
     }
