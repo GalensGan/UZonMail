@@ -1,4 +1,5 @@
 ﻿using UZonMailService.Models.SQL;
+using UZonMailService.Services.EmailSending.Models;
 
 namespace UZonMailService.Services.EmailSending.Sender
 {
@@ -7,24 +8,11 @@ namespace UZonMailService.Services.EmailSending.Sender
     /// </summary>
     public class SendResult
     {
-        public SendResult(SendItem sendItem, bool ok, string message)
+        public SendResult(bool ok, string message)
         {
-            SendItem = sendItem;
             Ok = ok;
             Message = message;
         }
-
-
-        /// <summary>
-        /// 数据库上下文
-        /// </summary>
-        public SqlContext SqlContext => SendItem.SqlContext;
-
-        /// <summary>
-        /// 发送项
-        /// 里面有当前进程的数据库上下文
-        /// </summary>
-        public SendItem SendItem { get;}
 
         /// <summary>
         /// 是否ok
@@ -34,7 +22,7 @@ namespace UZonMailService.Services.EmailSending.Sender
         /// <summary>
         /// 消息
         /// </summary>
-        public string Message { get;}
+        public string Message { get; }
 
         /// <summary>
         /// 发送状态

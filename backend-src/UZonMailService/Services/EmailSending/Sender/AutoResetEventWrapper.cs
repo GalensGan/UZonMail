@@ -12,8 +12,15 @@ namespace UZonMailService.Services.EmailSending.Sender
         /// </summary>
         public bool IsWaiting { get; private set; } = false;
 
-        private IServiceScope _scope;
-        public SqlContext SqlContext { get; private set; }
+        /// <summary>
+        /// 作用域
+        /// </summary>
+        public IServiceScope? Scope { get; private set; }
+
+        /// <summary>
+        /// 数据库上下文
+        /// </summary>
+        public SqlContext? SqlContext { get; private set; }
 
         /// <summary>
         /// 初始化
@@ -24,22 +31,25 @@ namespace UZonMailService.Services.EmailSending.Sender
             IsWaiting = initialState;
             _autoResetEvent = new AutoResetEvent(IsWaiting);
 
-            // 创建一个数据上下文
-            UpdateSqlContext();
+            // 创建一个 IoC 上下文
+            UpdateOrCreateScope();
         }
 
         /// <summary>
         /// 更新数据库上下文
         /// </summary>
         /// <returns></returns>
-        private bool UpdateSqlContext()
+        private bool UpdateOrCreateScope()
         {
-            if (ssf == null) return false;
-
             // 重新创建数据库上下文
-            _scope = ssf.CreateAsyncScope();
-            SqlContext = _scope.ServiceProvider.GetRequiredService<SqlContext>();
+            Scope = ssf.CreateAsyncScope();
             return true;
+        }
+
+        private void DisposeScope()
+        {
+            Scope?.Dispose();
+            Scope = null;
         }
 
         /// <summary>
@@ -48,19 +58,12 @@ namespace UZonMailService.Services.EmailSending.Sender
         public void Set()
         {
             IsWaiting = false;
-            // 重新创建数据库上下文
-            UpdateSqlContext();
+
+            // 释放原来的数据库上下文
+            DisposeScope();
+            UpdateOrCreateScope();
 
             _autoResetEvent.Set();
-        }
-
-        /// <summary>
-        /// 使线程等待
-        /// </summary>
-        private void Reset()
-        {
-            IsWaiting = true;
-            _autoResetEvent.Reset();
         }
 
         /// <summary>
@@ -70,8 +73,8 @@ namespace UZonMailService.Services.EmailSending.Sender
         {
             IsWaiting = true;
 
-            // 释放数据库连接
-            _scope?.Dispose();
+            // 释放 IoC 上下文
+            DisposeScope();
 
             _autoResetEvent.WaitOne();
         }

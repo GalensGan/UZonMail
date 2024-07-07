@@ -67,7 +67,6 @@ namespace UZonMailService.Models.SQL.EmailSending
         public List<EmailAddress>? BccBoxes { get; set; }
         #endregion
 
-
         /// <summary>
         /// 附件
         /// </summary>

@@ -162,7 +162,8 @@ namespace UZonMailService.Models.SQL.EmailSending
 
                     var sendingItem = new SendingItem()
                     {
-                        OutBoxId = group.Outboxes[0].Id,
+                        // TODO: 因为只有发件有一个时，才会被合并，后期考虑优化
+                        OutBoxId = group.Outboxes[0].Id, 
                         FromEmail = group.Outboxes[0].Email,
                         SendingGroupId = group.Id,
                         UserId = group.UserId,

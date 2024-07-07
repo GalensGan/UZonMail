@@ -279,7 +279,7 @@ namespace UZonMailService.Controllers.Emails
             var userId = tokenService.GetUserDataId();
 
             // 收件箱
-            var dbSet = db.Outboxes.Where(x => x.UserId == userId && !x.IsDeleted && !x.IsHidden);
+            var dbSet = db.Outboxes.AsNoTracking().Where(x => x.UserId == userId && !x.IsDeleted && !x.IsHidden);
             if (groupId > 0)
             {
                 dbSet = dbSet.Where(x => x.EmailGroupId == groupId);
@@ -304,7 +304,7 @@ namespace UZonMailService.Controllers.Emails
         public async Task<ResponseResult<List<Outbox>>> GetOutboxesData(long groupId, string filter, [FromBody] Pagination pagination)
         {
             var userId = tokenService.GetUserDataId();
-            var dbSet = db.Outboxes.Where(x => x.UserId == userId && !x.IsDeleted && !x.IsHidden);
+            var dbSet = db.Outboxes.AsNoTracking().Where(x => x.UserId == userId && !x.IsDeleted && !x.IsHidden);
             if (groupId > 0)
             {
                 dbSet = dbSet.Where(x => x.EmailGroupId == groupId);
@@ -347,7 +347,7 @@ namespace UZonMailService.Controllers.Emails
             var userId = tokenService.GetUserDataId();
 
             // 收件箱
-            var dbSet = db.Inboxes.Where(x => x.UserId == userId && !x.IsDeleted && !x.IsHidden);
+            var dbSet = db.Inboxes.AsNoTracking().Where(x => x.UserId == userId && !x.IsDeleted && !x.IsHidden);
             if (groupId > 0)
             {
                 dbSet = dbSet.Where(x => x.EmailGroupId == groupId);
@@ -372,7 +372,7 @@ namespace UZonMailService.Controllers.Emails
         public async Task<ResponseResult<List<Inbox>>> GetInboxesData(long groupId, string filter, [FromBody] Pagination pagination)
         {
             var userId = tokenService.GetUserDataId();
-            var dbSet = db.Inboxes.Where(x => x.UserId == userId && !x.IsDeleted && !x.IsHidden);
+            var dbSet = db.Inboxes.AsNoTracking().Where(x => x.UserId == userId && !x.IsDeleted && !x.IsHidden);
             if (groupId > 0)
             {
                 dbSet = dbSet.Where(x => x.EmailGroupId == groupId);

@@ -10,6 +10,13 @@ namespace UZonMailService.Models.SQL.Settings
     public class UserSetting : SqlId
     {
         /// <summary>
+        /// 优先级
+        /// 优先级大的覆盖小的
+        /// 同等优先级，按选择顺序进行覆盖，后者覆盖前者
+        /// </summary>
+        public int Priority { get; set; }
+
+        /// <summary>
         /// 用户 id
         /// </summary>
         public long UserId { get; set; }
@@ -44,6 +51,12 @@ namespace UZonMailService.Models.SQL.Settings
         /// 回复的邮箱地址, 多个邮箱用逗号分隔
         /// </summary>
         public string? ReplyToEmails { get; set; }
+
+        /// <summary>
+        /// 最大重试次数
+        /// 若为 0 则不重试
+        /// </summary>
+        public int MaxRetryCount { get; set; } = 3;
 
         /// <summary>
         /// 回复邮件地址列表

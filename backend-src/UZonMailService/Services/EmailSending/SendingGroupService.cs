@@ -7,6 +7,9 @@ using UZonMailService.Jobs;
 using UZonMailService.Models.SQL;
 using UZonMailService.Models.SQL.EmailSending;
 using UZonMailService.Models.SQL.Settings;
+using UZonMailService.Services.EmailSending.Models;
+using UZonMailService.Services.EmailSending.OutboxPool;
+using UZonMailService.Services.EmailSending.Pipeline;
 using UZonMailService.Services.EmailSending.Sender;
 using UZonMailService.Services.EmailSending.WaitList;
 using UZonMailService.Services.Settings;
@@ -19,9 +22,11 @@ namespace UZonMailService.Services.EmailSending
     /// </summary>
     public class SendingGroupService(SqlContext db
         , TokenService tokenService
-        , SystemTasksService tasksService
-        , SystemSendingWaitListService waitList
+        , SendingThreadManager tasksService
+        , UserSendingGroupsManager waitList
+        , UserOutboxesPoolManager userOutboxesPoolManager
         , ISchedulerFactory schedulerFactory
+        , IServiceProvider serviceProvider
         ) : IScopedService
     {
         /// <summary>
@@ -156,16 +161,22 @@ namespace UZonMailService.Services.EmailSending
 
         /// <summary>
         /// 立即发件
+        /// sendingGroup 需要提供 SmtpPasswordSecretKeys 参数
         /// </summary>
         /// <param name="sendingGroup"></param>
         /// <param name="sendItemIds">若有值，则只会发送这部分邮件</param>
         /// <returns></returns>
         public async Task SendNow(SendingGroup sendingGroup, List<long>? sendItemIds = null)
         {
+            // 创建新的上下文
+            var scopeServices = new SendingContext(serviceProvider);
             // 添加到发件列表
-            await waitList.AddSendingGroup(sendingGroup, sendItemIds);
+            await waitList.AddSendingGroup(scopeServices, sendingGroup, sendItemIds);
             // 开始发件
             tasksService.StartSending();
+            // 更新状态
+            await scopeServices.SqlContext.SendingGroups
+                .UpdateAsync(x => x.Id == sendingGroup.Id, x => x.SetProperty(y => y.Status, SendingGroupStatus.Sending));
         }
 
         /// <summary>
@@ -193,6 +204,19 @@ namespace UZonMailService.Services.EmailSending
                 .Build();
 
             await scheduler.ScheduleJob(job, trigger);
+        }
+
+        /// <summary>
+        /// 移除发件任务
+        /// 里面不会修改发件组和发件项的状态
+        /// </summary>
+        /// <returns></returns>
+        public async Task RemoveSendingGroupTask(SendingGroup sendingGroup)
+        {
+            // 找到关联的发件箱移除
+            await userOutboxesPoolManager.RemoveOutboxesBySendingGroup(sendingGroup.UserId, sendingGroup.Id);
+            // 移除任务
+            await waitList.RemoveSendingGroupTask(sendingGroup.UserId, sendingGroup.Id);
         }
     }
 }

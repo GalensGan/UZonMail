@@ -394,10 +394,10 @@ namespace UZonMailService.Migrations.MySql
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Email")
-                        .IsUnique();
-
                     b.HasIndex("EmailGroupId");
+
+                    b.HasIndex("Email", "UserId")
+                        .IsUnique();
 
                     b.ToTable("Inboxes");
                 });
@@ -476,9 +476,12 @@ namespace UZonMailService.Migrations.MySql
                     b.Property<string>("UserName")
                         .HasColumnType("longtext");
 
+                    b.Property<int>("Weight")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("Email")
+                    b.HasIndex("Email", "UserId")
                         .IsUnique();
 
                     b.ToTable("Outboxes");
@@ -741,6 +744,9 @@ namespace UZonMailService.Migrations.MySql
                     b.Property<string>("UserName")
                         .HasColumnType("longtext");
 
+                    b.Property<int>("Weight")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("RoleId");
@@ -978,6 +984,9 @@ namespace UZonMailService.Migrations.MySql
                     b.Property<int>("MaxOutboxCooldownSecond")
                         .HasColumnType("int");
 
+                    b.Property<int>("MaxRetryCount")
+                        .HasColumnType("int");
+
                     b.Property<int>("MaxSendCountPerEmailDay")
                         .HasColumnType("int");
 
@@ -988,6 +997,9 @@ namespace UZonMailService.Migrations.MySql
                         .HasColumnType("int");
 
                     b.Property<int>("MinOutboxCooldownSecond")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Priority")
                         .HasColumnType("int");
 
                     b.Property<string>("ReplyToEmails")

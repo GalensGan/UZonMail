@@ -1,178 +1,124 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
+using Uamazing.Utils.Results;
 using Uamazing.Utils.Web.Service;
+using UZonMailService.Models.SQL;
 using UZonMailService.Models.SQL.Emails;
+using UZonMailService.Models.SQL.MultiTenant;
+using UZonMailService.Services.EmailSending.Base;
+using UZonMailService.Services.EmailSending.Event;
+using UZonMailService.Services.EmailSending.Event.Commands;
+using UZonMailService.Services.EmailSending.Pipeline;
+using UZonMailService.Services.EmailSending.Utils;
 
 namespace UZonMailService.Services.EmailSending.OutboxPool
 {
     /// <summary>
-    /// 用户的发件箱池
+    /// 单个用户的发件箱池
     /// 每个邮箱账号共用冷却池
-    /// key: 用户 id，value: 发件箱列表
+    /// key: 邮箱 userId+邮箱号 ，value: 发件箱列表
     /// </summary>
-    public class UserOutboxesPool : ConcurrentDictionary<long, List<OutboxEmailAddress>>, ISingletonService
+    public class UserOutboxesPool : ConcurrentDictionary<string, OutboxEmailAddress>, IWeight, ISendingComplete
     {
+        private readonly IServiceScopeFactory _ssf;
+        public UserOutboxesPool(IServiceScopeFactory ssf, long userId, int weight)
+        {
+            _ssf = ssf;
+            UserId = userId;
+            Weight = weight > 0 ? weight : 1;
+        }
+
+        #region 自定义参数
+        public long UserId { get; }
+        #endregion
+
+        #region 接口实现
         /// <summary>
-        /// 发件箱冷却时间结束
+        /// 权重
         /// </summary>
-        public event Action<int> OutboxCoolDownFinish;
+        public int Weight { get; private set; }
 
         /// <summary>
-        /// 发件箱达到发件限制，没释放事件
+        /// 是否可用
         /// </summary>
-        public event Action<OutboxEmailAddress> OutboxDisposed;
+        public bool Enable { get; private set; }
+        #endregion
 
         /// <summary>
-        /// 添加发件箱组
+        /// 添加发件箱
         /// </summary>
-        /// <param name="userId"></param>
         /// <param name="outbox"></param>
-        public void AddOutbox(long userId, OutboxEmailAddress outbox)
+        public async Task<bool> AddOutbox(OutboxEmailAddress outbox)
         {
-            if (!this.TryGetValue(userId, out var value))
+            if (this.TryGetValue(outbox.Email, out var existValue))
             {
-                value = [outbox];
-                this[userId] = value;
-                return;
+                existValue.Update(outbox);
+                return true;
             }
 
-            // 存在则替换，在此时更新发件箱设置
-            int existIndex = value.FindIndex(x => x.Id == outbox.Id);
-            if (existIndex >= 0)
+            // 验证发件箱是否有效
+            if (!outbox.Validate())
             {
-                value[existIndex].Update(outbox);
+                return false;
             }
-            else value.Add(outbox);
+
+
+            // 不存在则添加
+            if (this.TryAdd(outbox.Email, outbox))
+            {
+                Enable = true;
+            }
+            return true;
         }
 
         /// <summary>
-        /// 移除发件箱
+        /// 按用户设置的权重获取发件箱
         /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="groupId"></param>
-        public void RemoveOutbox(long userId, long groupId)
+        /// <returns></returns>
+        public async Task<FuncResult<OutboxEmailAddress>> GetOutboxByWeight(SendingContext scopeServices)
         {
-            if (!this.TryGetValue(userId, out var value)) return;
-
-            // 建立快照，防止程序又向里面添加
-            var tempBoxes = value.ToArray();
-            foreach (var box in tempBoxes)
+            var data = this.GetDataByWeight();
+            if (data.NotOk) return new FuncResult<OutboxEmailAddress>()
             {
-                box.SendingGroupIds.Remove(groupId);
-                if (box.SendingGroupIds.Count == 0)
+                Message = data.Message,
+                Ok = data.Ok,
+                Status = data.Status,
+                Data = data.Data as OutboxEmailAddress
+            };
+
+            // 若有 outbox
+            var outbox = data.Data as OutboxEmailAddress;
+            if (!outbox.LockUsing())
+            {
+                // 获取使用权失败
+                return new FuncResult<OutboxEmailAddress>()
                 {
-                    // 从原始数据中移除
-                    value.Remove(box);
-                    // 释放资源
-                    box.Dispose();
-                }
+                    Ok = false,
+                    Status = PoolResultStatus.LockError,
+                    Message = "发件箱锁定失败"
+                };
             }
-        }
 
-        /// <summary>
-        /// 移除用户的发件箱
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="outboxEmail"></param>
-        public void RemoveOutbox(long userId, string outboxEmail)
-        {
-            if (!this.TryGetValue(userId, out var value)) return;
-
-            // 建立快照，防止程序又向里面添加
-            var tempBoxes = value.ToArray();
-            foreach (var box in tempBoxes)
-            {                
-                if (box.Email== outboxEmail)
-                {
-                    // 从原始数据中移除
-                    value.Remove(box);
-                    // 释放资源
-                    box.Dispose();
-                }
-            }
-        }
-
-        /// <summary>
-        /// 获取发件箱数量
-        /// </summary>
-        /// <returns></returns>
-        public int GetOutboxesCount()
-        {
-            var temps = this.ToArray();
-            return temps.Sum(o => o.Value.Count);
-        }
-
-        /// <summary>
-        /// 获取发件组可用的发件箱数量
-        /// </summary>
-        /// <param name="sendingGroupId"></param>
-        /// <returns></returns>
-        public int GetOutboxesCount(long sendingGroupId)
-        {
-            var temps = this.ToArray();
-            return temps.Sum(o => o.Value.Count(x => !x.ShouldDispose && x.SendingGroupIds.Contains(sendingGroupId)));
-        }
-
-        /// <summary>
-        /// 获取发件箱组
-        /// </summary>
-        /// <param name="userId">用户id</param>
-        /// <param name="sendingGroupId">发件组id</param>
-        /// <param name="outboxId">发件箱id,若有，则只获取该发件箱来发件</param>
-        /// <param name="status">0 未匹配到，1 正常, 2 冷却中</param>
-        /// <returns></returns>
-        public OutboxEmailAddress? GetOutbox(long userId, long sendingGroupId, long outboxId, out int status)
-        {
-            status = 2;
-            var outboxes = this[userId].ToArray();
-            OutboxEmailAddress? result;
-            if (outboxId > 0)
+            // 保存当前引用
+            scopeServices.UserOutboxesPool = this;
+            return new FuncResult<OutboxEmailAddress>()
             {
-                result = outboxes.FirstOrDefault(o => o.Enable && o.Id == outboxId);
-                status = 0;
-                return null;
-            }
-            else
-            {
-                result = outboxes.FirstOrDefault(o => o.Enable && o.SendingGroupIds.Contains(sendingGroupId));
-            }
-
-            if (result == null) return null;
-
-            // 取出来后，进入冷却时间
-            // 避免被其它线程取出
-            result.SetCooldown(OutboxCoolDownFinishHandler);
-            if (result.ShouldDispose)
-            {
-                // 移除发件箱
-                this[userId].Remove(result);
-                // 触发事件
-                OutboxDisposed?.Invoke(result);
-                result.Dispose();
-            }
-            status = 1;
-            return result;
+                Data = outbox,
+                Ok = true
+            };
         }
 
-        /// <summary>
-        /// 触发冷却结束事件
-        /// </summary>
-        /// <param name="count"></param>
-        private void OutboxCoolDownFinishHandler(int count)
+        public async Task EmailItemSendCompleted(SendingContext sendingContext)
         {
-            OutboxCoolDownFinish?.Invoke(count);
-        }
+            // 移除发件箱
+            if (sendingContext.OutboxEmailAddress.ShouldDispose)
+            {
+                this.TryRemove(sendingContext.OutboxEmailAddress.Email, out _);
+            }
 
-        /// <summary>
-        /// 获取用户内存中的发件箱列表
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <returns></returns>
-        public List<OutboxEmailAddress> GetExistOutboxes(long userId)
-        {
-            if (!this.TryGetValue(userId, out var value)) return [];
-            return value;
+            // 回调父级
+            await sendingContext.UserOutboxesPoolManager.EmailItemSendCompleted(sendingContext);
         }
     }
 }

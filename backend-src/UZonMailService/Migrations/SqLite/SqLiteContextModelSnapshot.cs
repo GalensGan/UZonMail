@@ -379,10 +379,10 @@ namespace UZonMailService.Migrations.SqLite
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Email")
-                        .IsUnique();
-
                     b.HasIndex("EmailGroupId");
+
+                    b.HasIndex("Email", "UserId")
+                        .IsUnique();
 
                     b.ToTable("Inboxes");
                 });
@@ -459,9 +459,12 @@ namespace UZonMailService.Migrations.SqLite
                     b.Property<string>("UserName")
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("Weight")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("Email")
+                    b.HasIndex("Email", "UserId")
                         .IsUnique();
 
                     b.ToTable("Outboxes");
@@ -712,6 +715,9 @@ namespace UZonMailService.Migrations.SqLite
                     b.Property<string>("UserName")
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("Weight")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
 
                     b.HasIndex("RoleId");
@@ -935,6 +941,9 @@ namespace UZonMailService.Migrations.SqLite
                     b.Property<int>("MaxOutboxCooldownSecond")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("MaxRetryCount")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("MaxSendCountPerEmailDay")
                         .HasColumnType("INTEGER");
 
@@ -945,6 +954,9 @@ namespace UZonMailService.Migrations.SqLite
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("MinOutboxCooldownSecond")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Priority")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("ReplyToEmails")

@@ -11,7 +11,8 @@ namespace UZonMailService.Cache
     /// <summary>
     /// 获取缓存服务
     /// 若 redis 不可用，则使用内存作为缓存
-    /// 请将该服务注册为单例
+    /// 该服务通过 UseCacheExtension 注入
+    /// !!! 不要直接在逻辑中直接调用该服务，应该将接口封装后再使用
     /// </summary>
     public class CacheService
     {

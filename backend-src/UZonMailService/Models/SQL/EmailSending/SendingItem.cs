@@ -138,16 +138,6 @@ namespace UZonMailService.Models.SQL.EmailSending
         #endregion
 
         /// <summary>
-        /// 转换成 SendItem
-        /// </summary>
-        /// <returns></returns>
-        public SendItem ToSendItem()
-        {
-            var sendItem = new SendItem(this);
-            return sendItem;
-        }
-
-        /// <summary>
         /// 配置
         /// </summary>
         /// <param name="builder"></param>
