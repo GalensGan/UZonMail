@@ -10,8 +10,13 @@ import { fileURLToPath } from 'node:url'
 // 按需导入 ElementPlus 组件
 import { ElementPlusResolver, QuasarResolver } from 'unplugin-vue-components/resolvers'
 
+// 导入用户配置
+import { useConfig } from 'src/config'
+
 // mock:https://github.com/vbenjs/vite-plugin-mock/blob/main/README.zh_CN.md
 export default configure((ctx) => {
+  const userConfig = useConfig(ctx)
+
   return {
     eslint: {
       // fix: true,
@@ -54,7 +59,8 @@ export default configure((ctx) => {
       env: {
         // 本机 mock 地址为: http://127.0.0.1:4523/m1/2361225-0-default
         // 本机测试地址为: http://localhost:22345/api/v1
-        BASE_URL: ctx.dev ? 'http://localhost:22345/api/v1' : 'https://api.example.com'
+        // BASE_URL: ctx.dev ? 'http://localhost:22345/api/v1' : 'https://api.example.com'
+        BASE_URL: userConfig.baseUrl
       },
 
       target: {

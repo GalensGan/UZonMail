@@ -2,8 +2,8 @@
   <div class="tags-view q-ml-md row items-center justify-start">
     <q-chip class="q-mr-xs route-tag row items-center" v-for="item in routes" :key="item.fullPath"
       :class="getTagClass(item)" square clickable transition-show="jump-right" transition-hide="jump-left"
-      @click="goToRoute(item)" :removable="item.showCloseIcon" @mouseenter="mouseenterTag(item)"
-      @mouseleave="item.showCloseIcon = false" @remove="onRemoveTag(item)">
+      @click="goToRoute(item)" @mouseenter="mouseenterTag(item)" @mouseleave="item.showCloseIcon = false"
+      @remove="onRemoveTag(item)">
       <div>{{ getTagLabel(item) }}</div>
       <ContextMenu :items="tagContextItems" :value="item" />
     </q-chip>
@@ -21,8 +21,8 @@ import { IContextMenuItem } from 'src/components/contextMenu/types'
 const routes = useRouteHistories()
 function getTagClass (item: IRouteHistory) {
   return {
-    'text-primary': item.isActive,
-    'text-white': !item.isActive
+    'bg-primary': item.isActive,
+    'text-white': true
   }
 }
 function getTagLabel (tagItem: IRouteHistory) {
@@ -80,4 +80,10 @@ const tagContextItems: IContextMenuItem[] = [
 ]
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.route-tag {
+  &:hover {
+    background-color: $primary;
+  }
+}
+</style>

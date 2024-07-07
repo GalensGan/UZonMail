@@ -203,7 +203,6 @@ export async function readExcelCore (params: IExcelReaderParams): Promise<{ data
       }
     }
   })
-
   // 将 mappers 转换成对象
   const mapper: Record<string, IExcelColumnMapper> = {}
   if (params.mappers) {

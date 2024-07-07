@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Notify, QNotifyCreateOptions, Dialog } from 'quasar'
 
 /**
@@ -125,3 +126,77 @@ export function showHtmlDialog (title: string, html: string) {
 // #region 对 components/popupDialog/PopupDialog.ts 进行导出，统一弹窗调用位置
 export { showDialog, showComponentDialog } from 'src/components/popupDialog/PopupDialog'
 // #endregion
+
+export function useIndeterminateProgressNotify (message: string, caption: string = '') {
+  const notify = Notify.create({
+    group: false, // required to be updatable
+    timeout: 0, // we want to be in control when it gets dismissed
+    spinner: true,
+    spinnerColor: 'negative',
+    message,
+    caption,
+    color: 'primary'
+  })
+
+  const startDate = Date.now()
+  // 每隔 1s 更新一次 caption
+  const intervalId = setInterval(() => {
+    notify({
+      caption: generateCaption(caption)
+    })
+  }, 1000)
+
+  function stop () {
+    clearInterval(intervalId)
+    notify({
+      timeout: 1
+    })
+  }
+
+  function generateCaption (caption: string) {
+    return `${caption} ${Math.round((Date.now() - startDate) / 1000)} s`
+  }
+
+  function update (caption?: string, message?: string) {
+    const notifyOptions: Record<string, string> = {
+    }
+    if (message !== undefined) notifyOptions.message = message
+    if (caption !== undefined) {
+      notifyOptions.caption = generateCaption(caption)
+    }
+    if (Object.keys(notifyOptions).length === 0) return
+
+    // 如果调用了 update，说明是手动在更新，则关闭自动更新
+    clearInterval(intervalId)
+    notify(notifyOptions)
+  }
+
+  return { stop, update }
+}
+
+/**
+ * 使用线性进度条通知
+ * @param message
+ * @param caption
+ */
+export function useProgressNotify (message: string, caption: string = '') {
+  console.log(message, caption)
+}
+
+/**
+ * 显示通知，直到执行完毕
+ * @param runFunc 执行的方法
+ * @param message 消息
+ * @param caption 小标题
+ * @returns
+ */
+export async function notifyUntil<T> (runFunc: (update: (caption?: string, message?: string,) => void) => Promise<T>
+  , message: string, caption: string = ''): Promise<T | null> {
+  if (typeof runFunc !== 'function') return null
+  const { stop, update } = useIndeterminateProgressNotify(message, caption)
+  try {
+    return await runFunc(update)
+  } finally {
+    stop()
+  }
+}

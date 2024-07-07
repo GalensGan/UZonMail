@@ -5,7 +5,7 @@ import { IEmailGroupListItem } from '../components/types'
 
 import { IInbox, createInbox, createInboxes } from 'src/api/emailBox'
 
-import { notifyError, notifySuccess } from 'src/utils/dialog'
+import { notifyError, notifySuccess, notifyUntil } from 'src/utils/dialog'
 import { IExcelColumnMapper, readExcel, writeExcel } from 'src/utils/file'
 
 export function getInboxFields () {
@@ -76,7 +76,7 @@ export async function showNewInboxDialog (emailGroupLabel: string) {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
 export function UseHeaderFunction (emailGroup: Ref<IEmailGroupListItem>,
-  addNewRow: (newRow: Record<string, any>) => void) {
+  addNewRow: (newRow: Record<string, any>, idField?: string) => void) {
   // 新建发件箱
   async function onNewInboxClick () {
     // 新增发件箱
@@ -132,10 +132,17 @@ export function UseHeaderFunction (emailGroup: Ref<IEmailGroupListItem>,
     })
 
     // 向服务器请求新增
-    const { data: inboxes } = await createInboxes(data as IInbox[])
-    inboxes.forEach(x => {
-      addNewRow(x)
-    })
+    await notifyUntil(async (update) => {
+      // 对数据分批处理
+      for (let i = 0; i < data.length; i += 100) {
+        update(`导入中... [${i}/${data.length}]`)
+        const partData = data.slice(i, i + 100)
+        const { data: inboxes } = await createInboxes(partData as IInbox[])
+        inboxes.forEach(x => {
+          addNewRow(x, 'email')
+        })
+      }
+    }, '导入收件箱', '正在导入中...')
 
     notifySuccess('导入成功')
   }
