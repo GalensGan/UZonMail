@@ -156,9 +156,7 @@ namespace UZonMailService.Services.EmailSending.Sender
                     }
 
                     var outbox = outboxResult.Data;
-                    if (!outbox.Enable || !outbox.LockUsing()) continue;
-
-                    _logger.Warn($"线程 [{Environment.CurrentManagedThreadId}] 开始使用 {outbox.Email} 发件");
+                    _logger.Info($"线程 [{Environment.CurrentManagedThreadId}] 开始使用 {outbox.Email} 发件");
                     // 取出该发件箱对应的邮件数据
                     var sendItem = await waitList.GetSendItem(sendingContext, outbox);
                     if (sendItem == null)

@@ -30,7 +30,7 @@ namespace UZonMailService.Services.EmailSending.Sender
             var now = DateTime.Now;
             var timeInverval = (int)(now - _lastDate).TotalMilliseconds;
             _lastDate = now;
-            var controlValue = Math.Max(cooldownMilliseconds, _minTimeIntervalMilliseconds);
+            var controlValue = Math.Min(cooldownMilliseconds, _minTimeIntervalMilliseconds);
             if (timeInverval <= controlValue)
             {
                 _logger.Warn($"{email} 发件间隔太短，将在 {timeInverval} 毫秒后开始发送");
@@ -38,7 +38,6 @@ namespace UZonMailService.Services.EmailSending.Sender
             }
 
 #if DEBUG
-            _logger.Warn($"使用 {email} 发件");
             return "send by debug";
 #endif
             return await base.SendAsync(message, cancellationToken, progress);
