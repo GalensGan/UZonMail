@@ -42,7 +42,14 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
         /// <summary>
         /// 是否可用
         /// </summary>
-        public bool Enable { get; private set; }
+        public bool Enable
+        {
+            get
+            {
+                if (this.Count == 0) return false;
+                return this.Values.Any(x => x.Enable);
+            }
+        }
         #endregion
 
         /// <summary>
@@ -65,10 +72,7 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
 
 
             // 不存在则添加
-            if (this.TryAdd(outbox.Email, outbox))
-            {
-                Enable = true;
-            }
+            this.TryAdd(outbox.Email, outbox);
             return true;
         }
 

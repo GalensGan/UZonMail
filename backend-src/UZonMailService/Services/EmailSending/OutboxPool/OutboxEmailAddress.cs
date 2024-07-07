@@ -16,6 +16,7 @@ using System.Collections.Concurrent;
 using UZonMailService.Services.EmailSending.Pipeline;
 using UZonMailService.Utils.Database;
 using UZonMailService.Services.EmailSending.Sender;
+using log4net;
 
 namespace UZonMailService.Services.EmailSending.OutboxPool
 {
@@ -29,6 +30,8 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
         #region 分布式锁
         public readonly object SendingItemIdsLock = new();
         #endregion
+
+        private readonly static ILog _logger = LogManager.GetLogger(typeof(OutboxEmailAddress));
 
         #region 属性参数
         public OutboxEmailAddressType Type { get; private set; } = OutboxEmailAddressType.Specific;
@@ -229,6 +232,7 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
                 return;
             }
 
+            _logger.Debug($"发件箱 {Email} 进入冷却状态，冷却时间 {cooldownMilliseconds} 毫秒");
             _timer?.Dispose();
             _timer = new Timer(cooldownMilliseconds)
             {
@@ -239,8 +243,9 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
             {
                 _timer.Stop();
                 _isCooldown = false;
+                _logger.Debug($"发件箱 {Email} 退出冷却状态");
                 // 通知可以继续发件
-                await new StartSendingCommand(sendingContext, 1).Execute(this);
+                await new StartSendingCommand(1).Execute(this);
             };
             return;
         }

@@ -78,7 +78,7 @@ namespace UZonMailService.Services.EmailSending.Sender
             // 获取核心数
             int coreCount = Environment.ProcessorCount;
             // 保证数据库查询期间有其它任务处理任务
-            int maxTasksCount = coreCount * 2;
+            int maxTasksCount = 2;
 
             int needCount = 0;
             if (activeCount <= 0)
@@ -91,7 +91,6 @@ namespace UZonMailService.Services.EmailSending.Sender
                 needCount = Math.Min(activeCount, maxTasksCount - _runningTasksCount);
             }
 
-            Interlocked.Add(ref _runningTasksCount, needCount);
             // 开始创建任务
             for (int i = 0; i < needCount; i++)
             {
@@ -137,6 +136,7 @@ namespace UZonMailService.Services.EmailSending.Sender
             ThreadContext.Properties["threadId"] = Environment.CurrentManagedThreadId;
             // 生成 task 的 scope
             var scope = ssf.CreateAsyncScope();
+            Interlocked.Increment(ref _runningTasksCount);
 
             // 当线程没有取消时
             while (true)
@@ -152,20 +152,17 @@ namespace UZonMailService.Services.EmailSending.Sender
                     if (outboxResult.NotOk)
                     {
                         _logger.Info(outboxResult.Message ?? $"发件箱处于冷却中, 线程 [{Environment.CurrentManagedThreadId}] 即将退出");
-                        // 没有可用发件箱，继续等待
-                        // 有可能处于冷却中
-                        sendingContext.Dispose();
                         break;
                     }
 
                     var outbox = outboxResult.Data;
-                    _logger.Debug($"线程 [{Environment.CurrentManagedThreadId}] 开始使用 {outbox.Email} 发件");
+                    if (!outbox.Enable || !outbox.LockUsing()) continue;
+
+                    _logger.Warn($"线程 [{Environment.CurrentManagedThreadId}] 开始使用 {outbox.Email} 发件");
                     // 取出该发件箱对应的邮件数据
                     var sendItem = await waitList.GetSendItem(sendingContext, outbox);
                     if (sendItem == null)
                     {
-                        // 没有任务，继续等待
-                        sendingContext.Dispose();
                         continue;
                     }
 
@@ -175,11 +172,11 @@ namespace UZonMailService.Services.EmailSending.Sender
                 }
                 finally
                 {
-                    sendingContext.Dispose();
+                    await sendingContext.DisposeAsync();
                 }
             }
-            Interlocked.Add(ref _runningTasksCount, -1);
             await scope.DisposeAsync();
+            Interlocked.Add(ref _runningTasksCount, -1);
         }
         #endregion
     }

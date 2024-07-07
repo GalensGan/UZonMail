@@ -3,15 +3,18 @@ using MailKit.Net.Proxy;
 using MailKit.Net.Smtp;
 using System.Collections.Concurrent;
 using UZonMailService.Models.SQL.Emails;
+using UZonMailService.Models.SQL.MultiTenant;
 using UZonMailService.Services.EmailSending.Base;
 using UZonMailService.Services.EmailSending.OutboxPool;
+using UZonMailService.Services.EmailSending.Pipeline;
+using UZonMailService.Services.Settings;
 
 namespace UZonMailService.Services.EmailSending.Sender
 {
     public class SmtpClientFactory
     {
-        private static ILog _logger = LogManager.GetLogger(typeof(SmtpClientFactory));
-        private static ConcurrentDictionary<string, SmtpClient> _smptClients = new ConcurrentDictionary<string, SmtpClient>();
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(SmtpClientFactory));
+        private static ConcurrentDictionary<string, SmtpClient> _smptClients = new();
 
         /// <summary>
         /// 获取 smtp 客户端
@@ -19,15 +22,9 @@ namespace UZonMailService.Services.EmailSending.Sender
         /// </summary>
         /// <param name="outbox"></param>
         /// <returns></returns>
-        public static async Task<FuncResult<SmtpClient>> GetSmtpClientAsync(OutboxEmailAddress outbox, ProxyInfo? proxyInfo)
+        public static async Task<FuncResult<SmtpClient>> GetSmtpClientAsync(SendingContext sendingContext, OutboxEmailAddress outbox, ProxyInfo? proxyInfo)
         {
-#if DEBUG
-            return new FuncResult<SmtpClient>()
-            {
-                Ok = true
-            };
-#endif
-            var key = outbox.AuthUserName;
+            var key = outbox.Email;
             if (_smptClients.TryGetValue(key, out var value))
             {
                 // 判断是否过期
@@ -37,7 +34,9 @@ namespace UZonMailService.Services.EmailSending.Sender
             }
 
             _logger.Info($"初始化 SmtpClient: {outbox.AuthUserName}");
-            var client = new SmtpClient();
+            var settingReader = await UserSettingsCache.GetUserSettingsReader(sendingContext.SqlContext, outbox.UserId);
+            int cooldownMilliseconds = settingReader.GetCooldownMilliseconds();
+            var client = new LimitedSmtpClient(outbox.Email, cooldownMilliseconds);
             try
             {
                 if (proxyInfo != null)
@@ -48,8 +47,10 @@ namespace UZonMailService.Services.EmailSending.Sender
                 client.Connect(outbox.SmtpHost, outbox.SmtpPort, outbox.EnableSSL);
                 // Note: only needed if the SMTP server requires authentication
                 // 进行鉴权
+#if DEBUG
+#else
                 if (!string.IsNullOrEmpty(outbox.AuthPassword)) client.Authenticate(outbox.AuthUserName, outbox.AuthPassword);
-
+#endif
                 _smptClients.TryAdd(key, client);
                 return new FuncResult<SmtpClient>() { Data = client };
             }
