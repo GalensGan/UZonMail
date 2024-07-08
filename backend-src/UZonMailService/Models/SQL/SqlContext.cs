@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using log4net;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.Json;
 using System.Reflection.Metadata;
 using UZonMailService.Models.MySql;
@@ -17,6 +18,8 @@ namespace UZonMailService.Models.SQL
     /// </summary>
     public class SqlContext : DbContext
     {
+        private readonly ILog _logger = LogManager.GetLogger(typeof(SqlContext));
+
         #region 初始化
         /// <summary>
         /// 配置数据库
@@ -78,7 +81,7 @@ namespace UZonMailService.Models.SQL
                 await transaction.CommitAsync();
                 return result;
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 // 如果有任何操作失败，那么回滚事务
                 await transaction.RollbackAsync();
