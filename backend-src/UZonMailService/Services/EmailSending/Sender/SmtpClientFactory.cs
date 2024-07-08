@@ -35,7 +35,7 @@ namespace UZonMailService.Services.EmailSending.Sender
 
             _logger.Info($"初始化 SmtpClient: {outbox.AuthUserName}");
             var settingReader = await UserSettingsCache.GetUserSettingsReader(sendingContext.SqlContext, outbox.UserId);
-            int cooldownMilliseconds = settingReader.GetCooldownMilliseconds();
+            int cooldownMilliseconds = settingReader.MinOutboxCooldownSecond.Value;
             var client = new LimitedSmtpClient(outbox.Email, cooldownMilliseconds);
             try
             {

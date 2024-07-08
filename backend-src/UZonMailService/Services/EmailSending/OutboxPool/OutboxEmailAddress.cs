@@ -217,7 +217,6 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
             // 说明被其它线程已经使用了
             if (_isCooldown)
                 return;
-
             _isCooldown = true;
 
             // 启动 _timer 用于解除冷却

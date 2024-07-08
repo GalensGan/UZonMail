@@ -16,7 +16,7 @@ namespace UZonMailService.Services.EmailSending.Sender
         /// </summary>
         private static readonly int _minTimeIntervalMilliseconds = 500;
 
-        private DateTime _lastDate = DateTime.Now;
+        private DateTime _lastDate = DateTime.Now.AddDays(-1);
 
         /// <summary>
         /// 发送邮件
@@ -30,7 +30,10 @@ namespace UZonMailService.Services.EmailSending.Sender
             var now = DateTime.Now;
             var timeInverval = (int)(now - _lastDate).TotalMilliseconds;
             _lastDate = now;
-            var controlValue = Math.Min(cooldownMilliseconds, _minTimeIntervalMilliseconds);
+            int controlValue = _minTimeIntervalMilliseconds;
+            if (cooldownMilliseconds > 0)
+                controlValue = Math.Max(cooldownMilliseconds, _minTimeIntervalMilliseconds);
+
             if (timeInverval <= controlValue)
             {
                 _logger.Warn($"{email} 发件间隔太短，将在 {timeInverval} 毫秒后开始发送");
