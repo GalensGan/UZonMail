@@ -48,7 +48,6 @@ namespace UZonMailService.Models.SQL.EmailSending
         /// 不包含数据中的发件箱
         /// </summary>
         public List<Outbox> Outboxes { get; set; }
-
         #region 用于前端传递参数
         /// <summary>
         /// 收件箱
