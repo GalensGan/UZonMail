@@ -11,7 +11,7 @@ namespace UZonMailService.Services.EmailSending.Pipeline
     /// 发送上下文
     /// 每一次发送任务都会创建一个新的上下文
     /// </summary>
-    public class SendingContext : IDisposable
+    public class SendingContext
     {
         public SendingContext(IServiceProvider serviceProvider)
         {
@@ -90,9 +90,14 @@ namespace UZonMailService.Services.EmailSending.Pipeline
         /// <summary>
         /// 释放资源
         /// </summary>
-        public void Dispose()
+        public async Task DisposeAsync()
         {
-            OutboxEmailAddress?.UnlockUsing();
+            if (OutboxEmailAddress != null)
+            {
+                await OutboxEmailAddress.SetCooldown(this);
+                OutboxEmailAddress.UnlockUsing();
+            }
+
             // 清空数据
             UserOutboxesPoolManager = null;
             UserOutboxesPool = null;

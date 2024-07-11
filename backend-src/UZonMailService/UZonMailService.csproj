@@ -9,7 +9,7 @@
 	<ServerGarbageCollection>false</ServerGarbageCollection>
 	<ConcurrentGarbageCollection>true</ConcurrentGarbageCollection>
     <Platforms>x64</Platforms>
-    <FileVersion>0.8.0.0</FileVersion>
+    <FileVersion>0.8.3.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

@@ -15,7 +15,7 @@ namespace UZonMailService.Models.SQL.EmailSending
     /// </summary>
     /// <param name="group"></param>
     /// <param name="userSetting"></param>
-    public class SendingItemsBuilder(SqlContext db, SendingGroup group, UserSetting userSetting,TokenService tokenService)
+    public class SendingItemsBuilder(SqlContext db, SendingGroup group, UserSetting userSetting, TokenService tokenService)
     {
         /// <summary>
         /// 批量发件时的大小
@@ -30,6 +30,19 @@ namespace UZonMailService.Models.SQL.EmailSending
         {
             // 获取收件箱
             List<EmailAddress> allInboxes = GetAllInboxes();
+            // allInboxes 有的是从数据中解析得到的，需要获取其 id
+            var inboxesWithoutId = allInboxes.Where(x => x.Id == 0).ToList();
+            var inboxes = await db.Inboxes.AsNoTracking().Where(x => inboxesWithoutId.Select(i => i.Id).Contains(x.Id)).ToListAsync();
+            inboxesWithoutId.ForEach(x =>
+            {
+                var existInbox = inboxes.FirstOrDefault(i => i.Id == x.Id);
+                if (existInbox == null)
+                {
+                    allInboxes.Remove(x);
+                    return;
+                }
+                x.Id = existInbox.Id;
+            });
 
             // 生成发件项与收件箱对应关系
             var sendingIitemes = await GenerateSendingItems(allInboxes);
@@ -163,7 +176,7 @@ namespace UZonMailService.Models.SQL.EmailSending
                     var sendingItem = new SendingItem()
                     {
                         // TODO: 因为只有发件有一个时，才会被合并，后期考虑优化
-                        OutBoxId = group.Outboxes[0].Id, 
+                        OutBoxId = group.Outboxes[0].Id,
                         FromEmail = group.Outboxes[0].Email,
                         SendingGroupId = group.Id,
                         UserId = group.UserId,
