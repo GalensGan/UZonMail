@@ -57,7 +57,9 @@ namespace UZonMailService.Controllers.Emails
                     SendingType = x.SendingType,
                     Status = x.Status,
                     Templates = x.Templates,
-                    Outboxes = x.Outboxes,
+                    Outboxes = x.Outboxes, // 兼容旧数据
+                    OutboxesCount = x.OutboxesCount,
+                    InboxesCount = x.InboxesCount,
                     SuccessCount = x.SuccessCount,
                     SentCount = x.SentCount,
                     CreateDate = x.CreateDate,

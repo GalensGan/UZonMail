@@ -15,7 +15,7 @@ namespace UZonMailService.Migrations.SqLite
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "8.0.4");
+            modelBuilder.HasAnnotation("ProductVersion", "8.0.7");
 
             modelBuilder.Entity("EmailTemplateSendingGroup", b =>
                 {
@@ -98,9 +98,15 @@ namespace UZonMailService.Migrations.SqLite
                     b.Property<string>("Data")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("InboxGroups")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Inboxes")
                         .IsRequired()
                         .HasColumnType("TEXT");
+
+                    b.Property<int>("InboxesCount")
+                        .HasColumnType("INTEGER");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("INTEGER");
@@ -113,6 +119,12 @@ namespace UZonMailService.Migrations.SqLite
 
                     b.Property<string>("LastMessage")
                         .HasColumnType("TEXT");
+
+                    b.Property<string>("OutboxGroups")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("OutboxesCount")
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("ScheduleDate")
                         .HasColumnType("TEXT");

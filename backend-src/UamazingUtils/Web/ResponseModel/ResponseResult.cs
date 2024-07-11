@@ -15,6 +15,6 @@ namespace Uamazing.Utils.Web.ResponseModel
         public int Code { get; set; } = (int)HttpStatusCode.OK;
 
         public static ResponseResult<T> Success(T data) => new ResponseResult<T>() { Ok = false, Message = "ok", Data = data };
-        public static ResponseResult<T> Fail(string message) => new ResponseResult<T>() { Ok = false, Message = message };
+        public static ResponseResult<T> Fail(string message) => new ResponseResult<T>() { Ok = false, Message = message,Code = (int)HttpStatusCode.BadRequest };
     }
 }
