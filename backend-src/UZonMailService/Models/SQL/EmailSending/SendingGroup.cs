@@ -49,12 +49,35 @@ namespace UZonMailService.Models.SQL.EmailSending
         /// </summary>
         public List<Outbox> Outboxes { get; set; }
 
+        /// <summary>
+        /// 发件箱组
+        /// </summary>
+        [JsonField]
+        public List<IdAndName>? OutboxGroups { get; set; }
+
+        /// <summary>
+        /// 所有的发件箱的数量
+        /// </summary>
+        public int OutboxesCount { get; set; }
+
         #region 用于前端传递参数
         /// <summary>
         /// 收件箱
         /// </summary>
         [JsonField]
         public List<EmailAddress> Inboxes { get; set; }
+
+        /// <summary>
+        /// 收件箱组
+        /// </summary>
+        [JsonField]
+        public List<IdAndName>? InboxGroups { get; set; }
+
+        /// <summary>
+        /// 所有发件箱的数量
+        /// </summary>
+        public int InboxesCount { get; set; }
+
         /// <summary>
         /// 抄送箱
         /// </summary>

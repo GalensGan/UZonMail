@@ -154,7 +154,6 @@ namespace UZonMailService.Services.EmailSending.WaitList
             // 更新用户 id
             UserId = sendingGroup.UserId;
 
-
             // 获取成功数、失败数、总数
             var allSendingItems = await scopeServices.SqlContext.SendingItems.AsNoTracking()
                 .Where(x => x.SendingGroupId == sendingGroup.Id)
@@ -184,7 +183,15 @@ namespace UZonMailService.Services.EmailSending.WaitList
             _sendingItemsCounter = new SendingItemsCounter(sendingGroup.TotalCount, sendingGroup.SuccessCount, sendingGroup.SentCount);
 
             // 将新的公用发件箱添加到发件池中
-            await AddOutboxToPool(scopeServices, sendingGroup.Outboxes);
+            await AddSharedOutboxToPool(scopeServices, sendingGroup.Outboxes);
+            if (sendingGroup.OutboxGroups.Count > 0)
+            {
+                var outboxGroupIds = sendingGroup.OutboxGroups.Select(x => x.Id).ToList();
+                // 添加发件组的发件箱
+                var groupBoxes = await scopeServices.SqlContext.Outboxes.AsNoTracking()
+                    .Where(x => outboxGroupIds.Contains(x.EmailGroupId)).ToListAsync();
+                await AddSharedOutboxToPool(scopeServices, groupBoxes);
+            }
 
             this._usableProxies = await PullUsableUserProxies(scopeServices);
             // 获取所有的模板
@@ -193,7 +200,7 @@ namespace UZonMailService.Services.EmailSending.WaitList
         }
 
         // 将新的发件箱添加到发件池中,自动去重了
-        private async Task AddOutboxToPool(SendingContext scopeServices, List<Outbox> outboxes)
+        private async Task AddSharedOutboxToPool(SendingContext scopeServices, List<Outbox> outboxes)
         {
             if (outboxes.Count == 0) return;
             var outboxesPoolManager = scopeServices.ServiceProvider.GetRequiredService<UserOutboxesPoolManager>();

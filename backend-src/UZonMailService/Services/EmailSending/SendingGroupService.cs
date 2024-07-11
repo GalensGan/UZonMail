@@ -32,71 +32,77 @@ namespace UZonMailService.Services.EmailSending
         /// <summary>
         /// 创建发送组
         /// </summary>
-        /// <param name="sendingGroup"></param>
+        /// <param name="sendingGroupData"></param>
         /// <returns></returns>
-        public async Task<SendingGroup> CreateSendingGroup(SendingGroup sendingGroup)
+        public async Task<SendingGroup> CreateSendingGroup(SendingGroup sendingGroupData)
         {
             var userId = tokenService.GetUserDataId();
             // 格式化 Excel 数据
-            sendingGroup.Data = await FormatExcelData(sendingGroup.Data, userId);
+            sendingGroupData.Data = await FormatExcelData(sendingGroupData.Data, userId);
 
             // 使用事务
             await db.RunTransaction(async ctx =>
             {
                 // 添加数据
                 // 跟踪数据，将数据转换成 EF 对象
-                if (sendingGroup.Templates != null)
+                if (sendingGroupData.Templates != null)
                 {
-                    var templates = ctx.EmailTemplates.Where(x => sendingGroup.Templates.Select(t => t.Id).Contains(x.Id)).ToList();
-                    sendingGroup.Templates = templates;
+                    var templates = ctx.EmailTemplates.Where(x => sendingGroupData.Templates.Select(t => t.Id).Contains(x.Id)).ToList();
+                    sendingGroupData.Templates = templates;
                 }
-                if (sendingGroup.Outboxes != null)
+                if (sendingGroupData.Outboxes != null)
                 {
-                    var outboxes = ctx.Outboxes.Where(x => sendingGroup.Outboxes.Select(t => t.Id).Contains(x.Id)).ToList();
-                    sendingGroup.Outboxes = outboxes;
+                    var outboxes = ctx.Outboxes.Where(x => sendingGroupData.Outboxes.Select(t => t.Id).Contains(x.Id)).ToList();
+                    sendingGroupData.Outboxes = outboxes;
                 }
-                if (sendingGroup.Attachments != null)
+                if (sendingGroupData.Attachments != null)
                 {
-                    var fileUsageIds = sendingGroup.Attachments.Select(x => x.__fileUsageId).Where(x => x > 0).ToList();
+                    var fileUsageIds = sendingGroupData.Attachments.Select(x => x.__fileUsageId).Where(x => x > 0).ToList();
                     if (fileUsageIds.Count > 0)
                     {
                         var attachmenets = await ctx.FileUsages.Where(x => fileUsageIds.Contains(x.Id)).ToListAsync();
-                        sendingGroup.Attachments = attachmenets;
+                        sendingGroupData.Attachments = attachmenets;
                     }
-                    else sendingGroup.Attachments = [];
+                    else sendingGroupData.Attachments = [];
                 }
                 // 增加数据
-                sendingGroup.Status = SendingGroupStatus.Created;
+                sendingGroupData.Status = SendingGroupStatus.Created;
                 // 解析总数
-                sendingGroup.TotalCount = sendingGroup.Inboxes.Count;
-                sendingGroup.UserId = userId;
-
-                ctx.SendingGroups.Add(sendingGroup);
+                sendingGroupData.TotalCount = sendingGroupData.Inboxes.Count;
+                sendingGroupData.UserId = userId;
+                ctx.SendingGroups.Add(sendingGroupData);
                 // 保存 group，从而获取 Id
                 await ctx.SaveChangesAsync();
 
                 // 获取用户设置
-                var userSettings = await UserSettingsCache.GetUserSettings(ctx, sendingGroup.UserId);
+                var userSettings = await UserSettingsCache.GetUserSettings(ctx, sendingGroupData.UserId);
 
                 // 将数据组装成 SendingItem 保存
                 // 要确保数据已经通过验证
-                var builder = new SendingItemsBuilder(db, sendingGroup, userSettings, tokenService);
+                var builder = new SendingItemsBuilder(db, sendingGroupData, userSettings, tokenService);
                 List<SendingItem> items = await builder.GenerateAndSave();
 
-                // 更新发件数量
-                sendingGroup.TotalCount = items.Count;
+                // 更新发件总数量
+                sendingGroupData.TotalCount = items.Count;
+                // 更新发件箱的数量
+                if (sendingGroupData.OutboxGroups.Count > 0)
+                {
+                    var outboxGroupIds = sendingGroupData.OutboxGroups.Select(x => x.Id).ToList();
+                    var outboxCount = await db.Outboxes.AsNoTracking().Where(x => outboxGroupIds.Contains(x.EmailGroupId)).CountAsync();
+                    sendingGroupData.OutboxesCount = outboxCount;
+                }
 
                 // 增加附件使用记录
-                if (sendingGroup.Attachments != null && sendingGroup.Attachments.Count > 0)
+                if (sendingGroupData.Attachments != null && sendingGroupData.Attachments.Count > 0)
                 {
-                    var attachmentObjectIds = sendingGroup.Attachments.Select(x => x.FileObjectId).ToList();
+                    var attachmentObjectIds = sendingGroupData.Attachments.Select(x => x.FileObjectId).ToList();
                     await ctx.FileObjects.UpdateAsync(x => attachmentObjectIds.Contains(x.Id), obj => obj.SetProperty(x => x.LinkCount, y => y.LinkCount + 1));
                 }
 
                 return await ctx.SaveChangesAsync();
             });
 
-            return sendingGroup;
+            return sendingGroupData;
         }
 
         /// <summary>

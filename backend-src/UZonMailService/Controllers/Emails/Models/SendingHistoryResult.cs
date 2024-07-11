@@ -9,12 +9,8 @@ namespace UZonMailService.Controllers.Emails.Models
     public class SendingHistoryResult : SendingGroup
     {
         public int TemplatesCount { get; }
-        public int OutboxesCount { get; }
-        public int InboxesCount { get; }
         public int CcBoxesCount { get; }
         public int BccBoxesCount { get; }
-        public List<FileUsage>? Attachments { get; }
-
 
         public SendingHistoryResult(SendingGroup sendingGroup)
         {

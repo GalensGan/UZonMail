@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.Json;
 using System.Reflection.Metadata;
 using UZonMailService.Models.MySql;
+using UZonMailService.Models.SQL.Base;
 using UZonMailService.Models.SQL.Emails;
 using UZonMailService.Models.SQL.EmailSending;
 using UZonMailService.Models.SQL.EntityConfigs;

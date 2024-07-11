@@ -105,7 +105,7 @@ namespace UZonMailService.Controllers.Users
         /// </summary>
         /// <returns></returns>
         [HttpPut("sign-out")]
-        public async Task<ResponseResult<bool>> SignOut()
+        public async Task<ResponseResult<bool>> UserSignOut()
         {
             // 从 token 中获取当前用户信息
 
