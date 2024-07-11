@@ -65,12 +65,12 @@ export function useBottomFunctions (emailInfo: Ref<IEmailCreateInfo>) {
       return false
     }
 
-    if (!emailInfo.value.outboxes.length) {
+    if (!emailInfo.value.outboxes.length && !emailInfo.value.outboxGroups.length) {
       notifyError('请选择发件人')
       return false
     }
 
-    if (!emailInfo.value.inboxes.length) {
+    if (!emailInfo.value.inboxes.length && !emailInfo.value.inboxGroups.length) {
       notifyError('请选择收件人')
       return false
     }

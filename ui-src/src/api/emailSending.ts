@@ -5,7 +5,9 @@ export interface IEmailCreateInfo {
   subjects: string, // 主题
   templates: Record<string, any>[], // 模板 id
   data: Record<string, any>[], // 用户发件数据
+  outboxGroups: Record<string, any>[], // 发件人邮箱组
   outboxes: Record<string, any>[], // 发件人邮箱
+  inboxGroups: Record<string, any>[], // 收件人邮箱组
   inboxes: Record<string, any>[], // 收件人邮箱
   ccBoxes: Record<string, any>[], // 抄送人邮箱
   body: string, // 邮件正文
