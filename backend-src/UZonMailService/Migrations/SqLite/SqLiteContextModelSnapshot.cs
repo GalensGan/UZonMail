@@ -29,7 +29,7 @@ namespace UZonMailService.Migrations.SqLite
 
                     b.HasIndex("TemplatesId");
 
-                    b.ToTable("EmailTemplateSendingGroup");
+                    b.ToTable("EmailTemplateSendingGroup", (string)null);
                 });
 
             modelBuilder.Entity("FileUsageSendingGroup", b =>
@@ -44,7 +44,7 @@ namespace UZonMailService.Migrations.SqLite
 
                     b.HasIndex("SendingGroupId");
 
-                    b.ToTable("FileUsageSendingGroup");
+                    b.ToTable("FileUsageSendingGroup", (string)null);
                 });
 
             modelBuilder.Entity("FileUsageSendingItem", b =>
@@ -59,7 +59,7 @@ namespace UZonMailService.Migrations.SqLite
 
                     b.HasIndex("SendingItemId");
 
-                    b.ToTable("FileUsageSendingItem");
+                    b.ToTable("FileUsageSendingItem", (string)null);
                 });
 
             modelBuilder.Entity("OutboxSendingGroup", b =>
@@ -74,7 +74,7 @@ namespace UZonMailService.Migrations.SqLite
 
                     b.HasIndex("SendingGroupId");
 
-                    b.ToTable("OutboxSendingGroup");
+                    b.ToTable("OutboxSendingGroup", (string)null);
                 });
 
             modelBuilder.Entity("UZonMailService.Models.SQL.EmailSending.SendingGroup", b =>
@@ -114,9 +114,6 @@ namespace UZonMailService.Migrations.SqLite
                     b.Property<string>("LastMessage")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("OutboxCount")
-                        .HasColumnType("INTEGER");
-
                     b.Property<DateTime>("ScheduleDate")
                         .HasColumnType("TEXT");
 
@@ -150,7 +147,7 @@ namespace UZonMailService.Migrations.SqLite
 
                     b.HasKey("Id");
 
-                    b.ToTable("SendingGroups");
+                    b.ToTable("SendingGroups", (string)null);
                 });
 
             modelBuilder.Entity("UZonMailService.Models.SQL.EmailSending.SendingItem", b =>
@@ -233,7 +230,7 @@ namespace UZonMailService.Migrations.SqLite
 
                     b.HasIndex("SendingGroupId");
 
-                    b.ToTable("SendingItems");
+                    b.ToTable("SendingItems", (string)null);
                 });
 
             modelBuilder.Entity("UZonMailService.Models.SQL.EmailSending.SendingItemInbox", b =>
@@ -278,7 +275,7 @@ namespace UZonMailService.Migrations.SqLite
 
                     b.HasIndex("SendingItemId");
 
-                    b.ToTable("SendingItemInboxes");
+                    b.ToTable("SendingItemInboxes", (string)null);
                 });
 
             modelBuilder.Entity("UZonMailService.Models.SQL.Emails.EmailGroup", b =>
@@ -325,7 +322,7 @@ namespace UZonMailService.Migrations.SqLite
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("EmailGroups");
+                    b.ToTable("EmailGroups", (string)null);
                 });
 
             modelBuilder.Entity("UZonMailService.Models.SQL.Emails.Inbox", b =>
@@ -387,7 +384,7 @@ namespace UZonMailService.Migrations.SqLite
 
                     b.HasIndex("EmailGroupId");
 
-                    b.ToTable("Inboxes");
+                    b.ToTable("Inboxes", (string)null);
                 });
 
             modelBuilder.Entity("UZonMailService.Models.SQL.Emails.Outbox", b =>
@@ -470,7 +467,7 @@ namespace UZonMailService.Migrations.SqLite
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("Outboxes");
+                    b.ToTable("Outboxes", (string)null);
                 });
 
             modelBuilder.Entity("UZonMailService.Models.SQL.Files.FileBucket", b =>
@@ -504,7 +501,7 @@ namespace UZonMailService.Migrations.SqLite
 
                     b.HasKey("Id");
 
-                    b.ToTable("FileBuckets");
+                    b.ToTable("FileBuckets", (string)null);
                 });
 
             modelBuilder.Entity("UZonMailService.Models.SQL.Files.FileObject", b =>
@@ -546,7 +543,7 @@ namespace UZonMailService.Migrations.SqLite
 
                     b.HasIndex("FileBucketId");
 
-                    b.ToTable("FileObjects");
+                    b.ToTable("FileObjects", (string)null);
                 });
 
             modelBuilder.Entity("UZonMailService.Models.SQL.Files.FileReader", b =>
@@ -581,7 +578,7 @@ namespace UZonMailService.Migrations.SqLite
 
                     b.HasIndex("FileObjectId");
 
-                    b.ToTable("FileReaders");
+                    b.ToTable("FileReaders", (string)null);
                 });
 
             modelBuilder.Entity("UZonMailService.Models.SQL.Files.FileUsage", b =>
@@ -625,7 +622,7 @@ namespace UZonMailService.Migrations.SqLite
 
                     b.HasIndex("OwnerUserId");
 
-                    b.ToTable("FileUsages");
+                    b.ToTable("FileUsages", (string)null);
                 });
 
             modelBuilder.Entity("UZonMailService.Models.SQL.MultiTenant.Department", b =>
@@ -665,7 +662,7 @@ namespace UZonMailService.Migrations.SqLite
 
                     b.HasKey("Id");
 
-                    b.ToTable("Departments");
+                    b.ToTable("Departments", (string)null);
                 });
 
             modelBuilder.Entity("UZonMailService.Models.SQL.MultiTenant.User", b =>
@@ -725,7 +722,7 @@ namespace UZonMailService.Migrations.SqLite
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("UZonMailService.Models.SQL.Permission.PermissionCode", b =>
@@ -758,7 +755,7 @@ namespace UZonMailService.Migrations.SqLite
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("PermissionCodes");
+                    b.ToTable("PermissionCodes", (string)null);
                 });
 
             modelBuilder.Entity("UZonMailService.Models.SQL.Permission.Role", b =>
@@ -782,7 +779,7 @@ namespace UZonMailService.Migrations.SqLite
 
                     b.HasKey("Id");
 
-                    b.ToTable("Roles");
+                    b.ToTable("Roles", (string)null);
                 });
 
             modelBuilder.Entity("UZonMailService.Models.SQL.Permission.RolePermissionCode", b =>
@@ -808,7 +805,7 @@ namespace UZonMailService.Migrations.SqLite
 
                     b.HasKey("Id");
 
-                    b.ToTable("RolePermissionCodes");
+                    b.ToTable("RolePermissionCodes", (string)null);
                 });
 
             modelBuilder.Entity("UZonMailService.Models.SQL.Permission.UserRole", b =>
@@ -844,7 +841,7 @@ namespace UZonMailService.Migrations.SqLite
 
                     b.HasIndex("UserId1");
 
-                    b.ToTable("UserRoles");
+                    b.ToTable("UserRoles", (string)null);
                 });
 
             modelBuilder.Entity("UZonMailService.Models.SQL.Settings.SystemSetting", b =>
@@ -877,7 +874,7 @@ namespace UZonMailService.Migrations.SqLite
 
                     b.HasKey("Id");
 
-                    b.ToTable("SystemSettings");
+                    b.ToTable("SystemSettings", (string)null);
                 });
 
             modelBuilder.Entity("UZonMailService.Models.SQL.Settings.UserProxy", b =>
@@ -923,7 +920,7 @@ namespace UZonMailService.Migrations.SqLite
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserProxies");
+                    b.ToTable("UserProxies", (string)null);
                 });
 
             modelBuilder.Entity("UZonMailService.Models.SQL.Settings.UserSetting", b =>
@@ -970,7 +967,7 @@ namespace UZonMailService.Migrations.SqLite
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserSettings");
+                    b.ToTable("UserSettings", (string)null);
                 });
 
             modelBuilder.Entity("UZonMailService.Models.SQL.Templates.EmailTemplate", b =>
@@ -1007,7 +1004,7 @@ namespace UZonMailService.Migrations.SqLite
 
                     b.HasKey("Id");
 
-                    b.ToTable("EmailTemplates");
+                    b.ToTable("EmailTemplates", (string)null);
                 });
 
             modelBuilder.Entity("EmailTemplateSendingGroup", b =>
