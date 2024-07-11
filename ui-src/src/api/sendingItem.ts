@@ -21,7 +21,9 @@ export enum SendingItemStatus {
   /// </summary>
   Created,
 
-  // 等待发件
+  /// <summary>
+  /// 等待发件中
+  /// </summary>
   Pending,
 
   /// <summary>
@@ -38,6 +40,16 @@ export enum SendingItemStatus {
   /// 发送失败
   /// </summary>
   Failed,
+
+  /// <summary>
+  /// 无效
+  /// </summary>
+  Invalid,
+
+  /// <summary>
+  /// 已取消
+  /// </summary>
+  Cancel,
 }
 
 /**
