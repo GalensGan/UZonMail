@@ -54,6 +54,7 @@ namespace UZonMailService.Services.EmailSending
                 {
                     var outboxes = ctx.Outboxes.Where(x => sendingGroupData.Outboxes.Select(t => t.Id).Contains(x.Id)).ToList();
                     sendingGroupData.Outboxes = outboxes;
+                    sendingGroupData.OutboxesCount = outboxes.Count;
                 }
                 if (sendingGroupData.Attachments != null)
                 {
@@ -89,7 +90,7 @@ namespace UZonMailService.Services.EmailSending
                 {
                     var outboxGroupIds = sendingGroupData.OutboxGroups.Select(x => x.Id).ToList();
                     var outboxCount = await db.Outboxes.AsNoTracking().Where(x => outboxGroupIds.Contains(x.EmailGroupId)).CountAsync();
-                    sendingGroupData.OutboxesCount = outboxCount;
+                    sendingGroupData.OutboxesCount += outboxCount;
                 }
 
                 // 增加附件使用记录
