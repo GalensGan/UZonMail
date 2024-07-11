@@ -32,7 +32,7 @@ namespace UZonMailService.Controllers.Emails
             var vdResult = sendingData.Validate();
             if (!vdResult)
             {
-                return ResponseResult<SendingGroup>.Fail(vdResult.Message);
+                return ResponseResult<SendingGroup>.Fail(vdResult.Message ?? "发件数据校验失败");
             }
 
             // 创建发件组

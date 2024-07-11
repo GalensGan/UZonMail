@@ -3,8 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Newtonsoft.Json.Linq;
 using System.ComponentModel.DataAnnotations.Schema;
-using Uamazing.ConfValidatation.Core.Entrance;
-using Uamazing.ConfValidatation.Core.Results;
+using Uamazing.Utils.Results;
 using UZonMailService.Models.SQL.Base;
 using UZonMailService.Models.SQL.Emails;
 using UZonMailService.Models.SQL.Files;
@@ -36,7 +35,7 @@ namespace UZonMailService.Models.SQL.EmailSending
         /// 模板
         /// 不包含用户中的模板
         /// </summary>
-        public List<EmailTemplate>? Templates { get; set; }
+        public List<EmailTemplate>? Templates { get; set; } = [];
 
         /// <summary>
         /// 正文内容
@@ -53,7 +52,7 @@ namespace UZonMailService.Models.SQL.EmailSending
         /// 发件箱组
         /// </summary>
         [JsonField]
-        public List<IdAndName>? OutboxGroups { get; set; }
+        public List<IdAndName>? OutboxGroups { get; set; } = [];
 
         /// <summary>
         /// 所有的发件箱的数量
@@ -65,13 +64,13 @@ namespace UZonMailService.Models.SQL.EmailSending
         /// 收件箱
         /// </summary>
         [JsonField]
-        public List<EmailAddress> Inboxes { get; set; }
+        public List<EmailAddress> Inboxes { get; set; } = [];
 
         /// <summary>
         /// 收件箱组
         /// </summary>
         [JsonField]
-        public List<IdAndName>? InboxGroups { get; set; }
+        public List<IdAndName>? InboxGroups { get; set; } = [];
 
         /// <summary>
         /// 所有发件箱的数量
@@ -82,18 +81,18 @@ namespace UZonMailService.Models.SQL.EmailSending
         /// 抄送箱
         /// </summary>
         [JsonField]
-        public List<EmailAddress>? CcBoxes { get; set; }
+        public List<EmailAddress>? CcBoxes { get; set; } = [];
         /// <summary>
         /// 密送
         /// </summary>
         [JsonField]
-        public List<EmailAddress>? BccBoxes { get; set; }
+        public List<EmailAddress>? BccBoxes { get; set; } = [];
         #endregion
 
         /// <summary>
         /// 附件
         /// </summary>
-        public List<FileUsage>? Attachments { get; set; }
+        public List<FileUsage>? Attachments { get; set; } = [];
 
         /// <summary>
         /// 用户通过 excel 上传的数据
@@ -218,12 +217,12 @@ namespace UZonMailService.Models.SQL.EmailSending
         /// </summary>
         /// <param name="validateOption"></param>
         /// <returns></returns>
-        public ValidateResult Validate(ValidateOption validateOption = ValidateOption.None)
+        public Result<bool> Validate()
         {
             // 1. 主题必须
             if (string.IsNullOrEmpty(Subjects))
             {
-                return new ValidateResult(false, "主题不能为空");
+                return new ErrorResult<bool>("主题不能为空");
             }
 
             // 没有 excel 数据的情况
@@ -254,39 +253,39 @@ namespace UZonMailService.Models.SQL.EmailSending
                 // 验证其它数据
                 if (Outboxes.Count == 0 && excelDataInfo.OutboxStatus != ExcelDataStatus.All)
                 {
-                    return new ValidateResult(false, "缺失发件箱，请在数据中指定发件箱或选择发件箱");
+                    return new ErrorResult<bool>("缺失发件箱，请在数据中指定发件箱或选择发件箱");
                 }
-                if(excelDataInfo.InboxStatus!=ExcelDataStatus.All)
+                if (excelDataInfo.InboxStatus != ExcelDataStatus.All)
                 {
-                    return new ValidateResult(false, "请保证每条数据都有 inbox (收件人邮箱)");
+                    return new ErrorResult<bool>("请保证每条数据都有 inbox (收件人邮箱)");
                 }
-                if(!ExistGlobalBody() && excelDataInfo.BodyStatus != ExcelDataStatus.All)
+                if (!ExistGlobalBody() && excelDataInfo.BodyStatus != ExcelDataStatus.All)
                 {
-                    return new ValidateResult(false, "缺失邮件正文，请在数据中指定邮件正文 或 选择模板 或 填写正文");
+                    return new ErrorResult<bool>("缺失邮件正文，请在数据中指定邮件正文 或 选择模板 或 填写正文");
                 }
             }
 
-            return new ValidateResult(true, string.Empty);
+            return new SuccessResult<bool>(true);
         }
 
-        private ValidateResult ValidateGlobalData()
+        private Result<bool> ValidateGlobalData()
         {
             if (!ExistGlobalBody())
             {
-                return new ValidateResult(false, "邮件模板和正文必须有一个不为空");
+                return new ErrorResult<bool>("缺失邮件正文，请选择模板 或 填写正文");
             }
 
-            if (Outboxes.Count == 0)
+            if (Outboxes.Count == 0 && (OutboxGroups==null || OutboxGroups.Count == 0))
             {
-                return new ValidateResult(false, "请选择发件人");
+                return new ErrorResult<bool>("请选择发件人");
             }
 
-            if (Inboxes.Count == 0)
+            if (Inboxes.Count == 0 && (InboxGroups == null || InboxGroups.Count == 0))
             {
-                return new ValidateResult(false, "请选择收件人");
+                return new ErrorResult<bool>("请选择收件人");
             }
 
-            return new ValidateResult(true, string.Empty);
+            return new SuccessResult<bool>(true);
         }
 
         // 是否存在全局正文
