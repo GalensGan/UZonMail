@@ -11,12 +11,12 @@
 
     <SelectEmailData v-model="emailInfo.data" class="q-mb-sm" />
 
-    <SelectEmailBox v-model="emailInfo.outboxes" :emailBoxType="0" icon="directions_run" label="发件人" class="q-mb-sm"
-      icon-color="secondary" placeholder="请选择发件箱 (必须)" />
+    <SelectEmailBox v-model="emailInfo.outboxes" v-model:selectedGroups="emailInfo.outboxGroups" :emailBoxType="0"
+      icon="directions_run" label="发件人" class="q-mb-sm" icon-color="secondary" placeholder="请选择发件箱 (必须)" />
 
     <div class="q-mb-sm row justify-start items-center">
-      <SelectEmailBox class="col" v-model="emailInfo.inboxes" :emailBoxType="1" icon="hail" label="收件人"
-        placeholder="请选择收件箱 (必须)" />
+      <SelectEmailBox class="col" v-model="emailInfo.inboxes" v-model:selectedGroups="emailInfo.inboxGroups"
+        :emailBoxType="1" icon="hail" label="收件人" placeholder="请选择收件箱 (必须)" />
 
       <q-checkbox dense keep-color v-model="emailInfo.sendBatch" label="合并" color="secondary"
         :disable="disableSendBatchCheckbox">
@@ -59,7 +59,9 @@ const emailInfo: Ref<IEmailCreateInfo> = ref({
   subjects: '', // 主题
   templates: [], // 模板 id
   data: [], // 用户发件数据
+  inboxGroups: [],
   outboxes: [], // 发件人邮箱
+  outboxGroups: [],
   inboxes: [], // 收件人邮箱
   ccBoxes: [], // 抄送人邮箱
   bccBoxes: [], // 密送人邮箱
@@ -80,15 +82,22 @@ const { needUpload, OkBtn, CommonBtn, onPreviewClick, onScheduleSendClick, onSen
 // 合并发送
 const sendBatchTooltips = ['若有多个发件人,将其合并到一封邮件中发送', '启用后无法对单个发件箱进行重发', '一般不建议启用']
 // 进行重置
+// inboxes 数量太少时不批量
 watch(() => emailInfo.value.inboxes, (newValue) => {
   if (newValue.length < 2) emailInfo.value.sendBatch = false
 })
+// 有数据时，不批量
 watch(() => emailInfo.value.data, (newValue) => {
   if (newValue.length > 0) emailInfo.value.sendBatch = false
 })
+// 多个发件箱时，不批量
 watch(() => emailInfo.value.outboxes, (newValue) => {
   if (newValue.length > 1) emailInfo.value.sendBatch = false
 })
+watch(() => emailInfo.value.outboxGroups, (newValue) => {
+  if (newValue.length > 0) emailInfo.value.sendBatch = false
+})
+
 const disableSendBatchCheckbox = computed(() => {
   return emailInfo.value.data.length === 0 && emailInfo.value.inboxes.length < 2 && emailInfo.value.outboxes.length < 2
 })

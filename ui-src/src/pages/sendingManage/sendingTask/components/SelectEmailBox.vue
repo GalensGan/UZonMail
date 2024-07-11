@@ -50,6 +50,8 @@ const props = defineProps({
 })
 
 import { IInbox } from 'src/api/emailBox'
+import { IEmailGroupListItem } from 'src/pages/emailManage/components/types'
+
 // placeholder 显示
 import { useCustomQField } from '../helper'
 const { isActive, fieldModelValue, fieldText } = useCustomQField(props.placeholder)
@@ -59,25 +61,53 @@ const modelValue = defineModel({
   type: Array as PropType<IInbox[]>,
   default: () => []
 })
+const selectedGroupsModelValue = defineModel('selectedGroups', {
+  type: Array as PropType<IEmailGroupListItem[]>,
+  default: () => []
+})
+
 import { showComponentDialog } from 'src/components/popupDialog/PopupDialog'
 import { createAbstractLabel } from 'src/utils/labelHelper'
 import SelectEmailBoxDialog from './SelectEmailBoxDialog.vue'
+
 async function onSelectOutboxes () {
-  const { ok, data: inboxes } = await showComponentDialog<IInbox[]>(SelectEmailBoxDialog, {
+  const { ok, data } = await showComponentDialog<{
+    selectedEmails: IInbox[],
+    selectedGroups: IEmailGroupListItem[]
+  }>(SelectEmailBoxDialog, {
     initEmailBoxes: modelValue.value,
+    initEmailGroups: selectedGroupsModelValue.value,
     emailBoxType: props.emailBoxType
   })
   if (!ok) return
 
   // 更新选择的数据
-  modelValue.value = inboxes.map(x => {
+  const selectedEmailsResults = data.selectedEmails.map(x => {
     return {
       id: x.id,
       email: x.email,
       name: x.name
-    }
+    } as IInbox
   })
-  const label = createAbstractLabel(inboxes.map(item => item.email), 3, '个邮箱')
+  modelValue.value = selectedEmailsResults
+  const selectedGroupsResults = data.selectedGroups.map(x => {
+    return {
+      id: x.id,
+      name: x.name
+    } as IEmailGroupListItem
+  })
+  selectedGroupsModelValue.value = selectedGroupsResults
+
+  let unitLabel = '个邮箱'
+  if (selectedGroupsModelValue.value.length > 0) {
+    unitLabel = '个分组和邮箱'
+  }
+  const labels = selectedGroupsResults.map(x => `组-${x.name}`)
+  if (selectedEmailsResults.length > 0) {
+    labels.push(...selectedEmailsResults.map(x => x.email))
+  }
+
+  const label = createAbstractLabel(labels, 5, unitLabel)
   fieldModelValue.value = label
 }
 </script>
