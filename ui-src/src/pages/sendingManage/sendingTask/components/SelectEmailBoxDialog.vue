@@ -3,7 +3,7 @@
     <q-card class='column no-wrap q-pa-sm height-0 select-email-box-dialog'>
       <div class="col row items-start">
         <EmailGroupList v-model="emailGroupRef" :extra-items="categoryTopItems" readonly :groupType="groupType"
-          class="q-mr-sm card-like full-height" />
+          selectable class="q-mr-sm card-like full-height" v-model:selected="selectedGroups" />
 
         <q-table class="col full-height" :rows="rows" :columns="columns" row-key="id" virtual-scroll
           v-model:pagination="pagination" dense :loading="loading" :filter="filter" binary-state-sort
@@ -34,6 +34,7 @@
 
 <script lang='ts' setup>
 import { IInbox, getInboxesCount, getInboxesData, getOutboxesCount, getOutboxesData, createUngroupedInbox } from 'src/api/emailBox'
+import { IEmailGroupListItem } from 'src/pages/emailManage/components/types'
 // props 定义
 const props = defineProps({
   emailBoxType: {
@@ -43,6 +44,10 @@ const props = defineProps({
   },
   initEmailBoxes: {
     type: Array as PropType<IInbox[]>,
+    default: () => []
+  },
+  initEmailGroups: {
+    type: Array as PropType<IEmailGroupListItem[]>,
     default: () => []
   }
 })
@@ -66,7 +71,7 @@ const { dialogRef, onDialogHide, onDialogOK, onDialogCancel } = useDialogPluginC
 
 // 分类列表
 import EmailGroupList from 'pages/emailManage/components/EmailGroupList.vue'
-import { IEmailGroupListItem } from 'src/pages/emailManage/components/types'
+
 const emailGroupRef: Ref<IEmailGroupListItem> = ref({
   name: 'selected',
   order: 0,
@@ -80,7 +85,8 @@ const categoryTopItems: Ref<IEmailGroupListItem[]> = ref([
     name: 'selected',
     order: -1,
     icon: 'task_alt',
-    label: '已选中'
+    label: '已选邮箱',
+    selectable: false
   }
 ])
 
@@ -111,6 +117,8 @@ import { IRequestPagination, TTableFilterObject } from 'src/compositions/types'
 const selected: Ref<IInbox[]> = ref([])
 // 初始化选择结果
 selected.value.push(...props.initEmailBoxes)
+const selectedGroups: Ref<IEmailGroupListItem[]> = ref([])
+selectedGroups.value.push(...props.initEmailGroups)
 
 // 若是选择已选中，需要单独处理
 async function getRowsNumberCount (filterObj: TTableFilterObject) {
@@ -187,7 +195,12 @@ async function onNewTempInboxClick () {
 import CancelBtn from 'src/components/componentWrapper/buttons/CancelBtn.vue'
 import OkBtn from 'src/components/componentWrapper/buttons/OkBtn.vue'
 function onOKClick () {
-  onDialogOK(selected.value)
+  const result = {
+    selectedEmails: selected.value,
+    selectedGroups: selectedGroups.value
+  }
+  // console.log('dialog closed:', result)
+  onDialogOK(result)
 }
 </script>
 

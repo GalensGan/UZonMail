@@ -6,10 +6,11 @@
       </q-item-section>
       <q-item-section class="q-px-lg q-py-sm">
         {{ header.label }}
-        <AsyncTooltip tooltip="右键可添加分组" />
+        <AsyncTooltip v-if="!readonly" tooltip="右键可添加分组" />
       </q-item-section>
       <ContextMenu v-if="!readonly" :items="headerContextMenuItems"></ContextMenu>
     </q-item>
+
     <q-item class="plain-list__item q-mt-xs">
       <SearchInput dense v-model="filter" />
     </q-item>
@@ -18,7 +19,14 @@
       <q-item class="plain-list__item q-my-xs" v-for="item in filteredItems" :key="item.name" clickable v-ripple
         :active="item.active" active-class="text-secondary" @click="onItemClick(item)">
         <div class="row justify-between no-wrap items-center full-width">
-          <q-icon v-if="item.icon" :name="item.icon || 'contact_mail'" size="sm" />
+          <div>
+            <q-icon v-if="item.icon" :name="item.icon || 'contact_mail'" size="sm" />
+
+            <q-checkbox v-if="selectable && item.selectable !== false" dense v-model="item.selected"
+              @click="onItemCheckboxClicked(item)" color="secondary" class="q-ml-xs">
+            </q-checkbox>
+          </div>
+
           <div class="q-px-xs" v-if="item.label">{{ item.label }}
             <AsyncTooltip :tooltip="item.label" />
           </div>
@@ -40,6 +48,17 @@ import SearchInput from 'src/components/searchInput/SearchInput.vue'
 import { IContextMenuItem } from 'src/components/contextMenu/types'
 
 const modelValue = defineModel<IEmailGroupListItem>()
+const selectedValues = defineModel<IEmailGroupListItem[]>('selected', {
+  type: Array,
+  default: () => []
+})
+function onItemCheckboxClicked (emailGroup: IEmailGroupListItem) {
+  // 已经修改emailGroup的值后，才触发的事件
+  // console.log('onItemCheckboxClicked', emailGroup.selected)
+  if (emailGroup.selected) {
+    if (!selectedValues.value.some(x => x.id === emailGroup.id)) { selectedValues.value.push(emailGroup) }
+  } else { selectedValues.value = selectedValues.value.filter(x => x.id !== emailGroup.id) }
+}
 
 const props = defineProps({
   // 树形结构顶部的菜单
@@ -61,6 +80,12 @@ const props = defineProps({
   groupType: {
     type: Number as PropType<1 | 2>,
     default: 1
+  },
+
+  // 是否允许选择
+  selectable: {
+    type: Boolean,
+    default: false
   }
 })
 const header: ComputedRef<IFlatHeader> = computed(() => {
@@ -84,6 +109,9 @@ const filteredItems = computed(() => {
   }
   results.push(...groupItems.value)
   results.sort((a, b) => a.order - b.order)
+  // 然后按是否选中排序
+  results.sort((a, b) => (b.selected ? 1 : 0) - (a.selected ? 1 : 0))
+
   if (!filter.value) return results
   return results.filter(x => x.name.indexOf(filter.value) > -1)
 })
@@ -95,7 +123,15 @@ import { showDialog } from 'src/components/popupDialog/PopupDialog'
 import { confirmOperation, notifySuccess } from 'src/utils/dialog'
 onMounted(async () => {
   const { data: groups } = await getEmailGroups(props.groupType)
-  groupItems.value = groups.map(x => ({ ...x, label: x.name, active: false, side: String(x.order) }))
+  groupItems.value = groups.map(x => {
+    // 判断是否有初始值，若有，则恢复选中状态
+    if (selectedValues.value.some(y => y.id === x.id)) {
+      x.selected = true
+    } else {
+      x.selected = false
+    }
+    return { ...x, label: x.name, active: false, side: String(x.order) }
+  })
 
   // 默认选中第一个
   if (filteredItems.value.length > 0) {

@@ -6,7 +6,9 @@ export interface IEmailGroup {
   icon?: string,
   description?: string,
   order: number,
-  type?: 1 | 2
+  type?: 1 | 2,
+  selectable?: boolean,
+  selected?: boolean
 }
 
 /**
