@@ -25,7 +25,7 @@ namespace UZonMailService.Controllers.Emails
         public async Task<ResponseResult<int>> GetSendingGroupsCount(string filter)
         {
             var userId = tokenService.GetUserDataId();
-            var dbSet = db.SendingGroups.Where(x => x.UserId == userId);
+            var dbSet = db.SendingGroups.AsNoTracking().Where(x => x.UserId == userId);
             if (!string.IsNullOrEmpty(filter))
             {
                 dbSet = dbSet.Where(x => x.Subjects.Contains(filter));
@@ -44,7 +44,7 @@ namespace UZonMailService.Controllers.Emails
         public async Task<ResponseResult<List<SendingHistoryResult>>> GetSendingGroupsData(string filter, Pagination pagination)
         {
             var userId = tokenService.GetUserDataId();
-            var dbSet = db.SendingGroups.Where(x => x.UserId == userId);
+            var dbSet = db.SendingGroups.AsNoTracking().Where(x => x.UserId == userId);
             if (!string.IsNullOrEmpty(filter))
             {
                 dbSet = dbSet.Where(x => x.Subjects.Contains(filter));
@@ -57,8 +57,10 @@ namespace UZonMailService.Controllers.Emails
                     SendingType = x.SendingType,
                     Status = x.Status,
                     Templates = x.Templates,
-                    Outboxes = x.Outboxes,
+                    OutboxesCount = x.OutboxesCount,
+                    InboxesCount = x.InboxesCount,
                     SuccessCount = x.SuccessCount,
+                    SentCount = x.SentCount,
                     CreateDate = x.CreateDate,
                     TotalCount = x.TotalCount
                 });

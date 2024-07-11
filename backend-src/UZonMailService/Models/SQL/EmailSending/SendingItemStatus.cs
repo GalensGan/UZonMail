@@ -34,5 +34,10 @@
         /// 无效
         /// </summary>
         Invalid,
+
+        /// <summary>
+        /// 已取消
+        /// </summary>
+        Cancel,
     }
 }

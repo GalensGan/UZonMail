@@ -91,12 +91,14 @@ onMounted(() => {
 // 上传地址配置
 import { useUserInfoStore } from 'src/stores/user'
 const userInfoStore = useUserInfoStore()
+import { useConfig } from 'src/config'
+const appConfig = useConfig()
 function factoryFn (files: readonly IUploadFile[]): Promise<QUploaderFactoryObject> {
   console.log('uploader factory called:', files)
   return new Promise((resolve) => {
     // Retrieve JWT token from your store.
     const token = userInfoStore.token
-    const uploadUrl = process.env.BASE_URL + '/file/upload-file-object'
+    const uploadUrl = `${process.env.BASE_URL}${appConfig.api}/file/upload-file-object`
     const result: QUploaderFactoryObject = {
       url: uploadUrl,
       method: 'POST',

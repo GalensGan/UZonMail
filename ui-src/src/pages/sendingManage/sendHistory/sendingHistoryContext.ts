@@ -49,7 +49,7 @@ export function useContextMenu () {
     const confirm = await confirmOperation('发送确认', '确认重新开始发件吗？')
     if (!confirm) return
 
-    await restartSending(data.id)
+    await restartSending(data.id, userInfoStore.smtpPasswordSecretKeys)
     data.status = SendingGroupStatus.Sending
 
     notifySuccess('已重新发送')

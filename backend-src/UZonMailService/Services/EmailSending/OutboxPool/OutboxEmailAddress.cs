@@ -15,6 +15,8 @@ using UZonMailService.Services.EmailSending.Event.Commands;
 using System.Collections.Concurrent;
 using UZonMailService.Services.EmailSending.Pipeline;
 using UZonMailService.Utils.Database;
+using UZonMailService.Services.EmailSending.Sender;
+using log4net;
 
 namespace UZonMailService.Services.EmailSending.OutboxPool
 {
@@ -28,6 +30,8 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
         #region 分布式锁
         public readonly object SendingItemIdsLock = new();
         #endregion
+
+        private readonly static ILog _logger = LogManager.GetLogger(typeof(OutboxEmailAddress));
 
         #region 属性参数
         public OutboxEmailAddressType Type { get; private set; } = OutboxEmailAddressType.Specific;
@@ -213,7 +217,6 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
             // 说明被其它线程已经使用了
             if (_isCooldown)
                 return;
-
             _isCooldown = true;
 
             // 启动 _timer 用于解除冷却
@@ -228,6 +231,7 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
                 return;
             }
 
+            _logger.Debug($"发件箱 {Email} 进入冷却状态，冷却时间 {cooldownMilliseconds} 毫秒");
             _timer?.Dispose();
             _timer = new Timer(cooldownMilliseconds)
             {
@@ -238,8 +242,9 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
             {
                 _timer.Stop();
                 _isCooldown = false;
+                _logger.Debug($"发件箱 {Email} 退出冷却状态");
                 // 通知可以继续发件
-                await new StartSendingCommand(sendingContext, 1).Execute(this);
+                await new StartSendingCommand(1).Execute(this);
             };
             return;
         }
@@ -296,7 +301,8 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
             }
 
             // 若是发件连接失败，则移除
-            if (sendingContext.SendResult.SentStatus.HasFlag(Sender.SentStatus.OutboxConnectError))
+            if (sendingContext.SendResult.SentStatus.HasFlag(SentStatus.OutboxConnectError) 
+                || sendingContext.SendResult.SentStatus.HasFlag(SentStatus.EmptySendingGroup))
             {
                 ShouldDispose = true;
             }
@@ -323,7 +329,7 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
                             // 修改发件项状态
                             await sendingContext.SqlContext.SendingItems.UpdateAsync(x => x.SendingGroupId == sendingGroupId && x.Status == SendingItemStatus.Pending
                             , x => x.SetProperty(y => y.Status, SendingItemStatus.Failed)
-                                .SetProperty(y => y.SendResult, sendingContext.SendResult.Message ?? "发件箱发件")
+                                .SetProperty(y => y.SendResult, sendingContext.SendResult.Message ?? "发件箱退出发件池，无发件箱可用")
                             );
                             // 修改发件组状态
                             await sendingContext.SqlContext.SendingGroups.UpdateAsync(x => x.Id == sendingGroupId, x => x.SetProperty(y => y.Status, SendingGroupStatus.Finish));

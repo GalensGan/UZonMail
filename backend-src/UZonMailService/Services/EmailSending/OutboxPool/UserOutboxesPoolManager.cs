@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Collections.Concurrent;
 using Uamazing.Utils.Web.Service;
+using UZonMailService.Controllers.SystemInfo.Model;
 using UZonMailService.Models.SQL;
 using UZonMailService.Models.SQL.Emails;
 using UZonMailService.Models.SQL.MultiTenant;
@@ -121,5 +122,15 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
                 userOutboxesPool.TryRemove(outbox.Email, out _);
             }
         }
+
+        #region 统计分析
+        public List<OutboxPoolInfo> GetOutboxPoolInfos()
+        {
+            return _userOutboxesPools.Values.Select(x =>
+              {
+                  return new OutboxPoolInfo(x);
+              }).ToList();
+        }
+        #endregion
     }
 }

@@ -107,6 +107,11 @@ export default {
   border-right: 2px solid $primary;
 }
 
+// 悬停高亮
+.menu-item__icon_hover:hover {
+  color: $primary;
+}
+
 :deep(.q-expansion-item__toggle-icon,
   .q-expansion-item__toggle-icon--rotated) {
   color: $secondary

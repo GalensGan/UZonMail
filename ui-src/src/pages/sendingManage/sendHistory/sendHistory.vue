@@ -104,6 +104,14 @@ const columns: QTableColumn[] = [
     sortable: true
   },
   {
+    name: 'sentCount',
+    required: true,
+    label: '已发送',
+    align: 'left',
+    field: 'sentCount',
+    sortable: true
+  },
+  {
     name: 'successCount',
     required: true,
     label: '已成功',
@@ -178,6 +186,7 @@ function onSendingGroupProgressChanged (arg: ISendingGroupProgressArg) {
   if (!row) return
 
   row.successCount = arg.successCount
+  row.sentCount = arg.sentCount
 
   if (arg.progressType === SendingGroupProgressType.end) {
     row.status = SendingGroupStatus.Finish

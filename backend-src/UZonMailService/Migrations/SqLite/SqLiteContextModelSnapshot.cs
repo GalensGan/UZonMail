@@ -379,12 +379,12 @@ namespace UZonMailService.Migrations.SqLite
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Email")
-                        .IsUnique();
-
                     b.HasIndex("EmailGroupId");
 
-                    b.ToTable("Inboxes", (string)null);
+                    b.HasIndex("Email", "UserId")
+                        .IsUnique();
+
+                    b.ToTable("Inboxes");
                 });
 
             modelBuilder.Entity("UZonMailService.Models.SQL.Emails.Outbox", b =>
@@ -464,7 +464,7 @@ namespace UZonMailService.Migrations.SqLite
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Email")
+                    b.HasIndex("Email", "UserId")
                         .IsUnique();
 
                     b.ToTable("Outboxes", (string)null);

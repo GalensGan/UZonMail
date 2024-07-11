@@ -15,7 +15,7 @@ namespace UZonMailService.Models.SQL.EmailSending
     /// </summary>
     /// <param name="group"></param>
     /// <param name="userSetting"></param>
-    public class SendingItemsBuilder(SqlContext db, SendingGroup group, UserSetting userSetting,TokenService tokenService)
+    public class SendingItemsBuilder(SqlContext db, SendingGroup group, UserSetting userSetting, TokenService tokenService)
     {
         /// <summary>
         /// 批量发件时的大小
@@ -29,7 +29,23 @@ namespace UZonMailService.Models.SQL.EmailSending
         public async Task<List<SendingItem>> GenerateAndSave()
         {
             // 获取收件箱
-            List<EmailAddress> allInboxes = GetAllInboxes();
+            List<EmailAddress> allInboxes = await GetAllInboxes();
+            // 更新发件箱总数
+            group.InboxesCount = allInboxes.Count;
+
+            // allInboxes 有的是从数据中解析得到的，需要获取其 id
+            var inboxesWithoutId = allInboxes.Where(x => x.Id == 0).ToList();
+            var inboxes = await db.Inboxes.AsNoTracking().Where(x => inboxesWithoutId.Select(i => i.Id).Contains(x.Id)).ToListAsync();
+            inboxesWithoutId.ForEach(x =>
+            {
+                var existInbox = inboxes.FirstOrDefault(i => i.Id == x.Id);
+                if (existInbox == null)
+                {
+                    allInboxes.Remove(x);
+                    return;
+                }
+                x.Id = existInbox.Id;
+            });
 
             // 生成发件项与收件箱对应关系
             var sendingIitemes = await GenerateSendingItems(allInboxes);
@@ -97,14 +113,31 @@ namespace UZonMailService.Models.SQL.EmailSending
         /// 会根据 email 去重
         /// </summary>
         /// <returns></returns>
-        private List<EmailAddress> GetAllInboxes()
+        private async Task<List<EmailAddress>> GetAllInboxes()
         {
             if (group.Data == null) return group.Inboxes;
 
-            // 若有数据，从数据中添加
+            // 从按单个 Inbox 添加
             List<EmailAddress> inboxes = [];
             inboxes.AddRange(group.Inboxes);
 
+            // 按组添加
+            if (group.InboxGroups.Count > 0)
+            {
+                var groupIds = group.InboxGroups.Select(x => x.Id).ToList();
+                var temps = await db.Inboxes.AsNoTracking().Where(x => groupIds.Contains(x.EmailGroupId)).ToListAsync();
+                inboxes.AddRange(temps.ConvertAll(x =>
+                {
+                    return new EmailAddress()
+                    {
+                        Id = x.Id,
+                        Name = x.Name,
+                        Email = x.Email
+                    };
+                }));
+            }
+
+            // 若有数据，从数据中添加
             foreach (var data in group.Data)
             {
                 var inbox = data.SelectTokenOrDefault("inbox", string.Empty);
@@ -120,6 +153,7 @@ namespace UZonMailService.Models.SQL.EmailSending
                     Name = inboxName
                 });
             }
+
             return inboxes.DistinctBy(x => x.Email).ToList();
         }
 
@@ -163,7 +197,7 @@ namespace UZonMailService.Models.SQL.EmailSending
                     var sendingItem = new SendingItem()
                     {
                         // TODO: 因为只有发件有一个时，才会被合并，后期考虑优化
-                        OutBoxId = group.Outboxes[0].Id, 
+                        OutBoxId = group.Outboxes[0].Id,
                         FromEmail = group.Outboxes[0].Email,
                         SendingGroupId = group.Id,
                         UserId = group.UserId,

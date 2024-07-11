@@ -92,7 +92,7 @@ namespace UZonMailService.Services.EmailSending.Sender
 
             try
             {
-                var clientResult = await SmtpClientFactory.GetSmtpClientAsync(sendItem.Outbox, sendItem.ProxyInfo);
+                var clientResult = await SmtpClientFactory.GetSmtpClientAsync(sendingContext, sendItem.Outbox, sendItem.ProxyInfo);
                 // 若返回 null,说明这个发件箱不能建立 smtp 连接，对它进行取消
                 if (!clientResult)
                 {
@@ -101,12 +101,8 @@ namespace UZonMailService.Services.EmailSending.Sender
                 else
                 {
                     //throw new NullReferenceException("测试报错");
-#if DEBUG
-                    var sendResult = "debug success";
-#else
                     var client = clientResult.Data;
                     string sendResult = await client.SendAsync(message);
-#endif
                     var successResult = new SendResult(true, sendResult);
                     sendingContext.SetSendResult(successResult);
                 }
