@@ -86,7 +86,7 @@ namespace UZonMailService.Services.EmailSending
                 // 更新发件总数量
                 sendingGroupData.TotalCount = items.Count;
                 // 更新发件箱的数量
-                if (sendingGroupData.OutboxGroups.Count > 0)
+                if (sendingGroupData.OutboxGroups != null && sendingGroupData.OutboxGroups.Count > 0)
                 {
                     var outboxGroupIds = sendingGroupData.OutboxGroups.Select(x => x.Id).ToList();
                     var outboxCount = await db.Outboxes.AsNoTracking().Where(x => outboxGroupIds.Contains(x.EmailGroupId)).CountAsync();

@@ -184,7 +184,7 @@ namespace UZonMailService.Services.EmailSending.WaitList
 
             // 将新的公用发件箱添加到发件池中
             await AddSharedOutboxToPool(scopeServices, sendingGroup.Outboxes);
-            if (sendingGroup.OutboxGroups.Count > 0)
+            if (sendingGroup.OutboxGroups != null && sendingGroup.OutboxGroups.Count > 0)
             {
                 var outboxGroupIds = sendingGroup.OutboxGroups.Select(x => x.Id).ToList();
                 // 添加发件组的发件箱

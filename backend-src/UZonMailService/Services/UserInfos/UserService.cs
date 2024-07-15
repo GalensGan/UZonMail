@@ -16,6 +16,7 @@ using System.Runtime.InteropServices;
 using System.Security.Claims;
 using UZonMailService.Services.Settings;
 using System.Net.NetworkInformation;
+using UZonMailService.Controllers.Users.Model;
 
 namespace UZonMailService.Services.UserInfos
 {
@@ -186,11 +187,12 @@ namespace UZonMailService.Services.UserInfos
         /// 修改密码
         /// </summary>
         /// <param name="userId"></param>
-        /// <param name="oldPassword">这个值在前端通过 Sha256 加密过</param>
-        /// <param name="newPassword">这个值在前端通过 Sha256 加密过</param>
         /// <returns></returns>
-        public async Task<bool> ChangeUserPassword(long userId, string oldPassword, string newPassword)
+        public async Task<bool> ChangeUserPassword(long userId, ChangePasswordModel passwordModel)
         {
+            var oldPassword = passwordModel.OldPassword;
+            var newPassword = passwordModel.NewPassword;
+
             if (userId <= 0 || string.IsNullOrEmpty(oldPassword) || string.IsNullOrEmpty(newPassword))
             {
                 throw new KnownException("新旧密码不能为空");
@@ -211,9 +213,10 @@ namespace UZonMailService.Services.UserInfos
                 foreach (var outbox in outboxes)
                 {
                     // 原密钥
-                    var smtpPassword = DecryptSmtpPassword(outbox.Password, oldPassword);
+                    var smtpPassword = DecryptSmtpPassword(outbox.Password, passwordModel.OldSmtpPasswordSecretKeys);
+
                     // 计算新的密码
-                    outbox.Password = EncryptSmtpPassword(smtpPassword, newPassword);
+                    outbox.Password = EncryptSmtpPassword(smtpPassword, passwordModel.NewSmtpPasswordSecretKeys);
                 }
 
                 await db.SaveChangesAsync();
@@ -229,10 +232,9 @@ namespace UZonMailService.Services.UserInfos
         /// <param name="password"></param>
         /// <param name="key"></param>
         /// <returns></returns>
-        public string EncryptSmtpPassword(string password, string key)
+        public string EncryptSmtpPassword(string password, SmtpPasswordSecretKeys secretKeys)
         {
-            string iv = key[..16];
-            return password.AES(key, iv);
+            return password.AES(secretKeys.Key, secretKeys.Iv);
         }
 
         /// <summary>
@@ -241,10 +243,9 @@ namespace UZonMailService.Services.UserInfos
         /// <param name="password"></param>
         /// <param name="key"></param>
         /// <returns></returns>
-        public string DecryptSmtpPassword(string password, string key)
+        public string DecryptSmtpPassword(string password, SmtpPasswordSecretKeys secretKeys)
         {
-            string iv = key[..16];
-            return password.DeAES(key, iv);
+            return password.DeAES(secretKeys.Key, secretKeys.Iv);
         }
     }
 }

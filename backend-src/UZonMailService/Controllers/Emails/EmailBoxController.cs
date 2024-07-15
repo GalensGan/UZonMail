@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
 using Uamazing.ConfValidatation.Core.Entrance;
 using Uamazing.ConfValidatation.Core.Validators;
 using Uamazing.Utils.Web.Extensions;
@@ -8,12 +10,14 @@ using Uamazing.Utils.Web.ResponseModel;
 using UZonMailService.Models.SQL;
 using UZonMailService.Models.SQL.Emails;
 using UZonMailService.Models.SQL.MultiTenant;
+using UZonMailService.Models.Validators;
 using UZonMailService.Services.Emails;
 using UZonMailService.Services.Settings;
 using UZonMailService.Services.UserInfos;
 using UZonMailService.Utils.ASPNETCore.PagingQuery;
 using UZonMailService.Utils.Database;
 using UZonMailService.Utils.DotNETCore.Exceptions;
+using UZonMailService.Utils.Extensions;
 
 namespace UZonMailService.Controllers.Emails
 {
@@ -30,12 +34,12 @@ namespace UZonMailService.Controllers.Emails
         [HttpPost("outbox")]
         public async Task<ResponseResult<Outbox>> CreateOutbox([FromBody] Outbox entity)
         {
-            entity.Validate(new VdObj()
+            var outboxValidator = new OutboxValidator();
+            var vdResult = outboxValidator.Validate(entity);
+            if (!vdResult.IsValid)
             {
-                { ()=>entity.SmtpHost,new IsString("请输入 smtp 地址") },
-                { ()=>entity.Email,new IsString("请输入邮箱"){ MinLength=3} },
-                { ()=>entity.Password,new IsString("请输入密码")}
-            }, ValidateOption.ThrowError);
+                return vdResult.ToErrorResponse<Outbox>();
+            }
 
             // 设置默认端口
             if (entity.SmtpPort == 0) entity.SmtpPort = 25; // 默认端口
@@ -77,18 +81,20 @@ namespace UZonMailService.Controllers.Emails
             var userId = tokenService.GetUserDataId();
             foreach (var entity in entities)
             {
-                entity.Validate(new VdObj()
-                {
-                    { ()=>entity.SmtpHost,new IsString("请输入 smtp 地址") },
-                    { ()=>entity.Email,new IsString("请输入邮箱"){ MinLength=3} },
-                    { ()=>entity.Password,new IsString("请输入密码")}
-                }, ValidateOption.ThrowError);
-
                 // 设置默认端口
-                if (entity.SmtpPort == 0) entity.SmtpPort = 25; // 默认端口
+                if (entity.SmtpPort == 0) entity.SmtpPort = 25;
                 // 设置用户
                 entity.UserId = userId;
+
+                // 验证数据
+                var outboxValidator = new OutboxValidator();
+                var vdResult = outboxValidator.Validate(entity);
+                if (!vdResult.IsValid)
+                {
+                    return vdResult.ToErrorResponse<List<Outbox>>();
+                }
             }
+
             List<string> emails = entities.Select(x => x.Email).ToList();
             List<Outbox> existEmails = await db.Outboxes.Where(x => x.UserId == userId && emails.Contains(x.Email)).ToListAsync();
             List<Outbox?> newEntities = emails.Except(existEmails.Select(x => x.Email))
@@ -96,11 +102,7 @@ namespace UZonMailService.Controllers.Emails
                 .ToList();
 
             // 新建发件箱
-            foreach (var entity in newEntities)
-            {
-                if (entity != null)
-                    db.Outboxes.Add(entity);
-            }
+            await db.Outboxes.AddRangeAsync(newEntities.Where(x => x != null));
 
             // 更新现有的发件箱
             foreach (var entity in existEmails)
@@ -135,7 +137,10 @@ namespace UZonMailService.Controllers.Emails
         [HttpPost("inbox")]
         public async Task<ResponseResult<Inbox>> CreateInbox([FromBody] Inbox entity)
         {
-            if (string.IsNullOrEmpty(entity.Email)) throw new KnownException("请输入邮箱地址");
+            var inboxValidator = new InboxValidator();
+            var vdResult = inboxValidator.Validate(entity);
+            if(!vdResult.IsValid)return vdResult.ToErrorResponse<Inbox>();
+
             var tokenPayloads = tokenService.GetTokenPayloads();
             var userId = tokenPayloads.UserId;
             entity.UserId = userId;
@@ -188,10 +193,13 @@ namespace UZonMailService.Controllers.Emails
             var userId = tokenService.GetUserDataId();
             foreach (var entity in entities)
             {
-                if (string.IsNullOrEmpty(entity.Email)) throw new KnownException("请输入邮箱地址");
                 // 设置用户
                 entity.UserId = userId;
+                var inboxValidator = new InboxValidator();
+                var vdResult = inboxValidator.Validate(entity);
+                if (!vdResult.IsValid) return vdResult.ToErrorResponse<List<Inbox>>();                
             }
+
             List<string> emails = entities.Select(x => x.Email).ToList();
             List<Inbox> existEmails = await db.Inboxes.Where(x => x.UserId == userId && emails.Contains(x.Email)).ToListAsync();
             List<Inbox?> newEntities = emails.Except(existEmails.Select(x => x.Email))
@@ -243,7 +251,7 @@ namespace UZonMailService.Controllers.Emails
                  .SetProperty(y => y.EnableSSL, entity.EnableSSL)
                  .SetProperty(y => y.Description, entity.Description)
                  .SetProperty(y => y.ProxyId, entity.ProxyId)
-                 .SetProperty(y=>y.ReplyToEmails,entity.ReplyToEmails)
+                 .SetProperty(y => y.ReplyToEmails, entity.ReplyToEmails)
                  );
             return true.ToSuccessResponse();
         }
@@ -260,7 +268,7 @@ namespace UZonMailService.Controllers.Emails
             await db.Inboxes.UpdateAsync(x => x.Id == inboxId,
                  x => x.SetProperty(y => y.Email, entity.Email)
                     .SetProperty(y => y.Name, entity.Name)
-                    .SetProperty(y=>y.MinInboxCooldownHours,entity.MinInboxCooldownHours)
+                    .SetProperty(y => y.MinInboxCooldownHours, entity.MinInboxCooldownHours)
                     .SetProperty(y => y.Description, entity.Description)
                  );
             return true.ToSuccessResponse();

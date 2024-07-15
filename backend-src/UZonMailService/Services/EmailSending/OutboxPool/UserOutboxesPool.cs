@@ -1,4 +1,5 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using log4net;
+using Microsoft.IdentityModel.Tokens;
 using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
 using Uamazing.Utils.Results;
@@ -21,7 +22,9 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
     /// </summary>
     public class UserOutboxesPool : ConcurrentDictionary<string, OutboxEmailAddress>, IWeight, ISendingComplete
     {
+        private readonly static ILog _logger = LogManager.GetLogger(typeof(UserOutboxesPool));
         private readonly IServiceScopeFactory _ssf;
+
         public UserOutboxesPool(IServiceScopeFactory ssf, long userId, int weight)
         {
             _ssf = ssf;
@@ -117,8 +120,9 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
         {
             // 移除发件箱
             if (sendingContext.OutboxEmailAddress.ShouldDispose)
-            {
+            {                
                 this.TryRemove(sendingContext.OutboxEmailAddress.Email, out _);
+                _logger.Info($"{sendingContext.OutboxEmailAddress.Email} 被标记为释放，从发件池中移除");
             }
 
             // 回调父级

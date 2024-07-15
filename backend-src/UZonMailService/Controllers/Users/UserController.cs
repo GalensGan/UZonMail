@@ -18,6 +18,7 @@ using UZonMailService.Services.Files;
 using UZonMailService.Models.SQL;
 using Microsoft.EntityFrameworkCore;
 using UZonMailService.Utils.Database;
+using UZonMailService.Controllers.Users.Model;
 
 namespace UZonMailService.Controllers.Users
 {
@@ -173,12 +174,12 @@ namespace UZonMailService.Controllers.Users
         /// </summary>
         /// <returns></returns>
         [HttpPut("password")]
-        public async Task<ResponseResult<bool>> ChangeUserPassword(string oldPassword, string newPassword)
+        public async Task<ResponseResult<bool>> ChangeUserPassword([FromBody] ChangePasswordModel passwordModel)
         {
             // 获取当前用户
             var userId = tokenService.GetUserDataId();
             // 验证原密码是否正确
-            bool result = await userService.ChangeUserPassword(userId, oldPassword, newPassword);
+            bool result = await userService.ChangeUserPassword(userId, passwordModel);
             return result.ToSuccessResponse();
         }
 

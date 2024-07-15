@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using log4net;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Concurrent;
 using Uamazing.Utils.Web.Service;
 using UZonMailService.Controllers.SystemInfo.Model;
@@ -18,6 +19,7 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
     /// </summary>
     public class UserOutboxesPoolManager : ISingletonService
     {
+        private readonly static ILog _logger = LogManager.GetLogger(typeof(UserOutboxesPoolManager));
         private IServiceScopeFactory _ssf;
         private readonly ConcurrentDictionary<long, UserOutboxesPool> _userOutboxesPools = new();
         public UserOutboxesPoolManager(IServiceScopeFactory ssf)
@@ -95,6 +97,7 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
             if (sendingContext.UserOutboxesPool.IsEmpty)
             {
                 _userOutboxesPools.TryRemove(sendingContext.UserOutboxesPool.UserId, out _);
+                _logger.Info($"用户 {sendingContext.UserOutboxesPool.UserId} 发件池为空，从发件池管理器中移除");
             }
         }
 

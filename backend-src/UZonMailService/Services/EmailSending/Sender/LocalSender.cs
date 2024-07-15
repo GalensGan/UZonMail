@@ -107,6 +107,7 @@ namespace UZonMailService.Services.EmailSending.Sender
                     sendingContext.SetSendResult(successResult);
                 }
 
+                _logger.Info($"邮件发送完成：{sendItem.Outbox.Email} -> {string.Join(",", sendItem.Inboxes.Select(x => x.Email))}");
                 await EmailItemSendCompleted(sendingContext);
                 return;
             }

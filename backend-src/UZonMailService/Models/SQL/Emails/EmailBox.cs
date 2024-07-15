@@ -29,12 +29,13 @@ namespace UZonMailService.Models.SQL.Emails
             get => _email;
             set
             {
-                _email = value;
-                var index = value.LastIndexOf('@');
+                // 去掉 email 两端空格
+                _email = value.Trim();
+                var index = _email.LastIndexOf('@');
                 // 提取邮箱类型
                 if (index > 0)
                 {
-                    Domain = value[(index + 1)..];
+                    Domain = _email[(index + 1)..];
                 }
             }
         }

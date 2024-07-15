@@ -113,9 +113,10 @@ namespace UZonMailService.Services.EmailSending.WaitList
             // 判断邮件任务是否已经发送完成
             if (sendingContext.SendingGroupTask.ShouldDispose)
             {
-                // 说明已经发完了
+                // 说明已经发完了               
                 // 移除当前任务
                 await TryRemoveSendingGroupTask(sendingContext, sendingContext.SendingGroupTask.SendingGroupId);
+                _logger.Info($"{sendingContext.SendingGroupTask.SendingGroupId} 可发邮件为空，从队列中移除");
             }
 
             // 向上回调

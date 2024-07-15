@@ -134,6 +134,7 @@ namespace UZonMailService.Services.EmailSending.WaitList
             // 移除用户队列池
             if (sendingContext.UserSendingGroupsPool.Count == 0)
             {
+                _logger.Info($"用户 {sendingContext.UserSendingGroupsPool.UserId} 发件池为空，从发件池管理器中移除");
                 _userTasks.TryRemove(sendingContext.UserSendingGroupsPool.UserId, out _);
             }
 
