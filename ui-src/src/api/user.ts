@@ -2,7 +2,7 @@
 import { httpClient } from 'src/api//base/httpClient'
 import { IUserInfo } from 'src/stores/types'
 import { IRequestPagination } from 'src/compositions/types'
-import { sha256 } from 'src/utils/encrypt'
+import { sha256, getSmtpPasswordSecretKeys } from 'src/utils/encrypt'
 
 export interface IUserLoginInfo {
   token: string,
@@ -121,12 +121,15 @@ export function getUserInfo (userId: string) {
  * @returns
  */
 export function changeUserPassword (oldPassword: string, newPassword: string) {
-  oldPassword = sha256(oldPassword)
-  newPassword = sha256(newPassword)
+  const oldSmtpPasswordSecretKeys = getSmtpPasswordSecretKeys(oldPassword)
+  const newSmtpPasswordSecretKeys = getSmtpPasswordSecretKeys(newPassword)
+
   return httpClient.put<boolean>('/user/password', {
-    params: {
-      oldPassword,
-      newPassword
+    data: {
+      oldPassword: sha256(oldPassword),
+      newPassword: sha256(newPassword),
+      oldSmtpPasswordSecretKeys,
+      newSmtpPasswordSecretKeys
     }
   })
 }

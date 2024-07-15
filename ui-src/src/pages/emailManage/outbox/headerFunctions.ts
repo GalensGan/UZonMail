@@ -6,6 +6,8 @@ import { IEmailGroupListItem } from '../components/types'
 import { IOutbox, createOutbox, createOutboxes } from 'src/api/emailBox'
 
 import { notifyError, notifySuccess } from 'src/utils/dialog'
+import { isEmail } from 'src/utils/validator'
+
 import { useUserInfoStore } from 'src/stores/user'
 import { aes } from 'src/utils/encrypt'
 import { IExcelColumnMapper, readExcel, writeExcel } from 'src/utils/file'
@@ -222,10 +224,17 @@ export function UseHeaderFunction (emailGroup: Ref<IEmailGroupListItem>,
     }
 
     // 对密码进行加密
-    data.forEach(row => {
+    for (const row of data) {
+      // 验证邮箱是否正确
+      // 验证 email 格式
+      if (!isEmail(row.email)) {
+        notifyError(`邮箱格式错误: ${row.email}`)
+        return
+      }
+
       row.password = encryptPassword(userInfoStore.smtpPasswordSecretKeys, row.password)
       row.emailGroupId = emailGroup.value.id
-    })
+    }
 
     // 向服务器请求新增
     const { data: outboxes } = await createOutboxes(data as IOutbox[])
