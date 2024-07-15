@@ -47,6 +47,7 @@ import AsyncTooltip from 'src/components/asyncTooltip/AsyncTooltip.vue'
 
 import { IUserSetting, getCurrentUserSetting, updateUserSetting } from 'src/api/userSetting'
 import { useUserInfoStore } from 'src/stores/user'
+import { notifySuccess } from 'src/utils/dialog'
 const userInfoStore = useUserInfoStore()
 const outboxSettingRef: Ref<IUserSetting> = ref({
   userId: userInfoStore.userId,
@@ -76,6 +77,8 @@ watch(outboxSettingRef, async () => {
   }
 
   await updateUserSetting(outboxSettingRef.value)
+
+  notifySuccess('设置更改已生效')
 }, { deep: true })
 </script>
 

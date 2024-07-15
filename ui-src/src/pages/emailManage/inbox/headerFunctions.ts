@@ -8,6 +8,8 @@ import { IInbox, createInbox, createInboxes } from 'src/api/emailBox'
 import { notifyError, notifySuccess, notifyUntil } from 'src/utils/dialog'
 import { IExcelColumnMapper, readExcel, writeExcel } from 'src/utils/file'
 
+import { isEmail } from 'src/utils/validator'
+
 export function getInboxFields () {
   return [
     {
@@ -84,7 +86,6 @@ export function UseHeaderFunction (emailGroup: Ref<IEmailGroupListItem>,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { ok, data } = await showNewInboxDialog(emailGroup.value.label)
     if (!ok) return
-    // 新建请求
     // 添加邮箱组
     data.emailGroupId = emailGroup.value.id
     const { data: outbox } = await createInbox(data)
@@ -127,9 +128,16 @@ export function UseHeaderFunction (emailGroup: Ref<IEmailGroupListItem>,
     }
 
     // 添加组
-    data.forEach(row => {
+    for (const row of data) {
+      // 验证 email 格式
+      if (!isEmail(row.email)) {
+        notifyError(`邮箱格式错误: ${row.email}`)
+        return
+      }
+
+      // 添加组 id
       row.emailGroupId = emailGroup.value.id
-    })
+    }
 
     // 向服务器请求新增
     await notifyUntil(async (update) => {
