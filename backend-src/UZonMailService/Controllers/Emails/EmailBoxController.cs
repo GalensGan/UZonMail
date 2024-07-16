@@ -7,17 +7,20 @@ using Uamazing.ConfValidatation.Core.Validators;
 using Uamazing.Utils.Web.Extensions;
 using Uamazing.Utils.Web.RequestModel;
 using Uamazing.Utils.Web.ResponseModel;
+using UZonMailService.Controllers.Users.Model;
 using UZonMailService.Models.SQL;
 using UZonMailService.Models.SQL.Emails;
 using UZonMailService.Models.SQL.MultiTenant;
 using UZonMailService.Models.Validators;
 using UZonMailService.Services.Emails;
+using UZonMailService.Services.EmailSending.Sender;
 using UZonMailService.Services.Settings;
 using UZonMailService.Services.UserInfos;
 using UZonMailService.Utils.ASPNETCore.PagingQuery;
 using UZonMailService.Utils.Database;
 using UZonMailService.Utils.DotNETCore.Exceptions;
 using UZonMailService.Utils.Extensions;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace UZonMailService.Controllers.Emails
 {
@@ -139,7 +142,7 @@ namespace UZonMailService.Controllers.Emails
         {
             var inboxValidator = new InboxValidator();
             var vdResult = inboxValidator.Validate(entity);
-            if(!vdResult.IsValid)return vdResult.ToErrorResponse<Inbox>();
+            if (!vdResult.IsValid) return vdResult.ToErrorResponse<Inbox>();
 
             var tokenPayloads = tokenService.GetTokenPayloads();
             var userId = tokenPayloads.UserId;
@@ -197,7 +200,7 @@ namespace UZonMailService.Controllers.Emails
                 entity.UserId = userId;
                 var inboxValidator = new InboxValidator();
                 var vdResult = inboxValidator.Validate(entity);
-                if (!vdResult.IsValid) return vdResult.ToErrorResponse<List<Inbox>>();                
+                if (!vdResult.IsValid) return vdResult.ToErrorResponse<List<Inbox>>();
             }
 
             List<string> emails = entities.Select(x => x.Email).ToList();
@@ -254,6 +257,36 @@ namespace UZonMailService.Controllers.Emails
                  .SetProperty(y => y.ReplyToEmails, entity.ReplyToEmails)
                  );
             return true.ToSuccessResponse();
+        }
+
+        /// <summary>
+        /// 测试发件箱是否可用
+        /// </summary>
+        /// <param name="outboxId"></param>
+        /// <returns></returns>
+        /// <exception cref="KnownException"></exception>
+        [HttpPut("outbox/{outboxId:long}/validation")]
+        public async Task<ResponseResult<bool>> ValidateOutbox(long outboxId, [FromBody] SmtpPasswordSecretKeys smtpPasswordSecretKeys)
+        {
+            // 只能测试属于自己的发件箱
+            var userId = tokenService.GetUserDataId();
+
+            var outbox = await db.Outboxes.FirstOrDefaultAsync(x => x.Id == outboxId && x.UserId == userId) ?? throw new KnownException("发件箱不存在");
+
+            // 发送测试邮件
+            var outboxTestor = new OutboxTestSender(outbox, smtpPasswordSecretKeys, db);
+            var result = await outboxTestor.SendTest();
+
+            // 更新数据库
+            await db.Outboxes.UpdateAsync(x => x.Id == outboxId, x => x.SetProperty(y => y.IsValid, result.Ok)
+            .SetProperty(x => x.ValidFailReason, result.Message));
+
+            return new ResponseResult<bool>()
+            {
+                Ok = true,
+                Data = result.Ok,
+                Message = result.Message,
+            };
         }
 
         /// <summary>

@@ -28,7 +28,7 @@ namespace UZonMailService.Models.SQL.Emails
 
         /// <summary>
         /// smtp 密码，需要加密保存
-        /// smpt 密码 = 原始密码  > aes (sha256 作为 key)
+        /// smpt 密码 = 原始密码  > aes (md5 作为 key)
         /// </summary>
         public string Password { get; set; }
 
@@ -69,5 +69,16 @@ namespace UZonMailService.Models.SQL.Emails
         /// 发件权重
         /// </summary>
         public int Weight { get; set; }
+
+        /// <summary>
+        /// 是否有效
+        /// 必须通过验证后，才能正常使用
+        /// </summary>
+        public bool IsValid { get; set; }
+
+        /// <summary>
+        /// 验证失败原因
+        /// </summary>
+        public string ValidFailReason { get; set; }
     }
 }
