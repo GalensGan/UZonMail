@@ -38,6 +38,13 @@
           {{ getPasswordValue(props.row) }}
         </q-td>
       </template>
+
+      <template v-slot:body-cell-isValid="props">
+        <q-td class="cursor-pointer" :props="props">
+          <StatusChip :status="props.value">
+          </StatusChip>
+        </q-td>
+      </template>
     </q-table>
 
     <CollapseLeft v-model="isCollapseGroupList" :style="collapseStyleRef" />
@@ -53,6 +60,7 @@ import ImportBtn from 'src/components/componentWrapper/buttons/ImportBtn.vue'
 import ExportBtn from 'src/components/componentWrapper/buttons/ExportBtn.vue'
 import EmailGroupList from '../components/EmailGroupList.vue'
 import ContextMenu from 'components/contextMenu/ContextMenu.vue'
+import StatusChip from 'src/components/statusChip/StatusChip.vue'
 
 import { useQTable } from 'src/compositions/qTableUtils'
 import { IRequestPagination, TTableFilterObject } from 'src/compositions/types'
@@ -153,6 +161,14 @@ const columns: QTableColumn[] = [
       const proxy = usableProxies.value.find(p => p.id === val)
       return proxy?.name ?? '无'
     }
+  },
+  {
+    name: 'isValid',
+    required: true,
+    label: '验证',
+    align: 'left',
+    field: 'isValid',
+    sortable: true
   }
 ]
 async function getRowsNumberCount (filterObj: TTableFilterObject) {

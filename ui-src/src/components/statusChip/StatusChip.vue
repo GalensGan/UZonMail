@@ -17,11 +17,13 @@ const defaultStatusStyles = [
   { status: 'pause', label: '暂停', color: 'orange', textColor: 'white', icon: '' },
   { status: 'stopped', label: '已停止', color: 'grey', textColor: 'white', icon: '' },
   { status: 'finish', label: '完成', color: 'secondary', textColor: 'white', icon: '' },
-  { status: 'cancel', label: '取消', color: 'grey', textColor: 'white', icon: '' }
+  { status: 'cancel', label: '取消', color: 'grey', textColor: 'white', icon: '' },
+  { status: 'true', label: '是', color: 'positive', textColor: 'white', icon: '' },
+  { status: 'false', label: '否', color: 'negative', textColor: 'white', icon: '' }
 ]
 const props = defineProps({
   status: {
-    type: [String, Number],
+    type: [String, Number, Boolean],
     required: true
   },
 

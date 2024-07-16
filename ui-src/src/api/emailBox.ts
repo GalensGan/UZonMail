@@ -27,7 +27,8 @@ export interface IOutbox extends IInbox {
   showPassword?: boolean,
   // 密码已解密
   decryptedPassword?: boolean,
-  replyToEmails?: string
+  replyToEmails?: string,
+  isValid?: boolean
 }
 
 /**
@@ -61,6 +62,21 @@ export function createOutboxes (outboxes: IOutbox[]) {
 export function updateOutbox (outboxId: number, outbox: IOutbox) {
   return httpClient.put<IOutbox[]>(`/email-box/outbox/${outboxId}`, {
     data: outbox
+  })
+}
+
+/**
+ * 验证发件箱
+ * @param outboxId
+ * @param outbox
+ * @returns
+ */
+export function validateOutbox (outboxId: number, smtpPasswordSecretKeys: string[]) {
+  return httpClient.put<boolean>(`/email-box/outbox/${outboxId}/validation`, {
+    data: {
+      key: smtpPasswordSecretKeys[0],
+      iv: smtpPasswordSecretKeys[1]
+    }
   })
 }
 

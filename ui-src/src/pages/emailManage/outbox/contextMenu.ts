@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { IOutbox, deleteOutboxById, updateOutbox } from 'src/api/emailBox'
+import { IOutbox, deleteOutboxById, updateOutbox, validateOutbox } from 'src/api/emailBox'
 
 import { IContextMenuItem } from 'src/components/contextMenu/types'
 import { IPopupDialogParams } from 'src/components/popupDialog/types'
-import { confirmOperation, notifySuccess } from 'src/utils/dialog'
+import { confirmOperation, notifyError, notifySuccess, notifyUntil } from 'src/utils/dialog'
 import { getOutboxFields } from './headerFunctions'
 import { useUserInfoStore } from 'src/stores/user'
 import { showDialog } from 'src/components/popupDialog/PopupDialog'
@@ -20,6 +20,28 @@ function getSmtpPassword (outbox: IOutbox, smtpPasswordSecretKeys: string[]) {
 }
 
 export function useContextMenu (deleteRowById: (id?: number) => void) {
+  const outboxContextMenuItems: IContextMenuItem[] = [
+    {
+      name: 'edit',
+      label: '编辑',
+      tooltip: '编辑当前发件箱',
+      onClick: onUpdateOutbox
+    },
+    {
+      name: 'delete',
+      label: '删除',
+      tooltip: '删除当前发件箱',
+      color: 'negative',
+      onClick: deleteOutbox
+    },
+    {
+      name: 'validate',
+      label: '验证',
+      tooltip: '向自己发送一封邮件，以此测试发件箱的有效性',
+      onClick: onValidateOutbox
+    }
+  ]
+
   const userInfoStore = useUserInfoStore()
 
   // 删除发件箱
@@ -97,21 +119,29 @@ export function useContextMenu (deleteRowById: (id?: number) => void) {
     notifySuccess('更新成功')
   }
 
-  const outboxContextMenuItems: IContextMenuItem[] = [
-    {
-      name: 'edit',
-      label: '编辑',
-      tooltip: '编辑当前发件箱',
-      onClick: onUpdateOutbox
-    },
-    {
-      name: 'delete',
-      label: '删除',
-      tooltip: '删除当前发件箱',
-      color: 'negative',
-      onClick: deleteOutbox
+  async function onValidateOutbox (row: Record<string, any>) {
+    const outbox = row as IOutbox
+    const result = await notifyUntil(async () => {
+      return await validateOutbox(outbox.id as number, userInfoStore.smtpPasswordSecretKeys)
+    }, `验证 ${row.email}`, '正在验证中...')
+    if (!result) return
+    const { data, message } = result
+
+    if (data) {
+      // 验证成功
+      notifySuccess('验证成功')
+      // 更新状态
+      row.isValid = true
+      return
     }
-  ]
+
+    const fullMessage = `验证失败: ${message}`
+    console.log(fullMessage)
+    // 验证失败
+    notifyError(fullMessage)
+    // 更新状态
+    row.isValid = false
+  }
 
   return { outboxContextMenuItems }
 }
