@@ -19,21 +19,11 @@ namespace Uamazing.Utils.Web.Token
         /// </summary>
         /// <param name="payload"></param>
         /// <returns></returns>
-        public static string CreateToken(this TokenParams tokenParam, Dictionary<string, string> payload)
+        public static string CreateToken(this TokenParams tokenParam, List<Claim> claims)
         {
-            // 定义用户信息
-            var claims = new List<Claim>();
-            if (payload != null)
-            {
-                claims = payload.ToList().ConvertAll(kv =>
-                {
-                    return new Claim(kv.Key, kv.Value);
-                });
-            }
-
             // 和 Startup 中的配置一致
             SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenParam.UniqueSecret));
-            JwtSecurityToken token = new JwtSecurityToken(
+            JwtSecurityToken token = new(
                 issuer: tokenParam.Issuer,
                 audience: tokenParam.Audience,
                 claims: claims,

@@ -102,23 +102,27 @@ namespace UZonMailService.Services.UserInfos
             // 生成 token
             string token = GenerateToken(user);
 
-
             // 查找用户的权限
             var userAccess = await db.Users
                 .Include(x => x.UserRoles)
                 .ThenInclude(x => x.Role)
                 .ThenInclude(x => x.PermissionCodes)
                 .FirstOrDefaultAsync(x => x.Id == user.Id);
+
             List<string> access = userAccess
                 .UserRoles
                 .SelectMany(x => x.Role.PermissionCodes)
                 .Select(x => x.Code)
                 .ToList();
 
+            // 添加管理员权限码
+            if (user.IsSuperAdmin)
+                access.Add("*");
+
             return new UserSignInResult()
             {
                 Token = token,
-                Access = access,
+                Access = access.Distinct().ToList(),
                 UserInfo = userInfo
             };
         }

@@ -1,29 +1,30 @@
 ﻿using Newtonsoft.Json.Linq;
 using System.Security.Claims;
 using UZonMailService.Models.SQL.MultiTenant;
+using UZonMailService.Models.SQL.Permission;
 
 namespace UZonMailService.Services.Settings
 {
     /// <summary>
     /// 生成 token 时的 payload
     /// </summary>
-    public class TokenPayloads : Dictionary<string, string>
+    public class TokenPayloads : List<Claim>
     {
         public TokenPayloads(User? userInfo)
         {
             if (userInfo == null)
                 return;
 
-            Add("userId", userInfo.Id.ToString());
-            Add("userName", userInfo.UserId);
+            Add(new Claim("userId", userInfo.Id.ToString()));
+            Add(new Claim("userName", userInfo.UserId));
             // 授予角色，接口权限控制
-            Add(ClaimTypes.Role, userInfo.IsSuperAdmin ? "admin" : "user");
+            Add(new Claim(ClaimTypes.Role, userInfo.IsSuperAdmin ? UserRoles.Admin.ToString() : UserRoles.User.ToString()));
             // signalR 需要使用此处的 Name
-            Add(ClaimTypes.Name, userInfo.Id.ToString());
+            Add(new Claim(ClaimTypes.Name, userInfo.Id.ToString()));
             // 参考:https://learn.microsoft.com/zh-cn/aspnet/core/signalr/groups?view=aspnetcore-8.0
-            Add(ClaimTypes.NameIdentifier, userInfo.Id.ToString());
-            Add("organizationId", userInfo.OrganizationId.ToString());
-            Add("departmentId", userInfo.DepartmentId.ToString());
+            Add(new Claim(ClaimTypes.NameIdentifier, userInfo.Id.ToString()));
+            Add(new Claim("organizationId", userInfo.OrganizationId.ToString()));
+            Add(new Claim("departmentId", userInfo.DepartmentId.ToString()));
         }
 
         public TokenPayloads(JObject? tokenObj)
@@ -33,14 +34,17 @@ namespace UZonMailService.Services.Settings
 
             foreach (var item in tokenObj)
             {
-                Add(item.Key, item.Value?.ToString() ?? "");
+                Add(new Claim(item.Key, item.Value?.ToString() ?? ""));
             }
         }
 
         /// <summary>
-        /// userName 等效于字符串型的 userId
+        /// 使用 key 获取值
         /// </summary>
-        public string UserName => this["UserId"];
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public string this[string key] => this.FirstOrDefault(x => x.Type == key)?.Value ?? "";
+
         public long UserId => long.Parse(this["userId"]);
         public long OrganizationId => long.Parse(this["organizationId"]);
         public long DepartmentId => long.Parse(this["departmentId"]);

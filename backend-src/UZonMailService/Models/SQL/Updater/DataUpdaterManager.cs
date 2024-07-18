@@ -4,6 +4,10 @@ using UZonMailService.Models.SQL.Updater.Updaters;
 
 namespace UZonMailService.Models.SQL.Updater
 {
+    /// <summary>
+    /// 数据升级管理器
+    /// </summary>
+    /// <param name="db"></param>
     public class DataUpdaterManager(SqlContext db)
     {
         private readonly Version _currentVersion = new("0.7.0.0");

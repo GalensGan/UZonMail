@@ -72,7 +72,7 @@ namespace UZonMailService.Controllers.Users
         }
 
         /// <summary>
-        /// 登陆
+        /// 登录
         /// </summary>
         /// <returns></returns>
         [HttpPost("sign-in"), AllowAnonymous]
