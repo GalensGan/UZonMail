@@ -7,6 +7,7 @@ using System.Linq;
 using System.Management;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace UzonMailDesktop.Utils
 {
@@ -34,16 +35,23 @@ namespace UzonMailDesktop.Utils
                 return;
             }
 
-            // 启动服务
-            var startInfo = new ProcessStartInfo
+            try
             {
-                FileName = "service/UZonMailService.exe",
-                WorkingDirectory = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "service"),
-                UseShellExecute = false,
-                CreateNoWindow = true,
-                WindowStyle = ProcessWindowStyle.Hidden
-            };
-            Process.Start(startInfo);
+                // 启动服务
+                var startInfo = new ProcessStartInfo
+                {
+                    FileName = "service/UZonMailService.exe",
+                    WorkingDirectory = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "service"),
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    WindowStyle = ProcessWindowStyle.Hidden
+                };
+                Process.Start(startInfo);
+            }
+            catch(Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
         }
 
         /// <summary>

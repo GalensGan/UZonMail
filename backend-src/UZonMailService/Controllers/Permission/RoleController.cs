@@ -67,7 +67,7 @@ namespace UZonMailService.Controllers.Permission
             var vdResult = roleValidator.Validate(role);
             if (!vdResult.IsValid) return vdResult.ToErrorResponse<Role>();
 
-            var permissionCodes = await db.PermissionCodes.AsNoTracking()
+            var permissionCodes = await db.PermissionCodes
                 .Where(x => role.PermissionCodeIds.Contains(x.Id))
                 .ToListAsync();
 

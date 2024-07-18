@@ -110,9 +110,9 @@ Write-Host "桌面端编译完成！" -ForegroundColor Green
 Write-Host "合并编译结果..." -ForegroundColor Yellow
 
 # 复制前端编译结果到桌面端指定位置
-$uiDist = Join-Path -Path $desktopDist -ChildPath "wwwroot"
-New-Item -Path $uiDist -ItemType Directory -ErrorAction SilentlyContinue
-Copy-Item -Path $uiSrc/dist/spa/* -Destination $uiDist -Recurse -Force
+# $uiDist = Join-Path -Path $desktopDist -ChildPath "wwwroot"
+# New-Item -Path $uiDist -ItemType Directory -ErrorAction SilentlyContinue
+# Copy-Item -Path $uiSrc/dist/spa/* -Destination $uiDist -Recurse -Force
 
 # 复制前端编译结果到服务端指定位置
 $serviceWwwroot = Join-Path -Path $serviceDist -ChildPath "wwwroot"
