@@ -10,7 +10,7 @@ namespace UZonMailService.Models.Validators
     {
         public InboxValidator()
         {
-            RuleFor(x => x.Email).NotEmpty().EmailAddress().WithMessage("请输入正确的 Email");
+            RuleFor(x => x.Email).NotEmpty().EmailAddress().WithMessage(x => $"{x.Email} 不是有效的邮箱格式");
         }
     }
 }

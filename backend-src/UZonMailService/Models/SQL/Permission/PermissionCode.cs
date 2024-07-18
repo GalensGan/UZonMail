@@ -19,5 +19,10 @@ namespace UZonMailService.Models.SQL.Permission
         /// 说明
         /// </summary>
         public string Description { get; set; }
+
+        /// <summary>
+        /// 关联的角色
+        /// </summary>
+        public List<Role> Roles { get; set; }
     }
 }

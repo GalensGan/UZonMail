@@ -53,6 +53,19 @@ namespace UZonMailService.Controllers.Permission
         }
 
         /// <summary>
+        /// 获取所有的权限码
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <param name="pagination"></param>
+        /// <returns></returns>
+        [HttpGet("all")]
+        public async Task<ResponseResult<List<PermissionCode>>> GetAllPermissionCodes()
+        {
+            var results = await db.PermissionCodes.AsNoTracking().ToListAsync();
+            return results.ToSuccessResponse();
+        }
+
+        /// <summary>
         /// 批量添加权限码
         /// </summary>
         /// <param name="permissionCodes"></param>

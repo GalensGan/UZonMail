@@ -35,9 +35,9 @@ namespace UZonMailService.Models.SQL
         #region 数据表定义
         public DbSet<MultiTenant.Department> Departments { get; set; }
         public DbSet<MultiTenant.User> Users { get; set; }
+
         public DbSet<Permission.PermissionCode> PermissionCodes { get; set; }
         public DbSet<Permission.Role> Roles { get; set; }
-        public DbSet<Permission.RolePermissionCode> RolePermissionCodes { get; set; }
         public DbSet<Permission.UserRole> UserRoles { get; set; }
 
         public DbSet<Files.FileBucket> FileBuckets { get; set; }

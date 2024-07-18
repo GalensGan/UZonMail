@@ -56,7 +56,10 @@ services.AddControllers(option =>
     option.Filters.Add(new KnownExceptionFilter());
     option.Filters.Add(new TokenExpiredFilter());
 })
-.AddNewtonsoftJson();
+.AddNewtonsoftJson(x =>
+{
+    x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+});
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 services.AddEndpointsApiExplorer();
