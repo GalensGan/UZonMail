@@ -15,8 +15,7 @@ namespace UZonMailService.Controllers.Permission
     /// <summary>
     /// 权限码路由
     /// </summary>
-    [Route("api/v1/permission/[controller]")]
-    public class PermissionCodeController(TokenService tokenService, SqlContext db) : ControllerBaseV1
+    public class PermissionCodeController(TokenService tokenService, SqlContext db) : PermissionControllerBase
     {
         /// <summary>
         /// 获取权限码数量

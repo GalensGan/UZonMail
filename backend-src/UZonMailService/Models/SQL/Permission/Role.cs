@@ -42,6 +42,11 @@ namespace UZonMailService.Models.SQL.Permission
         /// 权限码
         /// </summary>
         public List<PermissionCode> PermissionCodes { get; set; }
+
+        /// <summary>
+        /// 用户权限
+        /// </summary>
+        public List<UserRole>? UserRoles { get; set; }
         #endregion
 
         /// <summary>

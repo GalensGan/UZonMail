@@ -94,8 +94,18 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
                 Data = data.Data as OutboxEmailAddress
             };
 
-            // 若有 outbox
-            var outbox = data.Data as OutboxEmailAddress;
+            // outbox
+            // 判断是否可用
+            if (data.Data is not OutboxEmailAddress outbox)
+            {
+                return new FuncResult<OutboxEmailAddress>()
+                {
+                    Ok = false,
+                    Status = PoolResultStatus.EmptyError,
+                    Message = $"未能从{UserId}池中获取发件箱"
+                };
+            }
+
             if (!outbox.LockUsing())
             {
                 // 获取使用权失败
@@ -103,7 +113,7 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
                 {
                     Ok = false,
                     Status = PoolResultStatus.LockError,
-                    Message = "发件箱锁定失败"
+                    Message = $"发件箱 {outbox.Email} 已被其它线程使用，锁定失败"
                 };
             }
 
@@ -120,7 +130,7 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
         {
             // 移除发件箱
             if (sendingContext.OutboxEmailAddress.ShouldDispose)
-            {                
+            {
                 this.TryRemove(sendingContext.OutboxEmailAddress.Email, out _);
                 _logger.Info($"{sendingContext.OutboxEmailAddress.Email} 被标记为释放，从发件池中移除");
             }

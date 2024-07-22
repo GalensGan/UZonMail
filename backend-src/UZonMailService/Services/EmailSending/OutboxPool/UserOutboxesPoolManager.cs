@@ -38,7 +38,7 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
                 {
                     Ok = false,
                     Status = PoolResultStatus.EmptyError,
-                    Message = "发件池为空"
+                    Message = "系统发件池为空"
                 };
 
             var data = _userOutboxesPools.GetDataByWeight();

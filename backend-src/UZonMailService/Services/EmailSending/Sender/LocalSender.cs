@@ -30,7 +30,7 @@ namespace UZonMailService.Services.EmailSending.Sender
 
             if (!sendItem.Validate())
             {
-                sendingContext.SetSendResult(new SendResult(false, "发件项数据不满足要求") { SentStatus = SentStatus.Failed });
+                sendingContext.SetSendResult(new SendResult(false, "发件项数据验证失败，取消发件") { SentStatus = SentStatus.Failed });
                 await EmailItemSendCompleted(sendingContext);
                 return;
             }

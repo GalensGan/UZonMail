@@ -151,7 +151,7 @@ namespace UZonMailService.Services.EmailSending.Sender
                     var outboxResult = await outboxesPool.GetOutboxByWeight(sendingContext);
                     if (outboxResult.NotOk)
                     {
-                        _logger.Info(outboxResult.Message ?? $"发件箱处于冷却中, 线程 [{Environment.CurrentManagedThreadId}] 即将退出");
+                        _logger.Info(outboxResult.Message ?? $"所有发件箱处于冷却中, 线程 [{Environment.CurrentManagedThreadId}] 即将退出");
                         break;
                     }
 

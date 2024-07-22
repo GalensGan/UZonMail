@@ -143,6 +143,18 @@ namespace UZonMailService.Controllers.Users
         }
 
         /// <summary>
+        /// 获取所有的用户
+        /// </summary>
+        /// <returns></returns>
+        [Authorize(Roles = "Admin")]
+        [HttpGet("all")]
+        public async Task<ResponseResult<List<User>>> GetAllUsers()
+        {
+            var users = await db.Users.AsNoTracking().Where(x => !x.IsDeleted).ToListAsync();
+            return users.ToSuccessResponse();
+        }
+
+        /// <summary>
         /// 获取默认的用户密码
         /// 只有超管才可以操作
         /// </summary>

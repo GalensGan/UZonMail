@@ -68,7 +68,7 @@ namespace UZonMailService.Controllers.Emails
             }, ValidateOption.ThrowError);
 
             // 判断是否存在同名的模板
-            var existOne = await db.EmailTemplates.FirstOrDefaultAsync(x => x.Name == entity.Name && x.UserId == entity.UserId);
+            var existOne = await db.EmailTemplates.FirstOrDefaultAsync(x => x.Id == entity.Id && x.UserId == entity.UserId);
             // 如果有 Id,则说明是修改
             if (entity.Id > 0)
             {

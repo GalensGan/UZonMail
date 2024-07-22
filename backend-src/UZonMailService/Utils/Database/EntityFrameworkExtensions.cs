@@ -61,10 +61,37 @@ namespace UZonMailService.Utils.Database
                         entry.Property(propertyName).CurrentValue = property.GetValue(entity);
                     }
                 }
-            }            
+            }
 
             await ctx.SaveChangesAsync();
             return entity;
+        }
+
+        /// <summary>
+        /// 将目标集合赋值给原集合
+        /// 自动处理增加和减少
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="origin"></param>
+        /// <param name="target"></param>
+        public static void SetList<T>(this ICollection<T> origin, IEnumerable<T> target)
+        {
+            if (origin == null || target == null) return;
+
+            // 计算新增
+            var addList = target.Except(origin).ToList();
+            // 计算删除
+            var removeList = origin.Except(target).ToList();
+            // 开始添加
+            foreach (var item in addList)
+            {
+                origin.Add(item);
+            }
+            // 开始删除
+            foreach (var item in removeList)
+            {
+                origin.Remove(item);
+            }
         }
     }
 }

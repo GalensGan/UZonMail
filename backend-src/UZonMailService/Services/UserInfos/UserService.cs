@@ -105,13 +105,14 @@ namespace UZonMailService.Services.UserInfos
             // 查找用户的权限
             var userAccess = await db.Users
                 .Include(x => x.UserRoles)
-                .ThenInclude(x => x.Role)
+                .ThenInclude(x => x.Roles)
                 .ThenInclude(x => x.PermissionCodes)
                 .FirstOrDefaultAsync(x => x.Id == user.Id);
 
             List<string> access = userAccess
                 .UserRoles
-                .SelectMany(x => x.Role.PermissionCodes)
+                .SelectMany(x => x.Roles)
+                .SelectMany(x=>x.PermissionCodes)
                 .Select(x => x.Code)
                 .ToList();
 
