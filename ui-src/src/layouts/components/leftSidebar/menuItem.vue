@@ -1,5 +1,5 @@
 <template>
-  <q-expansion-item :inset-level="insetLevel" v-if="!noMenu && existChildren" v-model="openExpansionItem"
+  <q-expansion-item :header-inset-level="insetLevel" v-if="!noMenu && existChildren" v-model="openExpansionItem"
     class="rounded-borders" :class="{ 'text-orange': isActive }" :icon="icon" :label="label">
     <MenuItem v-for="child in childrenRoutes" :key="child.path" :routeRaw="child" :depth="depth + 1">
     </MenuItem>

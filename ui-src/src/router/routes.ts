@@ -203,6 +203,44 @@ export const dynamicRoutes: ExtendedRouteRecordRaw[] = [
           label: '代理管理'
         },
         component: () => import('pages/systemSetting/proxyManage/ProxyManager.vue')
+      },
+      {
+        name: 'PermissionManager',
+        path: 'permission',
+        meta: {
+          icon: 'key',
+          label: '权限管理'
+        },
+        redirect: '/system/permission/code',
+        children: [
+          {
+            name: 'FunctionManager',
+            path: 'code',
+            meta: {
+              icon: 'fingerprint',
+              label: '功能管理'
+            },
+            component: () => import('pages/systemSetting/permission/functionManager/PermissionCode.vue')
+          },
+          {
+            name: 'Role',
+            path: 'role',
+            meta: {
+              icon: 'emoji_people',
+              label: '角色管理'
+            },
+            component: () => import('pages/systemSetting/permission/roleManager/RoleManager.vue')
+          },
+          {
+            name: 'UserRoleManager',
+            path: 'user-role',
+            meta: {
+              icon: 'supervised_user_circle',
+              label: '用户角色'
+            },
+            component: () => import('pages/systemSetting/permission/userRole/UserRole.vue')
+          }
+        ]
       }
     ]
   },
