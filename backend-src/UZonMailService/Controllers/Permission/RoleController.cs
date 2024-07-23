@@ -6,6 +6,7 @@ using Uamazing.Utils.Web.ResponseModel;
 using UZonMailService.Models.SQL;
 using UZonMailService.Models.SQL.Permission;
 using UZonMailService.Models.Validators;
+using UZonMailService.Services.Permission;
 using UZonMailService.Services.Settings;
 using UZonMailService.Utils.ASPNETCore.PagingQuery;
 using UZonMailService.Utils.Database;
@@ -13,7 +14,7 @@ using UZonMailService.Utils.Extensions;
 
 namespace UZonMailService.Controllers.Permission
 {
-    public class RoleController(TokenService tokenService, SqlContext db) : PermissionControllerBase
+    public class RoleController(TokenService tokenService, SqlContext db, PermissionService permission) : PermissionControllerBase
     {
         /// <summary>
         /// 获取角色数量
@@ -123,12 +124,26 @@ namespace UZonMailService.Controllers.Permission
         public async Task<ResponseResult<bool>> DeleteRole(long roleId)
         {
             // 删除角色
+            var role = await db.Roles.Where(x => x.Id == roleId)
+                .Include(x => x.UserRoles)
+                .Include(x=>x.PermissionCodes)
+                .FirstOrDefaultAsync();
+            if (role == null) return true.ToSuccessResponse();
 
+            var userRoles = role.UserRoles?.ToList() ?? [];
             // 删除用户与角色关联表
+            role.UserRoles?.Clear();
+            role.PermissionCodes?.Clear();
+            // 删除角色
+            db.Roles.Remove(role);
+            await db.SaveChangesAsync();
 
             // 重新计算受影响的用户的权限
-
-            // 通知用户更新权限
+            // 更新权限缓存
+            var userIds = userRoles.Select(x => x.UserId).ToList();
+            var permissionCodesDic = await permission.UpdateUserPermissionsCache(userIds);
+            // 通知权限更新
+            await permission.NotifyPermissionUpdate(permissionCodesDic);
 
             return true.ToSuccessResponse();
         }

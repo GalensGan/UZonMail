@@ -5,6 +5,7 @@ using Uamazing.Utils.Web.ResponseModel;
 using UZonMailService.Models.SQL;
 using UZonMailService.Models.SQL.Permission;
 using UZonMailService.Models.Validators;
+using UZonMailService.Services.Permission;
 using UZonMailService.Services.Settings;
 using UZonMailService.Utils.ASPNETCore.PagingQuery;
 using UZonMailService.Utils.Database;
@@ -12,7 +13,7 @@ using UZonMailService.Utils.Extensions;
 
 namespace UZonMailService.Controllers.Permission
 {
-    public class UserRoleController(SqlContext db) : PermissionControllerBase
+    public class UserRoleController(SqlContext db, PermissionService permission) : PermissionControllerBase
     {
         /// <summary>
         /// 创建或者更新角色
@@ -42,7 +43,7 @@ namespace UZonMailService.Controllers.Permission
                 userRole = existOne;
             }
             else
-            {           
+            {
                 db.UserRoles.Add(userRole);
             }
 
@@ -58,7 +59,7 @@ namespace UZonMailService.Controllers.Permission
         [HttpGet("filtered-count")]
         public async Task<ResponseResult<int>> GetRolesCount(string filter)
         {
-            var dbSet = db.UserRoles.AsNoTracking();            
+            var dbSet = db.UserRoles.AsNoTracking();
             if (!string.IsNullOrEmpty(filter))
             {
                 dbSet = dbSet.Where(x => x.User.UserName.Contains(filter) || x.User.UserName.Contains(filter));
@@ -82,7 +83,7 @@ namespace UZonMailService.Controllers.Permission
             }
             var results = await dbSet.Page(pagination)
                 .Include(x => x.User)
-                .Include(x=>x.Roles)
+                .Include(x => x.Roles)
                 .ToListAsync();
 
             return results.ToSuccessResponse();
@@ -96,11 +97,23 @@ namespace UZonMailService.Controllers.Permission
         [HttpDelete("{userRoleId:long}")]
         public async Task<ResponseResult<bool>> DeleteUserRole(long userRoleId)
         {
-            // 先移除关联的角色 
+            // 先移除关联的角色
+            var userRole = await db.UserRoles.Where(x => x.Id == userRoleId)
+                .Include(x => x.Roles)
+                .FirstOrDefaultAsync();
+            if (userRole == null) return false.ToErrorResponse("未找到对应的用户角色");
+            userRole.Roles.Clear();
 
             // 删除本身
+            db.UserRoles.Remove(userRole);
+            await db.SaveChangesAsync();
 
+            // 更新权限缓存
+            var permissionCodesDic = await permission.UpdateUserPermissionsCache([userRole.UserId]);
             // 通知权限更新
+            await permission.NotifyPermissionUpdate(permissionCodesDic);
+
+            // 返回结果
             return true.ToSuccessResponse();
         }
     }
