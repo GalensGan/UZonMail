@@ -207,6 +207,11 @@ namespace UZonMailService.Utils.DotNETCore
         /// <returns></returns>
         public static IServiceCollection UseSingleApp(this IServiceCollection services)
         {
+            // 这种方式可能导致数据库迁移失败，因此迁移时不使用
+            bool isMigration = Environment.GetEnvironmentVariable("EF_MIGRATIONS") == "true";
+            if (isMigration)
+                return services;
+
             // 获取当前程序名称
             var currentProcess = Process.GetCurrentProcess();
             // 查找同名进程并关闭

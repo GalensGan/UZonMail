@@ -72,7 +72,7 @@ namespace UZonMailService.Controllers.Users
         }
 
         /// <summary>
-        /// 登陆
+        /// 登录
         /// </summary>
         /// <returns></returns>
         [HttpPost("sign-in"), AllowAnonymous]
@@ -139,6 +139,18 @@ namespace UZonMailService.Controllers.Users
         public async Task<ResponseResult<List<User>>> GetUsersData([FromQuery] string filter, [FromBody] Pagination pagination)
         {
             var users = await userService.GetFilteredUsersData(filter, pagination);
+            return users.ToSuccessResponse();
+        }
+
+        /// <summary>
+        /// 获取所有的用户
+        /// </summary>
+        /// <returns></returns>
+        [Authorize(Roles = "Admin")]
+        [HttpGet("all")]
+        public async Task<ResponseResult<List<User>>> GetAllUsers()
+        {
+            var users = await db.Users.AsNoTracking().Where(x => !x.IsDeleted).ToListAsync();
             return users.ToSuccessResponse();
         }
 

@@ -79,8 +79,8 @@ namespace UzonMailDesktop
             core.Settings.AreDefaultContextMenusEnabled = true;
             core.Settings.IsScriptEnabled = true;
 
-            core.SetVirtualHostNameToFolderMapping("desktop.uzonmail.com", "wwwroot", CoreWebView2HostResourceAccessKind.DenyCors);
-            core.NavigationStarting += Core_NavigationStarting;            
+            //core.SetVirtualHostNameToFolderMapping("desktop.uzonmail.com", "wwwroot", CoreWebView2HostResourceAccessKind.DenyCors);
+            //core.NavigationStarting += Core_NavigationStarting;            
         }
 
         private void Core_NavigationStarting(object sender, CoreWebView2NavigationStartingEventArgs e)

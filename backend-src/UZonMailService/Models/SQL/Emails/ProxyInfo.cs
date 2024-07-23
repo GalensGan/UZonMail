@@ -78,7 +78,7 @@ namespace UZonMailService.Models.SQL.Emails
             NetworkCredential networkCredential = new(Username, Password);
             switch (Schema.ToLower())
             {
-                case "socket5":
+                case "socks5":
                     _proxyClient = new Socks5Client(Host, Port, networkCredential);
                     break;
                 case "http":

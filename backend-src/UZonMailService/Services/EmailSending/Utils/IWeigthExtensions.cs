@@ -8,7 +8,7 @@ namespace UZonMailService.Services.EmailSending.Utils
     {
         /// <summary>
         /// 根据权重随机获取一个对象
-        /// 若为空，说明权重总和为0
+        /// 若为空，说明权重总和为 0
         /// </summary>
         /// <typeparam name="Tkey"></typeparam>
         /// <param name="datas"></param>

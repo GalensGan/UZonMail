@@ -82,6 +82,36 @@ namespace UZonMailService.Migrations.MySql
                     b.ToTable("OutboxSendingGroup");
                 });
 
+            modelBuilder.Entity("PermissionCodeRole", b =>
+                {
+                    b.Property<long>("PermissionCodesId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("RolesId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("PermissionCodesId", "RolesId");
+
+                    b.HasIndex("RolesId");
+
+                    b.ToTable("PermissionCodeRole");
+                });
+
+            modelBuilder.Entity("RoleUserRole", b =>
+                {
+                    b.Property<long>("RolesId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("UserRolesId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("RolesId", "UserRolesId");
+
+                    b.HasIndex("UserRolesId");
+
+                    b.ToTable("RoleUserRole");
+                });
+
             modelBuilder.Entity("UZonMailService.Models.SQL.EmailSending.SendingGroup", b =>
                 {
                     b.Property<long>("Id")
@@ -447,6 +477,9 @@ namespace UZonMailService.Migrations.MySql
                     b.Property<bool>("IsHidden")
                         .HasColumnType("tinyint(1)");
 
+                    b.Property<bool>("IsValid")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<int>("LinkCount")
                         .HasColumnType("int");
 
@@ -486,6 +519,9 @@ namespace UZonMailService.Migrations.MySql
                         .HasColumnType("bigint");
 
                     b.Property<string>("UserName")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ValidFailReason")
                         .HasColumnType("longtext");
 
                     b.Property<int>("Weight")
@@ -746,9 +782,6 @@ namespace UZonMailService.Migrations.MySql
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<long?>("RoleId")
-                        .HasColumnType("bigint");
-
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -760,8 +793,6 @@ namespace UZonMailService.Migrations.MySql
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("RoleId");
 
                     b.ToTable("Users");
                 });
@@ -776,7 +807,7 @@ namespace UZonMailService.Migrations.MySql
 
                     b.Property<string>("Code")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime(6)");
@@ -791,12 +822,10 @@ namespace UZonMailService.Migrations.MySql
                     b.Property<bool>("IsHidden")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<long?>("RoleId")
-                        .HasColumnType("bigint");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("RoleId");
+                    b.HasIndex("Code")
+                        .IsUnique();
 
                     b.ToTable("PermissionCodes");
                 });
@@ -812,6 +841,12 @@ namespace UZonMailService.Migrations.MySql
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<string>("Description")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Icon")
+                        .HasColumnType("longtext");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("tinyint(1)");
 
@@ -820,39 +855,17 @@ namespace UZonMailService.Migrations.MySql
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("PermissionCodesCount")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("Roles");
-                });
-
-            modelBuilder.Entity("UZonMailService.Models.SQL.Permission.RolePermissionCode", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<DateTime>("CreateDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<bool>("IsHidden")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<long>("PermissionCodeId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("RoleId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("RolePermissionCodes");
                 });
 
             modelBuilder.Entity("UZonMailService.Models.SQL.Permission.UserRole", b =>
@@ -872,23 +885,12 @@ namespace UZonMailService.Migrations.MySql
                     b.Property<bool>("IsHidden")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<int>("RoleId")
-                        .HasColumnType("int");
-
-                    b.Property<long>("RoleId1")
-                        .HasColumnType("bigint");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<long>("UserId1")
+                    b.Property<long>("UserId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RoleId1");
-
-                    b.HasIndex("UserId1");
+                    b.HasIndex("UserId");
 
                     b.ToTable("UserRoles");
                 });
@@ -1124,6 +1126,36 @@ namespace UZonMailService.Migrations.MySql
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("PermissionCodeRole", b =>
+                {
+                    b.HasOne("UZonMailService.Models.SQL.Permission.PermissionCode", null)
+                        .WithMany()
+                        .HasForeignKey("PermissionCodesId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("UZonMailService.Models.SQL.Permission.Role", null)
+                        .WithMany()
+                        .HasForeignKey("RolesId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("RoleUserRole", b =>
+                {
+                    b.HasOne("UZonMailService.Models.SQL.Permission.Role", null)
+                        .WithMany()
+                        .HasForeignKey("RolesId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("UZonMailService.Models.SQL.Permission.UserRole", null)
+                        .WithMany()
+                        .HasForeignKey("UserRolesId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("UZonMailService.Models.SQL.EmailSending.SendingItem", b =>
                 {
                     b.HasOne("UZonMailService.Models.SQL.EmailSending.SendingGroup", "SendingGroup")
@@ -1215,37 +1247,13 @@ namespace UZonMailService.Migrations.MySql
                     b.Navigation("OwnerUser");
                 });
 
-            modelBuilder.Entity("UZonMailService.Models.SQL.MultiTenant.User", b =>
-                {
-                    b.HasOne("UZonMailService.Models.SQL.Permission.Role", null)
-                        .WithMany("Users")
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.NoAction);
-                });
-
-            modelBuilder.Entity("UZonMailService.Models.SQL.Permission.PermissionCode", b =>
-                {
-                    b.HasOne("UZonMailService.Models.SQL.Permission.Role", null)
-                        .WithMany("PermissionCodes")
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.NoAction);
-                });
-
             modelBuilder.Entity("UZonMailService.Models.SQL.Permission.UserRole", b =>
                 {
-                    b.HasOne("UZonMailService.Models.SQL.Permission.Role", "Role")
-                        .WithMany()
-                        .HasForeignKey("RoleId1")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
                     b.HasOne("UZonMailService.Models.SQL.MultiTenant.User", "User")
                         .WithMany("UserRoles")
-                        .HasForeignKey("UserId1")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
-
-                    b.Navigation("Role");
 
                     b.Navigation("User");
                 });
@@ -1258,13 +1266,6 @@ namespace UZonMailService.Migrations.MySql
             modelBuilder.Entity("UZonMailService.Models.SQL.MultiTenant.User", b =>
                 {
                     b.Navigation("UserRoles");
-                });
-
-            modelBuilder.Entity("UZonMailService.Models.SQL.Permission.Role", b =>
-                {
-                    b.Navigation("PermissionCodes");
-
-                    b.Navigation("Users");
                 });
 #pragma warning restore 612, 618
         }

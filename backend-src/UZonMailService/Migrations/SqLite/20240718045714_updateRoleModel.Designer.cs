@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using UZonMailService.Models.SqLite;
 
@@ -10,9 +11,11 @@ using UZonMailService.Models.SqLite;
 namespace UZonMailService.Migrations.SqLite
 {
     [DbContext(typeof(SqLiteContext))]
-    partial class SqLiteContextModelSnapshot : ModelSnapshot
+    [Migration("20240718045714_updateRoleModel")]
+    partial class updateRoleModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.7");
@@ -90,21 +93,6 @@ namespace UZonMailService.Migrations.SqLite
                     b.HasIndex("RolesId");
 
                     b.ToTable("PermissionCodeRole");
-                });
-
-            modelBuilder.Entity("RoleUserRole", b =>
-                {
-                    b.Property<long>("RolesId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<long>("UserRolesId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("RolesId", "UserRolesId");
-
-                    b.HasIndex("UserRolesId");
-
-                    b.ToTable("RoleUserRole");
                 });
 
             modelBuilder.Entity("UZonMailService.Models.SQL.EmailSending.SendingGroup", b =>
@@ -505,6 +493,7 @@ namespace UZonMailService.Migrations.SqLite
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ValidFailReason")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<int>("Weight")
@@ -824,13 +813,7 @@ namespace UZonMailService.Migrations.SqLite
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("PermissionCodesCount")
-                        .HasColumnType("INTEGER");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("Name")
-                        .IsUnique();
 
                     b.ToTable("Roles");
                 });
@@ -850,12 +833,23 @@ namespace UZonMailService.Migrations.SqLite
                     b.Property<bool>("IsHidden")
                         .HasColumnType("INTEGER");
 
-                    b.Property<long>("UserId")
+                    b.Property<int>("RoleId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("RoleId1")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("UserId1")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("RoleId1");
+
+                    b.HasIndex("UserId1");
 
                     b.ToTable("UserRoles");
                 });
@@ -1098,21 +1092,6 @@ namespace UZonMailService.Migrations.SqLite
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("RoleUserRole", b =>
-                {
-                    b.HasOne("UZonMailService.Models.SQL.Permission.Role", null)
-                        .WithMany()
-                        .HasForeignKey("RolesId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("UZonMailService.Models.SQL.Permission.UserRole", null)
-                        .WithMany()
-                        .HasForeignKey("UserRolesId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("UZonMailService.Models.SQL.EmailSending.SendingItem", b =>
                 {
                     b.HasOne("UZonMailService.Models.SQL.EmailSending.SendingGroup", "SendingGroup")
@@ -1206,11 +1185,19 @@ namespace UZonMailService.Migrations.SqLite
 
             modelBuilder.Entity("UZonMailService.Models.SQL.Permission.UserRole", b =>
                 {
-                    b.HasOne("UZonMailService.Models.SQL.MultiTenant.User", "User")
-                        .WithMany("UserRoles")
-                        .HasForeignKey("UserId")
+                    b.HasOne("UZonMailService.Models.SQL.Permission.Role", "Role")
+                        .WithMany()
+                        .HasForeignKey("RoleId1")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
+
+                    b.HasOne("UZonMailService.Models.SQL.MultiTenant.User", "User")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("UserId1")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Role");
 
                     b.Navigation("User");
                 });

@@ -101,7 +101,10 @@ namespace UZonMailService.Services.EmailSending.WaitList
         private UserSendingGroupsPool? GetSendingGroupPool(long userId)
         {
             if (_userTasks.Count == 0)
+            {
+                _logger.Info("系统发件任务池为空");
                 return null;
+            }
 
             // 依次获取发件项
             // 返回 null 有以下几种情况：
@@ -109,6 +112,7 @@ namespace UZonMailService.Services.EmailSending.WaitList
             // 2. 所有发件箱都在冷却中
             if (!_userTasks.TryGetValue(userId, out var sendingGroupsPool))
             {
+                _logger.Info($"无法获取用户 {userId} 发件任务队列，该队列已释放");
                 return null;
             }
 

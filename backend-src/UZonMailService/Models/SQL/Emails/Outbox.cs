@@ -79,6 +79,6 @@ namespace UZonMailService.Models.SQL.Emails
         /// <summary>
         /// 验证失败原因
         /// </summary>
-        public string ValidFailReason { get; set; }
+        public string? ValidFailReason { get; set; }
     }
 }
