@@ -72,12 +72,20 @@ export function getFilteredUsersCount (filter?: string) {
  * @returns
  */
 export function getFilteredUsersData (filter: string, pagination: IRequestPagination) {
-  return httpClient.post<Array<object>>('/user/filtered-data', {
+  return httpClient.post<Array<IUserInfo>>('/user/filtered-data', {
     params: {
       filter
     },
     data: pagination
   })
+}
+
+/**
+ * 获取所有的用户
+ * @returns
+ */
+export function getAllUsers () {
+  return httpClient.get<Array<IUserInfo>>('/user/all')
 }
 
 /**

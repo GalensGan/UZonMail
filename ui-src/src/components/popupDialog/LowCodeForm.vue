@@ -5,7 +5,7 @@
         ... 内容
         ... 用q-card-section来做？
       -->
-      <div v-if="title" class="text-h6 q-mx-md q-mt-sm">{{ title }}</div>
+      <div v-if="title" class="text-subtitle1 text-primary text-bold q-mx-md q-mt-sm">{{ title }}</div>
 
       <div class="q-py-md q-px-xs justify-start items-center" :class="getContainerClass()">
         <template v-for="field in validFields" :key="field.name">
@@ -299,6 +299,7 @@ async function onOKClick () {
 
 .low-code__container_1 {
   .low-code__field {
+    width: 100%;
     flex: 1 1 100%;
     min-width: 300px;
   }
