@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using UZonMailService.UzonMailDB.SQL.Settings;
-using Uamazing.Utils.Extensions;
+using UZonMail.Utils.Extensions;
 
 namespace UZonMailService.Services.Settings
 {

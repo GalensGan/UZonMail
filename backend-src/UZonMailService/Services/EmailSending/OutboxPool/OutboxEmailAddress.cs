@@ -7,7 +7,7 @@ using UZonMailService.UzonMailDB.SQL.EmailSending;
 using UZonMailService.UzonMailDB.SQL.Settings;
 using UZonMailService.Services.EmailSending.Base;
 using Timer = System.Timers.Timer;
-using Uamazing.Utils.Extensions;
+using UZonMail.Utils.Extensions;
 using System.Net.NetworkInformation;
 using UZonMailService.Services.Settings;
 using UZonMailService.Services.EmailSending.Event;
@@ -17,7 +17,7 @@ using UZonMailService.Services.EmailSending.Pipeline;
 using UZonMailService.Utils.Database;
 using UZonMailService.Services.EmailSending.Sender;
 using log4net;
-using Uamazing.Utils.UzonMail;
+using UZonMail.Utils.UzonMail;
 
 namespace UZonMailService.Services.EmailSending.OutboxPool
 {

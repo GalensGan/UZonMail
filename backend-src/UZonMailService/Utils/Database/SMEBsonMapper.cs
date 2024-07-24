@@ -1,8 +1,8 @@
 ﻿using LiteDB;
-using Uamazing.Utils.Database.Attributes;
-using Uamazing.Utils.Database.LiteDB;
-using Uamazing.Utils.Extensions;
-using Uamazing.Utils.Helpers;
+using UZonMail.Utils.Database.Attributes;
+using UZonMail.Utils.Database.LiteDB;
+using UZonMail.Utils.Extensions;
+using UZonMail.Utils.Helpers;
 
 namespace UZonMailService.Utils.Database
 {

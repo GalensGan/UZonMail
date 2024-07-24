@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace UzonMailDesktop.Models
+namespace UZonMailDesktop.Models
 {
     internal class DotnetCoreEnvDetection : IDetectRuntimeEnv
     {

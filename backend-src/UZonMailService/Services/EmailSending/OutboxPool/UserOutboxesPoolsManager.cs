@@ -1,8 +1,8 @@
 ﻿using log4net;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Concurrent;
-using Uamazing.Utils.UzonMail;
-using Uamazing.Utils.Web.Service;
+using UZonMail.Utils.UzonMail;
+using UZonMail.Utils.Web.Service;
 using UZonMailService.Controllers.SystemInfo.Model;
 using UZonMailService.UzonMailDB.SQL;
 using UZonMailService.UzonMailDB.SQL.Emails;

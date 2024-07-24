@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Uamazing.Utils.Web.Extensions;
-using Uamazing.Utils.Web.ResponseModel;
+using UZonMail.Utils.Web.Extensions;
+using UZonMail.Utils.Web.ResponseModel;
 using UZonMailService.Controllers.Common;
 using UZonMailService.UzonMailDB.SQL.Emails;
 using UZonMailService.Services.Common;

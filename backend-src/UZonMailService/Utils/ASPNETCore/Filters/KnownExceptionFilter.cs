@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Text.Json;
-using Uamazing.Utils.Web.ResponseModel;
+using UZonMail.Utils.Web.ResponseModel;
 using UZonMailService.Utils.DotNETCore.Exceptions;
 
 namespace UZonMailService.Utils.DotNETCore.Filters

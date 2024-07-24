@@ -8,15 +8,15 @@ using UZonMailService.Utils.DotNETCore.Filters;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http.Features;
 using UZonMailService.SignalRHubs;
-using Uamazing.Utils.Extensions;
+using UZonMail.Utils.Extensions;
 using UZonMailService.Services.HostedServices;
 using Quartz;
 using UZonMailService.Utils.ASPNETCore.Filters;
-using Uamazing.Utils.Helpers;
+using UZonMail.Utils.Helpers;
 using UZonMailService.Middlewares;
 using Microsoft.AspNetCore.HttpLogging;
 using UZonMailService.Cache;
-using Uamazing.Utils.Web.Token;
+using UZonMail.Utils.Web.Token;
 using Microsoft.EntityFrameworkCore;
 using UZonMailService.Database.SQL;
 

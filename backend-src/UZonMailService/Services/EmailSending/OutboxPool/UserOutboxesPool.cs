@@ -2,9 +2,9 @@
 using Microsoft.IdentityModel.Tokens;
 using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
-using Uamazing.Utils.Results;
-using Uamazing.Utils.UzonMail;
-using Uamazing.Utils.Web.Service;
+using UZonMail.Utils.Results;
+using UZonMail.Utils.UzonMail;
+using UZonMail.Utils.Web.Service;
 using UZonMailService.UzonMailDB.SQL;
 using UZonMailService.UzonMailDB.SQL.Emails;
 using UZonMailService.UzonMailDB.SQL.MultiTenant;

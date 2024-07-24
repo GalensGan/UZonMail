@@ -1,4 +1,4 @@
-﻿using Uamazing.Utils.Web.RequestModel;
+﻿using UZonMail.Utils.Web.RequestModel;
 
 namespace UZonMailService.Utils.ASPNETCore.PagingQuery
 {

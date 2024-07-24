@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Concurrent;
-using Uamazing.Utils.Web.Service;
+using UZonMail.Utils.Web.Service;
 using UZonMailService.UzonMailDB.SQL;
 using UZonMailService.UzonMailDB.SQL.Emails;
 using UZonMailService.UzonMailDB.SQL.EmailSending;

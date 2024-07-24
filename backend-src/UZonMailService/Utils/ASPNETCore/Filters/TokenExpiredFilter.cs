@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.IdentityModel.Tokens;
 using System.Text.Json;
-using Uamazing.Utils.Web.ResponseModel;
+using UZonMail.Utils.Web.ResponseModel;
 using UZonMailService.Utils.DotNETCore.Exceptions;
 
 namespace UZonMailService.Utils.ASPNETCore.Filters

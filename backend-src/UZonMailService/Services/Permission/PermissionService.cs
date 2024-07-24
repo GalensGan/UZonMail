@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
-using Uamazing.Utils.Web.Service;
+using UZonMail.Utils.Web.Service;
 using UZonMailService.Cache;
 using UZonMailService.UzonMailDB.SQL;
 using UZonMailService.UzonMailDB.SQL.MultiTenant;

@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 using Quartz;
-using Uamazing.Utils.Json;
-using Uamazing.Utils.Web.Service;
+using UZonMail.Utils.Json;
+using UZonMail.Utils.Web.Service;
 using UZonMailService.Jobs;
 using UZonMailService.UzonMailDB.SQL;
 using UZonMailService.UzonMailDB.SQL.EmailSending;

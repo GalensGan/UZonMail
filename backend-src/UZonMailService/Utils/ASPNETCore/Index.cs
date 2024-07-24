@@ -10,7 +10,7 @@ using System.Text;
 using UZonMailService.Config.SubConfigs;
 using UZonMailService.Utils.DotNETCore;
 using UZonMailService.Utils.DotNETCore.Convention;
-using Uamazing.Utils.Web.Service;
+using UZonMail.Utils.Web.Service;
 using UZonMailService.Utils.Database;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;

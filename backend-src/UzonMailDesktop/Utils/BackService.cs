@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace UzonMailDesktop.Utils
+namespace UZonMailDesktop.Utils
 {
     /// <summary>
     /// 后台服务

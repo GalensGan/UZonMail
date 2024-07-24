@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
 using Org.BouncyCastle.Utilities;
-using Uamazing.Utils.Results;
+using UZonMail.Utils.Results;
 using UZonMailService.UzonMailDB.SQL.Emails;
 using UZonMailService.UzonMailDB.SQL.EmailSending;
 using UZonMailService.UzonMailDB.SQL.Permission;

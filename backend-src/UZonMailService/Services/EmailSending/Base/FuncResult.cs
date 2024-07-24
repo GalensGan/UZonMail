@@ -1,4 +1,4 @@
-﻿using Uamazing.Utils.Results;
+﻿using UZonMail.Utils.Results;
 
 namespace UZonMailService.Services.EmailSending.Base
 {

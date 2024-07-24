@@ -5,8 +5,8 @@ using Microsoft.Net.Http.Headers;
 using System.Globalization;
 using System.Net;
 using System.Text;
-using Uamazing.Utils.Web.FileUpload;
-using Uamazing.Utils.Extensions;
+using UZonMail.Utils.Web.FileUpload;
+using UZonMail.Utils.Extensions;
 
 namespace UZonMailService.Utils.DotNETCore.Multipart
 {

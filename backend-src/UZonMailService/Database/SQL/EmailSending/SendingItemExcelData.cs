@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
-using Uamazing.Utils.Json;
-using Uamazing.Utils.Extensions;
+using UZonMail.Utils.Json;
+using UZonMail.Utils.Extensions;
 
 namespace UZonMailService.Database.SQL.EmailSending
 {

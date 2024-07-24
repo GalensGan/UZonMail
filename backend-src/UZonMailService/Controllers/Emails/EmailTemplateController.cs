@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Uamazing.ConfValidatation.Core.Entrance;
-using Uamazing.ConfValidatation.Core.Validators;
-using Uamazing.Utils.Web.Extensions;
-using Uamazing.Utils.Extensions;
-using Uamazing.Utils.Web.ResponseModel;
+using UZonMail.ConfValidatation.Core.Entrance;
+using UZonMail.ConfValidatation.Core.Validators;
+using UZonMail.Utils.Web.Extensions;
+using UZonMail.Utils.Extensions;
+using UZonMail.Utils.Web.ResponseModel;
 using UZonMailService.UzonMailDB.SQL;
 using UZonMailService.UzonMailDB.SQL.Templates;
 using UZonMailService.Services.Settings;

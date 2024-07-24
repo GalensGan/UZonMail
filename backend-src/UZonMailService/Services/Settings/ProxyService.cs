@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Uamazing.Utils.Results;
-using Uamazing.Utils.Web.Service;
+using UZonMail.Utils.Results;
+using UZonMail.Utils.Web.Service;
 using UZonMailService.UzonMailDB.SQL;
 using UZonMailService.UzonMailDB.SQL.Settings;
 using UZonMailService.Utils.Database;

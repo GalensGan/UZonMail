@@ -6,7 +6,7 @@ using UZonMailService.UzonMailDB.SQL.Templates;
 using UZonMailService.Services.EmailSending.OutboxPool;
 using UZonMailService.Services.EmailSending.Sender;
 using UZonMailService.Services.Settings;
-using Uamazing.Utils.Json;
+using UZonMail.Utils.Json;
 using UZonMailService.SignalRHubs.SendEmail;
 using UZonMailService.UzonMailDB.SQL.Settings;
 using UZonMailService.UzonMailDB.SQL.Emails;

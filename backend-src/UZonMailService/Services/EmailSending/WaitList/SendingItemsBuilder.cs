@@ -2,7 +2,7 @@
 using Newtonsoft.Json.Linq;
 using System.Net.Mail;
 using System.Xml.Linq;
-using Uamazing.Utils.Json;
+using UZonMail.Utils.Json;
 using UZonMailService.UzonMailDB.SQL.Files;
 using UZonMailService.UzonMailDB.SQL.Settings;
 using UZonMailService.Services.Settings;

@@ -1,5 +1,5 @@
 ﻿using Quartz;
-using Uamazing.Utils.Web.Service;
+using UZonMail.Utils.Web.Service;
 using UZonMailService.UzonMailDB.SQL;
 using UZonMailService.Utils.Database;
 

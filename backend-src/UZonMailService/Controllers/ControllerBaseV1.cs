@@ -4,9 +4,9 @@ using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Text.RegularExpressions;
-using Uamazing.Utils.Extensions;
-using Uamazing.Utils.Json;
-using Uamazing.Utils.Web.Token;
+using UZonMail.Utils.Extensions;
+using UZonMail.Utils.Json;
+using UZonMail.Utils.Web.Token;
 
 namespace UZonMailService.Controllers
 {

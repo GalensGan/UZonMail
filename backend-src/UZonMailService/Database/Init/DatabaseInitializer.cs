@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Hosting;
 using UZonMailService.Config;
 using UZonMailService.Config.SubConfigs;
-using Uamazing.Utils.Extensions;
+using UZonMail.Utils.Extensions;
 using UZonMailService.UzonMailDB.SQL.Files;
 using Microsoft.EntityFrameworkCore;
 using UZonMailService.UzonMailDB.SQL.Settings;

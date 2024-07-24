@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Uamazing.Utils.Web.Extensions;
-using Uamazing.Utils.Web.ResponseModel;
+using UZonMail.Utils.Web.Extensions;
+using UZonMail.Utils.Web.ResponseModel;
 
 namespace UZonMailService.Controllers.Sponsor
 {

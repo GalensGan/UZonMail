@@ -1,5 +1,5 @@
 ﻿using FluentValidation.Results;
-using Uamazing.Utils.Web.ResponseModel;
+using UZonMail.Utils.Web.ResponseModel;
 
 namespace UZonMailService.Utils.Extensions
 {

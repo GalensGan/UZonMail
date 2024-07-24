@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using System.Text.RegularExpressions;
-using Uamazing.Utils.Web.Service;
+using UZonMail.Utils.Web.Service;
 using UZonMailService.Config;
-using Uamazing.Utils.Web.Token;
-using Uamazing.Utils.Json;
+using UZonMail.Utils.Web.Token;
+using UZonMail.Utils.Json;
 using Newtonsoft.Json.Linq;
 
 namespace UZonMailService.Services.Settings

@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
-using Uamazing.Utils.Web.Token;
+using UZonMail.Utils.Web.Token;
 using UZonMailService.Config.SubConfigs;
 
 namespace UZonMailService.Config

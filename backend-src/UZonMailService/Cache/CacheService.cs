@@ -3,7 +3,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using StackExchange.Redis;
 using UZonMailService.Config;
-using Uamazing.Utils.Json;
+using UZonMail.Utils.Json;
 using Newtonsoft.Json.Linq;
 
 namespace UZonMailService.Cache

@@ -1,7 +1,7 @@
 ﻿using log4net;
 using System.Threading;
 using System.Timers;
-using Uamazing.Utils.Web.Service;
+using UZonMail.Utils.Web.Service;
 using UZonMailService.UzonMailDB.SQL;
 using UZonMailService.Services.EmailSending.Base;
 using UZonMailService.Services.EmailSending.Event;

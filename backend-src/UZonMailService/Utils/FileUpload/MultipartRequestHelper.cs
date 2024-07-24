@@ -2,7 +2,7 @@
 using System;
 using System.IO;
 
-namespace Uamazing.Utils.Web.FileUpload
+namespace UZonMail.Utils.Web.FileUpload
 {
     /// <summary>
     /// Multipart帮助类

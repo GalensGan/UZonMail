@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Uamazing.Utils.Web.Extensions;
-using Uamazing.Utils.Web.ResponseModel;
+using UZonMail.Utils.Web.Extensions;
+using UZonMail.Utils.Web.ResponseModel;
 using UZonMailService.Controllers.Statistics.Model;
 using UZonMailService.UzonMailDB.SQL;
 using UZonMailService.UzonMailDB.SQL.Emails;
