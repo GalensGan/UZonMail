@@ -6,8 +6,8 @@ using System.IO.Pipelines;
 using Uamazing.Utils.Extensions;
 using Uamazing.Utils.Results;
 using UZonMailService.Controllers.Users.Model;
-using UZonMailService.Models.SQL;
-using UZonMailService.Models.SQL.Emails;
+using UZonMailService.UzonMailDB.SQL;
+using UZonMailService.UzonMailDB.SQL.Emails;
 
 namespace UZonMailService.Services.EmailSending.Sender
 {

@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 using System.Linq.Expressions;
-using UZonMailService.Models.SQL;
-using UZonMailService.Models.SQL.Base;
+using UZonMailService.UzonMailDB.SQL;
+using UZonMailService.UzonMailDB.SQL.Base;
 
 namespace UZonMailService.Utils.Database
 {

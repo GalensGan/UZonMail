@@ -27,4 +27,8 @@
     <Folder Include="Web\Captcha\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\UzonMailDB\UzonMailDB.csproj" />
+  </ItemGroup>
+
 </Project>

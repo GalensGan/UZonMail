@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using Uamazing.Utils.UzonMail;
-using UZonMailService.Models.SQL;
+using UZonMailService.UzonMailDB.SQL;
 using UZonMailService.Services.EmailSending.OutboxPool;
 using UZonMailService.Services.EmailSending.Sender;
 using UZonMailService.Services.EmailSending.WaitList;

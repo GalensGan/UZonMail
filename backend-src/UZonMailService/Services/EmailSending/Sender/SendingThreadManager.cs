@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Timers;
 using Uamazing.Utils.Web.Service;
-using UZonMailService.Models.SQL;
+using UZonMailService.UzonMailDB.SQL;
 using UZonMailService.Services.EmailSending.Base;
 using UZonMailService.Services.EmailSending.Event;
 using UZonMailService.Services.EmailSending.Event.Commands;

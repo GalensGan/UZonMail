@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using UZonMailService.Models.SQL;
+using UZonMailService.UzonMailDB.SQL;
 
 namespace UZonMailService.Controllers.Tests
 {

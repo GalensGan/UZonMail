@@ -1,5 +1,5 @@
-﻿using UZonMailService.Models.SQL.Emails;
-using UZonMailService.Models.SQL.EmailSending;
+﻿using UZonMailService.UzonMailDB.SQL.Emails;
+using UZonMailService.UzonMailDB.SQL.EmailSending;
 
 namespace UZonMailService.SignalRHubs.SendEmail
 {

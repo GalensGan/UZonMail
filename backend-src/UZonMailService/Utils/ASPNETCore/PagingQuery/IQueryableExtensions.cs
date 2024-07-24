@@ -37,7 +37,7 @@ namespace UZonMailService.Utils.ASPNETCore.PagingQuery
         /// <param name="values"></param>
         /// <param name="pick"></param>
         /// <returns></returns>
-        public static IQueryable<T> Page<T>(this IQueryable<T> values, Pagination pick) where T : Models.SQL.Base.SqlId
+        public static IQueryable<T> Page<T>(this IQueryable<T> values, Pagination pick) where T : UzonMailDB.SQL.Base.SqlId
         {
             return pick.Run<T>(values);
         }

@@ -2,8 +2,8 @@
 using MailKit.Net.Proxy;
 using MailKit.Net.Smtp;
 using System.Collections.Concurrent;
-using UZonMailService.Models.SQL.Emails;
-using UZonMailService.Models.SQL.MultiTenant;
+using UZonMailService.UzonMailDB.SQL.Emails;
+using UZonMailService.UzonMailDB.SQL.MultiTenant;
 using UZonMailService.Services.EmailSending.Base;
 using UZonMailService.Services.EmailSending.OutboxPool;
 using UZonMailService.Services.EmailSending.Pipeline;

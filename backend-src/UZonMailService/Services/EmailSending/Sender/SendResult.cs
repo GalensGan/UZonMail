@@ -1,4 +1,4 @@
-﻿using UZonMailService.Models.SQL;
+﻿using UZonMailService.UzonMailDB.SQL;
 using UZonMailService.Services.EmailSending.Models;
 
 namespace UZonMailService.Services.EmailSending.Sender

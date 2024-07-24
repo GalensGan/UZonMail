@@ -1,6 +1,6 @@
-﻿using UZonMailService.Models.MySql;
-using UZonMailService.Models.SQL;
-using UZonMailService.Models.SqLite;
+﻿using UZonMailService.UzonMailDB.MySql;
+using UZonMailService.UzonMailDB.SQL;
+using UZonMailService.UzonMailDB.SqLite;
 
 namespace UZonMailService.Cache
 {

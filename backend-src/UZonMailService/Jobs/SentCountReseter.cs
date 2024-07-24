@@ -1,6 +1,6 @@
 ﻿using Quartz;
 using Uamazing.Utils.Web.Service;
-using UZonMailService.Models.SQL;
+using UZonMailService.UzonMailDB.SQL;
 using UZonMailService.Utils.Database;
 
 namespace UZonMailService.Jobs

@@ -1,4 +1,4 @@
-﻿using UZonMailService.Models.SQL.EmailSending;
+﻿using UZonMailService.UzonMailDB.SQL.EmailSending;
 using UZonMailService.Services.EmailSending.WaitList;
 
 namespace UZonMailService.SignalRHubs.SendEmail

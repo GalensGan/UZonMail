@@ -3,7 +3,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi.Models;
 using UZonMailService.Config;
 using UZonMailService.Utils.DotNETCore;
-using UZonMailService.Models.SQL;
+using UZonMailService.UzonMailDB.SQL;
 using UZonMailService.Utils.DotNETCore.Filters;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http.Features;
@@ -17,6 +17,8 @@ using UZonMailService.Middlewares;
 using Microsoft.AspNetCore.HttpLogging;
 using UZonMailService.Cache;
 using Uamazing.Utils.Web.Token;
+using Microsoft.EntityFrameworkCore;
+using UZonMailService.Database.SQL;
 
 var appOptions = new WebApplicationOptions
 {

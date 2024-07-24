@@ -21,5 +21,6 @@ namespace UZonMailService.Utils.Database
         Upgrade = true
     }, new SMEBsonMapper())
     {
+       
     }
 }

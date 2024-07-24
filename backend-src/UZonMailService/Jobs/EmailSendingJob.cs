@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Quartz;
 using Uamazing.Utils.Web.Service;
-using UZonMailService.Models.SQL;
-using UZonMailService.Models.SQL.EmailSending;
+using UZonMailService.UzonMailDB.SQL;
+using UZonMailService.UzonMailDB.SQL.EmailSending;
 using UZonMailService.Services.EmailSending;
 
 namespace UZonMailService.Jobs

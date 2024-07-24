@@ -1,9 +1,9 @@
 ﻿using log4net;
 using Microsoft.EntityFrameworkCore;
 using UZonMailService.Cache;
-using UZonMailService.Models.SQL;
-using UZonMailService.Models.SQL.MultiTenant;
-using UZonMailService.Models.SQL.Settings;
+using UZonMailService.UzonMailDB.SQL;
+using UZonMailService.UzonMailDB.SQL.MultiTenant;
+using UZonMailService.UzonMailDB.SQL.Settings;
 
 namespace UZonMailService.Services.Settings
 {

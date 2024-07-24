@@ -2,9 +2,9 @@
 using Microsoft.EntityFrameworkCore;
 using Uamazing.Utils.Web.Extensions;
 using Uamazing.Utils.Web.ResponseModel;
-using UZonMailService.Models.SQL;
-using UZonMailService.Models.SQL.Permission;
-using UZonMailService.Models.Validators;
+using UZonMailService.UzonMailDB.SQL;
+using UZonMailService.UzonMailDB.SQL.Permission;
+using UZonMailService.UzonMailDB.Validators;
 using UZonMailService.Services.Permission;
 using UZonMailService.Services.Settings;
 using UZonMailService.Utils.ASPNETCore.PagingQuery;

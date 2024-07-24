@@ -1,9 +1,9 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
 using Uamazing.Utils.Web.Service;
-using UZonMailService.Models.SQL;
-using UZonMailService.Models.SQL.Base;
-using UZonMailService.Models.SQL.Emails;
+using UZonMailService.UzonMailDB.SQL;
+using UZonMailService.UzonMailDB.SQL.Base;
+using UZonMailService.UzonMailDB.SQL.Emails;
 using UZonMailService.Services.Common;
 using UZonMailService.Services.Settings;
 using UZonMailService.Utils.Database;

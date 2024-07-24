@@ -9,12 +9,12 @@ namespace Uamazing.Utils.UzonMail
     /// <summary>
     /// 发件箱地址
     /// </summary>
-    public interface IOutboxEmailAddress
+    public interface IOutboxEmailAddress : IWeight
     {
         /// <summary>
         /// 地址类型
         /// </summary>
-        OutboxEmailAddressType Type { get;}
+        OutboxEmailAddressType Type { get; }
 
         /// <summary>
         /// 用户 Id

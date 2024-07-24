@@ -4,9 +4,9 @@ using System.Collections.Concurrent;
 using Uamazing.Utils.UzonMail;
 using Uamazing.Utils.Web.Service;
 using UZonMailService.Controllers.SystemInfo.Model;
-using UZonMailService.Models.SQL;
-using UZonMailService.Models.SQL.Emails;
-using UZonMailService.Models.SQL.MultiTenant;
+using UZonMailService.UzonMailDB.SQL;
+using UZonMailService.UzonMailDB.SQL.Emails;
+using UZonMailService.UzonMailDB.SQL.MultiTenant;
 using UZonMailService.Services.EmailSending.Base;
 using UZonMailService.Services.EmailSending.Event;
 using UZonMailService.Services.EmailSending.Event.Commands;
@@ -18,7 +18,7 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
     /// <summary>
     /// 所有用户的发件箱池管理器
     /// </summary>
-    public class UserOutboxesPoolsManager : ISingletonService, IUserOutboxesPoolsManager
+    public class UserOutboxesPoolsManager : ISingletonService
     {
         private readonly static ILog _logger = LogManager.GetLogger(typeof(UserOutboxesPoolsManager));
         private IServiceScopeFactory _ssf;

@@ -2,9 +2,9 @@
 using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
 using System.Timers;
-using UZonMailService.Models.SQL;
-using UZonMailService.Models.SQL.Emails;
-using UZonMailService.Models.SQL.EmailSending;
+using UZonMailService.UzonMailDB.SQL;
+using UZonMailService.UzonMailDB.SQL.Emails;
+using UZonMailService.UzonMailDB.SQL.EmailSending;
 using UZonMailService.Services.EmailSending.OutboxPool;
 using UZonMailService.Services.EmailSending.WaitList;
 using UZonMailService.SignalRHubs;

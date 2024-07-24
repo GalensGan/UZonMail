@@ -1,10 +1,10 @@
 ﻿using System.Text.RegularExpressions;
 using System.Timers;
 using UZonMailService.Cache;
-using UZonMailService.Models.SQL;
-using UZonMailService.Models.SQL.Emails;
-using UZonMailService.Models.SQL.EmailSending;
-using UZonMailService.Models.SQL.Settings;
+using UZonMailService.UzonMailDB.SQL;
+using UZonMailService.UzonMailDB.SQL.Emails;
+using UZonMailService.UzonMailDB.SQL.EmailSending;
+using UZonMailService.UzonMailDB.SQL.Settings;
 using UZonMailService.Services.EmailSending.Base;
 using Timer = System.Timers.Timer;
 using Uamazing.Utils.Extensions;
@@ -26,7 +26,7 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
     /// 该地址可能仅用于部分发件箱
     /// 也有可能是用于通用发件
     /// </summary>
-    public class OutboxEmailAddress : EmailAddress, IDisposable, IWeight, IOutboxEmailAddress
+    public class OutboxEmailAddress : EmailAddress, IDisposable, IOutboxEmailAddress
     {
         #region 分布式锁
         public readonly object SendingItemIdsLock = new();
@@ -216,7 +216,7 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
         /// 若设置失败，则返回 false
         /// </summary>
         /// <returns></returns>
-        public async Task SetCooldown(SendingContext sendingContext)
+        public async Task SetCooldown(ISendingContext sendingContext)
         {
             // 说明被其它线程已经使用了
             if (_isCooldown)

@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-using UZonMailService.Models.SQL.Settings;
+using UZonMailService.UzonMailDB.SQL.Settings;
 using Uamazing.Utils.Extensions;
 
 namespace UZonMailService.Services.Settings

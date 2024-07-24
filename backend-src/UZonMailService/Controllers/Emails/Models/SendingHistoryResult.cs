@@ -1,5 +1,5 @@
-﻿using UZonMailService.Models.SQL.EmailSending;
-using UZonMailService.Models.SQL.Files;
+﻿using UZonMailService.UzonMailDB.SQL.EmailSending;
+using UZonMailService.UzonMailDB.SQL.Files;
 
 namespace UZonMailService.Controllers.Emails.Models
 {

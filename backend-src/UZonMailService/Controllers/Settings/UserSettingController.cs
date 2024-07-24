@@ -2,8 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using Uamazing.Utils.Web.Extensions;
 using Uamazing.Utils.Web.ResponseModel;
-using UZonMailService.Models.SQL;
-using UZonMailService.Models.SQL.Settings;
+using UZonMailService.UzonMailDB.SQL;
+using UZonMailService.UzonMailDB.SQL.Settings;
 using UZonMailService.Services.Settings;
 
 namespace UZonMailService.Controllers.Settings
