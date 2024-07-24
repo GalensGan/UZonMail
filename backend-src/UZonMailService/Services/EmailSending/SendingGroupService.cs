@@ -24,7 +24,7 @@ namespace UZonMailService.Services.EmailSending
         , TokenService tokenService
         , SendingThreadManager tasksService
         , UserSendingGroupsManager waitList
-        , UserOutboxesPoolManager userOutboxesPoolManager
+        , UserOutboxesPoolsManager userOutboxesPoolManager
         , ISchedulerFactory schedulerFactory
         , IServiceProvider serviceProvider
         ) : IScopedService

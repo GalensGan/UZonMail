@@ -17,6 +17,7 @@ using UZonMailService.Services.EmailSending.Pipeline;
 using UZonMailService.Utils.Database;
 using UZonMailService.Services.EmailSending.Sender;
 using log4net;
+using Uamazing.Utils.UzonMail;
 
 namespace UZonMailService.Services.EmailSending.OutboxPool
 {
@@ -25,7 +26,7 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
     /// 该地址可能仅用于部分发件箱
     /// 也有可能是用于通用发件
     /// </summary>
-    public class OutboxEmailAddress : EmailAddress, IDisposable, IWeight
+    public class OutboxEmailAddress : EmailAddress, IDisposable, IWeight, IOutboxEmailAddress
     {
         #region 分布式锁
         public readonly object SendingItemIdsLock = new();
@@ -34,14 +35,17 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
         private readonly static ILog _logger = LogManager.GetLogger(typeof(OutboxEmailAddress));
 
         #region 属性参数
+        /// <summary>
+        /// 发件箱地址类型
+        /// </summary>
         public OutboxEmailAddressType Type { get; private set; } = OutboxEmailAddressType.Specific;
 
-        public Outbox _outbox;
+        private Outbox _outbox;
 
         /// <summary>
         /// 当指定收件箱时，此处有值
         /// </summary>
-        public ConcurrentQueue<long> SendingItemIds { get; } = [];
+        private ConcurrentQueue<long> SendingItemIds { get; } = [];
 
         /// <summary>
         /// 用户 ID
@@ -122,7 +126,7 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
         /// <param name="smtpPasswordSecretKeys"></param>
         /// <param name="type"></param>
         /// <param name="sendingItemIds"></param>
-        public OutboxEmailAddress(Outbox outbox, long sendingGroupId, List<string> smtpPasswordSecretKeys, OutboxEmailAddressType type, List<long> sendingItemIds = null)
+        private OutboxEmailAddress(Outbox outbox, long sendingGroupId, List<string> smtpPasswordSecretKeys, OutboxEmailAddressType type, List<long> sendingItemIds = null)
         {
             _outbox = outbox;
             AuthPassword = outbox.Password.DeAES(smtpPasswordSecretKeys.First(), smtpPasswordSecretKeys.Last());
@@ -301,7 +305,7 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
             }
 
             // 若是发件连接失败，则移除
-            if (sendingContext.SendResult.SentStatus.HasFlag(SentStatus.OutboxConnectError) 
+            if (sendingContext.SendResult.SentStatus.HasFlag(SentStatus.OutboxConnectError)
                 || sendingContext.SendResult.SentStatus.HasFlag(SentStatus.EmptySendingGroup))
             {
                 ShouldDispose = true;

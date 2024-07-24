@@ -3,7 +3,7 @@
     /// <summary>
     /// 验证是否为空
     /// </summary>
-    public interface IMSendingManagerStatus
+    public interface ISendingManagerStatus
     {
         /// <summary>
         /// 获取管理器状态

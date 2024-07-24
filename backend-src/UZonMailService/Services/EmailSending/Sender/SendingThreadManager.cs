@@ -23,7 +23,7 @@ namespace UZonMailService.Services.EmailSending.Sender
 
         private IServiceScopeFactory ssf;
         private UserSendingGroupsManager waitList;
-        private UserOutboxesPoolManager outboxesPool;
+        private UserOutboxesPoolsManager outboxesPool;
 
         /// <summary>
         /// 构造
@@ -33,7 +33,7 @@ namespace UZonMailService.Services.EmailSending.Sender
         public SendingThreadManager(
               IServiceScopeFactory ssf
             , UserSendingGroupsManager waitList
-            , UserOutboxesPoolManager outboxesPool)
+            , UserOutboxesPoolsManager outboxesPool)
         {
             this.ssf = ssf;
             this.waitList = waitList;

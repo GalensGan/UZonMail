@@ -17,13 +17,15 @@ using System.Security.Claims;
 using UZonMailService.Services.Settings;
 using System.Net.NetworkInformation;
 using UZonMailService.Controllers.Users.Model;
+using UZonMailService.Cache;
+using UZonMailService.Services.Permission;
 
 namespace UZonMailService.Services.UserInfos
 {
     /// <summary>
     /// 只在请求生命周期内有效的服务
     /// </summary>
-    public class UserService(SqlContext db, IOptions<AppConfig> appConfig) : IScopedService
+    public class UserService(SqlContext db, IOptions<AppConfig> appConfig, PermissionService permission) : IScopedService
     {
         /// <summary>
         /// 判断用户是否存在
@@ -103,22 +105,7 @@ namespace UZonMailService.Services.UserInfos
             string token = GenerateToken(user);
 
             // 查找用户的权限
-            var userAccess = await db.Users
-                .Include(x => x.UserRoles)
-                .ThenInclude(x => x.Roles)
-                .ThenInclude(x => x.PermissionCodes)
-                .FirstOrDefaultAsync(x => x.Id == user.Id);
-
-            List<string> access = userAccess
-                .UserRoles
-                .SelectMany(x => x.Roles)
-                .SelectMany(x=>x.PermissionCodes)
-                .Select(x => x.Code)
-                .ToList();
-
-            // 添加管理员权限码
-            if (user.IsSuperAdmin)
-                access.Add("*");
+            List<string> access = await permission.GetUserPermissionCodes(user.Id);
 
             return new UserSignInResult()
             {

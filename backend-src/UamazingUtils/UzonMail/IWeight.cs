@@ -1,5 +1,5 @@
 ﻿
-namespace UZonMailService.Services.EmailSending.Base
+namespace Uamazing.Utils.UzonMail
 {
     /// <summary>
     /// 权重接口

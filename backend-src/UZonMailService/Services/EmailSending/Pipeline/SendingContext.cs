@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using Uamazing.Utils.UzonMail;
 using UZonMailService.Models.SQL;
 using UZonMailService.Services.EmailSending.OutboxPool;
 using UZonMailService.Services.EmailSending.Sender;
@@ -11,7 +12,7 @@ namespace UZonMailService.Services.EmailSending.Pipeline
     /// 发送上下文
     /// 每一次发送任务都会创建一个新的上下文
     /// </summary>
-    public class SendingContext
+    public class SendingContext : ISendingContext
     {
         public SendingContext(IServiceProvider serviceProvider)
         {
@@ -25,7 +26,7 @@ namespace UZonMailService.Services.EmailSending.Pipeline
         public SqlContext SqlContext { get; private set; }
 
         /// <summary>
-        /// 
+        /// Service Provider
         /// </summary>
         public IServiceProvider ServiceProvider { get; private set; }
 
@@ -38,7 +39,7 @@ namespace UZonMailService.Services.EmailSending.Pipeline
         /// <summary>
         /// 所有用户的发件箱池管理器
         /// </summary>
-        public UserOutboxesPoolManager? UserOutboxesPoolManager { get; set; }
+        public UserOutboxesPoolsManager? UserOutboxesPoolManager { get; set; }
 
         /// <summary>
         /// 用户发件箱池

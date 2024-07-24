@@ -203,7 +203,7 @@ namespace UZonMailService.Services.EmailSending.WaitList
         private async Task AddSharedOutboxToPool(SendingContext scopeServices, List<Outbox> outboxes)
         {
             if (outboxes.Count == 0) return;
-            var outboxesPoolManager = scopeServices.ServiceProvider.GetRequiredService<UserOutboxesPoolManager>();
+            var outboxesPoolManager = scopeServices.ServiceProvider.GetRequiredService<UserOutboxesPoolsManager>();
 
             var outboxAddresses = outboxes.ConvertAll(x => new OutboxEmailAddress(x, SendingGroupId, SmtpPasswordSecretKeys, OutboxEmailAddressType.Shared));
             foreach (var outbox in outboxAddresses)
@@ -249,7 +249,7 @@ namespace UZonMailService.Services.EmailSending.WaitList
             }
 
             // 新增特定发件箱
-            var outboxesPoolManager = sendingContext.ServiceProvider.GetRequiredService<UserOutboxesPoolManager>();
+            var outboxesPoolManager = sendingContext.ServiceProvider.GetRequiredService<UserOutboxesPoolsManager>();
             foreach (var outbox in outboxes)
             {
                 // 获取收件项 Id

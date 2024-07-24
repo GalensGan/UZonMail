@@ -3,6 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
 using Uamazing.Utils.Results;
+using Uamazing.Utils.UzonMail;
 using Uamazing.Utils.Web.Service;
 using UZonMailService.Models.SQL;
 using UZonMailService.Models.SQL.Emails;
@@ -20,7 +21,7 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
     /// 每个邮箱账号共用冷却池
     /// key: 邮箱 userId+邮箱号 ，value: 发件箱列表
     /// </summary>
-    public class UserOutboxesPool : ConcurrentDictionary<string, OutboxEmailAddress>, IWeight, ISendingComplete
+    public class UserOutboxesPool : ConcurrentDictionary<string, OutboxEmailAddress>, IWeight, ISendingStage
     {
         private readonly static ILog _logger = LogManager.GetLogger(typeof(UserOutboxesPool));
         private readonly IServiceScopeFactory _ssf;
@@ -126,7 +127,12 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
             };
         }
 
-        public async Task EmailItemSendCompleted(SendingContext sendingContext)
+        /// <summary>
+        /// 邮件发送完成
+        /// </summary>
+        /// <param name="sendingContext"></param>
+        /// <returns></returns>
+        public async Task EmailItemSendCompleted(ISendingContext sendingContext)
         {
             // 移除发件箱
             if (sendingContext.OutboxEmailAddress.ShouldDispose)

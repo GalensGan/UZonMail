@@ -107,11 +107,33 @@ namespace UZonMailService.Cache
             {
                 // 将数据转为 json
                 var value = await RedisCache.StringGetAsync(key);
+                if (value.IsNullOrEmpty)
+                    return default;
                 return value.ToString().JsonTo<T>();
             }
             else
             {
-                return MemoryCache.Get<T>(key);
+               return MemoryCache.Get<T>(key);
+            }
+        }
+
+        /// <summary>
+        /// 是否存在缓存
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public async Task<bool> KeyExistsAsync(string key)
+        {
+            if (string.IsNullOrEmpty(key))
+                return false;
+
+            if (RedisEnabled)
+            {
+                return await RedisCache.KeyExistsAsync(key);
+            }
+            else
+            {
+                return MemoryCache.TryGetValue(key, out _);
             }
         }
     }

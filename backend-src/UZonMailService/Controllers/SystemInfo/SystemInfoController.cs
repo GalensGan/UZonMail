@@ -10,7 +10,7 @@ using UZonMailService.Services.EmailSending.WaitList;
 namespace UZonMailService.Controllers.SystemInfo
 {
     public class SystemInfoController(UserSendingGroupsManager userSendingGroupsManager
-        , UserOutboxesPoolManager userOutboxesPoolManager
+        , UserOutboxesPoolsManager userOutboxesPoolManager
         , SendingThreadManager sendingThreadManager) : ControllerBaseV1
     {
         /// <summary>

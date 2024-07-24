@@ -1,4 +1,6 @@
-﻿namespace UZonMailService.Services.EmailSending.OutboxPool
+﻿using System;
+
+namespace Uamazing.Utils.UzonMail
 {
     /// <summary>
     /// 发件箱地址类型

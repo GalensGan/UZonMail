@@ -1,6 +1,7 @@
 ﻿using log4net;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Concurrent;
+using Uamazing.Utils.UzonMail;
 using Uamazing.Utils.Web.Service;
 using UZonMailService.Controllers.SystemInfo.Model;
 using UZonMailService.Models.SQL;
@@ -17,12 +18,12 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
     /// <summary>
     /// 所有用户的发件箱池管理器
     /// </summary>
-    public class UserOutboxesPoolManager : ISingletonService
+    public class UserOutboxesPoolsManager : ISingletonService, IUserOutboxesPoolsManager
     {
-        private readonly static ILog _logger = LogManager.GetLogger(typeof(UserOutboxesPoolManager));
+        private readonly static ILog _logger = LogManager.GetLogger(typeof(UserOutboxesPoolsManager));
         private IServiceScopeFactory _ssf;
         private readonly ConcurrentDictionary<long, UserOutboxesPool> _userOutboxesPools = new();
-        public UserOutboxesPoolManager(IServiceScopeFactory ssf)
+        public UserOutboxesPoolsManager(IServiceScopeFactory ssf)
         {
             this._ssf = ssf;
         }
