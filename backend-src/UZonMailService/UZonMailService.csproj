@@ -62,7 +62,6 @@
   <ItemGroup>
     <Folder Include="Migrations\MySql\" />
     <Folder Include="Migrations\SqLite\" />
-    <Folder Include="Services\EmailSending\RemoteClient\" />
     <Folder Include="Utils\ASPNETCore\Service\" />
     <Folder Include="Utils\Helpers\" />
     <Folder Include="Utils\ASPNETCore\Configure\" />
@@ -78,6 +77,7 @@
   <ItemGroup>
     <ProjectReference Include="..\UamazingUtils\UzonMailUtils.csproj" />
     <ProjectReference Include="..\UzonMailDB\UzonMailDB.csproj" />
+    <ProjectReference Include="..\UZonMailUtils\UZonMailUtils.csproj" />
   </ItemGroup>
 
   <ItemGroup>

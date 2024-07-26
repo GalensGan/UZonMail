@@ -12,20 +12,72 @@ using UZonMailService.Services.EmailSending.Event;
 using UZonMailService.Services.EmailSending.Event.Commands;
 using UZonMailService.Services.EmailSending.Pipeline;
 using UZonMailService.Services.EmailSending.Utils;
+using Uamazing.Utils.UzonMail;
 
 namespace UZonMailService.Services.EmailSending.OutboxPool
 {
     /// <summary>
     /// 所有用户的发件箱池管理器
     /// </summary>
-    public class UserOutboxesPoolsManager : ISingletonService
+    public class UserOutboxesPoolsManager : ISingletonService, ISendingStageBuilder, ISendingStage
     {
         private readonly static ILog _logger = LogManager.GetLogger(typeof(UserOutboxesPoolsManager));
         private IServiceScopeFactory _ssf;
         private readonly ConcurrentDictionary<long, UserOutboxesPool> _userOutboxesPools = new();
+
+        public bool ShouldDispose => throw new NotImplementedException();
+
+        public string StageName => throw new NotImplementedException();
+
         public UserOutboxesPoolsManager(IServiceScopeFactory ssf)
         {
             this._ssf = ssf;
+        }
+
+        /// <summary>
+        /// 生成阶段
+        /// </summary>
+        /// <param name="sendingContext"></param>
+        /// <returns></returns>
+        public async Task BuildSendingStage(ISendingContext sendingContext)
+        {
+            // 添加自己
+            sendingContext.AddSendingStage(this);
+
+            if (_userOutboxesPools.Count == 0)
+            {
+                var result = new SentResult(false, "系统发件池为空")
+                {
+                    SentStatus = SentStatus.EmptyOutboxesPoolsManager
+                };
+                sendingContext.SetSendResult(result);
+                return;
+            }
+
+            var userOutboxesPoolResult = _userOutboxesPools.GetDataByWeight();
+            // 未获取到发件箱
+            if (!userOutboxesPoolResult)
+            {
+                var result = new SentResult(false, userOutboxesPoolResult.Message)
+                {
+                    SentStatus = SentStatus.Failed
+                };
+                sendingContext.SetSendResult(result);
+                return;
+            }
+
+            // 获取子项
+            if (userOutboxesPoolResult.Data is not UserOutboxesPool userOutboxesPool)
+            {
+                var result = new SentResult(false, "结果无法转成 UserOutboxesPool")
+                {
+                    SentStatus = SentStatus.Failed
+                };
+                sendingContext.SetSendResult(result);
+                return;
+            }
+            sendingContext.AddSendingStage(userOutboxesPool);  
+            await userOutboxesPool.BuildSendingStage(sendingContext);
         }
 
         /// <summary>
@@ -134,6 +186,16 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
               {
                   return new OutboxPoolInfo(x);
               }).ToList();
+        }
+
+        public Task Execute(ISendingContext sendingContext)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task Dispose(ISendingContext sendingContext)
+        {
+            throw new NotImplementedException();
         }
         #endregion
     }

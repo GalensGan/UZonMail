@@ -13,6 +13,7 @@ using UZonMailService.Services.EmailSending.Event;
 using UZonMailService.Services.EmailSending.Event.Commands;
 using UZonMailService.Services.EmailSending.Pipeline;
 using UZonMailService.Services.EmailSending.Utils;
+using Uamazing.Utils.UzonMail;
 
 namespace UZonMailService.Services.EmailSending.OutboxPool
 {
@@ -21,10 +22,11 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
     /// 每个邮箱账号共用冷却池
     /// key: 邮箱 userId+邮箱号 ，value: 发件箱列表
     /// </summary>
-    public class UserOutboxesPool : ConcurrentDictionary<string, OutboxEmailAddress>, IWeight, ISendingStage
+    public class UserOutboxesPool : IWeight, ISendingStage, ISendingStageBuilder
     {
         private readonly static ILog _logger = LogManager.GetLogger(typeof(UserOutboxesPool));
         private readonly IServiceScopeFactory _ssf;
+        private readonly ConcurrentDictionary<string, OutboxEmailAddress> _outboxes = new();
 
         public UserOutboxesPool(IServiceScopeFactory ssf, long userId, int weight)
         {
@@ -50,10 +52,14 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
         {
             get
             {
-                if (this.Count == 0) return false;
-                return this.Values.Any(x => x.Enable);
+                if (_outboxes.Count == 0) return false;
+                return _outboxes.Values.Any(x => x.Enable);
             }
         }
+
+        public bool ShouldDispose => throw new NotImplementedException();
+
+        public string StageName => throw new NotImplementedException();
         #endregion
 
         /// <summary>
@@ -62,7 +68,7 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
         /// <param name="outbox"></param>
         public async Task<bool> AddOutbox(OutboxEmailAddress outbox)
         {
-            if (this.TryGetValue(outbox.Email, out var existValue))
+            if (_outboxes.TryGetValue(outbox.Email, out var existValue))
             {
                 existValue.Update(outbox);
                 return true;
@@ -76,7 +82,7 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
 
 
             // 不存在则添加
-            this.TryAdd(outbox.Email, outbox);
+            _outboxes.TryAdd(outbox.Email, outbox);
             return true;
         }
 
@@ -86,7 +92,7 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
         /// <returns></returns>
         public async Task<FuncResult<OutboxEmailAddress>> GetOutboxByWeight(SendingContext scopeServices)
         {
-            var data = this.GetDataByWeight();
+            var data = _outboxes.GetDataByWeight();
             if (data.NotOk) return new FuncResult<OutboxEmailAddress>()
             {
                 Message = data.Message,
@@ -132,17 +138,73 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
         /// </summary>
         /// <param name="sendingContext"></param>
         /// <returns></returns>
-        public async Task EmailItemSendCompleted(ISendingContext sendingContext)
+        public async Task EmailItemSendCompleted(SendingContext sendingContext)
         {
             // 移除发件箱
             if (sendingContext.OutboxEmailAddress.ShouldDispose)
             {
-                this.TryRemove(sendingContext.OutboxEmailAddress.Email, out _);
+                _outboxes.TryRemove(sendingContext.OutboxEmailAddress.Email, out _);
                 _logger.Info($"{sendingContext.OutboxEmailAddress.Email} 被标记为释放，从发件池中移除");
             }
 
             // 回调父级
             await sendingContext.UserOutboxesPoolManager.EmailItemSendCompleted(sendingContext);
+        }
+
+        /// <summary>
+        /// 构建发送阶段
+        /// </summary>
+        /// <param name="sendingContext"></param>
+        /// <returns></returns>
+        public async Task BuildSendingStage(ISendingContext sendingContext)
+        {
+            // 调用时肯定非空，因为有 enable 控制
+            var outboxResult = _outboxes.GetDataByWeight();
+            if (outboxResult.NotOk)
+            {
+                var sentResult = new SentResult(false, outboxResult.Message ?? $"未能从{UserId}池中获取发件箱")
+                {
+                    SentStatus = SentStatus.Failed
+                };
+                sendingContext.SetSendResult(sentResult);
+                return;
+            }
+
+            // outbox
+            // 判断是否可用
+            if (outboxResult.Data is not OutboxEmailAddress outbox)
+            {
+                var result = new SentResult(false, "结果无法转成 OutboxEmailAddress")
+                {
+                    SentStatus = SentStatus.Failed
+                };
+                sendingContext.SetSendResult(result);
+                return;
+            }
+
+            // 锁定邮箱
+            if (!outbox.LockUsing())
+            {
+                // 获取使用权失败
+                var result = new SentResult(false, $"发件箱 {outbox.Email} 已被其它线程使用，锁定失败")
+                {
+                    SentStatus = SentStatus.LockError | SentStatus.Failed
+                };
+                sendingContext.SetSendResult(result);
+                return;
+            }
+
+            // 发件箱不再继续向下调用
+        }
+
+        public Task Execute(ISendingContext sendingContext)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task Dispose(ISendingContext sendingContext)
+        {
+            throw new NotImplementedException();
         }
     }
 }

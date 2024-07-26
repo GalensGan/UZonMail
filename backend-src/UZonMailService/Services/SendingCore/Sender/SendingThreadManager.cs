@@ -11,6 +11,7 @@ using UZonMailService.Services.EmailSending.OutboxPool;
 using UZonMailService.Services.EmailSending.Pipeline;
 using UZonMailService.Services.EmailSending.WaitList;
 using Timer = System.Timers.Timer;
+using Uamazing.Utils.UzonMail;
 
 namespace UZonMailService.Services.EmailSending.Sender
 {
@@ -145,6 +146,24 @@ namespace UZonMailService.Services.EmailSending.Sender
                 var sendingContext = new SendingContext(scope.ServiceProvider);
                 try
                 {
+                    // 生成 SendingStages
+                    List<ISendingStageBuilder> builders = [outboxesPool, waitList];
+                    foreach(var builder in builders)
+                    {
+                        await builder.BuildSendingStage(sendingContext);                       
+                    }
+
+                    // 倒序执行 sendingStages
+                    for (int i = sendingContext.SendingStages.Count - 1; i >= 0; i--)
+                    {
+                        await sendingContext.SendingStages[i].Execute(sendingContext);
+                    }
+
+                    // 清理数据
+
+
+                    // 释放资源
+
                     // 取出发件箱
                     // 并解析发件箱的代理信息
                     // 发件箱出队必须保证线程安全

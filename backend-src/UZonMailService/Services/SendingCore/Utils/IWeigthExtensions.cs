@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using System.Collections.Concurrent;
+using UZonMail.Utils.UzonMail;
 using UZonMailService.Services.EmailSending.Base;
 
 namespace UZonMailService.Services.EmailSending.Utils

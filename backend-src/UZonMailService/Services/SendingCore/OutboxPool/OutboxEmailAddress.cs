@@ -305,8 +305,8 @@ namespace UZonMailService.Services.EmailSending.OutboxPool
             }
 
             // 若是发件连接失败，则移除
-            if (sendingContext.SendResult.SentStatus.HasFlag(SentStatus.OutboxConnectError)
-                || sendingContext.SendResult.SentStatus.HasFlag(SentStatus.EmptySendingGroup))
+            if (sendingContext.SendResult.SentStatus.HasFlag(Sender.SentStatus.OutboxConnectError)
+                || sendingContext.SendResult.SentStatus.HasFlag(Sender.SentStatus.EmptySendingGroup))
             {
                 ShouldDispose = true;
             }

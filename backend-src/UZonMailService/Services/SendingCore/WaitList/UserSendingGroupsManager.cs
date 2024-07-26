@@ -18,6 +18,7 @@ using UZonMailService.Services.EmailSending.Sender;
 using UZonMailService.Services.Settings;
 using UZonMailService.SignalRHubs;
 using UZonMailService.Utils.Database;
+using Uamazing.Utils.UzonMail;
 
 namespace UZonMailService.Services.EmailSending.WaitList
 {
@@ -27,7 +28,7 @@ namespace UZonMailService.Services.EmailSending.WaitList
     /// 每位用户的资源都是公平的
     /// 今后可以考虑加入权重
     /// </summary>
-    public class UserSendingGroupsManager(IServiceScopeFactory ssf) : ISingletonService
+    public class UserSendingGroupsManager(IServiceScopeFactory ssf) : ISingletonService, ISendingStageBuilder
     {
         private static readonly ILog _logger = LogManager.GetLogger(typeof(UserSendingGroupsManager));
         private readonly ConcurrentDictionary<long, UserSendingGroupsPool> _userTasks = new();
