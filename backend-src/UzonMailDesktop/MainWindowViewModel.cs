@@ -5,9 +5,9 @@ using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using UzonMailDesktop.MVVM;
+using UZonMailDesktop.MVVM;
 
-namespace UzonMailDesktop
+namespace UZonMailDesktop
 {
     internal class MainWindowViewModel : ObservableObject
     {

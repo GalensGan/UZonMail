@@ -3,20 +3,23 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi.Models;
 using UZonMailService.Config;
 using UZonMailService.Utils.DotNETCore;
-using UZonMailService.Models.SQL;
+using UZonMailService.UZonMailDB.SQL;
 using UZonMailService.Utils.DotNETCore.Filters;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http.Features;
 using UZonMailService.SignalRHubs;
-using Uamazing.Utils.Extensions;
+using UZonMail.Utils.Extensions;
 using UZonMailService.Services.HostedServices;
 using Quartz;
 using UZonMailService.Utils.ASPNETCore.Filters;
-using Uamazing.Utils.Helpers;
+using UZonMail.Utils.Helpers;
 using UZonMailService.Middlewares;
 using Microsoft.AspNetCore.HttpLogging;
 using UZonMailService.Cache;
-using Uamazing.Utils.Web.Token;
+using UZonMail.Utils.Web.Token;
+using Microsoft.EntityFrameworkCore;
+using UZonMailService.Database.SQL;
+using Microsoft.Extensions.DependencyInjection;
 
 var appOptions = new WebApplicationOptions
 {
@@ -94,6 +97,7 @@ services.SetupSlugifyCaseRoute();
 services.Configure<AppConfig>(builder.Configuration);
 // 注入数据库
 services.AddSqlContext();
+
 // 注入 liteDB
 //services.AddLiteDB();
 // 添加数据缓存

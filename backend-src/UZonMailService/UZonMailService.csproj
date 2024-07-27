@@ -9,7 +9,7 @@
 	<ServerGarbageCollection>false</ServerGarbageCollection>
 	<ConcurrentGarbageCollection>true</ConcurrentGarbageCollection>
     <Platforms>x64</Platforms>
-    <FileVersion>0.8.7.0</FileVersion>
+    <FileVersion>0.8.9.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -37,7 +37,7 @@
     <PackageReference Include="IGeekFan.AspNetCore.Knife4jUI" Version="0.0.16" />
     <PackageReference Include="Innofactor.EfCoreJsonValueConverter" Version="6.0.0" />
     <PackageReference Include="LiteDB" Version="5.0.21" />
-    <PackageReference Include="MailKit" Version="4.7.0" />
+    <PackageReference Include="MailKit" Version="4.7.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.7" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.7" />
@@ -62,12 +62,6 @@
   <ItemGroup>
     <Folder Include="Migrations\MySql\" />
     <Folder Include="Migrations\SqLite\" />
-    <Folder Include="Models\SQL\EntityConfigs\Attributes\" />
-    <Folder Include="Services\EmailSending\RemoteClient\" />
-    <Folder Include="Utils\ASPNETCore\Service\" />
-    <Folder Include="Utils\Helpers\" />
-    <Folder Include="Utils\ASPNETCore\Configure\" />
-    <Folder Include="Utils\Attributes\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -77,7 +71,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\UamazingUtils\UamzingUtils.csproj" />
+    <ProjectReference Include="..\UZonMailCore\UZonMailCore.csproj" />
+    <ProjectReference Include="..\UzonMailDB\UzonMailDB.csproj" />
+    <ProjectReference Include="..\UZonMailUtils\UZonMailUtils.csproj" />
   </ItemGroup>
 
   <ItemGroup>

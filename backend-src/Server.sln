@@ -5,11 +5,15 @@ VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UZonMailService", "UZonMailService\UZonMailService.csproj", "{1933B83C-82B4-4C06-9997-5C79BD971269}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UamzingUtils", "UamazingUtils\UamzingUtils.csproj", "{E562275E-14AA-4D35-BC2A-738530661716}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UZonMailUtils", "UZonMailUtils\UZonMailUtils.csproj", "{E562275E-14AA-4D35-BC2A-738530661716}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UzonMailDesktop", "UzonMailDesktop\UzonMailDesktop.csproj", "{5CAD1711-EF72-4CD2-B45F-6AD2A7448753}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UZonMailDesktop", "UZonMailDesktop\UZonMailDesktop.csproj", "{5CAD1711-EF72-4CD2-B45F-6AD2A7448753}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UamzingUtilsTests", "UamzingUtilsTests\UamzingUtilsTests.csproj", "{91DEBF8F-3A12-4F56-90C7-645A0CE41E49}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UZonMailUtilsTests", "UZonMailUtilsTests\UZonMailUtilsTests.csproj", "{91DEBF8F-3A12-4F56-90C7-645A0CE41E49}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UZonMailDB", "UZonMailDB\UZonMailDB.csproj", "{1CB8B4FE-B917-4A32-B989-8407047FB0F7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UZonMailCore", "UZonMailCore\UZonMailCore.csproj", "{D3202ACE-C90E-4672-B322-0D91254994B3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +55,22 @@ Global
 		{91DEBF8F-3A12-4F56-90C7-645A0CE41E49}.Release|Any CPU.Build.0 = Release|x64
 		{91DEBF8F-3A12-4F56-90C7-645A0CE41E49}.Release|x64.ActiveCfg = Release|x64
 		{91DEBF8F-3A12-4F56-90C7-645A0CE41E49}.Release|x64.Build.0 = Release|x64
+		{1CB8B4FE-B917-4A32-B989-8407047FB0F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1CB8B4FE-B917-4A32-B989-8407047FB0F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1CB8B4FE-B917-4A32-B989-8407047FB0F7}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1CB8B4FE-B917-4A32-B989-8407047FB0F7}.Debug|x64.Build.0 = Debug|Any CPU
+		{1CB8B4FE-B917-4A32-B989-8407047FB0F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1CB8B4FE-B917-4A32-B989-8407047FB0F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1CB8B4FE-B917-4A32-B989-8407047FB0F7}.Release|x64.ActiveCfg = Release|Any CPU
+		{1CB8B4FE-B917-4A32-B989-8407047FB0F7}.Release|x64.Build.0 = Release|Any CPU
+		{D3202ACE-C90E-4672-B322-0D91254994B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3202ACE-C90E-4672-B322-0D91254994B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3202ACE-C90E-4672-B322-0D91254994B3}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D3202ACE-C90E-4672-B322-0D91254994B3}.Debug|x64.Build.0 = Debug|Any CPU
+		{D3202ACE-C90E-4672-B322-0D91254994B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3202ACE-C90E-4672-B322-0D91254994B3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D3202ACE-C90E-4672-B322-0D91254994B3}.Release|x64.ActiveCfg = Release|Any CPU
+		{D3202ACE-C90E-4672-B322-0D91254994B3}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

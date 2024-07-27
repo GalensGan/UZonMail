@@ -14,10 +14,10 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using UzonMailDesktop.Models;
-using UzonMailDesktop.Utils;
+using UZonMailDesktop.Models;
+using UZonMailDesktop.Utils;
 
-namespace UzonMailDesktop
+namespace UZonMailDesktop
 {
     /// <summary>
     /// MainWindow.xaml 的交互逻辑
