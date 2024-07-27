@@ -30,8 +30,8 @@ import { useQTable, useQTableIndex } from 'src/compositions/qTableUtils'
 import { IRequestPagination, TTableFilterObject } from 'src/compositions/types'
 import SearchInput from 'src/components/searchInput/SearchInput.vue'
 import { IPopupDialogParams, PopupDialogFieldType } from 'src/components/popupDialog/types'
-import { getAllRoles, getUserRolesCount, getUserRolesData, IRole, IUserRole, upsertUserRole } from 'src/api/permission'
-import { notifyError, notifySuccess, showDialog } from 'src/utils/dialog'
+import { getAllRoles, getUserRolesCount, getUserRolesData, IRole, IUserRole, upsertUserRole, deleteUserRoles } from 'src/api/permission'
+import { confirmOperation, notifyError, notifySuccess, showDialog } from 'src/utils/dialog'
 import { getAllUsers } from 'src/api/user'
 import { IUserInfo } from 'src/stores/types'
 import { IContextMenuItem } from 'src/components/contextMenu/types'
@@ -80,7 +80,7 @@ async function onRequest (filterObj: TTableFilterObject, pagination: IRequestPag
   return data || []
 }
 
-const { pagination, rows, filter, onTableRequest, loading, addNewRow } = useQTable({
+const { pagination, rows, filter, onTableRequest, loading, addNewRow, deleteRowById } = useQTable({
   getRowsNumberCount,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onRequest
@@ -153,6 +153,12 @@ const contextItems: IContextMenuItem[] = [
     name: 'edit',
     label: '编辑',
     onClick: onUserRoleClicked
+  },
+  {
+    name: 'delete',
+    label: '删除',
+    color: 'negative',
+    onClick: onDeleteUserRole
   }
 ]
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -170,6 +176,18 @@ async function onUserRoleClicked (row: Record<string, any>) {
   addNewRow(newData)
 
   notifySuccess('用户角色更新成功')
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function onDeleteUserRole (row: Record<string, any>) {
+  const userRole = row as IUserRole
+  const confirm = await confirmOperation('删除角色', `即将删除 ${userRole.user.userId} 的 ${userRole.roles.map(x => x.name).join()} 角色，是否继续？`)
+  if (!confirm) return
+
+  await deleteUserRoles(userRole.id)
+
+  deleteRowById(userRole.id)
+  notifySuccess('删除成功')
 }
 // #endregion
 </script>

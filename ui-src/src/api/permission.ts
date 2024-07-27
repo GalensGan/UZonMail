@@ -170,4 +170,13 @@ export function getUserRolesData (filter: string | undefined, pagination: IReque
     }
   })
 }
+
+/**
+ * 删除用户角色
+ * @param userRoleId
+ * @returns
+ */
+export function deleteUserRoles (userRoleId: number) {
+  return httpClient.delete<boolean[]>(`/permission/user-role/${userRoleId}`)
+}
 // #endregion
