@@ -1,25 +1,22 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi.Models;
-using UZonMailService.Config;
-using UZonMailService.Utils.DotNETCore;
-using UZonMailService.UZonMailDB.SQL;
-using UZonMailService.Utils.DotNETCore.Filters;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http.Features;
-using UZonMailService.SignalRHubs;
 using UZonMail.Utils.Extensions;
-using UZonMailService.Services.HostedServices;
 using Quartz;
-using UZonMailService.Utils.ASPNETCore.Filters;
 using UZonMail.Utils.Helpers;
 using UZonMailService.Middlewares;
 using Microsoft.AspNetCore.HttpLogging;
-using UZonMailService.Cache;
 using UZonMail.Utils.Web.Token;
-using Microsoft.EntityFrameworkCore;
-using UZonMailService.Database.SQL;
-using Microsoft.Extensions.DependencyInjection;
+using UZonMail.Core.Utils.DotNETCore.Filters;
+using UZonMail.Core.Utils.ASPNETCore.Filters;
+using UZonMail.Core.Utils.DotNETCore;
+using UZonMail.Core.Config;
+using UZonMail.Core.Database.SQL;
+using UZonMail.Core.Cache;
+using UZonMail.Core.Services.HostedServices;
+using UZonMail.Core.SignalRHubs;
 
 var appOptions = new WebApplicationOptions
 {

@@ -16,7 +16,7 @@ namespace UZonMail.Core.Utils.DotNETCore
     /// <summary>
     /// DotNETCore 扩展类
     /// </summary>
-    internal static class Index
+    public static class Index
     {
         /// <summary>
         /// 设置 slugify-case 形式的路由
