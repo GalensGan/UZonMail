@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
+using StackExchange.Redis;
 using UZonMail.Utils.Json;
 
 namespace UZonMail.Core.Cache

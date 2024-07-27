@@ -11,6 +11,7 @@ using UZonMail.Core.Services.EmailSending.Event;
 using UZonMail.Core.Services.EmailSending.Event.Commands;
 using UZonMail.Core.Services.EmailSending.Pipeline;
 using UZonMail.Core.Services.EmailSending.Utils;
+using UZonMail.Core.Controllers.SystemInfo.Model;
 
 namespace UZonMail.Core.Services.EmailSending.OutboxPool
 {

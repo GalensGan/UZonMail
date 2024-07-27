@@ -1,14 +1,10 @@
-﻿using Quartz.Impl;
-using Quartz;
+﻿using Quartz;
 using UZonMail.DB.SQL;
-using UZonMail.Core.Services.EmailSending;
 using Microsoft.Extensions.Options;
-using UZonMail.Core.Config;
-using UZonMail.DB.SQL.Init;
 using Microsoft.EntityFrameworkCore;
 using UZonMail.Core.Jobs;
-using UZonMail.DB.SQL.EmailSending;
-using UZonMail.DB.SQL.Updater;
+using UZonMail.Core.Database.Init;
+using UZonMail.Core.Database.Updater;
 
 namespace UZonMail.Core.Services.HostedServices
 {

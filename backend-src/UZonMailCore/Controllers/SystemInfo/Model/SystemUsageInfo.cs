@@ -16,7 +16,7 @@ namespace UZonMail.Core.Controllers.SystemInfo.Model
         public List<OutboxPoolInfo> OutboxPoolInfos { get; set; }
         public List<SendingGroupInfo> SendingGroupsPoolInfos { get; set; }
 
-        public async Task GatherInfomations(UserSendingGroupsManager userSendingGroupsManager,UserOutboxesPoolsManager userOutboxesPoolManager, SendingThreadManager sendingThreadManager)
+        public async Task GatherInfomations(UserSendingGroupsManager userSendingGroupsManager, UserOutboxesPoolManager userOutboxesPoolManager, SendingThreadManager sendingThreadManager)
         {
             CpuUsage = await GetCpuUsageForProcess();
             MemoryUsage = Process.GetCurrentProcess().WorkingSet64 / 1024 / 1024;

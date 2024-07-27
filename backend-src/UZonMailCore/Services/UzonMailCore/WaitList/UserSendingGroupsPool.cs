@@ -1,22 +1,11 @@
 ﻿using log4net;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
 using System.Collections.Concurrent;
-using Uamazing.Utils.Web.Service;
-using UZonMail.Core.Models.SQL;
-using UZonMail.Core.Models.SQL.Emails;
-using UZonMail.Core.Models.SQL.EmailSending;
 using UZonMail.Core.Services.EmailSending.Base;
-using UZonMail.Core.Services.EmailSending.Event;
-using UZonMail.Core.Services.EmailSending.Event.Commands;
 using UZonMail.Core.Services.EmailSending.OutboxPool;
 using UZonMail.Core.Services.EmailSending.Pipeline;
 using UZonMail.Core.Services.EmailSending.Sender;
-using UZonMail.Core.SignalRHubs;
-using UZonMail.Core.SignalRHubs.Extensions;
-using UZonMail.Core.SignalRHubs.SendEmail;
 using UZonMail.Core.Utils.Database;
+using UZonMail.DB.SQL.EmailSending;
 
 namespace UZonMail.Core.Services.EmailSending.WaitList
 {

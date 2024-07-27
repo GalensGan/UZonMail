@@ -1,5 +1,4 @@
-﻿using UZonMail.Core.Models.SQL;
-using UZonMail.DB.SQL;
+﻿using UZonMail.DB.SQL;
 
 namespace UZonMail.Core.Services.EmailSending.Sender
 {

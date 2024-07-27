@@ -8,6 +8,7 @@ using log4net;
 using UZonMail.Core.Services.EmailSending.Pipeline;
 using UZonMail.DB.SQL.EmailSending;
 using UZonMail.Core.Database.SQL.EmailSending;
+using UZonMail.DB.SQL.Emails;
 
 namespace UZonMail.Core.Services.EmailSending.Sender
 {

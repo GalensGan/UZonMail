@@ -4,6 +4,7 @@ using System;
 using UZonMail.Core.Services.EmailSending.OutboxPool;
 using UZonMail.Core.Services.EmailSending.Sender;
 using UZonMail.Core.Services.EmailSending.WaitList;
+using UZonMail.Core.SignalRHubs;
 using UZonMail.DB.SQL;
 
 namespace UZonMail.Core.Services.EmailSending.Pipeline

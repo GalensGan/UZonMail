@@ -1,7 +1,4 @@
-﻿using UZonMail.Core.Models.SQL;
-using UZonMail.Core.Services.EmailSending.Models;
-
-namespace UZonMail.Core.Services.EmailSending.Sender
+﻿namespace UZonMail.Core.Services.EmailSending.Sender
 {
     /// <summary>
     /// 发送完成的结果

@@ -1,13 +1,11 @@
 ﻿using log4net;
-using MailKit.Net.Proxy;
 using MailKit.Net.Smtp;
 using System.Collections.Concurrent;
-using UZonMail.Core.Models.SQL.Emails;
-using UZonMail.Core.Models.SQL.MultiTenant;
 using UZonMail.Core.Services.EmailSending.Base;
 using UZonMail.Core.Services.EmailSending.OutboxPool;
 using UZonMail.Core.Services.EmailSending.Pipeline;
 using UZonMail.Core.Services.Settings;
+using UZonMail.DB.SQL.Emails;
 
 namespace UZonMail.Core.Services.EmailSending.Sender
 {

@@ -10,6 +10,11 @@ using log4net;
 using UZonMail.Core.Services.EmailSending.Pipeline;
 using UZonMail.DB.SQL.EmailSending;
 using UZonMail.DB.SQL.Emails;
+using UZonMail.DB.SQL.Settings;
+using UZonMail.DB.SQL.Templates;
+using UZonMail.Core.Database.SQL.EmailSending;
+using UZonMail.DB.SQL;
+using UZonMail.Utils.Json;
 
 namespace UZonMail.Core.Services.EmailSending.WaitList
 {

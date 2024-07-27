@@ -2,10 +2,8 @@
 using Microsoft.Net.Http.Headers;
 using System.Text.RegularExpressions;
 using UZonMail.Utils.Web.Service;
-using UZonMail.Core.Config;
 using UZonMail.Utils.Web.Token;
 using UZonMail.Utils.Json;
-using Newtonsoft.Json.Linq;
 
 namespace UZonMail.Core.Services.Settings
 {
