@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.ComponentModel.DataAnnotations.Schema;
-using UZonMailService.UzonMailDB.SQL.Base;
-using UZonMailService.UzonMailDB.SQL.EmailSending;
+using UZonMail.DB.SQL.Base;
+using UZonMail.DB.SQL.EmailSending;
 
-namespace UZonMailService.UzonMailDB.SQL.Emails
+namespace UZonMail.DB.SQL.Emails
 {
     /// <summary>
     /// EmailBox 基类

@@ -1,4 +1,4 @@
-﻿namespace UZonMailService.UzonMailDB.SQL.Tests
+﻿namespace UZonMail.DB.SQL.Tests
 {
     public class Post
     {

@@ -1,7 +1,7 @@
-﻿using UZonMailService.UzonMailDB.SQL.Base;
-using UZonMailService.UzonMailDB.SQL.MultiTenant;
+﻿using UZonMail.DB.SQL.Base;
+using UZonMail.DB.SQL.MultiTenant;
 
-namespace UZonMailService.UzonMailDB.SQL.Emails
+namespace UZonMail.DB.SQL.Emails
 {
     /// <summary>
     /// 邮箱组

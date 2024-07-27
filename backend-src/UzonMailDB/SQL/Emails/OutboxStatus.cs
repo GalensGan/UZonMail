@@ -1,4 +1,4 @@
-﻿namespace UZonMailService.UzonMailDB.SQL.Emails
+﻿namespace UZonMail.DB.SQL.Emails
 {
     public enum OutboxStatus
     {

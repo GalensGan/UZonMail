@@ -1,4 +1,4 @@
-﻿namespace UZonMailService.UzonMailDB.SQL.MultiTenant
+﻿namespace UZonMail.DB.SQL.MultiTenant
 {
     /// <summary>
     /// 部门类型

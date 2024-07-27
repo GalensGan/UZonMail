@@ -1,4 +1,4 @@
-﻿namespace UZonMailService.UzonMailDB.SQL.NoEntity
+﻿namespace UZonMail.DB.SQL.NoEntity
 {
     /// <summary>
     /// 仅有 Name 的数据引用

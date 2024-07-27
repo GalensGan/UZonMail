@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using UZonMailService.UzonMailDB.SQL;
+using UZonMail.DB.SQL;
 
-namespace UZonMailService.UzonMailDB.MySql
+namespace UZonMail.DB.MySql
 {
     public class MySqlContext : SqlContext
     {

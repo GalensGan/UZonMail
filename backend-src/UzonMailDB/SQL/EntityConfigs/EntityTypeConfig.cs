@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using System.Reflection.Emit;
 
-namespace UZonMailService.UzonMailDB.SQL.EntityConfigs
+namespace UZonMail.DB.SQL.EntityConfigs
 {
     // 指定 outbox 外键
     internal class EntityTypeConfig : IEntityTypeConfig

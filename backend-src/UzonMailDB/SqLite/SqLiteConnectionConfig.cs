@@ -1,6 +1,6 @@
 ﻿using Microsoft.Data.Sqlite;
 
-namespace UZonMailService.UzonMailDB.SqLite
+namespace UZonMail.DB.SqLite
 {
     public class SqLiteConnectionConfig
     {

@@ -1,6 +1,6 @@
-﻿using UZonMailService.UzonMailDB.SQL.Base;
+﻿using UZonMail.DB.SQL.Base;
 
-namespace UZonMailService.UzonMailDB.SQL.Settings
+namespace UZonMail.DB.SQL.Settings
 {
     /// <summary>
     /// 系统级设置全系统只此一份

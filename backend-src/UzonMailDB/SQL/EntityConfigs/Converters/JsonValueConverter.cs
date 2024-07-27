@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Linq.Expressions;
 
-namespace UZonMailService.UzonMailDB.SQL.EntityConfigs.Converters
+namespace UZonMail.DB.SQL.EntityConfigs.Converters
 {
     /// <summary>
     /// 将对象转换成 json 保存

@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using UZonMailService.UzonMailDB.SQL.Base;
-using UZonMailService.UzonMailDB.SQL.MultiTenant;
+using UZonMail.DB.SQL.Base;
+using UZonMail.DB.SQL.MultiTenant;
 
-namespace UZonMailService.UzonMailDB.SQL.Permission
+namespace UZonMail.DB.SQL.Permission
 {
     /// <summary>
     /// 权限码

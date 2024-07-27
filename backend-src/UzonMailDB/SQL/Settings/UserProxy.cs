@@ -1,8 +1,8 @@
 ﻿using System.Text.RegularExpressions;
-using UZonMailService.UzonMailDB.SQL.Base;
-using UZonMailService.UzonMailDB.SQL.Emails;
+using UZonMail.DB.SQL.Base;
+using UZonMail.DB.SQL.Emails;
 
-namespace UZonMailService.UzonMailDB.SQL.Settings
+namespace UZonMail.DB.SQL.Settings
 {
     /// <summary>
     /// 邮件代理

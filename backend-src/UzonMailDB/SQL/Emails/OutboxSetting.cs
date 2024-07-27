@@ -1,6 +1,6 @@
-﻿using UZonMailService.UzonMailDB.SQL.Base;
+﻿using UZonMail.DB.SQL.Base;
 
-namespace UZonMailService.UzonMailDB.SQL.Emails
+namespace UZonMail.DB.SQL.Emails
 {
     /// <summary>
     /// 发件箱设置

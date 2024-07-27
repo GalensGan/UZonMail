@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.ComponentModel.DataAnnotations.Schema;
-using UZonMailService.UzonMailDB.SQL.Base;
-using UZonMailService.UzonMailDB.SQL.Emails;
+using UZonMail.DB.SQL.Base;
+using UZonMail.DB.SQL.Emails;
 
-namespace UZonMailService.UzonMailDB.SQL.EmailSending
+namespace UZonMail.DB.SQL.EmailSending
 {
     /// <summary>
     /// 发件项与发件箱对应的表

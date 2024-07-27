@@ -1,12 +1,12 @@
 ﻿using log4net;
 using Microsoft.EntityFrameworkCore;
-using UZonMailService.UzonMailDB.SQL.Emails;
-using UZonMailService.UzonMailDB.SQL.EmailSending;
-using UZonMailService.UzonMailDB.SQL.EntityConfigs;
-using UZonMailService.UzonMailDB.SQL.Settings;
-using UZonMailService.UzonMailDB.SQL.Templates;
+using UZonMail.DB.SQL.Emails;
+using UZonMail.DB.SQL.EmailSending;
+using UZonMail.DB.SQL.EntityConfigs;
+using UZonMail.DB.SQL.Settings;
+using UZonMail.DB.SQL.Templates;
 
-namespace UZonMailService.UzonMailDB.SQL
+namespace UZonMail.DB.SQL
 {
     /// <summary>
     /// Sql 上下文

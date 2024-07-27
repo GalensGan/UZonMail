@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-using UZonMailService.UzonMailDB.SQL.Base;
-using UZonMailService.UzonMailDB.SQL.MultiTenant;
+using UZonMail.DB.SQL.Base;
+using UZonMail.DB.SQL.MultiTenant;
 
-namespace UZonMailService.UzonMailDB.SQL.Files
+namespace UZonMail.DB.SQL.Files
 {
     /// <summary>
     /// 文件使用情况

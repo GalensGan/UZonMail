@@ -1,4 +1,4 @@
-﻿namespace UZonMailService.UzonMailDB.MySql
+﻿namespace UZonMail.DB.MySql
 {
     /// <summary>
     /// mysql 连接信息

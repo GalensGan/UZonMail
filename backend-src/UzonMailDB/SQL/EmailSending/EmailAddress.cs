@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using UZonMailService.UzonMailDB.SQL.Base;
+using UZonMail.DB.SQL.Base;
 
-namespace UZonMailService.UzonMailDB.SQL.EmailSending
+namespace UZonMail.DB.SQL.EmailSending
 {
     /// <summary>
     /// 邮件地址

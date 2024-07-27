@@ -1,7 +1,7 @@
-﻿using UZonMailService.UzonMailDB.SQL.Base;
-using UZonMailService.UzonMailDB.SQL.Permission;
+﻿using UZonMail.DB.SQL.Base;
+using UZonMail.DB.SQL.Permission;
 
-namespace UZonMailService.UzonMailDB.SQL.MultiTenant
+namespace UZonMail.DB.SQL.MultiTenant
 {
     /// <summary>
     /// 用户上下文

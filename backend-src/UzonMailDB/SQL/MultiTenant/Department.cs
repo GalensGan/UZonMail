@@ -1,6 +1,6 @@
-﻿using UZonMailService.UzonMailDB.SQL.Base;
+﻿using UZonMail.DB.SQL.Base;
 
-namespace UZonMailService.UzonMailDB.SQL.MultiTenant
+namespace UZonMail.DB.SQL.MultiTenant
 {
     /// <summary>
     /// 部门表

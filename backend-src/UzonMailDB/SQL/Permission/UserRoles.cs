@@ -1,4 +1,4 @@
-﻿namespace UZonMailService.UzonMailDB.SQL.Permission
+﻿namespace UZonMail.DB.SQL.Permission
 {
     /// <summary>
     /// 用户所有角色

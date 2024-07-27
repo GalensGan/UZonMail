@@ -2,10 +2,10 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using UZonMailService.UzonMailDB.SQL;
-using UZonMailService.UzonMailDB.SqLite;
+using UZonMail.DB.SQL;
+using UZonMail.DB.SqLite;
 
-namespace UZonMailService.UzonMailDB.SqLite
+namespace UZonMail.DB.SqLite
 {
     public class SqLiteContext : SqlContext
     {

@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using UZonMailService.UzonMailDB.SQL.Emails;
+using UZonMail.DB.SQL.Emails;
 
-namespace UZonMailService.UzonMailDB.SQL.EntityConfigs
+namespace UZonMail.DB.SQL.EntityConfigs
 {
     /// <summary>
     /// 配置实体类型

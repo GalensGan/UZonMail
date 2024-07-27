@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace UZonMailService.UzonMailDB.SQL.Base
+namespace UZonMail.DB.SQL.Base
 {
     /// <summary>
     /// 所有数据库的基类

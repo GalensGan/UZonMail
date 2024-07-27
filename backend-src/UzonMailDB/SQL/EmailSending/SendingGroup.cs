@@ -3,13 +3,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Newtonsoft.Json.Linq;
 using System.ComponentModel.DataAnnotations.Schema;
-using UZonMailService.UzonMailDB.SQL.Base;
-using UZonMailService.UzonMailDB.SQL.Emails;
-using UZonMailService.UzonMailDB.SQL.Files;
-using UZonMailService.UzonMailDB.SQL.Settings;
-using UZonMailService.UzonMailDB.SQL.Templates;
+using UZonMail.DB.SQL.Base;
+using UZonMail.DB.SQL.Emails;
+using UZonMail.DB.SQL.Files;
+using UZonMail.DB.SQL.Settings;
+using UZonMail.DB.SQL.Templates;
 
-namespace UZonMailService.UzonMailDB.SQL.EmailSending
+namespace UZonMail.DB.SQL.EmailSending
 {
     /// <summary>
     /// 发件组

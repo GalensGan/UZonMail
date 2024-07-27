@@ -3,7 +3,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi.Models;
 using UZonMailService.Config;
 using UZonMailService.Utils.DotNETCore;
-using UZonMailService.UzonMailDB.SQL;
+using UZonMailService.UZonMailDB.SQL;
 using UZonMailService.Utils.DotNETCore.Filters;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http.Features;
@@ -19,6 +19,7 @@ using UZonMailService.Cache;
 using UZonMail.Utils.Web.Token;
 using Microsoft.EntityFrameworkCore;
 using UZonMailService.Database.SQL;
+using Microsoft.Extensions.DependencyInjection;
 
 var appOptions = new WebApplicationOptions
 {
@@ -96,6 +97,7 @@ services.SetupSlugifyCaseRoute();
 services.Configure<AppConfig>(builder.Configuration);
 // 注入数据库
 services.AddSqlContext();
+
 // 注入 liteDB
 //services.AddLiteDB();
 // 添加数据缓存

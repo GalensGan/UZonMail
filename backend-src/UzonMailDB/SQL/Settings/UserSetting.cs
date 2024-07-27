@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-using UZonMailService.UzonMailDB.Extensions;
-using UZonMailService.UzonMailDB.SQL.Base;
+using UZonMail.DB.Extensions;
+using UZonMail.DB.SQL.Base;
 
-namespace UZonMailService.UzonMailDB.SQL.Settings
+namespace UZonMail.DB.SQL.Settings
 {
     /// <summary>
     /// 用户设置

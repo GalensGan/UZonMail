@@ -1,11 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.ComponentModel.DataAnnotations.Schema;
-using UZonMailService.UzonMailDB.SQL.Base;
-using UZonMailService.UzonMailDB.SQL.EmailSending;
-using UZonMailService.UzonMailDB.SQL.MultiTenant;
+using UZonMail.DB.SQL.Base;
+using UZonMail.DB.SQL.EmailSending;
+using UZonMail.DB.SQL.MultiTenant;
 
-namespace UZonMailService.UzonMailDB.SQL.Permission
+namespace UZonMail.DB.SQL.Permission
 {
     /// <summary>
     /// 权限角色

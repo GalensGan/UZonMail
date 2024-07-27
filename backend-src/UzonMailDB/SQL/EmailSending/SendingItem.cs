@@ -2,10 +2,10 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Newtonsoft.Json.Linq;
-using UZonMailService.UzonMailDB.SQL.Base;
-using UZonMailService.UzonMailDB.SQL.Files;
+using UZonMail.DB.SQL.Base;
+using UZonMail.DB.SQL.Files;
 
-namespace UZonMailService.UzonMailDB.SQL.EmailSending
+namespace UZonMail.DB.SQL.EmailSending
 {
     /// <summary>
     /// 邮件项
