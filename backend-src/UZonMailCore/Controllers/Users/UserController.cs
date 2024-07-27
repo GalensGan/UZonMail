@@ -13,6 +13,8 @@ using UZonMail.Core.Utils.Database;
 using UZonMail.Core.Controllers.Users.Model;
 using UZonMail.DB.SQL;
 using UZonMail.DB.SQL.MultiTenant;
+using UZonMail.Core.Database.Validators;
+using UZonMail.Core.Utils.Extensions;
 
 namespace UZonMail.Core.Controllers.Users
 {
@@ -47,16 +49,13 @@ namespace UZonMail.Core.Controllers.Users
         [HttpPost("sign-up")]
         public async Task<ResponseResult<User>> SignUp([FromBody] User user)
         {
+            // 验证用户名和密码
+            var userVdResult = new UserIdAndPasswordValidator().Validate(user);
+            if (!userVdResult.IsValid) return userVdResult.ToErrorResponse<User>();
+
             // 用户名重复检查
             var existUser = await userService.ExistUser(user.UserId);
             if (existUser) throw new KnownException($"用户 {user.UserId} 已经存在");
-
-            // 验证用户
-            user.Validate(new VdObj
-            {
-                { ()=>user.UserId,new IsString("用户名最小长度不小于3个字符"){ MinLength=3} },
-                { ()=>user.Password,new IsString("密码最小长度不小于6个字符"){ MinLength=6} }
-            }, ValidateOption.ThrowError);
 
             // 返回新建用户
             var newUser = await userService.CreateUser(user.UserId, user.Password);
@@ -73,11 +72,10 @@ namespace UZonMail.Core.Controllers.Users
         public async Task<ResponseResult<UserSignInResult>> SignIn([FromBody] User user)
         {
             // 验证用户
-            user.Validate(new VdObj
-            {
-                { ()=>user.UserId,new NotNullOrEmpty(),"用户名为空"},
-                { ()=>user.Password,new NotNullOrEmpty(),"密码为空" }
-            }, ValidateOption.ThrowError);
+            // 验证用户名和密码
+            var userVdResult = new UserIdAndPasswordValidator().Validate(user);
+            if (!userVdResult.IsValid) return userVdResult.ToErrorResponse<UserSignInResult>();
+
             var loginResult = await userService.UserSignIn(user.UserId, user.Password);
 
             return loginResult.ToSuccessResponse();

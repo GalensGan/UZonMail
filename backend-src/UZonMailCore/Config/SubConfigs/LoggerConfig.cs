@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace UZonMailService.Config.SubConfigs
+namespace UZonMail.Core.Config.SubConfigs
 {
-    public class HttpConfig
+    public class LoggerConfig
     {
-
     }
 }

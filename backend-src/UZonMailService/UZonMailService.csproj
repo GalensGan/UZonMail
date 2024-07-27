@@ -71,7 +71,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\UamazingUtils\UzonMailUtils.csproj" />
     <ProjectReference Include="..\UZonMailCore\UZonMailCore.csproj" />
     <ProjectReference Include="..\UzonMailDB\UzonMailDB.csproj" />
     <ProjectReference Include="..\UZonMailUtils\UZonMailUtils.csproj" />

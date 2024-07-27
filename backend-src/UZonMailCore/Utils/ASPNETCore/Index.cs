@@ -8,8 +8,8 @@ using UZonMail.Core.Utils.DotNETCore.Convention;
 using UZonMail.Utils.Web.Service;
 using UZonMail.Core.Utils.Database;
 using System.Diagnostics;
-using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.OpenApi.Models;
 
 namespace UZonMail.Core.Utils.DotNETCore
 {

@@ -1,8 +1,7 @@
-﻿using Microsoft.Extensions.Options;
+﻿using UZonMail.Core.Config.SubConfigs;
 using UZonMail.Utils.Web.Token;
-using UZonMailService.Config.SubConfigs;
 
-namespace UZonMailService.Config
+namespace UZonMail.Core.Config
 {
     /// <summary>
     /// 程序所有的配置

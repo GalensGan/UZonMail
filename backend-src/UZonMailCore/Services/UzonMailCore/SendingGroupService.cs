@@ -13,6 +13,7 @@ using UZonMail.DB.SQL.EmailSending;
 using UZonMail.Utils.Web.Service;
 using UZonMail.Utils.Extensions;
 using UZonMail.Utils.Json;
+using UZonMail.Core.Database.SQL.EmailSending;
 
 namespace UZonMail.Core.Services.EmailSending
 {

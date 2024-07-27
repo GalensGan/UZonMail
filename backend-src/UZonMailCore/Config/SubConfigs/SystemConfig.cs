@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace UZonMailService.Config.SubConfigs
+namespace UZonMail.Core.Config.SubConfigs
 {
     /// <summary>
     /// 系统配置

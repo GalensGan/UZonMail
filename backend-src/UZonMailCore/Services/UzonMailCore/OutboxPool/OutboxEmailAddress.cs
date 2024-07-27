@@ -17,6 +17,7 @@ using UZonMail.Core.Services.Settings;
 using UZonMail.Utils.Extensions;
 using System.Threading.Tasks;
 using System.Threading;
+using UZonMail.Core.Utils.Database;
 
 namespace UZonMail.Core.Services.EmailSending.OutboxPool
 {

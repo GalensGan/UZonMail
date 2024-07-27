@@ -1,4 +1,5 @@
 ﻿using LiteDB;
+using UZonMail.Core.Config.SubConfigs;
 
 namespace UZonMail.Core.Utils.Database
 {

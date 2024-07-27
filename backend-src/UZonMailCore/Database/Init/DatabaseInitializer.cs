@@ -5,6 +5,7 @@ using UZonMail.DB.SQL;
 using UZonMail.DB.SQL.MultiTenant;
 using UZonMail.DB.SQL.Files;
 using UZonMail.DB.SQL.EmailSending;
+using UZonMail.Core.Config;
 
 namespace UZonMail.Core.Database.Init
 {

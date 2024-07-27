@@ -10,6 +10,7 @@ using UZonMail.Core.Utils.ASPNETCore.PagingQuery;
 using UZonMail.Core.Services.Settings;
 using UZonMail.Core.Controllers.Users.Model;
 using UZonMail.Core.Services.Permission;
+using UZonMail.Core.Config;
 
 namespace UZonMail.Core.Services.UserInfos
 {

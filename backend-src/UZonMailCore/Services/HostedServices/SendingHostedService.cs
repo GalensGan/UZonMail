@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using UZonMail.Core.Jobs;
 using UZonMail.Core.Database.Init;
 using UZonMail.Core.Database.Updater;
+using UZonMail.Core.Config;
 
 namespace UZonMail.Core.Services.HostedServices
 {

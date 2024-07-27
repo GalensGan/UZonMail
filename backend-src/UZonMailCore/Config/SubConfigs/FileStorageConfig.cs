@@ -1,4 +1,4 @@
-﻿namespace UZonMailService.Config.SubConfigs
+﻿namespace UZonMail.Core.Config.SubConfigs
 {
     /// <summary>
     /// 文件存储设置
