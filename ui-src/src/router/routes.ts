@@ -178,15 +178,6 @@ export const dynamicRoutes: ExtendedRouteRecordRaw[] = [
     redirect: '/system/user-manage',
     children: [
       {
-        name: 'UserManage',
-        path: 'user-manage',
-        meta: {
-          icon: 'manage_accounts',
-          label: '用户管理'
-        },
-        component: () => import('pages/systemSetting/userManage.vue')
-      },
-      {
         name: 'BasicSetting',
         path: 'basicSetting',
         meta: {
@@ -205,11 +196,22 @@ export const dynamicRoutes: ExtendedRouteRecordRaw[] = [
         component: () => import('pages/systemSetting/proxyManage/ProxyManager.vue')
       },
       {
+        name: 'UserManage',
+        path: 'user-manage',
+        meta: {
+          icon: 'manage_accounts',
+          label: '用户管理',
+          access: ['admin']
+        },
+        component: () => import('pages/systemSetting/userManage.vue')
+      },
+      {
         name: 'PermissionManager',
         path: 'permission',
         meta: {
           icon: 'key',
-          label: '权限管理'
+          label: '权限管理',
+          access: ['admin']
         },
         redirect: '/system/permission/code',
         children: [
@@ -238,9 +240,19 @@ export const dynamicRoutes: ExtendedRouteRecordRaw[] = [
               icon: 'supervised_user_circle',
               label: '用户角色'
             },
-            component: () => import('pages/systemSetting/permission/userRole/UserRole.vue')
+            component: () => import('pages/systemSetting/permission/userRoleManager/UserRole.vue')
           }
         ]
+      },
+      {
+        name: 'SoftwareLicense',
+        path: 'license',
+        meta: {
+          icon: 'emoji_events',
+          label: '软件许可',
+          access: ['admin']
+        },
+        component: () => import('pages/systemSetting/proxyManage/ProxyManager.vue')
       }
     ]
   },
