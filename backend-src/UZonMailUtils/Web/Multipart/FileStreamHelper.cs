@@ -1,14 +1,17 @@
-﻿using Microsoft.AspNetCore.Http.Features;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Net.Http.Headers;
+using System;
 using System.Globalization;
+using System.IO;
 using System.Net;
 using System.Text;
-using UZonMail.Utils.Web.FileUpload;
+using System.Threading.Tasks;
 using UZonMail.Utils.Extensions;
 
-namespace UZonMail.Core.Utils.DotNETCore.Multipart
+namespace UZonMail.Utils.Web.Multipart
 {
     /// <summary>
     /// 文件流帮助类

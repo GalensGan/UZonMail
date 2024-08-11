@@ -12,15 +12,17 @@ namespace UZonMail.Core.Database.Updater.Updaters
     /// </summary>
     public class PermissionUpdater : IDataUpdater
     {
-        public Version Version => new Version(1, 0, 1, 0);
+        public Version Version => new(1, 0, 1, 0);
 
         public async Task Update(SqlContext db)
         {
             // 添加功能码
             List<PermissionCode> permissionCodes =
             [
-                new() { Code = "PermissionCode1", Description = "PermissionCode1" },
+                new() { Code = "admin", Description = "管理员" },
             ];
+            await db.PermissionCodes.AddRangeAsync(permissionCodes);
+            await db.SaveChangesAsync();
         }
     }
 }

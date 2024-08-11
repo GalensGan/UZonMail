@@ -1,4 +1,7 @@
-﻿namespace UZonMail.Core.Utils.DotNETCore.Exceptions
+﻿using Microsoft.AspNetCore.Http;
+using System;
+
+namespace UZonMail.Utils.Web.Exceptions
 {
     /// <summary>
     /// 已知的异常

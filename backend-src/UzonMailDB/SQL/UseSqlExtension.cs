@@ -2,7 +2,7 @@
 using UZonMail.DB.SQL;
 using UZonMail.DB.SqLite;
 
-namespace UZonMail.Core.Database.SQL
+namespace UZonMail.DB.SQL
 {
     public static class UseSqlExtension
     {

@@ -1,17 +1,19 @@
-﻿using LiteDB;
-using Microsoft.AspNetCore.Mvc.ApplicationModels;
+﻿using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
 using System.Text;
-using UZonMail.Core.Utils.DotNETCore;
-using UZonMail.Core.Utils.DotNETCore.Convention;
 using UZonMail.Utils.Web.Service;
-using UZonMail.Core.Utils.Database;
 using System.Diagnostics;
+using Microsoft.Extensions.DependencyInjection;
+using UZonMail.Utils.Web.Convention;
+using System.Linq;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System;
+using System.Threading.Tasks;
 using Microsoft.OpenApi.Models;
+using System.IO;
 
-namespace UZonMail.Core.Utils.DotNETCore
+namespace UZonMail.Utils.Web
 {
     /// <summary>
     /// DotNETCore 扩展类
@@ -180,19 +182,6 @@ namespace UZonMail.Core.Utils.DotNETCore
                     }
                 };
             });
-            return services;
-        }
-
-        /// <summary>
-        /// 注册 LiteDB 实例
-        /// liteDB 数据库文件名在配置中用 Database:LiteDbPath 指定，相对于程序目录
-        /// </summary>
-        /// <param name="builder"></param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException"></exception>
-        public static IServiceCollection AddLiteDB(this IServiceCollection services)
-        {
-            services.AddSingleton(typeof(ILiteRepository), typeof(LiteDBContext));
             return services;
         }
 

@@ -8,15 +8,11 @@ using Quartz;
 using UZonMail.Utils.Helpers;
 using UZonMailService.Middlewares;
 using Microsoft.AspNetCore.HttpLogging;
+using UZonMail.Utils.Web;
 using UZonMail.Utils.Web.Token;
-using UZonMail.Core.Utils.DotNETCore.Filters;
-using UZonMail.Core.Utils.ASPNETCore.Filters;
-using UZonMail.Core.Utils.DotNETCore;
-using UZonMail.Core.Config;
-using UZonMail.Core.Database.SQL;
-using UZonMail.Core.Cache;
-using UZonMail.Core.Services.HostedServices;
-using UZonMail.Core.SignalRHubs;
+using Uamazing.Utils.Plugin;
+using UZonMail.Utils.Web.Filters;
+using UZonMail.DB.SQL;
 
 var appOptions = new WebApplicationOptions
 {
@@ -26,7 +22,6 @@ var appOptions = new WebApplicationOptions
     Args = args
 };
 var builder = WebApplication.CreateBuilder(appOptions);
-
 var services = builder.Services;
 
 // 保证只有一个实例
@@ -90,22 +85,12 @@ services.AddSignalR();
 
 // 设置 hyphen-case 路由
 services.SetupSlugifyCaseRoute();
-// 绑定配置
-services.Configure<AppConfig>(builder.Configuration);
+
 // 注入数据库
 services.AddSqlContext();
 
-// 注入 liteDB
-//services.AddLiteDB();
-// 添加数据缓存
-services.AddCache();
-
 // 添加 HttpContextAccessor，以供 service 获取当前请求的用户信息
 services.AddHttpContextAccessor();
-// 批量注册服务
-services.AddServices();
-// 添加后台服务
-services.AddHostedService<SendingHostedService>();
 
 // 定时任务
 services.Configure<QuartzOptions>(builder.Configuration.GetSection("Quartz"));
@@ -123,6 +108,7 @@ services.AddQuartzHostedService(
 var tokenParams = new TokenParams();
 builder.Configuration.GetSection("TokenParams").Bind(tokenParams);
 services.AddJWTAuthentication(tokenParams.UniqueSecret);
+
 // 配置接口鉴权策略
 services.AddAuthorizationBuilder()
     // 超管
@@ -180,6 +166,10 @@ builder.WebHost.ConfigureKestrel(options =>
     options.Limits.MaxRequestBodySize = int.MaxValue;
 });
 
+// 加载插件
+var pluginLoader = new PluginLoader("Plugins");
+pluginLoader.UseServices(builder);
+
 var app = builder.Build();
 
 
@@ -216,8 +206,7 @@ app.UseVueASP();
 // http 路由
 app.MapControllers();
 
-// SignalR 配置
-app.MapHub<UzonMailHub>($"/hubs/{nameof(UzonMailHub).ToCamelCase()}");
+pluginLoader.UseApp(app);
 
 // 初始数据库
 //if (app.Environment.IsDevelopment())

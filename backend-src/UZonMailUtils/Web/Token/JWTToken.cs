@@ -6,6 +6,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace UZonMail.Utils.Web.Token
 {
@@ -22,7 +23,7 @@ namespace UZonMail.Utils.Web.Token
         public static string CreateToken(this TokenParams tokenParam, List<Claim> claims)
         {
             // 和 Startup 中的配置一致
-            SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenParam.UniqueSecret));
+            SymmetricSecurityKey key = new(Encoding.UTF8.GetBytes(tokenParam.UniqueSecret));
             JwtSecurityToken token = new(
                 issuer: tokenParam.Issuer,
                 audience: tokenParam.Audience,

@@ -6,11 +6,11 @@ using UZonMail.Utils.Web.ResponseModel;
 using UZonMail.Core.Database.Validators;
 using UZonMail.Core.Services.Permission;
 using UZonMail.Core.Services.Settings;
-using UZonMail.Core.Utils.ASPNETCore.PagingQuery;
 using UZonMail.Core.Utils.Database;
 using UZonMail.Core.Utils.Extensions;
 using UZonMail.DB.SQL;
 using UZonMail.DB.SQL.Permission;
+using UZonMail.Utils.Web.PagingQuery;
 
 namespace UZonMail.Core.Controllers.Permission
 {

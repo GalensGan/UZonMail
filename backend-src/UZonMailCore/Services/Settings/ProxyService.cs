@@ -4,7 +4,6 @@ using UZonMail.Utils.Web.Service;
 using UZonMail.DB.SQL;
 using UZonMail.DB.SQL.Settings;
 using UZonMail.Core.Utils.Database;
-using UZonMail.Core.Utils.DotNETCore.Exceptions;
 
 namespace UZonMail.Core.Services.Settings
 {

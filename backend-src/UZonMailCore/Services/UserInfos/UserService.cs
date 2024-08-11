@@ -3,14 +3,14 @@ using UZonMail.Utils.Web.Service;
 using UZonMail.DB.SQL;
 using UZonMail.DB.SQL.MultiTenant;
 using UZonMail.Utils.Extensions;
-using UZonMail.Core.Utils.DotNETCore.Exceptions;
 using UZonMail.Utils.Web.Token;
 using Microsoft.Extensions.Options;
-using UZonMail.Core.Utils.ASPNETCore.PagingQuery;
-using UZonMail.Core.Services.Settings;
 using UZonMail.Core.Controllers.Users.Model;
 using UZonMail.Core.Services.Permission;
 using UZonMail.Core.Config;
+using Uamazing.Utils.Web.Token;
+using UZonMail.Utils.Web.Exceptions;
+using UZonMail.Utils.Web.PagingQuery;
 
 namespace UZonMail.Core.Services.UserInfos
 {
@@ -94,7 +94,7 @@ namespace UZonMail.Core.Services.UserInfos
             };
 
             // 生成 token
-            string token = GenerateToken(user);
+            string token = await GenerateToken(user);
 
             // 查找用户的权限
             List<string> access = await permission.GetUserPermissionCodes(user.Id);
@@ -111,10 +111,11 @@ namespace UZonMail.Core.Services.UserInfos
         /// </summary>
         /// <param name="userInfo"></param>
         /// <returns></returns>
-        private string GenerateToken(User userInfo)
+        private async Task<string> GenerateToken(User userInfo)
         {
+            var claims = await TokenClaimsBuilders.GetClaims(db, userInfo);
             // 保证每个机器不一样
-            string token = JWTToken.CreateToken(appConfig.Value.TokenParams, new TokenPayloads(userInfo));
+            string token = JWTToken.CreateToken(appConfig.Value.TokenParams, claims);
             return token;
         }
 

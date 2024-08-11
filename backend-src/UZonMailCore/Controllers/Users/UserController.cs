@@ -5,8 +5,6 @@ using UZonMail.Utils.Web.Extensions;
 using UZonMail.Utils.Web.ResponseModel;
 using UZonMail.Core.Services.Settings;
 using UZonMail.Core.Services.UserInfos;
-using UZonMail.Core.Utils.ASPNETCore.PagingQuery;
-using UZonMail.Core.Utils.DotNETCore.Exceptions;
 using UZonMail.Core.Services.Files;
 using Microsoft.EntityFrameworkCore;
 using UZonMail.Core.Utils.Database;
@@ -15,6 +13,8 @@ using UZonMail.DB.SQL;
 using UZonMail.DB.SQL.MultiTenant;
 using UZonMail.Core.Database.Validators;
 using UZonMail.Core.Utils.Extensions;
+using UZonMail.Utils.Web.Exceptions;
+using UZonMail.Utils.Web.PagingQuery;
 
 namespace UZonMail.Core.Controllers.Users
 {
@@ -45,7 +45,7 @@ namespace UZonMail.Core.Controllers.Users
         /// 新建用户
         /// </summary>
         /// <returns></returns>
-        [Authorize("RequireAdmin")]
+        [Authorize(Roles ="Admin")]
         [HttpPost("sign-up")]
         public async Task<ResponseResult<User>> SignUp([FromBody] User user)
         {

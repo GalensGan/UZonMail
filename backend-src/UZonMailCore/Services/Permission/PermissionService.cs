@@ -73,9 +73,8 @@ namespace UZonMail.Core.Services.Permission
 
             // 添加管理员权限码
             var user = await db.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Id == userId);
-            // TODO: 根据是否授权是否返回管理员权限码
-            //if (user != null && user.IsSuperAdmin)
-            //    cacheValues.AddRange(["admin", "*"]);
+            if (user != null && user.IsSuperAdmin)
+                cacheValues.AddRange(["admin", "*"]);
 
             return cacheValues;
         }

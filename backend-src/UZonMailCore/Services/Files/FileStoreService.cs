@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using UZonMail.Utils.Web.Service;
 using UZonMail.Core.Services.UserInfos;
-using UZonMail.Core.Utils.DotNETCore.Exceptions;
 using UZonMail.Utils.Extensions;
 using UZonMail.DB.SQL;
 using UZonMail.DB.SQL.Files;
+using UZonMail.Utils.Web.Exceptions;
 
 namespace UZonMail.Core.Services.Files
 {

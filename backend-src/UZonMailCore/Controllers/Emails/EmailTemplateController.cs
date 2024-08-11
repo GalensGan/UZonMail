@@ -4,13 +4,13 @@ using UZonMail.Utils.Web.Extensions;
 using UZonMail.Utils.Extensions;
 using UZonMail.Utils.Web.ResponseModel;
 using UZonMail.Core.Services.Settings;
-using UZonMail.Core.Utils.ASPNETCore.PagingQuery;
 using UZonMail.Core.Utils.Database;
-using UZonMail.Core.Utils.DotNETCore.Exceptions;
 using UZonMail.DB.SQL.Templates;
 using UZonMail.DB.SQL;
 using UZonMail.Core.Utils.Extensions;
 using UZonMail.Core.Database.Validators;
+using UZonMail.Utils.Web.Exceptions;
+using UZonMail.Utils.Web.PagingQuery;
 
 
 namespace UZonMail.Core.Controllers.Emails

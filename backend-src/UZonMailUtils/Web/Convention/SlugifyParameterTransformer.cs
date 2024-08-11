@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Routing;
+using System;
 using System.Text.RegularExpressions;
 
-namespace UZonMail.Core.Utils.DotNETCore.Convention
+namespace UZonMail.Utils.Web.Convention
 {
     /// <summary>
     /// 将路由转成破折号连接的小写样式

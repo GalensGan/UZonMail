@@ -9,13 +9,12 @@ using UZonMail.Core.Services.Emails;
 using UZonMail.Core.Services.EmailSending.Sender;
 using UZonMail.Core.Services.Settings;
 using UZonMail.Core.Services.UserInfos;
-using UZonMail.Core.Utils.ASPNETCore.PagingQuery;
 using UZonMail.Core.Utils.Database;
-using UZonMail.Core.Utils.DotNETCore.Exceptions;
 using UZonMail.Core.Utils.Extensions;
 using UZonMail.DB.SQL;
 using UZonMail.DB.SQL.Emails;
-using UZonMail.Core.Database.Validators;
+using UZonMail.Utils.Web.Exceptions;
+using UZonMail.Utils.Web.PagingQuery;
 
 namespace UZonMail.Core.Controllers.Emails
 {

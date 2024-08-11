@@ -4,8 +4,8 @@ using UZonMail.Utils.Web.ResponseModel;
 using UZonMail.Core.Controllers.Common;
 using UZonMail.Core.Services.Emails;
 using UZonMail.Core.Services.Settings;
-using UZonMail.Core.Utils.DotNETCore.Exceptions;
 using UZonMail.DB.SQL.Emails;
+using UZonMail.Utils.Web.Exceptions;
 
 namespace UZonMail.Core.Controllers.Emails
 {
