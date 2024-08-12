@@ -17,7 +17,7 @@ namespace UZonMail.Core.Services.UserInfos
     /// <summary>
     /// 只在请求生命周期内有效的服务
     /// </summary>
-    public class UserService(SqlContext db, IOptions<AppConfig> appConfig, PermissionService permission) : IScopedService
+    public class UserService(IServiceProvider serviceProvider, SqlContext db, IOptions<AppConfig> appConfig, PermissionService permission) : IScopedService
     {
         /// <summary>
         /// 判断用户是否存在
@@ -113,7 +113,7 @@ namespace UZonMail.Core.Services.UserInfos
         /// <returns></returns>
         private async Task<string> GenerateToken(User userInfo)
         {
-            var claims = await TokenClaimsBuilders.GetClaims(db, userInfo);
+            var claims = await TokenClaimsBuilders.GetClaims(serviceProvider, userInfo);
             // 保证每个机器不一样
             string token = JWTToken.CreateToken(appConfig.Value.TokenParams, claims);
             return token;

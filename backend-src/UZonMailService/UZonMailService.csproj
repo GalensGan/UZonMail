@@ -51,11 +51,11 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Log4Net.AspNetCore" Version="8.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.2" />
-    <PackageReference Include="Quartz.AspNetCore" Version="3.11.0" />
-    <PackageReference Include="Quartz.Serialization.Json" Version="3.11.0" />
+    <PackageReference Include="Quartz.AspNetCore" Version="3.13.0" />
+    <PackageReference Include="Quartz.Serialization.Json" Version="3.13.0" />
     <PackageReference Include="StackExchange.Redis" Version="2.8.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.6.3" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.7.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.0.1" />
     <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
   </ItemGroup>
 
@@ -71,8 +71,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\UZonMailPro\UZonMailPro\UZonMailPro.csproj" />
-    <ProjectReference Include="..\UZonMailCore\UZonMailCore.csproj" />
     <ProjectReference Include="..\UzonMailDB\UzonMailDB.csproj" />
     <ProjectReference Include="..\UZonMailUtils\UZonMailUtils.csproj" />
   </ItemGroup>

@@ -25,7 +25,7 @@ var builder = WebApplication.CreateBuilder(appOptions);
 var services = builder.Services;
 
 // 保证只有一个实例
-services.UseSingleApp();
+//services.UseSingleApp();
 
 // 日志
 services.AddLogging();
@@ -45,7 +45,7 @@ builder.Logging.AddLog4Net();
 services.AddHttpClient();
 
 // Add services to the container.
-services.AddControllers(option =>
+var mvcBuilder = services.AddControllers(option =>
 {
     // 添加全局异常处理
     option.Filters.Add(new KnownExceptionFilter());
@@ -55,6 +55,10 @@ services.AddControllers(option =>
 {
     x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
 });
+
+// 加载插件
+var pluginLoader = new PluginLoader("Plugins");
+pluginLoader.AddApplicationPart(mvcBuilder);
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 services.AddEndpointsApiExplorer();
@@ -166,8 +170,7 @@ builder.WebHost.ConfigureKestrel(options =>
     options.Limits.MaxRequestBodySize = int.MaxValue;
 });
 
-// 加载插件
-var pluginLoader = new PluginLoader("Plugins");
+// 加载服务
 pluginLoader.UseServices(builder);
 
 var app = builder.Build();

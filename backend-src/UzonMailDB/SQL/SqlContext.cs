@@ -18,6 +18,11 @@ namespace UZonMail.DB.SQL
         private readonly ILog _logger = LogManager.GetLogger(typeof(SqlContext));
 
         #region 初始化
+        public SqlContext() { }
+        public SqlContext(DbContextOptions<SqlContext> options) : base(options)
+        {
+        }
+
         /// <summary>
         /// 配置数据库
         /// </summary>

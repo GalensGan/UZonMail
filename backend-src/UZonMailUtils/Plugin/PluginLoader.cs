@@ -1,5 +1,6 @@
 ﻿using log4net;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,13 +14,14 @@ namespace Uamazing.Utils.Plugin
 {
     /// <summary>
     /// 插件加载器
+    /// 必须在 AddControllers 之前初始化
     /// </summary>
     public class PluginLoader : IPlugin
     {
         private ILog _logger = LogManager.GetLogger(typeof(PluginLoader));
         private readonly string _pluginDir;
         private List<string> _pluginDllFullPaths;
-
+        private List<Assembly> _pluginAssemblies = [];
         private List<IPlugin> _plugins = [];
 
         public PluginLoader(string pluginDir)
@@ -45,6 +47,11 @@ namespace Uamazing.Utils.Plugin
         /// </summary>
         private void LoadPlugin()
         {
+            if(!Directory.Exists(_pluginDir))
+            {
+                return;
+            }
+
             // 获取所有插件的 dll 名称
             _pluginDllFullPaths = [.. Directory.GetFiles(_pluginDir, "*Plugin.dll", SearchOption.AllDirectories)];
 
@@ -57,14 +64,15 @@ namespace Uamazing.Utils.Plugin
             foreach (var dllFullPath in _pluginDllFullPaths)
             {
                 // 判断是否已经加载了
-                if (AppDomain.CurrentDomain.GetAssemblies().Any(x => x.Location == dllFullPath))
+                if (AppDomain.CurrentDomain.GetAssemblies().Any(x => x.Location.EndsWith(dllFullPath)))
                 {
                     continue;
                 }
 
                 var dll = Assembly.LoadFrom(dllFullPath);
                 var thisType = typeof(PluginLoader);
-                var pluginTypes = dll.GetTypes().Where(x => !x.IsAbstract && typeof(IPlugin).IsAssignableFrom(x) && x != thisType);
+                var pluginTypes = dll.GetTypes().Where(x => !x.IsAbstract && typeof(IPlugin).IsAssignableFrom(x) && x != thisType).ToList();
+                if (pluginTypes.Count > 0) _pluginAssemblies.Add(dll);
 
                 foreach (var pluginType in pluginTypes)
                 {
@@ -79,6 +87,14 @@ namespace Uamazing.Utils.Plugin
                     _plugins.Add(plugin);
                     _logger.Info($"已加载插件: {pluginName}");
                 }
+            }
+        }
+
+        public void AddApplicationPart(IMvcBuilder mvcBuilder)
+        {
+            foreach (var assembly in _pluginAssemblies)
+            {
+                mvcBuilder.AddApplicationPart(assembly);
             }
         }
 

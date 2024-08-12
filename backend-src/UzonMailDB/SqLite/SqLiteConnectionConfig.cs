@@ -37,12 +37,14 @@ namespace UZonMail.DB.SqLite
             get
             {
                 var dataSource = GetSqLiteFilePath();
-                SqliteConnectionStringBuilder builder = new();
-                builder.Add("Data Source", dataSource);
-                builder.Add("Mode", Mode);
-                builder.Add("Cache", Cache);
-                builder.Add("Password", Password);
-                builder.Add("Version", Version);
+                SqliteConnectionStringBuilder builder = new()
+                {
+                    { "Data Source", dataSource },
+                    { "Mode", Mode },
+                    { "Cache", Cache },
+                    { "Password", Password },
+                    { "Version", Version }
+                };
 
                 return builder.ConnectionString;
             }

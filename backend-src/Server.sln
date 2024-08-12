@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UZonMailService", "UZonMail
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UZonMailUtils", "UZonMailUtils\UZonMailUtils.csproj", "{E562275E-14AA-4D35-BC2A-738530661716}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UZonMailDesktop", "UZonMailDesktop\UZonMailDesktop.csproj", "{5CAD1711-EF72-4CD2-B45F-6AD2A7448753}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UZonMailUtilsTests", "UZonMailUtilsTests\UZonMailUtilsTests.csproj", "{91DEBF8F-3A12-4F56-90C7-645A0CE41E49}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UZonMailDB", "UZonMailDB\UZonMailDB.csproj", "{1CB8B4FE-B917-4A32-B989-8407047FB0F7}"
@@ -16,6 +14,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UZonMailCore", "UZonMailCore\UZonMailCore.csproj", "{D3202ACE-C90E-4672-B322-0D91254994B3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UZonMailPro", "..\..\UZonMailPro\UZonMailPro\UZonMailPro.csproj", "{1AF32A2F-34A6-48E4-BBB1-8097386E4140}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UZonMailDesktop", "UZonMailDesktop\UZonMailDesktop.csproj", "{B6EB2106-FA92-417C-A4E9-8B9B5342C355}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UZonMailDBTests", "UZonMailDBTests\UZonMailDBTests.csproj", "{302E642D-76ED-4D77-A910-9271A5FAC549}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,14 +43,6 @@ Global
 		{E562275E-14AA-4D35-BC2A-738530661716}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E562275E-14AA-4D35-BC2A-738530661716}.Release|x64.ActiveCfg = Release|x64
 		{E562275E-14AA-4D35-BC2A-738530661716}.Release|x64.Build.0 = Release|x64
-		{5CAD1711-EF72-4CD2-B45F-6AD2A7448753}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5CAD1711-EF72-4CD2-B45F-6AD2A7448753}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5CAD1711-EF72-4CD2-B45F-6AD2A7448753}.Debug|x64.ActiveCfg = Debug|x64
-		{5CAD1711-EF72-4CD2-B45F-6AD2A7448753}.Debug|x64.Build.0 = Debug|x64
-		{5CAD1711-EF72-4CD2-B45F-6AD2A7448753}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5CAD1711-EF72-4CD2-B45F-6AD2A7448753}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5CAD1711-EF72-4CD2-B45F-6AD2A7448753}.Release|x64.ActiveCfg = Release|x64
-		{5CAD1711-EF72-4CD2-B45F-6AD2A7448753}.Release|x64.Build.0 = Release|x64
 		{91DEBF8F-3A12-4F56-90C7-645A0CE41E49}.Debug|Any CPU.ActiveCfg = Debug|x64
 		{91DEBF8F-3A12-4F56-90C7-645A0CE41E49}.Debug|Any CPU.Build.0 = Debug|x64
 		{91DEBF8F-3A12-4F56-90C7-645A0CE41E49}.Debug|x64.ActiveCfg = Debug|x64
@@ -81,6 +75,22 @@ Global
 		{1AF32A2F-34A6-48E4-BBB1-8097386E4140}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1AF32A2F-34A6-48E4-BBB1-8097386E4140}.Release|x64.ActiveCfg = Release|Any CPU
 		{1AF32A2F-34A6-48E4-BBB1-8097386E4140}.Release|x64.Build.0 = Release|Any CPU
+		{B6EB2106-FA92-417C-A4E9-8B9B5342C355}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6EB2106-FA92-417C-A4E9-8B9B5342C355}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6EB2106-FA92-417C-A4E9-8B9B5342C355}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B6EB2106-FA92-417C-A4E9-8B9B5342C355}.Debug|x64.Build.0 = Debug|Any CPU
+		{B6EB2106-FA92-417C-A4E9-8B9B5342C355}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6EB2106-FA92-417C-A4E9-8B9B5342C355}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B6EB2106-FA92-417C-A4E9-8B9B5342C355}.Release|x64.ActiveCfg = Release|Any CPU
+		{B6EB2106-FA92-417C-A4E9-8B9B5342C355}.Release|x64.Build.0 = Release|Any CPU
+		{302E642D-76ED-4D77-A910-9271A5FAC549}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{302E642D-76ED-4D77-A910-9271A5FAC549}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{302E642D-76ED-4D77-A910-9271A5FAC549}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{302E642D-76ED-4D77-A910-9271A5FAC549}.Debug|x64.Build.0 = Debug|Any CPU
+		{302E642D-76ED-4D77-A910-9271A5FAC549}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{302E642D-76ED-4D77-A910-9271A5FAC549}.Release|Any CPU.Build.0 = Release|Any CPU
+		{302E642D-76ED-4D77-A910-9271A5FAC549}.Release|x64.ActiveCfg = Release|Any CPU
+		{302E642D-76ED-4D77-A910-9271A5FAC549}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

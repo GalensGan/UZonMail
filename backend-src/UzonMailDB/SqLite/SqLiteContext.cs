@@ -1,15 +1,16 @@
-﻿
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.EntityFrameworkCore;
 using UZonMail.DB.SQL;
-using UZonMail.DB.SqLite;
 
 namespace UZonMail.DB.SqLite
 {
     public class SqLiteContext : SqlContext
     {
         private readonly SqLiteConnectionConfig _sqLiteConnectionConfig;
+
+        internal SqLiteContext(DbContextOptions<SqlContext> options) : base(options)
+        {
+        }
+
         public SqLiteContext(IConfiguration configuration)
         {
             // sqlLite
@@ -26,7 +27,8 @@ namespace UZonMail.DB.SqLite
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
-            options.UseSqlite(_sqLiteConnectionConfig.ConnectionString);
+            if (_sqLiteConnectionConfig != null)
+                options.UseSqlite(_sqLiteConnectionConfig.ConnectionString);
         }
     }
 }

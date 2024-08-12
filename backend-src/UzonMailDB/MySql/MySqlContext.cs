@@ -7,6 +7,11 @@ namespace UZonMail.DB.MySql
     public class MySqlContext : SqlContext
     {
         private readonly MySqlConnectionConfig _mysqlConnectionConfig;
+
+        internal MySqlContext(DbContextOptions<SqlContext> options) : base(options)
+        {
+        }
+
         public MySqlContext(IConfiguration configuration)
         {
             _mysqlConnectionConfig = new();
@@ -15,7 +20,8 @@ namespace UZonMail.DB.MySql
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
-            options.UseMySql(_mysqlConnectionConfig.ConnectionString, new MySqlServerVersion(_mysqlConnectionConfig.MysqlVersion));
+            if (_mysqlConnectionConfig != null)
+                options.UseMySql(_mysqlConnectionConfig.ConnectionString, new MySqlServerVersion(_mysqlConnectionConfig.MysqlVersion));
         }
     }
 }

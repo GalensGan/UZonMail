@@ -1,2 +1,4 @@
 data/*
 public
+obj
+Quarts/quartz-sqlite*

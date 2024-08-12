@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
+﻿using System.Configuration;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Management;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace UZonMailDesktop.Utils
@@ -65,21 +60,19 @@ namespace UZonMailDesktop.Utils
             foreach (var process in processes)
             {
                 string query = $"SELECT ProcessId,ExecutablePath FROM Win32_Process WHERE ProcessId = {process.Id}";
-                using (ManagementObjectSearcher searcher = new ManagementObjectSearcher(query))
+                using ManagementObjectSearcher searcher = new(query);
+                ManagementObject? mo = searcher.Get().Cast<ManagementObject>().FirstOrDefault();
+                if (mo == null)
+                    continue;
+
+                var executablePath = mo["ExecutablePath"]?.ToString();
+                if (string.IsNullOrEmpty(executablePath))
+                    continue;
+
+                if (!executablePath.StartsWith(servicePath))
                 {
-                    ManagementObject mo = searcher.Get().Cast<ManagementObject>().FirstOrDefault();
-                    if (mo == null)
-                        continue;
-
-                    var executablePath = mo["ExecutablePath"]?.ToString();
-                    if (string.IsNullOrEmpty(executablePath))
-                        continue;
-
-                    if (!executablePath.StartsWith(servicePath))
-                    {
-                        // 非当前进程目录下的进程服务，关闭
-                        process.Kill();
-                    }
+                    // 非当前进程目录下的进程服务，关闭
+                    process.Kill();
                 }
             }
         }

@@ -1,28 +1,29 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<RootNamespace>UZonMail.Core</RootNamespace>
+		<OutputType>Library</OutputType>
+		<AssemblyName>$(MSBuildProjectName)Plugin</AssemblyName>
+		<BaseOutputPath>D:\Develop\Personal\SendMultipleEmails\backend-src\UZonMailService\bin\x64\Debug\net8.0\Plugins\UZonMailCore</BaseOutputPath>
+	</PropertyGroup>
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <RootNamespace>UZonMail.Core</RootNamespace>
-    <OutputType>Library</OutputType>
-  </PropertyGroup>
+	<ItemGroup>
+		<Folder Include="Utils\Attributes\" />
+		<Folder Include="Utils\Helpers\" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Utils\Attributes\" />
-    <Folder Include="Utils\Helpers\" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.7" />
+		<PackageReference Include="Microsoft.OpenApi" Version="1.6.17" />
+		<PackageReference Include="Quartz" Version="3.13.0" />
+		<PackageReference Include="StackExchange.Redis" Version="2.8.0" />
+		<PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.7.0" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.7" />
-    <PackageReference Include="Microsoft.OpenApi" Version="1.6.14" />
-    <PackageReference Include="Quartz" Version="3.11.0" />
-    <PackageReference Include="StackExchange.Redis" Version="2.8.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.7.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\UZonMailUtils\UZonMailUtils.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\UZonMailUtils\UZonMailUtils.csproj" />
+	</ItemGroup>
 
 </Project>

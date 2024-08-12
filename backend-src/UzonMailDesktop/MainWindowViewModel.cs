@@ -9,7 +9,7 @@ using UZonMailDesktop.MVVM;
 
 namespace UZonMailDesktop
 {
-    internal class MainWindowViewModel : ObservableObject
+    public class MainWindowViewModel : ObservableObject
     {
         private string url;
 

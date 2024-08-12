@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using UZonMail.DB.SQL;
@@ -15,6 +16,6 @@ namespace Uamazing.Utils.Web.Token
         /// 构建 TokenClaim
         /// </summary>
         /// <returns></returns>
-        Task<List<Claim>> Build(SqlContext sqlContext,User userInfo);
+        Task<List<Claim>> Build(IServiceProvider serviceProvider, User userInfo);
     }
 }
