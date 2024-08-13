@@ -37,6 +37,7 @@ import { useUserInfoStore } from 'src/stores/user'
 import { notifyError } from 'src/utils/dialog'
 import { resolveSvgFullName } from 'src/utils/svgHelper'
 import { md5 } from 'src/utils/encrypt'
+import log from 'loglevel'
 
 // 登陆界面
 const userId = ref('')
@@ -64,11 +65,12 @@ async function onUserLogin () {
   // 2- 保存信息、密码加密后保存，用于解析服务器的密码
   // 3- 跳转到主页或重定向的页面
   const { data: { userInfo, token, access } } = await userLogin(userId.value, password.value)
+  log.debug('用户登陆信息:', userInfo, token, access)
   const userInfoStore = useUserInfoStore()
   userInfoStore.setUserLoginInfo(userInfo, token, access)
   userInfoStore.setSecretKey(md5(password.value))
 
-  console.log('登陆成功:', userInfo, token, access)
+  log.log('登陆成功:', userInfo, token, access)
   // 跳转到主页
   router.push({ path: '/' })
 }

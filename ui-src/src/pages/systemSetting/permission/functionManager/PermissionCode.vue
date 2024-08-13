@@ -3,7 +3,7 @@
     v-model:pagination="pagination" dense :loading="loading" :filter="filter" binary-state-sort
     @request="onTableRequest">
     <template #top-left>
-      <ImportBtn v-if="isSuperAdmin" label="更新" icon="fingerprint" tooltip="更新路由权限码"
+      <ImportBtn v-if="isSuperAdmin && false" label="更新" icon="fingerprint" tooltip="更新路由权限码"
         @click="onImportRoutePermissionCode"></ImportBtn>
     </template>
 

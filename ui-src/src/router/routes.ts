@@ -201,7 +201,7 @@ export const dynamicRoutes: ExtendedRouteRecordRaw[] = [
         meta: {
           icon: 'manage_accounts',
           label: '用户管理',
-          access: ['admin']
+          access: ['admin', 'professional']
         },
         component: () => import('pages/systemSetting/userManage.vue')
       },
@@ -211,7 +211,7 @@ export const dynamicRoutes: ExtendedRouteRecordRaw[] = [
         meta: {
           icon: 'key',
           label: '权限管理',
-          access: ['admin']
+          access: ['admin', 'enterprise']
         },
         redirect: '/system/permission/code',
         children: [
@@ -250,9 +250,10 @@ export const dynamicRoutes: ExtendedRouteRecordRaw[] = [
         meta: {
           icon: 'emoji_events',
           label: '软件许可',
-          access: ['admin']
+          access: ['admin'],
+          noTag: true
         },
-        component: () => import('pages/systemSetting/proxyManage/ProxyManager.vue')
+        component: () => import('pages/systemSetting/license/LicenseManager.vue')
       }
     ]
   },
@@ -272,7 +273,8 @@ export const dynamicRoutes: ExtendedRouteRecordRaw[] = [
         meta: {
           icon: 'thumb_up',
           label: '支持作者',
-          noTag: true
+          noTag: true,
+          denies: ['disable:sponsor']
         },
         component: () => import('pages/sponsor/sponsorAuthor.vue')
       }

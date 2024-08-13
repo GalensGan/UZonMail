@@ -80,15 +80,23 @@ export const useUserInfoStore = defineStore('userInfo', {
 
     /**
      * 判断是否有权限
-     * @param targetAccess
+     * @param targetAccess 所有权限都满足时，才返回 true
      */
     hasPermission (targetAccess: string[] | string) {
-      // * 表示超管权限
-      if (this.access.includes('*')) return true
-
       if (!targetAccess || targetAccess.length === 0) return false
       if (typeof targetAccess === 'string') targetAccess = [targetAccess]
-      return this.access.some(x => targetAccess.includes(x))
+
+      return targetAccess.every(x => this.access.includes(x))
+    },
+
+    /**
+     * 是否有拒绝权限
+     * @param targetDenies 只要有一个权限，就返回 true
+     */
+    hasDenies (targetDenies: string[] | string) {
+      if (!targetDenies || targetDenies.length === 0) return false
+      if (typeof targetDenies === 'string') targetDenies = [targetDenies]
+      return targetDenies.some(x => this.access.includes(x))
     },
 
     // 退出登陆

@@ -10,6 +10,14 @@ function filterDynamicRouesByAccess (routes: ExtendedRouteRecordRaw[]): Extended
   const results: ExtendedRouteRecordRaw[] = []
   const userInfoStore = useUserInfoStore()
   for (const route of routes) {
+    // 判断是否被拒绝, 被拒绝的权限大于允许的权限
+    if (route.meta?.denies) {
+      if (userInfoStore.hasPermission(route.meta?.denies)) {
+        continue
+      }
+    }
+
+    // 判断是否有权限
     if (route.meta?.access) {
       if (!userInfoStore.hasPermission(route.meta.access)) {
         continue

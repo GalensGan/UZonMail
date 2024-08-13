@@ -3,8 +3,10 @@
 // Configuration for your app
 // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js
 
-import { configure } from 'quasar/wrappers'
+// import { configure } from 'quasar/wrappers'
 import { fileURLToPath } from 'node:url'
+import { QuasarConf } from '@quasar/app-vite/types/configuration/conf'
+import { QuasarContext } from '@quasar/app-vite/types/configuration/context'
 
 // 参考 https://element-plus.org/zh-CN/guide/quickstart.html
 // 按需导入 ElementPlus 组件
@@ -13,10 +15,8 @@ import { ElementPlusResolver, QuasarResolver } from 'unplugin-vue-components/res
 // 导入用户配置
 import { useConfig } from 'src/config'
 
-// mock:https://github.com/vbenjs/vite-plugin-mock/blob/main/README.zh_CN.md
-export default configure((ctx) => {
-  const userConfig = useConfig(ctx)
-
+async function buildConfig (ctx: QuasarContext): Promise<QuasarConf> {
+  const userConfig = useConfig()
   return {
     eslint: {
       // fix: true,
@@ -34,7 +34,7 @@ export default configure((ctx) => {
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli-vite/boot-files
-    boot: ['i18n', 'axios'],
+    boot: ['i18n', 'axios', 'logger'],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#css
     css: ['app.scss'],
@@ -249,7 +249,6 @@ export default configure((ctx) => {
 
       builder: {
         // https://www.electron.build/configuration/configuration
-
         appId: 'uzon-mail'
       }
     },
@@ -262,4 +261,7 @@ export default configure((ctx) => {
       contentScripts: ['my-content-script']
     }
   }
-})
+}
+
+// mock:https://github.com/vbenjs/vite-plugin-mock/blob/main/README.zh_CN.md
+export default buildConfig

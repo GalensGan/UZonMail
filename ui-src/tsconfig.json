@@ -1,6 +1,9 @@
 {
   "extends": "@quasar/app-vite/tsconfig-preset",
   "compilerOptions": {
-    "baseUrl": "."
+    "baseUrl": ".",
+    "paths": {
+      "public/*": ["public/*"]
+    }
   }
 }

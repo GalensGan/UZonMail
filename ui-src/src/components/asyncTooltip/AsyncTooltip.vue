@@ -77,7 +77,7 @@ let cached = false
 const tooltipModel = ref(false)
 async function onTooltipBeforeShow () {
   const { params, cache, tooltip } = toRefs(props)
-  if (cache && cached) {
+  if (cache.value && cached) {
     if (tooltips.value.length === 0) {
       tooltipModel.value = false
     }
@@ -85,24 +85,35 @@ async function onTooltipBeforeShow () {
   }
   cached = true
 
-  const tooltipsResult: string[] = []
-  if (typeof tooltip.value === 'string') {
-    tooltipsResult.push(tooltip.value)
-  } else if (Array.isArray(tooltip.value)) {
-    tooltipsResult.push(...tooltip.value)
-  } else if (typeof tooltip.value === 'function') {
-    const tipItems = await tooltip.value(params.value)
-    tooltipsResult.push(...tipItems)
-  }
-
-  // console.log('tooltipsResult', tooltipsResult)
+  const tooltipResults: string[] = await generateTooltips(tooltip.value, params.value)
   // 过滤掉空值
-  tooltips.value = tooltipsResult.filter(item => item)
-  // console.log('tooltips is empty', tooltips.value)
-  if (!tooltip.value || tooltip.value.length === 0) {
+  tooltips.value = tooltipResults.filter(item => item)
+  if (!tooltips.value || tooltips.value.length === 0) {
     // 隐藏不显示
     tooltipModel.value = false
   }
+}
+
+/**
+ * 生成提示信息
+ * @param tooltip
+ * @param params
+ */
+async function generateTooltips (tooltip: Array<string> | ((params?: object) => Promise<string[]>) | string, params: object) {
+  const tooltipResults: string[] = []
+  if (typeof tooltip === 'string') {
+    tooltipResults.push(tooltip)
+  } else if (Array.isArray(tooltip)) {
+    tooltipResults.push(...tooltip)
+  } else if (typeof tooltip === 'function') {
+    const tipItems = await tooltip(params)
+    const resultsTemp = await generateTooltips(tipItems, params)
+    tooltipResults.push(...resultsTemp)
+  }
+
+  console.log('tooltipsResult', tooltipResults)
+
+  return tooltipResults
 }
 </script>
 <style lang="scss" scoped></style>
