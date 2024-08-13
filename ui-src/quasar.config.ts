@@ -13,10 +13,10 @@ import { QuasarContext } from '@quasar/app-vite/types/configuration/context'
 import { ElementPlusResolver, QuasarResolver } from 'unplugin-vue-components/resolvers'
 
 // 导入用户配置
-import { useConfig } from 'src/config'
+import { useConfigAsync } from 'src/config'
 
 async function buildConfig (ctx: QuasarContext): Promise<QuasarConf> {
-  const userConfig = useConfig()
+  const userConfig = await useConfigAsync(ctx)
   return {
     eslint: {
       // fix: true,
@@ -60,7 +60,8 @@ async function buildConfig (ctx: QuasarContext): Promise<QuasarConf> {
         // 本机 mock 地址为: http://127.0.0.1:4523/m1/2361225-0-default
         // 本机测试地址为: http://localhost:22345/api/v1
         // BASE_URL: ctx.dev ? 'http://localhost:22345/api/v1' : 'https://api.example.com'
-        BASE_URL: userConfig.baseUrl
+        BASE_URL: userConfig.baseUrl,
+        LOG_LEVEL: userConfig.logger.level
       },
 
       target: {

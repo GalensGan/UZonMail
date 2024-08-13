@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import _ from 'lodash'
 import { QuasarContext } from '@quasar/app-vite/types/configuration/context'
-import appConfigs from '../../public/app.config'
+import appConfigs from './app.config'
 import { IAppConfig, IAppConfigsContainer } from './types'
 
 /**
@@ -15,7 +15,7 @@ export function useConfig (): IAppConfig {
 
 export async function useConfigAsync (quasarContext: QuasarContext): Promise<IAppConfig> {
   // 从服务器获取 /app.config.ts 获取配置
-  const origin = window?.location.origin
+  const origin = typeof window !== 'undefined' ? window.location.origin : ''
   const fetchConfig = new Promise((resolve) => {
     if (!origin) resolve(appConfigs)
     const configUrl = `${origin}/app.config.ts`

@@ -7,6 +7,7 @@ import log, { LogLevelNames } from 'loglevel'
 export default boot(() => {
   // 设置日志级别
   const logLevel = (process.env.LOG_LEVEL || 'info') as LogLevelNames
+  console.log('[logger] log level is set to', logLevel)
   log.setLevel(logLevel)
 
   if (window) {
