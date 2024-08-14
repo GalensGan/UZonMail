@@ -11,7 +11,6 @@
 </template>
 
 <script lang="ts" setup>
-
 // 参考：https://echarts.apache.org/handbook/zh/basics/import/
 // 引入 echarts 核心模块，核心模块提供了 echarts 使用必须要的接口。
 import { EChartsOption, EChartsType } from 'echarts/types/dist/shared'
@@ -31,6 +30,7 @@ import {
 import { LabelLayout, UniversalTransition } from 'echarts/features'
 // 引入 Canvas 渲染器，注意引入 CanvasRenderer 或者 SVGRenderer 是必须的一步
 import { CanvasRenderer } from 'echarts/renderers'
+import logger from 'loglevel'
 
 // 注册必须的组件
 echarts.use([
@@ -62,7 +62,7 @@ const outboxesCount: Ref<IEmailCount[]> = ref([])
 // 渲染 outbox 数量柱状图
 function renderOutboxCountBar () {
   const barChart = initCharts.find(x => x.name === 'outbox')?.chart
-  console.log('barChart', barChart, initCharts)
+  logger.log('[Dashboard] barChart:', barChart, initCharts)
   // 开始渲染
   // 基于准备好的dom，初始化echarts实例
   // 绘制图表

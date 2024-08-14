@@ -1,6 +1,7 @@
 import { settimeoutAsync } from 'src/utils/tsUtils'
 import CollapseLeft from './CollapseLeft.vue'
 import { QTable } from 'quasar'
+import logger from 'loglevel'
 
 /**
  * 使用折叠左侧组件
@@ -18,7 +19,7 @@ export function useTableCollapseLeft (containerRef: Ref<InstanceType<typeof QTab
   function updateCollapseLocation () {
     if (!containerRef.value) return
     const containerElement = containerRef.value.$el as HTMLElement
-    console.log('containerElement', containerElement.offsetLeft)
+    logger.log('[components] containerElement offsetLeft:', containerElement.offsetLeft)
     // 更新
     collapseStyleRef.value.left = `${containerElement.offsetLeft + offsetLeft}px`
   }

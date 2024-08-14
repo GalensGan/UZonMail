@@ -13,8 +13,9 @@ export default boot(() => {
   if (window) {
     // 向 windows 暴露 setLogLevel 方法
     window.setLogLevel = (level: LogLevelNames) => {
-      console.log('[logger] set log level to', level)
       log.setLevel(level)
+      console.log(`[logger] set log level to: ${level}`)
+      return 'Success!'
     }
   }
 })

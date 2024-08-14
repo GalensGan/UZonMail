@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { useSessionStorage } from '@vueuse/core'
 import { IUserInfo } from './types'
 import { useRouter } from 'src/router/index'
+import logger from 'loglevel'
 
 // options 方式定义
 export const useUserInfoStore = defineStore('userInfo', {
@@ -46,7 +47,7 @@ export const useUserInfoStore = defineStore('userInfo', {
       this.token = token
       // 保存到 session 中，方便刷新后恢复
       const tokenSession = useSessionStorage('token', '')
-      console.log('setToken: ', token, tokenSession.value)
+      logger.debug('[UserStore] setToken: ', token, tokenSession.value)
       tokenSession.value = token
     },
 
@@ -67,6 +68,7 @@ export const useUserInfoStore = defineStore('userInfo', {
     },
 
     setUserLoginInfo (userInfo: IUserInfo, token: string, access: string[]) {
+      logger.debug('[UserStore] setUserLoginInfo')
       this.setUserInfo(userInfo)
       this.setToken(token)
       this.setAccess(access)

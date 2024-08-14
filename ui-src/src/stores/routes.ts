@@ -3,6 +3,7 @@ import { useRouter } from 'vue-router'
 import { useUserInfoStore } from './user'
 import { constantRoutes, dynamicRoutes, exceptionRoutes } from 'src/router/routes'
 import { ExtendedRouteRecordRaw } from 'src/router/types'
+import logger from 'loglevel'
 
 // 过滤动态路由
 function filterDynamicRouesByAccess (routes: ExtendedRouteRecordRaw[]): ExtendedRouteRecordRaw[] {
@@ -47,13 +48,14 @@ export const useRoutesStore = defineStore('routes', {
      * @returns
      */
     addDynamicRoutes (): boolean {
-      // console.log('addDynamicRoutes', this.isAddedDynamicRoutes)
+      logger.debug('[Router] addDynamicRoutes:', this.isAddedDynamicRoutes)
+
       if (this.isAddedDynamicRoutes) return false
       this.isAddedDynamicRoutes = true
 
       // 动态添加路由
       const accessRoutes = filterDynamicRouesByAccess(dynamicRoutes)
-      // console.log('添加的动态路由：', accessRoutes)
+      logger.debug('[Router] 添加的动态路由：', accessRoutes)
       const router = useRouter()
       const allDynamicRoutes = [...accessRoutes, ...exceptionRoutes]
       allDynamicRoutes.forEach(route => {
