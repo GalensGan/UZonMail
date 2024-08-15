@@ -65,6 +65,13 @@ export const useRoutesStore = defineStore('routes', {
       // 将静态和动态路由保存到 store 中
       this.loadedRoutes = [...constantRoutes, ...accessRoutes]
       return true
+    },
+
+    /**
+     * 重置动态路由
+     */
+    resetDynamicRoutes () {
+      this.isAddedDynamicRoutes = false
     }
   }
 })

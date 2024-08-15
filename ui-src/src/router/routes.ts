@@ -263,7 +263,8 @@ export const dynamicRoutes: ExtendedRouteRecordRaw[] = [
     component: NormalLayout,
     meta: {
       label: '支持作者',
-      icon: 'thumb_up'
+      icon: 'thumb_up',
+      denies: ['professional', 'enterprise']
     },
     redirect: '/sponsor/author',
     children: [
@@ -273,8 +274,7 @@ export const dynamicRoutes: ExtendedRouteRecordRaw[] = [
         meta: {
           icon: 'thumb_up',
           label: '支持作者',
-          noTag: true,
-          denies: ['disable:sponsor']
+          noTag: true
         },
         component: () => import('pages/sponsor/sponsorAuthor.vue')
       }

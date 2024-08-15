@@ -32,7 +32,10 @@ export default class HttpClient {
   // 获取基础 url
   private getBaseUrl (): string {
     const config = useConfig()
-    return `${config.baseUrl}${config.api}` as string
+    const baseUrl = this._options.baseUrl || config.baseUrl
+    const api = this._options.api || config.api
+
+    return `${baseUrl}${api}` as string
   }
 
   // 创建 axios 实例
@@ -246,6 +249,17 @@ export default class HttpClient {
   // #endregion
 }
 
+/**
+ * 默认的 httpClient, 前缀为 /api/v1
+ */
 export const httpClient = new HttpClient({
   notifyError: true
+})
+
+/**
+ * pro 版本的 httpClient, 前缀为 /api/pro
+ */
+export const httpClientPro = new HttpClient({
+  notifyError: true,
+  api: '/api/pro'
 })

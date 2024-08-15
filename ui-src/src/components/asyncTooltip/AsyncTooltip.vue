@@ -8,6 +8,7 @@
 <script lang="ts" setup>
 import { QTooltip } from 'quasar'
 import { PropType } from 'vue'
+import logger from 'loglevel'
 
 /**
  * 说明
@@ -111,7 +112,7 @@ async function generateTooltips (tooltip: Array<string> | ((params?: object) => 
     tooltipResults.push(...resultsTemp)
   }
 
-  console.log('tooltipsResult', tooltipResults)
+  logger.debug('[tooltip] tooltipsResult', tooltipResults)
 
   return tooltipResults
 }

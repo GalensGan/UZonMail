@@ -73,7 +73,7 @@ export async function confirmOperation (title: string, message: string): Promise
       title,
       message,
       ok: {
-        color: 'secondary',
+        color: 'primary',
         icon: 'check_circle',
         label: '确认',
         tooltip: '确认操作',

@@ -94,6 +94,9 @@ export function useContextMenu (deleteRowById: (id?: number) => void) {
         case 'replyToEmails':
           field.value = outbox.replyToEmails
           break
+        case 'enableSSL':
+          field.value = outbox.enableSSL
+          break
         default:
           break
       }

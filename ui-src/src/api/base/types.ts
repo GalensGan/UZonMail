@@ -6,7 +6,11 @@ import { AxiosRequestConfig, AxiosResponse } from 'axios'
  */
 export interface IHttpClientOptions {
   // 提示错误
-  notifyError?: boolean
+  notifyError?: boolean,
+  // 重写配置中的 baseUrl
+  baseUrl?: string,
+  // 重写配置中的 api
+  api?: string,
 }
 
 /**

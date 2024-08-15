@@ -67,6 +67,12 @@ export const useUserInfoStore = defineStore('userInfo', {
       accessSession.value = access
     },
 
+    appendAccess (access: string[]) {
+      if (!access || access.length === 0) return
+      const fullAccess = [...this.access, ...access]
+      this.setAccess([...new Set(fullAccess)])
+    },
+
     setUserLoginInfo (userInfo: IUserInfo, token: string, access: string[]) {
       logger.debug('[UserStore] setUserLoginInfo')
       this.setUserInfo(userInfo)

@@ -3,22 +3,18 @@
     <div class="column justify-start">
       <div>
         <span>授权类型:</span>
-        <span class="text-primary text-subtitle1 text-bold q-ml-sm">{{ activeInfo.licenseType }}</span>
+        <span class="text-primary text-subtitle1 text-bold q-ml-sm">{{ formatLicenseType(activeInfo.licenseType)
+          }}</span>
       </div>
 
       <div>
         <span>激活时间:</span>
-        <span class="q-ml-sm">{{ formatDate(activeInfo.activeTime) }}</span>
+        <span class="q-ml-sm">{{ formatDate(activeInfo.activeDate) }}</span>
       </div>
 
       <div>
         <span>到期时间:</span>
-        <span class="q-ml-sm">{{ formatDate(activeInfo.expireTime) }}</span>
-      </div>
-
-      <div>
-        <span>授权状态:</span>
-        <q-chip class="q-ml-sm" outline square dense color="primary" text-color="white" :label="activeInfo.status" />
+        <span class="q-ml-sm">{{ formatDate(activeInfo.expireDate) }}</span>
       </div>
     </div>
 
@@ -37,7 +33,9 @@
 
 <script lang="ts" setup>
 import AsyncTooltip from 'src/components/asyncTooltip/AsyncTooltip.vue'
-import { confirmOperation, notifySuccess } from 'src/utils/dialog'
+import { confirmOperation, notifyError, notifySuccess } from 'src/utils/dialog'
+import dayjs from 'dayjs'
+import { ILicenseInfo, LicenseType, updateLicenseInfo, getProAccess, getLicenseInfo } from 'src/api/license'
 
 const license = ref<string>('')
 
@@ -64,27 +62,56 @@ function getActiveIconTooltip () {
 }
 
 // 激活激活码
+import { useUserInfoStore } from 'src/stores/user'
+import { useRoutesStore } from 'src/stores/routes'
+
+const userInfoStore = useUserInfoStore()
+const routeStore = useRoutesStore()
+
 async function onActiveLicense () {
+  // 验证授权码是否合法
+  if (!isLicenseValid.value) {
+    notifyError('激活码长度应为 24 位')
+    return
+  }
+
   const confirm = await confirmOperation('升级确认', '即将进行升级, 是否继续?')
   if (!confirm) return
 
+  // 调用升级接口
+  const { data: licenseInfo } = await updateLicenseInfo(license.value)
+  activeInfo.value = licenseInfo
+
+  // 重新拉取权限码
+  const { data: access } = await getProAccess(userInfoStore.userId)
+  userInfoStore.appendAccess(access)
+  // 重置动态路由
+  routeStore.resetDynamicRoutes()
+  // 更新路由
   notifySuccess('您已升级成功, 刷新后生效')
 }
 
 // #region  激活信息
-const activeInfo = ref({
-  activeTime: '2021-08-01 12:00:00',
+const activeInfo: Ref<ILicenseInfo> = ref({
+  activeDate: dayjs().format('YYYY-MM-DD HH:mm'),
+  expireDate: dayjs().add(99, 'year').format('YYYY-MM-DD HH:mm'),
+  lastUpdateDate: dayjs().format('YYYY-MM-DD HH:mm'),
   activeUser: 'admin',
-  expireTime: '2022-08-01 12:00:00',
-  licenseType: '企业版',
-  licenseIcon: 'mdi-crown',
-  status: '已激活'
+  licenseType: LicenseType.Community,
+  licenseIcon: 'mdi-crown'
 })
-import dayjs from 'dayjs'
 function formatDate (datetime: string) {
   if (!datetime) return
-  return dayjs(datetime).format('YYYY-MM-DD HH:mm:ss')
+  return dayjs(datetime).format('YYYY-MM-DD HH:mm')
 }
+function formatLicenseType (licenseType: LicenseType) {
+  return LicenseType[licenseType]
+}
+onMounted(async () => {
+  // 从服务器拉取激活信息
+  const { data: licenseInfo } = await getLicenseInfo()
+  activeInfo.value = licenseInfo
+})
 // #endregion
 </script>
 

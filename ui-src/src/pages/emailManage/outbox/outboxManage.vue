@@ -143,6 +143,15 @@ const columns: QTableColumn[] = [
     sortable: true
   },
   {
+    name: 'enableSSL',
+    required: true,
+    label: 'SSL',
+    align: 'left',
+    field: 'enableSSL',
+    format: v => v ? '是' : '否',
+    sortable: true
+  },
+  {
     name: 'description',
     required: true,
     label: '描述',
