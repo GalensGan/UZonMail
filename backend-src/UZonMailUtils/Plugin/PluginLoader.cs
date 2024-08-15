@@ -47,7 +47,7 @@ namespace Uamazing.Utils.Plugin
         /// </summary>
         private void LoadPlugin()
         {
-            if(!Directory.Exists(_pluginDir))
+            if (!Directory.Exists(_pluginDir))
             {
                 return;
             }
@@ -63,12 +63,16 @@ namespace Uamazing.Utils.Plugin
             // 加载插件
             foreach (var dllFullPath in _pluginDllFullPaths)
             {
+                var dllName = Path.GetFileName(dllFullPath);
                 // 判断是否已经加载了
-                if (AppDomain.CurrentDomain.GetAssemblies().Any(x => x.Location.EndsWith(dllFullPath)))
+                if (AppDomain.CurrentDomain.GetAssemblies().Any(x =>
+                {
+                    var fileName = Path.GetFileName(x.Location);
+                    return fileName == dllName;
+                }))
                 {
                     continue;
                 }
-
                 var dll = Assembly.LoadFrom(dllFullPath);
                 var thisType = typeof(PluginLoader);
                 var pluginTypes = dll.GetTypes().Where(x => !x.IsAbstract && typeof(IPlugin).IsAssignableFrom(x) && x != thisType).ToList();
