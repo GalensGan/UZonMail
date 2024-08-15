@@ -3,20 +3,20 @@
 // Configuration for your app
 // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js
 
-import { configure } from 'quasar/wrappers'
+// import { configure } from 'quasar/wrappers'
 import { fileURLToPath } from 'node:url'
+import { QuasarConf } from '@quasar/app-vite/types/configuration/conf'
+import { QuasarContext } from '@quasar/app-vite/types/configuration/context'
 
 // 参考 https://element-plus.org/zh-CN/guide/quickstart.html
 // 按需导入 ElementPlus 组件
 import { ElementPlusResolver, QuasarResolver } from 'unplugin-vue-components/resolvers'
 
 // 导入用户配置
-import { useConfig } from 'src/config'
+import { useConfigAsync } from 'src/config'
 
-// mock:https://github.com/vbenjs/vite-plugin-mock/blob/main/README.zh_CN.md
-export default configure((ctx) => {
-  const userConfig = useConfig(ctx)
-
+async function buildConfig (ctx: QuasarContext): Promise<QuasarConf> {
+  const userConfig = await useConfigAsync(ctx)
   return {
     eslint: {
       // fix: true,
@@ -34,7 +34,7 @@ export default configure((ctx) => {
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli-vite/boot-files
-    boot: ['i18n', 'axios'],
+    boot: ['i18n', 'axios', 'logger'],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#css
     css: ['app.scss'],
@@ -60,7 +60,8 @@ export default configure((ctx) => {
         // 本机 mock 地址为: http://127.0.0.1:4523/m1/2361225-0-default
         // 本机测试地址为: http://localhost:22345/api/v1
         // BASE_URL: ctx.dev ? 'http://localhost:22345/api/v1' : 'https://api.example.com'
-        BASE_URL: userConfig.baseUrl
+        BASE_URL: userConfig.baseUrl,
+        LOG_LEVEL: userConfig.logger.level
       },
 
       target: {
@@ -249,7 +250,6 @@ export default configure((ctx) => {
 
       builder: {
         // https://www.electron.build/configuration/configuration
-
         appId: 'uzon-mail'
       }
     },
@@ -262,4 +262,7 @@ export default configure((ctx) => {
       contentScripts: ['my-content-script']
     }
   }
-})
+}
+
+// mock:https://github.com/vbenjs/vite-plugin-mock/blob/main/README.zh_CN.md
+export default buildConfig

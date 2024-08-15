@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { useSessionStorage } from '@vueuse/core'
 import { IUserInfo } from './types'
 import { useRouter } from 'src/router/index'
+import logger from 'loglevel'
 
 // options 方式定义
 export const useUserInfoStore = defineStore('userInfo', {
@@ -46,7 +47,7 @@ export const useUserInfoStore = defineStore('userInfo', {
       this.token = token
       // 保存到 session 中，方便刷新后恢复
       const tokenSession = useSessionStorage('token', '')
-      console.log('setToken: ', token, tokenSession.value)
+      logger.debug('[UserStore] setToken: ', token, tokenSession.value)
       tokenSession.value = token
     },
 
@@ -66,7 +67,14 @@ export const useUserInfoStore = defineStore('userInfo', {
       accessSession.value = access
     },
 
+    appendAccess (access: string[]) {
+      if (!access || access.length === 0) return
+      const fullAccess = [...this.access, ...access]
+      this.setAccess([...new Set(fullAccess)])
+    },
+
     setUserLoginInfo (userInfo: IUserInfo, token: string, access: string[]) {
+      logger.debug('[UserStore] setUserLoginInfo')
       this.setUserInfo(userInfo)
       this.setToken(token)
       this.setAccess(access)
@@ -80,15 +88,23 @@ export const useUserInfoStore = defineStore('userInfo', {
 
     /**
      * 判断是否有权限
-     * @param targetAccess
+     * @param targetAccess 所有权限都满足时，才返回 true
      */
     hasPermission (targetAccess: string[] | string) {
-      // * 表示超管权限
-      if (this.access.includes('*')) return true
-
       if (!targetAccess || targetAccess.length === 0) return false
       if (typeof targetAccess === 'string') targetAccess = [targetAccess]
-      return this.access.some(x => targetAccess.includes(x))
+
+      return targetAccess.every(x => this.access.includes(x))
+    },
+
+    /**
+     * 是否有拒绝权限
+     * @param targetDenies 只要有一个权限，就返回 true
+     */
+    hasDenies (targetDenies: string[] | string) {
+      if (!targetDenies || targetDenies.length === 0) return false
+      if (typeof targetDenies === 'string') targetDenies = [targetDenies]
+      return targetDenies.some(x => this.access.includes(x))
     },
 
     // 退出登陆

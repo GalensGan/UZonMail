@@ -1,6 +1,7 @@
 import { subscribeOne } from 'src/signalR/signalR'
 import { UzonMailClientMethods } from 'src/signalR/types'
 import { notifyAny } from 'src/utils/dialog'
+import logger from 'loglevel'
 
 export interface INotifyMessage {
   message?: string,
@@ -13,7 +14,7 @@ export interface INotifyMessage {
  */
 export async function useNotifyRegister () {
   function receivedNotify (message: INotifyMessage) {
-    console.log('receive message from server', message)
+    logger.debug('[signalR] receive message from server:', message)
 
     notifyAny(message)
   }

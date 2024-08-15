@@ -28,6 +28,7 @@ export interface IOutbox extends IInbox {
   // 密码已解密
   decryptedPassword?: boolean,
   replyToEmails?: string,
+  enableSSL: boolean, // 是否使用 ssl
   isValid?: boolean
 }
 

@@ -14,7 +14,7 @@ import AsyncTooltip from 'src/components/asyncTooltip/AsyncTooltip.vue'
 defineProps({
   color: {
     type: String,
-    default: 'secondary'
+    default: 'primary'
   },
   icon: {
     type: String,

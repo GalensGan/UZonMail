@@ -10,6 +10,7 @@ import {
 import { constantRoutes } from './routes'
 import { useRoutesStore } from 'src/stores/routes'
 import { useUserInfoStore } from 'src/stores/user'
+import logger from 'loglevel'
 
 let router: Router
 export function useRouter () {
@@ -43,20 +44,22 @@ export default route(function (/* { store, ssrContext } */) {
   })
 
   const userInfoStore = useUserInfoStore()
+
+  logger.debug('[Router] 配置前置守卫')
   // 添加路由前置守卫
   router.beforeEach((to, from, next) => {
-    // console.log('userInfoStore: ', userInfoStore)
+    logger.debug('[Router] userInfoStore: ', userInfoStore)
     if (!userInfoStore.token && to.path !== '/login') {
       // 跳转到登陆界面
       next('/login')
       return
     }
 
-    // console.log('路由前置守卫', to, from)
+    logger.debug('[Router] 路由前置守卫触发：', to, from)
     // 添加动态路由
     const routeStore = useRoutesStore()
-    if (routeStore.addDynamicRoutes()) {
-      // console.log('添加动态路由')
+    if (to.path !== '/login' && routeStore.addDynamicRoutes()) {
+      logger.debug('[Router] 添加动态路由')
       // 重新导航
       router.replace(to)
       return

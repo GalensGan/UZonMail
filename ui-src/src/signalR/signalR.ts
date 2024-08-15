@@ -3,6 +3,7 @@ import * as signalR from '@microsoft/signalr'
 import { useConfig } from 'src/config'
 import { useUserInfoStore } from 'src/stores/user'
 import { UzonMailClientMethods } from './types'
+import logger from 'loglevel'
 
 export interface ISignalRs {
   sendingProgressHub?: signalR.HubConnection
@@ -39,12 +40,12 @@ export function useSendEmailHub () {
   // })
 
   signal.onclose((err) => {
-    console.log('连接已经断开 执行函数onclose', err)
+    logger.debug('[signalR] 连接已经断开 执行函数onclose', err)
     signalRs.sendingProgressHub = undefined
   })
 
   signal.start().then(() => {
-    console.log('signalR 连接成功')
+    logger.debug('[signalR] signalR 连接成功')
   })
 
   signalRs.sendingProgressHub = signal
@@ -65,13 +66,13 @@ export function subscribeOne (methodEnum: UzonMailClientMethods, callback: (...a
 
   const methodName = UzonMailClientMethods[methodEnum]
   onMounted(async () => {
-    console.log('订阅事件', methodName)
+    logger.debug('[signalR] 订阅事件', methodName)
     // hub.on(methodName, callback)
     hub.on(methodName, callback)
   })
 
   onUnmounted(async () => {
-    console.log('取消订阅事件', methodName)
+    logger.debug('[signalR] 取消订阅事件', methodName)
     hub.off(methodName, callback)
   })
 }

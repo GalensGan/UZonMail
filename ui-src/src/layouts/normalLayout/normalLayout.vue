@@ -38,6 +38,8 @@
 </template>
 
 <script lang="ts" setup>
+import logger from 'loglevel'
+
 // 导入组件
 import MenuOpenButton from '../components/menuOpen/menuOpenButton.vue'
 import UserInfo from '../components/userInfo/userInfo.vue'
@@ -63,7 +65,7 @@ if ($q.platform.is.desktop && $q.screen.gt.md) {
 const routeHistories = useRouteHistories()
 const cachedViews = computed(() => {
   const results = routeHistories.value.filter(x => !x.noCache).map(x => x.name)
-  console.log('cachedViews:', results)
+  logger.debug('[NormalLayout] cachedViews:', results)
   return results
 })
 
