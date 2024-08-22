@@ -5,8 +5,16 @@
 		<Nullable>enable</Nullable>
 		<RootNamespace>UZonMail.Core</RootNamespace>
 		<OutputType>Library</OutputType>
-		<AssemblyName>$(MSBuildProjectName)Plugin</AssemblyName>
+		<AssemblyName>$(MSBuildProjectName)</AssemblyName>
+		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)' == 'Debug'">
 		<BaseOutputPath>D:\Develop\Personal\SendMultipleEmails\backend-src\UZonMailService\bin\x64\Debug\net8.0\Plugins\UZonMailCore</BaseOutputPath>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
+		<BaseOutputPath>bin\x64\Release\</BaseOutputPath>
 	</PropertyGroup>
 
 	<ItemGroup>

@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UZonMailUtilsTests", "UZonM
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UZonMailDB", "UZonMailDB\UZonMailDB.csproj", "{1CB8B4FE-B917-4A32-B989-8407047FB0F7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UZonMailCore", "UZonMailCore\UZonMailCore.csproj", "{D3202ACE-C90E-4672-B322-0D91254994B3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UZonMailCorePlugin", "UZonMailCorePlugin\UZonMailCorePlugin.csproj", "{D3202ACE-C90E-4672-B322-0D91254994B3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UZonMailPro", "..\..\UZonMailPro\UZonMailPro\UZonMailPro.csproj", "{1AF32A2F-34A6-48E4-BBB1-8097386E4140}"
 EndProject

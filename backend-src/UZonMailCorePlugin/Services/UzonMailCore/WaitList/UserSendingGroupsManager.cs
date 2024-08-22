@@ -1,6 +1,5 @@
 ﻿using log4net;
 using System.Collections.Concurrent;
-using UZonMail.Core.Controllers.SystemInfo.Model;
 using UZonMail.Core.Services.EmailSending.OutboxPool;
 using UZonMail.Core.Services.EmailSending.Pipeline;
 using UZonMail.Core.Services.EmailSending.Sender;
@@ -19,6 +18,8 @@ namespace UZonMail.Core.Services.EmailSending.WaitList
     {
         private static readonly ILog _logger = LogManager.GetLogger(typeof(UserSendingGroupsManager));
         private readonly ConcurrentDictionary<long, UserSendingGroupsPool> _userTasks = new();
+
+        public ConcurrentDictionary<long, UserSendingGroupsPool> UserTasks => _userTasks;
 
         /// <summary>
         /// 将发件组添加到待发件队列
@@ -139,12 +140,5 @@ namespace UZonMail.Core.Services.EmailSending.WaitList
             if (!_userTasks.TryGetValue(userId, out var userSendingGroupsPool)) return;
             userSendingGroupsPool.TryRemove(sendingGroupId, out _);
         }
-
-        #region 统计信息
-        public List<SendingGroupInfo> GetSendingGroupInfos()
-        {
-            return _userTasks.Values.Select(x => new SendingGroupInfo(x)).ToList();
-        }
-        #endregion
     }
 }

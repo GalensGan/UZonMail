@@ -42,12 +42,12 @@ if (-not (Get-Command dotnet -ErrorAction SilentlyContinue)) {
 }
 Write-Host "dotnet 环境检测通过！" -ForegroundColor Green
 
-# 检测 msbuild 环境
-if (-not (Get-Command MSBuild -ErrorAction SilentlyContinue)) {
-    Write-Host "请将 msbuild 添加到环境变量！" -ForegroundColor Red
-    return
-}
-Write-Host "MSBuild 环境检测通过！" -ForegroundColor Green
+# # 检测 msbuild 环境
+# if (-not (Get-Command MSBuild -ErrorAction SilentlyContinue)) {
+#     Write-Host "请将 msbuild 添加到环境变量！" -ForegroundColor Red
+#     return
+# }
+# Write-Host "MSBuild 环境检测通过！" -ForegroundColor Green
 
 # 检测 7z
 if (-not (Get-Command 7z.exe -ErrorAction SilentlyContinue)) {
@@ -76,34 +76,60 @@ Set-Location -Path $uiSrc
 yarn build
 Write-Host "前端编译完成！" -ForegroundColor Green
 
-# 编译后端
-Write-Host "后端服务编译中..." -ForegroundColor Yellow
+# 编译后端 UZonMailService
+Write-Host "开始编译后端 UZonMailService ..." -ForegroundColor Yellow
 $backendSrc = Join-Path -Path $scriptRoot -ChildPath "backend-src"
+
 $serviceSr = Join-Path -Path $backendSrc -ChildPath "UZonMailService"
 # 使用 dotnet 编译
 Set-Location -Path $serviceSr
-$serviceDist = "$scriptRoot/build/service-win-x64"
+$mainService = "$scriptRoot/build/service-win-x64"
+$serviceDist = $mainService
 dotnet publish -c Release -o $serviceDist -r win-x64 --self-contained false
 # 创建 public 目录
 New-Item -Path "$serviceDist/public" -ItemType Directory -Force
 # 创建 wwwwroot 目录
 New-Item -Path "$serviceDist/wwwroot" -ItemType Directory -Force
+# 创建 Plugins 目录
+New-Item -Path "$serviceDist/Plugins" -ItemType Directory -Force
 # 复制 Quartz/quartz-sqlite.sqlite3 到 Quartz 目录中
 New-Item -Path "$serviceDist/Quartz" -ItemType Directory  -ErrorAction SilentlyContinue
 Copy-Item -Path "$serviceSr/Quartz/quartz-sqlite.sqlite3" -Destination "$serviceDist/Quartz/quartz-sqlite.sqlite3" -Force
-Write-Host "后端服务编译完成！" -ForegroundColor Green
+Write-Host "后端 UZonMailService 编译完成!" -ForegroundColor Green
+
+# 编译后端 UzonMailCore
+$uZonMailCore = 'UZonMailCore'
+Write-Host "开始编译后端 $uZonMailCore ..." -ForegroundColor Yellow
+$serviceSr = Join-Path -Path $backendSrc -ChildPath $uZonMailCore
+# 使用 dotnet 编译
+Set-Location -Path $serviceSr
+$serviceDist = "$scriptRoot/build/service-win-x64/$uZonMailCore"
+dotnet publish -c Release -o $serviceDist -r win-x64 --self-contained false
+# 复制依赖到根目录，复制库 到 Plugins 目录
+Copy-Item -Path "$serviceDist/*" -Destination $mainService -Recurse -Force -ErrorAction Continue -Exclude "$uZonMailCore.dll"
+Copy-Item -Path "$serviceDist/$uZonMailCore.dll" -Destination "$mainService/Plugins" -Force
+Write-Host "后端 $uZonMailCore 编译完成!" -ForegroundColor Green
+
+# 编译后端 UzonMailPro
+$uZonMailPro = 'UZonMailPro'
+Write-Host "开始编译后端 $uZonMailPro ..." -ForegroundColor Yellow
+$serviceSr = Join-Path -Path $backendSrc -ChildPath $uZonMailPro
+# 使用 dotnet 编译
+Set-Location -Path $serviceSr
+$serviceDist = "$scriptRoot/build/service-win-x64/$uZonMailPro"
+dotnet publish -c Release -o $serviceDist -r win-x64 --self-contained false
+# 复制依赖到根目录，复制库 到 Plugins 目录
+Copy-Item -Path "$serviceDist/*" -Destination $mainService -Recurse -Force -ErrorAction Continue -Exclude "$uZonMailPro.dll"
+Copy-Item -Path "$serviceDist/$uZonMailPro.dll" -Destination "$mainService/Plugins" -Force
+Write-Host "后端 $uZonMailPro 编译完成!" -ForegroundColor Green
 
 # 编译桌面端
 Write-Host "桌面端编译中..." -ForegroundColor Yellow
 $desktopSrc = Join-Path -Path $backendSrc -ChildPath "UzonMailDesktop"
 Set-Location -Path $desktopSrc
-$desktopCsproj = Get-ChildItem -Path $desktopSrc -Filter "*.csproj" -Recurse | Select-Object -First 1
 $desktopDist = "$scriptRoot/build/desktop"
-# 若存在，则删除
-if (Test-Path -Path $desktopDist -PathType Container) {
-    Remove-Item -Path $desktopDist -Recurse -Force -ErrorAction SilentlyContinue
-}
-MSBuild.exe $desktopCsproj /t:Rebuild /p:Configuration=Release /p:DebugType=none /p:Platform=x64 /p:OutputPath=$desktopDist
+dotnet publish -c Release -o $serviceDist -r win-x64 --self-contained false
+
 Write-Host "桌面端编译完成！" -ForegroundColor Green
 
 # 整合环境

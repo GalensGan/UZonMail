@@ -11,22 +11,22 @@ using UZonMail.Core.Services.EmailSending.Event;
 using UZonMail.Core.Services.EmailSending.Event.Commands;
 using UZonMail.Core.Services.EmailSending.Pipeline;
 using UZonMail.Core.Services.EmailSending.Utils;
-using UZonMail.Core.Controllers.SystemInfo.Model;
 
 namespace UZonMail.Core.Services.EmailSending.OutboxPool
 {
     /// <summary>
     /// 所有用户的发件箱池管理器
     /// </summary>
-    public class UserOutboxesPoolManager : ISingletonService
+    public class UserOutboxesPoolManager(IServiceScopeFactory ssf) : ISingletonService
     {
         private readonly static ILog _logger = LogManager.GetLogger(typeof(UserOutboxesPoolManager));
-        private IServiceScopeFactory _ssf;
+        private IServiceScopeFactory _ssf = ssf;
         private readonly ConcurrentDictionary<long, UserOutboxesPool> _userOutboxesPools = new();
-        public UserOutboxesPoolManager(IServiceScopeFactory ssf)
-        {
-            this._ssf = ssf;
-        }
+
+        /// <summary>
+        /// 用户发件箱池
+        /// </summary>
+        public ConcurrentDictionary<long, UserOutboxesPool> UserOutboxesPools => _userOutboxesPools;
 
         /// <summary>
         /// 通过用户发件池的权重先筛选出发件池，然后从这个用户的发件池中选择一个发件箱
@@ -126,15 +126,5 @@ namespace UZonMail.Core.Services.EmailSending.OutboxPool
                 userOutboxesPool.TryRemove(outbox.Email, out _);
             }
         }
-
-        #region 统计分析
-        public List<OutboxPoolInfo> GetOutboxPoolInfos()
-        {
-            return _userOutboxesPools.Values.Select(x =>
-              {
-                  return new OutboxPoolInfo(x);
-              }).ToList();
-        }
-        #endregion
     }
 }
