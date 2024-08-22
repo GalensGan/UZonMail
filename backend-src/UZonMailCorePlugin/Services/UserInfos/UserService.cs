@@ -11,13 +11,15 @@ using UZonMail.Core.Config;
 using Uamazing.Utils.Web.Token;
 using UZonMail.Utils.Web.Exceptions;
 using UZonMail.Utils.Web.PagingQuery;
+using UZonMail.Core.Services.Plugin;
 
 namespace UZonMail.Core.Services.UserInfos
 {
     /// <summary>
     /// 只在请求生命周期内有效的服务
     /// </summary>
-    public class UserService(IServiceProvider serviceProvider, SqlContext db, IOptions<AppConfig> appConfig, PermissionService permission) : IScopedService
+    public class UserService(IServiceProvider serviceProvider, SqlContext db, IOptions<AppConfig> appConfig, PermissionService permission,
+        PluginService pluginService) : IScopedService
     {
         /// <summary>
         /// 判断用户是否存在
@@ -99,13 +101,20 @@ namespace UZonMail.Core.Services.UserInfos
             // 查找用户的权限
             List<string> access = await permission.GetUserPermissionCodes(user.Id);
 
+            // 获取已经安装的插件名称
+            var installedPlugins = pluginService.GetInstalledPluginNames();
+
             return new UserSignInResult()
             {
                 Token = token,
                 Access = access.Distinct().ToList(),
-                UserInfo = userInfo
+                UserInfo = userInfo,
+                InstalledPlugins = installedPlugins
             };
         }
+
+
+
         /// <summary>
         /// 生成 token
         /// </summary>

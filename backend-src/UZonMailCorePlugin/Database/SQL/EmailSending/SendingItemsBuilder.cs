@@ -221,7 +221,7 @@ namespace UZonMail.Core.Database.SQL.EmailSending
                 {
                     if (data is not JObject jobj) continue;
                     var row = new SendingItemExcelData(jobj);
-                    if (!string.IsNullOrEmpty(row.Inbox))
+                    if (!string.IsNullOrEmpty(row.Inbox) && !rowData.ContainsKey(row.Inbox))
                         rowData.Add(row.Inbox, row);
                 }
             }

@@ -34,12 +34,20 @@ namespace Uamazing.Utils.Plugin
         private List<string>? _allDllNames;
         private Assembly? CurrentDomain_AssemblyResolve(object? sender, ResolveEventArgs args)
         {
-            _allDllNames ??= [.. Directory.GetFiles(_pluginDir, "*.dll", SearchOption.AllDirectories)];
+            _allDllNames ??= [.. Directory.GetFiles("./", "*.dll", SearchOption.AllDirectories)];
 
-            var dllName = Path.GetFileNameWithoutExtension(args.Name);
-            var dllFullName = _allDllNames.Where(x => x.EndsWith(dllName + ".dll")).FirstOrDefault();
+            var dllName = args.Name.Split(',').First() + ".dll";
+            var dllFullName = _allDllNames.Where(x => x.EndsWith(dllName)).FirstOrDefault();
 
-            return dllFullName == null ? null : Assembly.LoadFile(dllFullName);
+            if(dllFullName == null)
+            {
+                _logger.Warn($"未找到 dll: {dllName}");
+                return null;
+            }
+
+            var absDllFullName = Path.GetFullPath(dllFullName);
+            var assembly = Assembly.LoadFile(absDllFullName);
+            return assembly;
         }
 
         /// <summary>
