@@ -7,7 +7,8 @@ import { sha256, getSmtpPasswordSecretKeys } from 'src/utils/encrypt'
 export interface IUserLoginInfo {
   token: string,
   access: string[],
-  userInfo: IUserInfo
+  userInfo: IUserInfo,
+  installedPlugins: string[]
 }
 
 /**

@@ -12,7 +12,8 @@ export const useUserInfoStore = defineStore('userInfo', {
     userId: useSessionStorage('userId', '').value,
     userName: useSessionStorage('userName', '').value,
     avatar: useSessionStorage('avatar', '').value,
-    secretKey: useSessionStorage('secretKey', '').value
+    secretKey: useSessionStorage('secretKey', '').value,
+    installedPlugins: useSessionStorage('installedPlugins', [] as string[]).value
   }),
   getters: {
     userInfo: (state) => {
@@ -40,6 +41,15 @@ export const useUserInfoStore = defineStore('userInfo', {
       const key = state.secretKey
       if (!key || key.length < 16) return [key, key]
       return [key, key.substring(0, 16)]
+    },
+
+    /**
+     * 是否有 pro 插件
+     * @param state
+     * @returns
+     */
+    hasProPlugin: (state) => {
+      return state.installedPlugins.includes('UZonMailProPlugin')
     }
   },
   actions: {
@@ -65,6 +75,13 @@ export const useUserInfoStore = defineStore('userInfo', {
       this.access = access
       const accessSession = useSessionStorage('access', access)
       accessSession.value = access
+    },
+
+    setInstalledPlugins (installedPlugins: string[]) {
+      if (!installedPlugins) installedPlugins = []
+      this.installedPlugins = installedPlugins
+      const installedPluginsSession = useSessionStorage('installedPlugins', installedPlugins)
+      installedPluginsSession.value = installedPlugins
     },
 
     appendAccess (access: string[]) {

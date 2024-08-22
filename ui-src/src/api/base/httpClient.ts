@@ -258,6 +258,7 @@ export const httpClient = new HttpClient({
 
 /**
  * pro 版本的 httpClient, 前缀为 /api/pro
+ * 调用时，请先使用 userStore.hasProPlugin 判断一下
  */
 export const httpClientPro = new HttpClient({
   notifyError: true,

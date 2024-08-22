@@ -114,7 +114,7 @@ function factoryFn (files: readonly IUploadFile[]): Promise<QUploaderFactoryObje
 }
 
 // 添加文件后的操作
-import { GetFileUsageId } from 'src/api/file'
+import { getFileUsageId } from 'src/api/file'
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const vm = getCurrentInstance()
 function sha256Callback (params: FileSha256Callback) {
@@ -135,7 +135,7 @@ async function onFileAdded (files: readonly IUploadFile[]) {
     file.__sha256 = sha256
 
     // 向服务器请求文件是否已经上传过
-    const { data: fileUsageId } = await GetFileUsageId(sha256, file.name)
+    const { data: fileUsageId } = await getFileUsageId(sha256, file.name)
     if (fileUsageId < 0) continue
 
     // 说明文件已经上传过

@@ -27,7 +27,7 @@ export function uploadToStaticFile (subPath: string, fileName: string, data: Blo
  * @param fileName
  * @returns
  */
-export function GetFileUsageId (sha256: string, fileName: string) {
+export function getFileUsageId (sha256: string, fileName: string) {
   return httpClient.get<number>('/file/file-id', {
     params: {
       sha256,
