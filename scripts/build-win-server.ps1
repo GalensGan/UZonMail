@@ -1,0 +1,1 @@
+﻿. ./build-core.ps1 -platform win

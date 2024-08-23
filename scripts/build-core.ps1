@@ -1,5 +1,16 @@
 ﻿# 脚本说明
-# 本脚本用于自动编译 windows-x64 桌面端程序
+# 本脚本为自动编译核心程序
+# 设置参数
+param(
+    [string]$platform = "win",
+    [bool]$desktop = $false
+)
+
+$publishPlatform = "win-x64"
+if ($platform -eq "linux") {
+    $publishPlatform = "linux-x64"
+}
+
 
 # 遇到错误即退出
 $ErrorActionPreference = "Stop"
@@ -8,18 +19,6 @@ Set-StrictMode -Version Latest
 
 # 检测环境
 Write-Host "开始检测环境..." -ForegroundColor Yellow
-
-# 检测脚本位置是否正确：当前目录下是否有 ui-src 目录和 backend-src 目录
-$scriptRoot = $PSScriptRoot
-$subDirs = $("ui-src", "backend-src")
-foreach ($subDir in $subDirs) {
-    $dir = Join-Path -Path $scriptRoot -ChildPath $subDir
-    if (-not (Test-Path -Path $dir -PathType Container)) {
-        Write-Host "请在项目的根目录下执行当前脚本！"
-        return
-    }
-}
-Write-Host "脚本位置检测通过！" -ForegroundColor Green
 
 # 检查是否有 yarn 环境
 if (-not (Get-Command yarn -ErrorAction SilentlyContinue)) {
@@ -56,12 +55,39 @@ if (-not (Get-Command 7z.exe -ErrorAction SilentlyContinue)) {
 }
 Write-Host "7z 环境检测通过！" -ForegroundColor Green
 
+# 找到 git 的根目录
+$gitRoot = $null
+try {
+    $gitRoot = & git rev-parse --show-toplevel    
+}
+catch {
+    Write-Host "无法找到 Git 仓库的根目录，请确保在 Git 仓库中运行此脚本" -ForegroundColor Red
+    exit 1
+}
+
+if (-not $gitRoot) {
+    Write-Host "未找到 Git 仓库的根目录" -ForegroundColor Red
+    exit 1
+}
+
+# 检测脚本位置是否正确：当前目录下是否有 ui-src 目录和 backend-src 目录
+$sriptRoot = $PSScriptRoot
+$subDirs = $("ui-src", "backend-src")
+foreach ($subDir in $subDirs) {
+    $dir = Join-Path -Path $gitRoot -ChildPath $subDir
+    if (-not (Test-Path -Path $dir -PathType Container)) {
+        Write-Host "请在项目的根目录下执行当前脚本！"
+        return
+    }
+}
+Write-Host "脚本位置检测通过！" -ForegroundColor Green
+
 # 开始编译项目
 Write-Host "开始编译项目..." -ForegroundColor Yellow
 
 # 编译前端
 Write-Host "前端编译中..." -ForegroundColor Yellow
-$uiSrc = Join-Path -Path $scriptRoot -ChildPath "ui-src"
+$uiSrc = Join-Path -Path $gitRoot -ChildPath "ui-src"
 # 判断是否已经执行过 yarn install
 $nodeModules = Join-Path -Path $uiSrc -ChildPath "node_modules"
 if (-not (Test-Path -Path $nodeModules -PathType Container)) {
@@ -73,17 +99,17 @@ if (-not (Test-Path -Path $nodeModules -PathType Container)) {
 }
 
 Set-Location -Path $uiSrc
-# yarn build
+yarn build
 Write-Host "前端编译完成！" -ForegroundColor Green
 
 # 编译后端 UZonMailService
 Write-Host "开始编译后端 UZonMailService ..." -ForegroundColor Yellow
-$backendSrc = Join-Path -Path $scriptRoot -ChildPath "backend-src"
+$backendSrc = Join-Path -Path $gitRoot -ChildPath "backend-src"
 
 $serviceSrc = Join-Path -Path $backendSrc -ChildPath "UZonMailService"
 # 使用 dotnet 编译
 Set-Location -Path $serviceSrc
-$mainService = "$scriptRoot/build/service-win-x64"
+$mainService = "$gitRoot/build/service-$publishPlatform"
 # 先清空
 if (Test-Path -Path $mainService -PathType Container) {
     Remove-Item -Path $mainService -Recurse -Force
@@ -91,7 +117,7 @@ if (Test-Path -Path $mainService -PathType Container) {
 New-Item -Path $mainService -ItemType Directory -Force
 
 $serviceDist = $mainService
-dotnet publish -c Release -o $serviceDist -r win-x64 --self-contained false
+dotnet publish -c Release -o $serviceDist -r $publishPlatform --self-contained false
 # 创建 public 目录
 New-Item -Path "$serviceDist/public" -ItemType Directory -Force
 # 创建 wwwwroot 目录
@@ -105,6 +131,10 @@ New-Item -Path "$serviceDist/Assembly" -ItemType Directory -Force
 New-Item -Path "$serviceDist/Quartz" -ItemType Directory  -ErrorAction SilentlyContinue
 Copy-Item -Path "$serviceSrc/Quartz/quartz-sqlite.sqlite3" -Destination "$serviceDist/Quartz/quartz-sqlite.sqlite3" -Force
 Write-Host "后端 UZonMailService 编译完成!" -ForegroundColor Green
+
+# 复制根目录中的 Dockerfile 和 docker-compose.yml 到编译目录
+Copy-Item -Path "$gitRoot/Dockerfile" -Destination $mainService -Force
+Copy-Item -Path "$gitRoot/docker-compose.yml" -Destination $mainService -Force
 
 # 复制程序集函数
 function Copy-Assembly {
@@ -132,7 +162,7 @@ $serviceSrc = Join-Path -Path $backendSrc -ChildPath $uZonMailCorePlugin
 # 使用 dotnet 编译
 $serviceDist = "$mainService/$uZonMailCorePlugin"
 Set-Location $serviceSrc
-dotnet publish -c Release -o $serviceDist -r win-x64 --self-contained false
+dotnet publish -c Release -o $serviceDist -r $publishPlatform --self-contained false
 # 复制依赖到根目录，复制库 到 Plugins 目录
 Copy-Assembly -src $serviceDist -exclude "$uZonMailCorePlugin.*"
 $uzonMailCorePluginPath = Join-Path -Path $mainService -ChildPath "Plugins/$uZonMailCorePlugin"
@@ -146,13 +176,13 @@ Write-Host "后端 $uZonMailCorePlugin 编译完成!" -ForegroundColor Green
 $uZonMailProPlugin = 'UZonMailProPlugin'
 Write-Host "开始编译后端 $uZonMailProPlugin ..." -ForegroundColor Yellow
 # 使用 dotnet 编译
-Set-Location -Path $scriptRoot
+Set-Location -Path $gitRoot
 $proPluginPath = "../UzonMailPro/$uZonMailProPlugin"
 $serviceSrc = Resolve-Path -Path $proPluginPath
 if (test-path -path $serviceSrc -PathType Container) {
-    $serviceDist = "$scriptRoot/build/service-win-x64/$uZonMailProPlugin"
+    $serviceDist = "$mainService/$uZonMailProPlugin"
     Set-Location $proPluginPath
-    dotnet publish -c Release -o $serviceDist -r win-x64 --self-contained false
+    dotnet publish -c Release -o $serviceDist -r $publishPlatform --self-contained false
     # 复制依赖到根目录，复制库 到 Plugins 目录
     Copy-Assembly -src $serviceDist -exclude "$uZonMailProPlugin.*"
     $uzonMailProPluginPath = Join-Path -Path $mainService -ChildPath "Plugins/$uZonMailProPlugin"
@@ -163,46 +193,65 @@ if (test-path -path $serviceSrc -PathType Container) {
     Write-Host "后端 $uZonMailProPlugin 编译完成!" -ForegroundColor Green
 }
 
-
-# 编译桌面端
-Write-Host "桌面端编译中..." -ForegroundColor Yellow
-$desktopSrc = Join-Path -Path $backendSrc -ChildPath "UzonMailDesktop"
-Set-Location -Path $desktopSrc
-$desktopDist = "$scriptRoot/build/desktop"
-# 若存在，则删除
-if (Test-Path -Path $desktopDist -PathType Container) {
-    Remove-Item -Path $desktopDist -Recurse -Force
-}
-dotnet publish -c Release -o $desktopDist -r win-x64 --self-contained false
-
-Write-Host "桌面端编译完成！" -ForegroundColor Green
-
-# 整合环境
-Write-Host "合并编译结果..." -ForegroundColor Yellow
-
 # 复制前端编译结果到服务端指定位置
-$serviceWwwroot = Join-Path -Path $serviceDist -ChildPath "wwwroot"
+$serviceWwwroot = Join-Path -Path $mainService -ChildPath "wwwroot"
 # 目录不存在时，创建
 if (-not (Test-Path -Path $serviceWwwroot -PathType Container)) {
     New-Item -Path $serviceWwwroot -ItemType Directory -Force
 }
 Copy-Item -Path $uiSrc/dist/spa/* -Destination $serviceWwwroot -Recurse -Force
 
-# 复制服务端
-$svrDis = Join-Path -Path $desktopDist -ChildPath "service"
-New-Item -Path $svrDis -ItemType Directory -ErrorAction SilentlyContinue
-Copy-Item -Path $mainService/* -Destination $svrDis -Recurse -Force
+$buildVersion = "error"
+$zipSrc = "$mainService/*"
 
-Write-Host "编译整合完成！" -ForegroundColor Green
-
-# 读取 desktop.exe 的版本号
-$desktopExePath = Join-Path -Path $desktopDist -ChildPath "UzonMailDesktop.exe"
-$desktopVersion = [System.Diagnostics.FileVersionInfo]::GetVersionInfo($desktopExePath).FileVersion
+# 读取服务端的版本号
+$UZonMailServiceDll = Join-Path -Path $mainService -ChildPath "UZonMailService.dll"
+$serviceVersion = [System.Diagnostics.FileVersionInfo]::GetVersionInfo($UZonMailServiceDll).FileVersion
 # 生成文件路径
-$zipDist = Join-Path -Path $scriptRoot -ChildPath "build\uzonmail-desktop-$desktopVersion.zip"
+$zipDist = Join-Path -Path $gitRoot -ChildPath "build\uzonmail-service-$publishPlatform-$serviceVersion.zip"
+
+function Build-Desktop {
+    # $desktop 为 false，直接返回
+    if (-not $desktop) {
+        return
+    }
+
+    # 编译桌面端
+    Write-Host "桌面端编译中..." -ForegroundColor Yellow
+    $desktopSrc = Join-Path -Path $backendSrc -ChildPath "UzonMailDesktop"
+    Set-Location -Path $desktopSrc
+    $desktopDist = "$gitRoot/build/desktop"
+    # 若存在，则删除
+    if (Test-Path -Path $desktopDist -PathType Container) {
+        Remove-Item -Path $desktopDist -Recurse -Force
+    }
+    dotnet publish -c Release -o $desktopDist -r $publishPlatform --self-contained false
+
+    Write-Host "桌面端编译完成！" -ForegroundColor Green
+
+    # 整合环境
+    Write-Host "整理编译结果..." -ForegroundColor Yellow
+
+    # 复制服务端
+    $svrDis = Join-Path -Path $desktopDist -ChildPath "service"
+    New-Item -Path $svrDis -ItemType Directory -ErrorAction SilentlyContinue
+    Copy-Item -Path $mainService/* -Destination $svrDis -Recurse -Force
+
+    Write-Host "编译整理完成！" -ForegroundColor Green
+
+    # 读取 desktop.exe 的版本号
+    $desktopExePath = Join-Path -Path $desktopDist -ChildPath "UzonMailDesktop.exe"
+    $buildVersion = [System.Diagnostics.FileVersionInfo]::GetVersionInfo($desktopExePath).FileVersion
+    # 生成文件路径
+    $script:zipSrc = "$desktopDist/*"
+    $script:zipDist = Join-Path -Path $gitRoot -ChildPath "build\uzonmail-desktop-$buildVersion.zip"
+}
+
+Build-Desktop
+
 # 打包文件
-7z a -tzip $zipDist "$desktopDist\*"
+7z a -tzip $zipDist $zipSrc
 
 # 回到根目录
-Set-Location -Path $scriptRoot
+Set-Location -Path $sriptRoot
 Write-Host "编译完成：$zipDist" -ForegroundColor Green
