@@ -31,7 +31,9 @@ namespace UZonMailDesktop
         public void SetURL()
         {
             // 获取配置
-            URL = ConfigurationManager.AppSettings["url"];
+            // URL = ConfigurationManager.AppSettings["url"];
+            var url = App.Config.GetSection("webview2Url").Value.ToString();
+            URL = url;
         }
     }
 }

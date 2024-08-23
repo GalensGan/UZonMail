@@ -73,17 +73,23 @@ if (-not (Test-Path -Path $nodeModules -PathType Container)) {
 }
 
 Set-Location -Path $uiSrc
-yarn build
+# yarn build
 Write-Host "前端编译完成！" -ForegroundColor Green
 
 # 编译后端 UZonMailService
 Write-Host "开始编译后端 UZonMailService ..." -ForegroundColor Yellow
 $backendSrc = Join-Path -Path $scriptRoot -ChildPath "backend-src"
 
-$serviceSr = Join-Path -Path $backendSrc -ChildPath "UZonMailService"
+$serviceSrc = Join-Path -Path $backendSrc -ChildPath "UZonMailService"
 # 使用 dotnet 编译
-Set-Location -Path $serviceSr
+Set-Location -Path $serviceSrc
 $mainService = "$scriptRoot/build/service-win-x64"
+# 先清空
+if (Test-Path -Path $mainService -PathType Container) {
+    Remove-Item -Path $mainService -Recurse -Force
+}
+New-Item -Path $mainService -ItemType Directory -Force
+
 $serviceDist = $mainService
 dotnet publish -c Release -o $serviceDist -r win-x64 --self-contained false
 # 创建 public 目录
@@ -92,53 +98,87 @@ New-Item -Path "$serviceDist/public" -ItemType Directory -Force
 New-Item -Path "$serviceDist/wwwroot" -ItemType Directory -Force
 # 创建 Plugins 目录
 New-Item -Path "$serviceDist/Plugins" -ItemType Directory -Force
+# 创建 assembly 目录
+New-Item -Path "$serviceDist/Assembly" -ItemType Directory -Force
+
 # 复制 Quartz/quartz-sqlite.sqlite3 到 Quartz 目录中
 New-Item -Path "$serviceDist/Quartz" -ItemType Directory  -ErrorAction SilentlyContinue
-Copy-Item -Path "$serviceSr/Quartz/quartz-sqlite.sqlite3" -Destination "$serviceDist/Quartz/quartz-sqlite.sqlite3" -Force
+Copy-Item -Path "$serviceSrc/Quartz/quartz-sqlite.sqlite3" -Destination "$serviceDist/Quartz/quartz-sqlite.sqlite3" -Force
 Write-Host "后端 UZonMailService 编译完成!" -ForegroundColor Green
 
+# 复制程序集函数
+function Copy-Assembly {
+    param(
+        [string]$src,
+        [string]$exclude
+    )
+    
+    # 获取 $mainService 目录中的 dll
+    $mainDlls = Get-ChildItem -Path "$mainService/*" | Where-Object { -not $_.PSIsContainer }
+    # 获取目标目录中的 dll
+    $srcDlls = Get-ChildItem -Path "$src/*" -Exclude $exclude | Where-Object { -not $_.PSIsContainer }
+    # 比较两个目录中的 dll，去掉重复的 dll
+    $dlls = Compare-Object -ReferenceObject $srcDlls -DifferenceObject $mainDlls -Property Name | Where-Object { $_.SideIndicator -eq '<=' }
+    $targetDir = "$mainService/Assembly"
+    foreach ($dll in $dlls) {
+        Copy-Item -Path "$src/$($dll.Name)" -Destination $targetDir -Force
+    }    
+}
+
 # 编译后端 UzonMailCore
-$uZonMailCore = 'UZonMailCore'
-Write-Host "开始编译后端 $uZonMailCore ..." -ForegroundColor Yellow
-$serviceSr = Join-Path -Path $backendSrc -ChildPath $uZonMailCore
+$uZonMailCorePlugin = 'UZonMailCorePlugin'
+Write-Host "开始编译后端 $uZonMailCorePlugin ..." -ForegroundColor Yellow
+$serviceSrc = Join-Path -Path $backendSrc -ChildPath $uZonMailCorePlugin
 # 使用 dotnet 编译
-Set-Location -Path $serviceSr
-$serviceDist = "$scriptRoot/build/service-win-x64/$uZonMailCore"
+$serviceDist = "$mainService/$uZonMailCorePlugin"
+Set-Location $serviceSrc
 dotnet publish -c Release -o $serviceDist -r win-x64 --self-contained false
 # 复制依赖到根目录，复制库 到 Plugins 目录
-Copy-Item -Path "$serviceDist/*" -Destination $mainService -Recurse -Force -ErrorAction Continue -Exclude "$uZonMailCore.dll"
-Copy-Item -Path "$serviceDist/$uZonMailCore.dll" -Destination "$mainService/Plugins" -Force
-Write-Host "后端 $uZonMailCore 编译完成!" -ForegroundColor Green
+Copy-Assembly -src $serviceDist -exclude "$uZonMailCorePlugin.*"
+$uzonMailCorePluginPath = Join-Path -Path $mainService -ChildPath "Plugins/$uZonMailCorePlugin"
+New-Item -Path $uzonMailCorePluginPath -ItemType Directory -Force
+Copy-Item -Path "$serviceDist/$uZonMailCorePlugin.*" -Destination $uzonMailCorePluginPath -Force
+# 删除临时目录
+Remove-Item -Path $serviceDist -Recurse -Force
+Write-Host "后端 $uZonMailCorePlugin 编译完成!" -ForegroundColor Green
 
 # 编译后端 UzonMailPro
-$uZonMailPro = 'UZonMailPro'
-Write-Host "开始编译后端 $uZonMailPro ..." -ForegroundColor Yellow
-$serviceSr = Join-Path -Path $backendSrc -ChildPath $uZonMailPro
+$uZonMailProPlugin = 'UZonMailProPlugin'
+Write-Host "开始编译后端 $uZonMailProPlugin ..." -ForegroundColor Yellow
 # 使用 dotnet 编译
-Set-Location -Path $serviceSr
-$serviceDist = "$scriptRoot/build/service-win-x64/$uZonMailPro"
-dotnet publish -c Release -o $serviceDist -r win-x64 --self-contained false
-# 复制依赖到根目录，复制库 到 Plugins 目录
-Copy-Item -Path "$serviceDist/*" -Destination $mainService -Recurse -Force -ErrorAction Continue -Exclude "$uZonMailPro.dll"
-Copy-Item -Path "$serviceDist/$uZonMailPro.dll" -Destination "$mainService/Plugins" -Force
-Write-Host "后端 $uZonMailPro 编译完成!" -ForegroundColor Green
+Set-Location -Path $scriptRoot
+$proPluginPath = "../UzonMailPro/$uZonMailProPlugin"
+$serviceSrc = Resolve-Path -Path $proPluginPath
+if (test-path -path $serviceSrc -PathType Container) {
+    $serviceDist = "$scriptRoot/build/service-win-x64/$uZonMailProPlugin"
+    Set-Location $proPluginPath
+    dotnet publish -c Release -o $serviceDist -r win-x64 --self-contained false
+    # 复制依赖到根目录，复制库 到 Plugins 目录
+    Copy-Assembly -src $serviceDist -exclude "$uZonMailProPlugin.*"
+    $uzonMailProPluginPath = Join-Path -Path $mainService -ChildPath "Plugins/$uZonMailProPlugin"
+    New-Item -Path $uzonMailProPluginPath -ItemType Directory -Force
+    Copy-Item -Path "$serviceDist/$uZonMailProPlugin.*" -Destination $uzonMailProPluginPath -Force
+    # 删除临时目录
+    Remove-Item -Path $serviceDist -Recurse -Force
+    Write-Host "后端 $uZonMailProPlugin 编译完成!" -ForegroundColor Green
+}
+
 
 # 编译桌面端
 Write-Host "桌面端编译中..." -ForegroundColor Yellow
 $desktopSrc = Join-Path -Path $backendSrc -ChildPath "UzonMailDesktop"
 Set-Location -Path $desktopSrc
 $desktopDist = "$scriptRoot/build/desktop"
-dotnet publish -c Release -o $serviceDist -r win-x64 --self-contained false
+# 若存在，则删除
+if (Test-Path -Path $desktopDist -PathType Container) {
+    Remove-Item -Path $desktopDist -Recurse -Force
+}
+dotnet publish -c Release -o $desktopDist -r win-x64 --self-contained false
 
 Write-Host "桌面端编译完成！" -ForegroundColor Green
 
 # 整合环境
 Write-Host "合并编译结果..." -ForegroundColor Yellow
-
-# 复制前端编译结果到桌面端指定位置
-# $uiDist = Join-Path -Path $desktopDist -ChildPath "wwwroot"
-# New-Item -Path $uiDist -ItemType Directory -ErrorAction SilentlyContinue
-# Copy-Item -Path $uiSrc/dist/spa/* -Destination $uiDist -Recurse -Force
 
 # 复制前端编译结果到服务端指定位置
 $serviceWwwroot = Join-Path -Path $serviceDist -ChildPath "wwwroot"
@@ -151,7 +191,9 @@ Copy-Item -Path $uiSrc/dist/spa/* -Destination $serviceWwwroot -Recurse -Force
 # 复制服务端
 $svrDis = Join-Path -Path $desktopDist -ChildPath "service"
 New-Item -Path $svrDis -ItemType Directory -ErrorAction SilentlyContinue
-Copy-Item -Path $serviceDist/* -Destination $svrDis -Recurse -Force
+Copy-Item -Path $mainService/* -Destination $svrDis -Recurse -Force
+
+Write-Host "编译整合完成！" -ForegroundColor Green
 
 # 读取 desktop.exe 的版本号
 $desktopExePath = Join-Path -Path $desktopDist -ChildPath "UzonMailDesktop.exe"

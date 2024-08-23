@@ -32,10 +32,18 @@ namespace UZonMailDesktop.Utils
 
             try
             {
+                // 判断是否存在文件，若不存在，则进行提示
+                var servicePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "service", "UZonMailService.exe");
+                if (!File.Exists(servicePath))
+                {
+                    MessageBox.Show("后台服务缺失，请检查！", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
                 // 启动服务
                 var startInfo = new ProcessStartInfo
                 {
-                    FileName = "service/UZonMailService.exe",
+                    FileName = servicePath,
                     WorkingDirectory = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "service"),
                     UseShellExecute = false,
                     CreateNoWindow = true,
