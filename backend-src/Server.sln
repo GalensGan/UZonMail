@@ -13,11 +13,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UZonMailDB", "UZonMailDB\UZ
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UZonMailCorePlugin", "UZonMailCorePlugin\UZonMailCorePlugin.csproj", "{D3202ACE-C90E-4672-B322-0D91254994B3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UZonMailPro", "..\..\UZonMailPro\UZonMailPro\UZonMailPro.csproj", "{1AF32A2F-34A6-48E4-BBB1-8097386E4140}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UZonMailProPlugin", "..\..\UZonMailPro\UZonMailProPlugin\UZonMailProPlugin.csproj", "{1AF32A2F-34A6-48E4-BBB1-8097386E4140}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UZonMailDesktop", "UZonMailDesktop\UZonMailDesktop.csproj", "{B6EB2106-FA92-417C-A4E9-8B9B5342C355}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UZonMailDesktop", "UZonMailDesktop\UZonMailDesktop.csproj", "{B6EB2106-FA92-417C-A4E9-8B9B5342C355}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UZonMailDBTests", "UZonMailDBTests\UZonMailDBTests.csproj", "{302E642D-76ED-4D77-A910-9271A5FAC549}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UZonMailDBTests", "UZonMailDBTests\UZonMailDBTests.csproj", "{302E642D-76ED-4D77-A910-9271A5FAC549}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
