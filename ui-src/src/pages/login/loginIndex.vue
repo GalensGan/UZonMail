@@ -79,6 +79,8 @@ async function onUserLogin () {
     if (proAccess) {
       access.push(...proAccess)
     }
+  } else {
+    access.push('noProPlugin')
   }
 
   userInfoStore.setUserLoginInfo(userInfo, token, access)
