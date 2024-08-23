@@ -249,7 +249,7 @@ function Build-Desktop {
     $buildVersion = [System.Diagnostics.FileVersionInfo]::GetVersionInfo($desktopExePath).FileVersion
     # 生成文件路径
     $script:zipSrc = "$desktopDist/*"
-    $script:zipDist = Join-Path -Path $gitRoot -ChildPath "build\uzonmail-desktop-$buildVersion.zip"
+    $script:zipDist = Join-Path -Path $gitRoot -ChildPath "build\uzonmail-desktop-$publishPlatform-$buildVersion.zip"
 }
 
 Build-Desktop
