@@ -251,7 +251,7 @@ export const dynamicRoutes: ExtendedRouteRecordRaw[] = [
           icon: 'emoji_events',
           label: '软件许可',
           access: ['admin'],
-          denies: ['noPro'],
+          denies: ['noProPlugin'],
           noTag: true
         },
         component: () => import('pages/systemSetting/license/LicenseManager.vue')

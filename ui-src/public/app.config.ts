@@ -3,8 +3,6 @@
  * 可以在这里配置一些全局的配置
  */
 
-import { IAppConfigsContainer } from 'src/config/types'
-
 export default {
   // 默认配置
   default: {
@@ -30,5 +28,4 @@ export default {
       level: 'debug'
     }
   }
-
-} as IAppConfigsContainer
+}
