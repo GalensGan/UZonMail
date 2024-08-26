@@ -15,7 +15,7 @@ export default boot(async () => {
     fetch(configUrl)
       .then(async response => {
         const configResult = await response.json()
-        console.log('[config] ', '获取配置成功:', configResult)
+        console.log('[config] ', '获取远程配置成功:', configResult)
         resolve(configResult)
       }
       )
