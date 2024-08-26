@@ -13,10 +13,10 @@ export default boot(async () => {
     const configUrl = `${origin}/app.config.js`
     console.log('[config] ', `正在从${configUrl}获取配置`)
     fetch(configUrl)
-      .then(response => {
-        console.log('[config] ', '获取配置成功:', response, response.json())
-        const config = response.json()
-        resolve(config)
+      .then(async response => {
+        const configResult = await response.json()
+        console.log('[config] ', '获取配置成功:', configResult)
+        resolve(configResult)
       }
       )
       .catch((error) => {
