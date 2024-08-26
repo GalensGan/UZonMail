@@ -110,7 +110,7 @@ export async function getOutboxFields (smtpPasswordSecretKeys: string[]): Promis
   ]
 }
 
-function getOutboxExcelDataMapper (): IExcelColumnMapper[] {
+export function getOutboxExcelDataMapper (): IExcelColumnMapper[] {
   return [
     {
       headerName: 'smtp邮箱',
@@ -154,13 +154,22 @@ function getOutboxExcelDataMapper (): IExcelColumnMapper[] {
     },
     {
       headerName: '使用 SSL',
-      fieldName: 'EnableSSL'
+      fieldName: 'enableSSL',
+      format: (value: boolean) => {
+        if (typeof value === 'boolean') {
+          return value ? '是' : '否'
+        }
+        if (typeof value === 'string') {
+          return value === '是'
+        }
+        return !!value
+      }
     }
   ]
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
-export function UseHeaderFunction (emailGroup: Ref<IEmailGroupListItem>,
+export function useHeaderFunction (emailGroup: Ref<IEmailGroupListItem>,
   addNewRow: (newRow: Record<string, any>) => void) {
   const userInfoStore = useUserInfoStore()
 
@@ -198,7 +207,8 @@ export function UseHeaderFunction (emailGroup: Ref<IEmailGroupListItem>,
         smtpPort: 25,
         description: '描述(可选)',
         proxy: '格式为：http://username:password@domain:port(可选)',
-        replyToEmails: '回信收件人(多个使用逗号分隔)'
+        replyToEmails: '回信收件人(多个使用逗号分隔)',
+        enableSSL: '否'
       }
     ]
     await writeExcel(data, {
@@ -211,7 +221,7 @@ export function UseHeaderFunction (emailGroup: Ref<IEmailGroupListItem>,
   }
 
   // 导入发件箱
-  async function onImportOutboxClick () {
+  async function onImportOutboxClick (emailGroupId: number | null = null) {
     const data = await readExcel({
       sheetIndex: 0,
       selectSheet: true,
@@ -233,14 +243,17 @@ export function UseHeaderFunction (emailGroup: Ref<IEmailGroupListItem>,
       }
 
       row.password = encryptPassword(userInfoStore.smtpPasswordSecretKeys, row.password)
-      row.emailGroupId = emailGroup.value.id
+      row.emailGroupId = emailGroupId || emailGroup.value.id
     }
 
     // 向服务器请求新增
     const { data: outboxes } = await createOutboxes(data as IOutbox[])
-    outboxes.forEach(x => {
-      addNewRow(x)
-    })
+
+    if (emailGroupId === emailGroup.value.id) {
+      outboxes.forEach(x => {
+        addNewRow(x)
+      })
+    }
 
     notifySuccess('导入成功')
   }

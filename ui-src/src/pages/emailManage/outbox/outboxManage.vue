@@ -1,7 +1,7 @@
 <template>
   <div class="full-height full-width row items-start">
     <EmailGroupList v-show="!isCollapseGroupList" v-model="emailGroupRef" class="q-card q-mr-sm full-height"
-      style="min-width: 160px;" />
+      style="min-width: 160px;" :contextMenuItems="groupCtxMenuItems" />
 
     <q-table ref="outboxTableRef" class="col full-height" :rows="rows" :columns="columns" row-key="id" virtual-scroll
       v-model:pagination="pagination" dense :loading="loading" :filter="filter" binary-state-sort
@@ -220,13 +220,56 @@ async function togglePasswordViewMode (data: IOutbox) {
 }
 
 // #region 表头功能
-import { UseHeaderFunction } from './headerFunctions'
-const { onNewOutboxClick, onExportOutboxTemplateClick, onImportOutboxClick } = UseHeaderFunction(emailGroupRef, addNewRow)
+import { useHeaderFunction, getOutboxExcelDataMapper } from './headerFunctions'
+const { onNewOutboxClick, onExportOutboxTemplateClick, onImportOutboxClick } = useHeaderFunction(emailGroupRef, addNewRow)
 // #endregion
 
 // #region 数据右键菜单
 import { useContextMenu } from './contextMenu'
 const { outboxContextMenuItems } = useContextMenu(deleteRowById)
+// #endregion
+
+// #region 分组的右键菜单
+import { IContextMenuItem } from 'src/components/contextMenu/types'
+import { notifyError } from 'src/utils/dialog'
+const groupCtxMenuItems: Ref<IContextMenuItem[]> = ref([
+  {
+    name: 'import',
+    label: '导入',
+    tooltip: '向当前组中导入收件箱',
+    onClick: value => onImportOutboxClick(value.id)
+  },
+  {
+    name: 'export',
+    label: '导出',
+    tooltip: '导出当前组中的收件箱',
+    onClick: exportAllInboxesInThisGroup
+  }
+])
+// 导出当前组中的所有的收件箱
+import { writeExcel } from 'src/utils/file'
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function exportAllInboxesInThisGroup (group: Record<string, any>) {
+  // 获取所有的收件箱
+  const { data: count } = await getOutboxesCount(group.id, '')
+  if (!count) {
+    notifyError('没有可导出项')
+    return
+  }
+  const { data: dataRows } = await getOutboxesData(group.id, '', { sortBy: 'id', descending: false, skip: 0, limit: count })
+  // 对密码进行解密
+  dataRows.forEach(row => {
+    const plainPwd = deAes(userInfoStore.smtpPasswordSecretKeys[0], userInfoStore.smtpPasswordSecretKeys[1], row.password)
+    row.password = plainPwd || '密钥变动,解密失败'
+  })
+
+  await writeExcel(dataRows, {
+    fileName: `${group.name}-发件箱.xlsx`,
+    sheetName: group.name,
+    mappers: getOutboxExcelDataMapper(),
+    strict: true
+  })
+}
 // #endregion
 </script>
 
