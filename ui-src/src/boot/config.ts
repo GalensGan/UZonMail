@@ -10,7 +10,7 @@ export default boot(async () => {
   const origin = typeof window !== 'undefined' ? window.location.origin : ''
   const fetchConfig = new Promise((resolve) => {
     if (!origin) resolve({})
-    const configUrl = `${origin}/app.config.js`
+    const configUrl = `${origin}/app.config.json`
     console.log('[config] ', `正在从${configUrl}获取配置`)
     fetch(configUrl)
       .then(async response => {

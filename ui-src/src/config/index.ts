@@ -24,7 +24,7 @@ export async function useConfigAsync (quasarContext: QuasarContext): Promise<IAp
   // 解析 config
   const configTemp = Object.assign({}, appConfigs.default, isDev ? appConfigs.dev : appConfigs.prod)
   config = Object.assign({}, import.meta.env, configTemp)
-  console.log('[config] ', '应用配置：', config)
+  console.log('[config] ', '当前配置：', config)
   return config
 }
 
