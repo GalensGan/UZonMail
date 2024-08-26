@@ -107,7 +107,14 @@ function formatDate (datetime: string) {
 function formatLicenseType (licenseType: LicenseType) {
   return LicenseType[licenseType]
 }
+
 onMounted(async () => {
+  // 判断是否包含 pro 插件
+  if (!userInfoStore.hasProPlugin) {
+    notifyError('当前为免费版本, 请先安装 pro 版本插件')
+    return
+  }
+
   // 从服务器拉取激活信息
   const { data: licenseInfo } = await getLicenseInfo()
   activeInfo.value = licenseInfo
