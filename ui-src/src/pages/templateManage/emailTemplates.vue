@@ -73,7 +73,7 @@ async function onNewEmailTemplate () {
   })
 }
 // 导入模板
-import { selectFile, saveStringToFile } from 'src/utils/file'
+import { selectFile, saveFileSmart } from 'src/utils/file'
 async function onImportTemplateFromHtml () {
   const { ok, data: buffer, files } = await selectFile()
   if (!ok) return
@@ -125,7 +125,7 @@ async function onEditTemplateClick (value: Record<string, any>) {
 // 导出模板
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function onExportTemplateClick (value: Record<string, any>) {
-  await saveStringToFile(value.name + '.html', value.content)
+  await saveFileSmart(value.name + '.html', value.content)
 }
 // 右键菜单
 const templateContextMenuItems = ref<IContextMenuItem[]>([

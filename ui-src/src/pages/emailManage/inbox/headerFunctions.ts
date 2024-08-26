@@ -37,7 +37,7 @@ export function getInboxFields () {
   ]
 }
 
-function getInboxExcelDataMapper (): IExcelColumnMapper[] {
+export function getInboxExcelDataMapper (): IExcelColumnMapper[] {
   return [
     {
       headerName: '邮箱',
@@ -77,7 +77,7 @@ export async function showNewInboxDialog (emailGroupLabel: string) {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
-export function UseHeaderFunction (emailGroup: Ref<IEmailGroupListItem>,
+export function useHeaderFunction (emailGroup: Ref<IEmailGroupListItem>,
   addNewRow: (newRow: Record<string, any>, idField?: string) => void) {
   // 新建发件箱
   async function onNewInboxClick () {
@@ -111,11 +111,11 @@ export function UseHeaderFunction (emailGroup: Ref<IEmailGroupListItem>,
       mappers: getInboxExcelDataMapper()
     })
 
-    notifySuccess('模板下载成功，请在下载目录中查看')
+    notifySuccess('模板下载成功')
   }
 
   // 导入发件箱
-  async function onImportInboxClick () {
+  async function onImportInboxClick (emailGroupId: number | null = null) {
     const data = await readExcel({
       sheetIndex: 0,
       selectSheet: true,
@@ -136,7 +136,7 @@ export function UseHeaderFunction (emailGroup: Ref<IEmailGroupListItem>,
       }
 
       // 添加组 id
-      row.emailGroupId = emailGroup.value.id
+      row.emailGroupId = emailGroupId || emailGroup.value.id
     }
 
     // 向服务器请求新增
@@ -146,9 +146,12 @@ export function UseHeaderFunction (emailGroup: Ref<IEmailGroupListItem>,
         update(`导入中... [${i}/${data.length}]`)
         const partData = data.slice(i, i + 100)
         const { data: inboxes } = await createInboxes(partData as IInbox[])
-        inboxes.forEach(x => {
-          addNewRow(x, 'email')
-        })
+
+        if (emailGroupId === emailGroup.value.id) {
+          inboxes.forEach(x => {
+            addNewRow(x, 'email')
+          })
+        }
       }
     }, '导入收件箱', '正在导入中...')
 

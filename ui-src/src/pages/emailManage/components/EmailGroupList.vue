@@ -20,7 +20,7 @@
         :active="item.active" active-class="text-secondary" @click="onItemClick(item)">
         <div class="row justify-between no-wrap items-center full-width">
           <div>
-            <q-icon v-if="item.icon" :name="item.icon || 'contact_mail'" size="sm" />
+            <q-icon v-if="item.icon" :name="item.icon" size="sm" />
 
             <q-checkbox v-if="selectable && item.selectable !== false" dense v-model="item.selected"
               @click="onItemCheckboxClicked(item)" color="secondary" class="q-ml-xs">
@@ -86,6 +86,12 @@ const props = defineProps({
   selectable: {
     type: Boolean,
     default: false
+  },
+
+  // 右键菜单
+  contextMenuItems: {
+    type: Array as PropType<IContextMenuItem[]>,
+    default: () => []
   }
 })
 const header: ComputedRef<IFlatHeader> = computed(() => {
@@ -300,6 +306,7 @@ async function deleteGroup (emailGroup: Record<string, any>) {
   notifySuccess(`删除组【${emailGroup.label}】成功`)
 }
 const itemContextMenuItems: IContextMenuItem[] = [
+  ...props.contextMenuItems,
   ...headerContextMenuItems,
   {
     name: 'modify',

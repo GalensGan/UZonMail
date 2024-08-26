@@ -4,6 +4,8 @@ import { notifyError } from 'src/utils/dialog'
 import * as XLSX from 'xlsx'
 import { PopupDialogFieldType } from 'src/components/popupDialog/types'
 import CryptoJS from 'crypto-js'
+import { useNotifyProgress, IProgressOptions } from 'src/compositions/useProgress'
+import logger from 'loglevel'
 
 export interface ISelectFileResult {
   ok: boolean,
@@ -137,7 +139,8 @@ export interface IExcelMapperParams {
   // 映射
   mappers?: IExcelColumnMapper[],
   format?: (value: Record<string, any>) => Record<string, any>,
-  filter?: (value: Record<string, any>) => boolean
+  filter?: (value: Record<string, any>) => boolean,
+  strict?: boolean // 仅读取或保存 mappers 中对应的字段
 }
 
 export interface IExcelReaderParams extends IExcelMapperParams {
@@ -273,9 +276,16 @@ export async function readExcel (params: IExcelReaderParams) {
 
 /**
  * 导出 Excel
+ * @param rows
  * @param params
+ * @param params.fileName 文件名，包含后缀
  */
 export async function writeExcel (rows: any[], params: IExcelWriterParams) {
+  if (params.strict && !params.mappers?.length) {
+    logger.error('[file] 严格模式下, mappers 不能为空')
+    return
+  }
+
   // 创建一个新的工作簿
   const newWorkbook = XLSX.utils.book_new()
 
@@ -288,12 +298,17 @@ export async function writeExcel (rows: any[], params: IExcelWriterParams) {
   }
 
   const results: any[] = []
+  const keys = Object.keys(mapper)
+
   let rowIndex = -1
   for (const row of rows) {
     rowIndex++
     // 对数据进行转换
     let formattedRow: Record<string, any> = {}
     for (const key of Object.keys(row)) {
+      // 严格模式下，只读取 mappers 中的字段
+      if (params.strict && !keys.includes(key)) { continue }
+
       const value = row[key]
       const map = mapper[key]
       if (map) {
@@ -336,8 +351,18 @@ export async function writeExcel (rows: any[], params: IExcelWriterParams) {
   const newWorksheet = XLSX.utils.json_to_sheet(results)
   // 将工作表添加到工作簿
   XLSX.utils.book_append_sheet(newWorkbook, newWorksheet, params.sheetName || 'Sheet1')
+
   // 写入文件
-  XLSX.writeFile(newWorkbook, params.fileName)
+  // XLSX.writeFile(newWorkbook, params.fileName)
+
+  // 保存文件
+  const buffer = XLSX.write(newWorkbook, { bookType: 'xlsx', type: 'buffer' })
+  const blob = new Blob([buffer], {
+    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+  })
+  const url = URL.createObjectURL(blob)
+  const fullFileName = `${params.fileName}`
+  await saveFileSmart(fullFileName, url)
 }
 // #endregion
 
@@ -452,15 +477,19 @@ export function fileSha256 (file: File, callback?: (params: FileSha256Callback) 
 // #endregion
 
 // #region 文件保存相关操作
-/**
- * 保存字符串到文件
- * @param fileName
- * @param content
- */
-export async function saveStringToFile (fileName: string, content: string) {
-  const blob = new Blob([content], { type: 'text/plain' })
-  const url = URL.createObjectURL(blob)
-  await saveUrlToFile(fileName, url)
+export async function saveFileSmart (fileName: string, contentOrString: string) {
+  // 若不是 url，则转换成 objectUrl
+  if (!validUrl(contentOrString)) {
+    const blob = new Blob([contentOrString], { type: 'text/plain' })
+    const url = URL.createObjectURL(blob)
+    contentOrString = url
+  }
+
+  if (window.showSaveFilePicker) {
+    return saveByFileSystemAccess(fileName, contentOrString)
+  } else {
+    return saveByUrl(fileName, contentOrString)
+  }
 }
 
 /**
@@ -468,12 +497,133 @@ export async function saveStringToFile (fileName: string, content: string) {
  * @param fileName
  * @param fileUrl
  */
-export async function saveUrlToFile (fileName: string, fileUrl: string) {
+export async function saveByUrl (fileName: string, fileUrl: string) {
   const aLink = document.createElement('a')
   aLink.href = fileUrl
   aLink.download = fileName
   aLink.click()
   // 删除 alink
   aLink.remove()
+}
+
+function validUrl (url: string) {
+  if (url && typeof (url) === 'string' && url.indexOf('http') >= 0) return true
+  return false
+}
+
+declare global {
+  interface Window {
+    showSaveFilePicker?: (filePickerOptions: {
+      suggestedName: string,
+      types: {
+        description: string,
+        accept: Record<string, string[]>
+      }[]
+    }) => Promise<any>;
+  }
+}
+
+/**
+ * 通过 FileSystemAccess API 保存文件
+ * @param downloadUrl
+ * @param fileName
+ * @param options
+ * @returns
+ */
+export async function saveByFileSystemAccess (fileName: string, downloadUrl: string, options: IProgressOptions = {}) {
+  if (!validUrl(downloadUrl)) {
+    throw new Error('下载地址不合法,应以 http 开头')
+  }
+
+  const _options = Object.assign({
+    token: '',
+    initMessage: '正在解析文件...',
+    doneMessage: '下载完成',
+    cancellable: false
+  }, options)
+  if (!window.showSaveFilePicker) return false
+
+  // 解析文件后缀
+  const ext = fileName.split('.').pop() || '.*'
+  let progressDoneFn: null | ((silent: boolean) => Promise<void>) = null
+  try {
+    logger.debug(`[file] saveByFileSystemAccess: ${fileName}, ${downloadUrl}`)
+    const fileHandle = await window.showSaveFilePicker({
+      suggestedName: fileName,
+      types: [
+        {
+          description: `${ext} 文件`,
+          accept: {
+            '*/*': [`.${ext.toLowerCase()}`]
+          }
+        }
+      ]
+    })
+    if (!fileHandle) return false
+
+    // 创建 AbortController 实例
+    const controller = new AbortController()
+    const signal = controller.signal
+    if (_options.cancellable) {
+      _options.actions = [
+        {
+          label: '取消',
+          dense: true,
+          color: 'white',
+          padding: 'none',
+          class: 'q-px-xs',
+          flat: true,
+          handler: () => {
+            controller.abort()
+            // 不需要手动取消，因为会自动取消
+          }
+        }
+      ]
+    }
+    const { update, done: progressDone } = useNotifyProgress(Date.now(), _options)
+    progressDoneFn = progressDone
+
+    // 选择文件后，显示初始消息
+    update(0, _options.initMessage)
+
+    const writableStream = await fileHandle.createWritable()
+    const response = await fetch(downloadUrl, { signal })
+    if (!response || !response.body) { throw new Error('下载失败') }
+    const reader = response.body.getReader()
+    const writer = writableStream.getWriter()
+
+    const contentLength = Number(response.headers.get('Content-Length'))
+    const totalLength = isNaN(contentLength) ? 1 : contentLength
+    let receivedLength = 0
+    function updateProgress (bytes: Uint8Array) {
+      receivedLength += bytes.length
+      const percent = Math.floor(receivedLength / totalLength * 100)
+      if (percent > 100) return 90
+
+      update(percent, `${fileHandle.name} 下载中...`)
+    }
+
+    while (true) {
+      const { done, value } = await reader.read()
+      if (done) {
+        writer.close()
+        progressDone()
+        break
+      }
+
+      updateProgress(value)
+      writer.write(value)
+    }
+    return true
+  } catch (e) {
+    if (e instanceof DOMException && e.name === 'AbortError') {
+      return false
+    }
+
+    // 关闭进度条
+    if (progressDoneFn) progressDoneFn(true)
+    console.error(e)
+    return false
+  }
 }
 // #endregion

@@ -168,7 +168,7 @@ async function onDownloadEmailDataTemplate () {
     mappers: getEmailSendingExcelDataMapper()
   })
 
-  notifySuccess('模板下载成功，请在下载目录中查看')
+  notifySuccess('模板下载成功')
 }
 </script>
 

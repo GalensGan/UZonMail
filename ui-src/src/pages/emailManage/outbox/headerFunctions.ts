@@ -207,7 +207,7 @@ export function UseHeaderFunction (emailGroup: Ref<IEmailGroupListItem>,
       mappers: getOutboxExcelDataMapper()
     })
 
-    notifySuccess('模板下载成功，请在下载目录中查看')
+    notifySuccess('模板下载成功')
   }
 
   // 导入发件箱

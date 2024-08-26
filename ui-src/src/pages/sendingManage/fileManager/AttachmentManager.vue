@@ -179,7 +179,7 @@ const attachmentCtxMenuItems: IContextMenuItem[] = [
 
 import { useConfig } from 'src/config'
 import { getFileReaderId, getFileStreamByReaderId } from 'src/api/fileReader'
-import { saveUrlToFile } from 'src/utils/file'
+import { saveFileSmart } from 'src/utils/file'
 import { PopupDialogFieldType } from 'src/components/popupDialog/types'
 const config = useConfig()
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -212,7 +212,7 @@ async function onDownloadAttachment (row: Record<string, any>) {
   // 使用旧式的下载方式
   const baseUrl = `${config.baseUrl}${config.api}` as string
   const fileUrl = `${baseUrl}/file-reader/${fileReaderId}/stream`
-  saveUrlToFile(row.displayName || row.fileName, fileUrl)
+  saveFileSmart(row.displayName || row.fileName, fileUrl)
   notifySuccess('下载成功')
 }
 

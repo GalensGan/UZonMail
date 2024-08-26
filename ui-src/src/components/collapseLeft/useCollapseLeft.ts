@@ -1,4 +1,4 @@
-import { settimeoutAsync } from 'src/utils/tsUtils'
+import { setTimeoutAsync } from 'src/utils/tsUtils'
 import CollapseLeft from './CollapseLeft.vue'
 import { QTable } from 'quasar'
 import logger from 'loglevel'
@@ -31,7 +31,7 @@ export function useTableCollapseLeft (containerRef: Ref<InstanceType<typeof QTab
 
   onMounted(async () => {
     await nextTick()
-    await settimeoutAsync(10)
+    await setTimeoutAsync(10)
     updateCollapseLocation()
   })
 

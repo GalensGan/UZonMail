@@ -1,9 +1,9 @@
 <template>
   <q-menu v-model="qMenuModel" context-menu transition-show="scale" transition-hide="rotate" auto-close
     @before-show="beforeContextMenuShow" @before-hide="onMenuBeforeHide">
-    <q-list dense>
+    <q-list dense style="overflow: hidden;">
       <q-item v-for="(item, index) in contextItems" :key="item.name" clickable @click="onMenuItemClick($event, item)"
-        :class="getItemClass(item, index)" dense>
+        :class="getItemClass(item, index)" dense class="active-item">
         <div class="row justify-start items-center">
           <q-icon v-if="item.icon" :color="item.color" :name="item.icon" class="q-mr-sm"></q-icon>
           <q-item-section>
@@ -58,7 +58,6 @@ const contextItems = computed(() => {
 // 获取菜单项显示样式
 function getItemClass (contextItem: IContextMenuItem, index: number) {
   if (contextItem.color) return `text-${contextItem.color}`
-
   const colors = ['text-primary', 'text-secondary', 'text-accent']
   return colors[index % 3]
 }
@@ -124,4 +123,12 @@ async function onMenuItemClick (event: Event, item: IContextMenuItem) {
 // #endregion
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.active-item {
+  &:hover {
+    // 放大
+    scale: 1.1;
+    transition: all 0.3s;
+  }
+}
+</style>
