@@ -13,11 +13,14 @@ export default boot(async () => {
     const configUrl = `${origin}/app.config.js`
     console.log('[config] ', `正在从${configUrl}获取配置`)
     fetch(configUrl)
-      .then(response => response.json())
-      .then(config => {
+      .then(response => {
+        console.log('[config] ', '获取配置成功:', response, response.json())
+        const config = response.json()
         resolve(config)
-      })
-      .catch(() => {
+      }
+      )
+      .catch((error) => {
+        console.log('[config] ', '获取配置失败，使用默认配置', error)
         resolve({})
       })
   })
