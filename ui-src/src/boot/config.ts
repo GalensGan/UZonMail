@@ -1,0 +1,27 @@
+import { boot } from 'quasar/wrappers'
+import { changeConfig } from 'src/config/index'
+import { IAppConfig } from 'src/config/types'
+
+/**
+ * 配置 logger
+ */
+export default boot(async () => {
+  // 从服务器获取 /app.config.ts 获取配置
+  const origin = typeof window !== 'undefined' ? window.location.origin : ''
+  const fetchConfig = new Promise((resolve) => {
+    if (!origin) resolve({})
+    const configUrl = `${origin}/app.config.js`
+    console.log('[config] ', `正在从${configUrl}获取配置`)
+    fetch(configUrl)
+      .then(response => response.json())
+      .then(config => {
+        resolve(config)
+      })
+      .catch(() => {
+        resolve({})
+      })
+  })
+
+  const config = (await fetchConfig) as IAppConfig
+  changeConfig(config)
+})

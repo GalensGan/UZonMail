@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * 可以在这里配置一些全局的配置
+ * 这个配置是编译时使用，若在运行时修改配置，请修改 public/app.config.js
  */
 
 import { IAppConfigsContainer } from 'src/config/types'
@@ -18,7 +19,15 @@ export default {
   },
 
   // 生产配置
-  prod: {},
+  prod: {
+    baseUrl: 'http://localhost:22345',
+    api: '/api/v1',
+    signalRHub: '/hubs/uzonMailHub',
+    // 日志配置
+    logger: {
+      level: 'info'
+    }
+  },
 
   // 开发配置
   dev: {
