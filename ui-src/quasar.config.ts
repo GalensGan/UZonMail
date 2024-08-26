@@ -34,7 +34,7 @@ async function buildConfig (ctx: QuasarContext): Promise<QuasarConf> {
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli-vite/boot-files
-    boot: ['i18n', 'axios', 'logger'],
+    boot: ['config.ts', 'i18n', 'axios', 'logger'],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#css
     css: ['app.scss'],

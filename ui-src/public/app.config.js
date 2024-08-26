@@ -3,7 +3,7 @@
  * 可以在这里配置一些全局的配置
  */
 
-const prodConfig = {
+export const prodConfig = {
   baseUrl: 'http://localhost:22345',
   api: '/api/v1',
   signalRHub: '/hubs/uzonMailHub',
@@ -12,5 +12,3 @@ const prodConfig = {
     level: 'info'
   }
 }
-
-window.uzonMailConfig = prodConfig
