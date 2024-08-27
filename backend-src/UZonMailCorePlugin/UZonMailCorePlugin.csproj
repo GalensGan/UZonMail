@@ -18,6 +18,13 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="bin\**" />
+	  <Content Remove="bin\**" />
+	  <EmbeddedResource Remove="bin\**" />
+	  <None Remove="bin\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<Folder Include="Utils\Attributes\" />
 		<Folder Include="Utils\Helpers\" />
 	</ItemGroup>

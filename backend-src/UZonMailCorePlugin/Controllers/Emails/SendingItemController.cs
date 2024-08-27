@@ -18,7 +18,7 @@ namespace UZonMail.Core.Controllers.Emails
         /// <param name="filter"></param>
         /// <returns></returns>
         [HttpGet("filtered-count")]
-        public async Task<ResponseResult<int>> GetEmailTemplatesCount(long sendingGroupId, string filter)
+        public async Task<ResponseResult<int>> GetEmailTemplatesCount(long sendingGroupId, string filter, int itemStatus)
         {
             var userId = tokenService.GetUserDataId();
             // 只能获取自己的发件历史
@@ -29,6 +29,10 @@ namespace UZonMail.Core.Controllers.Emails
             }
 
             var dbSet = db.SendingItems.Where(x => x.SendingGroupId == sendingGroupId);
+            if (itemStatus > 0)
+            {
+                dbSet = dbSet.Where(x => x.Status == (SendingItemStatus)itemStatus);
+            }
             if (!string.IsNullOrEmpty(filter))
             {
                 dbSet = dbSet.Where(x => x.Subject.Contains(filter) || x.ToEmails.Contains(filter) || x.FromEmail.Contains(filter));
@@ -45,7 +49,7 @@ namespace UZonMail.Core.Controllers.Emails
         /// <param name="pagination"></param>
         /// <returns></returns>
         [HttpPost("filtered-data")]
-        public async Task<ResponseResult<List<SendingItem>>> GetEmailTemplatesData(long sendingGroupId, string filter, Pagination pagination)
+        public async Task<ResponseResult<List<SendingItem>>> GetEmailTemplatesData(long sendingGroupId, string filter, Pagination pagination, int itemStatus)
         {
             var userId = tokenService.GetUserDataId();
             // 只能获取自己的发件历史
@@ -56,6 +60,10 @@ namespace UZonMail.Core.Controllers.Emails
             }
 
             var dbSet = db.SendingItems.Where(x => x.SendingGroupId == sendingGroupId);
+            if (itemStatus > 0)
+            {
+                dbSet = dbSet.Where(x => x.Status == (SendingItemStatus)itemStatus);
+            }
             if (!string.IsNullOrEmpty(filter))
             {
                 dbSet = dbSet.Where(x => x.Subject.Contains(filter) || x.ToEmails.Contains(filter) || x.FromEmail.Contains(filter));
