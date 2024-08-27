@@ -1,6 +1,6 @@
 <template>
   <div class="column justify-center login-container bg-white">
-    <div class="row justify-center items-center q-mb-xl animated fadeIn slower">
+    <div class="row justify-center items-center q-mb-xl animated fadeIn slower col">
       <q-icon :name="resolveSvgFullName('undraw_mention_re_k5xc')" size="220px"
         class="q-pa-lg animated fadeInUp"></q-icon>
 
@@ -27,6 +27,12 @@
 
         <q-btn class="full-width border-radius-8" color="primary" label="登 陆" @click="onUserLogin" />
       </div>
+    </div>
+
+    <div class="row justify-center items-center q-mb-lg text-primary">
+      <div>version:&nbsp;</div>
+      <div>client&nbsp;{{ clientVersion }},&nbsp;</div>
+      <div>server&nbsp;{{ serverVersion }}</div>
     </div>
   </div>
 </template>
@@ -91,6 +97,17 @@ async function onUserLogin () {
   router.push({ path: '/' })
 }
 
+// #region 显示版本号
+import { useConfig } from 'src/config'
+import { getServerVersion } from 'src/api/system'
+const config = useConfig()
+const clientVersion = ref(config.version)
+const serverVersion = ref('0.0.1')
+onMounted(async () => {
+  const { data: version } = await getServerVersion()
+  serverVersion.value = version
+})
+// #endregion
 </script>
 
 <style lang="scss" scoped>

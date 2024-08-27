@@ -15,7 +15,8 @@ export default {
     // 日志配置
     logger: {
       level: 'info'
-    }
+    },
+    version: '0.9.0'
   },
 
   // 生产配置

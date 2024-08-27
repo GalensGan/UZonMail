@@ -7,7 +7,8 @@ export interface IAppConfig {
   // 日志配置
   logger: {
     level: LogLevelNames
-  }
+  },
+  version?: string
 }
 
 /**
