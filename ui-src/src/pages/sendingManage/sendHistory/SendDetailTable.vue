@@ -9,14 +9,22 @@
             返回到历史发件
           </q-tooltip>
         </q-btn>
-        <div class="text-subtitle1">发件明细</div>
 
-        <LinearProgress v-if="showProgressBar" :value="sendingGroupProgressValue" :width="160">
-        </LinearProgress>
+        <q-tabs class="shadow-1 border-radius-6" v-model="statusTab" dense active-color="secondary"
+          indicator-color="primary" align="left">
+          <q-tab class="q-px-xs border-radius-6" v-for="statusTabOption in statusTabOptions"
+            :key="statusTabOption.value" :name="statusTabOption.value" :label="statusTabOption.label" />
+        </q-tabs>
+
+        <!-- <div class="text-subtitle1">发件明细</div> -->
+        <ExportBtn outline tooltip="导出当前数据" @click="onExportCurrentSendingItems"></ExportBtn>
       </div>
     </template>
 
     <template v-slot:top-right>
+      <LinearProgress class="q-mr-sm" v-if="showProgressBar" :value="sendingGroupProgressValue" :width="160">
+      </LinearProgress>
+
       <SearchInput v-model="filter" />
     </template>
 
@@ -46,6 +54,16 @@ const vueProps = defineProps({
     type: Number,
     required: false
   }
+})
+const statusTab = ref(-1)
+const statusTabOptions = [
+  { label: '全部', value: -1 },
+  { label: '发送中', value: 2 },
+  { label: '成功', value: 3 },
+  { label: '失败', value: 4 }
+]
+watch(statusTab, () => {
+  refreshTable()
 })
 
 const sendingGroupId = ref(vueProps.sendingGroupId)
@@ -111,12 +129,12 @@ const columns: QTableColumn[] = [
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function getRowsNumberCount (filterObj: TTableFilterObject) {
-  const { data } = await getSendingItemsCount(sendingGroupId.value as number, filterObj.filter)
+  const { data } = await getSendingItemsCount(sendingGroupId.value as number, filterObj.filter, statusTab.value)
   return data || 0
 }
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function onRequest (filterObj: TTableFilterObject, pagination: IRequestPagination) {
-  const { data } = await getSendingItemsData(sendingGroupId.value as number, filterObj.filter, pagination)
+  const { data } = await getSendingItemsData(sendingGroupId.value as number, filterObj.filter, statusTab.value, pagination)
   return data || []
 }
 
@@ -190,7 +208,44 @@ import AsyncTooltip from 'src/components/asyncTooltip/AsyncTooltip.vue'
  * 右键菜单
  */
 import { useContextMenu } from './sendDetailContext'
+import { notifyError } from 'src/utils/dialog'
+import { IExcelColumnMapper, writeExcel, IExcelWriterParams } from 'src/utils/file'
 const { sendDetailContextItems, ContextMenu } = useContextMenu()
+
+// 导出
+async function onExportCurrentSendingItems () {
+  if (rows.value.length === 0) {
+    notifyError('数据为空')
+    return
+  }
+
+  const { data: allRows } = await getSendingItemsData(sendingGroupId.value as number, '', statusTab.value, {
+    sortBy: 'id',
+    descending: false,
+    skip: 0,
+    limit: pagination.value.rowsNumber
+  })
+  // 生成 headerMaps
+  const headerMaps: IExcelColumnMapper[] = columns.map(x => {
+    return {
+      headerName: x.label,
+      fieldName: x.field as string,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      format: x.format as (v: any) => string
+    }
+  })
+  headerMaps.push({
+    headerName: '发送结果',
+    fieldName: 'sendResult'
+  })
+  const statusLabel = statusTabOptions.find(x => x.value === statusTab.value)?.label
+  const writerParams: IExcelWriterParams = {
+    mappers: headerMaps,
+    fileName: `${sendingGroupId.value}-发送明细-${statusLabel}.xlsx`,
+    strict: true
+  }
+  await writeExcel(allRows, writerParams)
+}
 </script>
 
 <style lang="scss" scoped></style>

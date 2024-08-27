@@ -57,11 +57,12 @@ export enum SendingItemStatus {
  * @param filter
  * @returns
  */
-export function getSendingItemsCount (sendingGroupId: number, filter?: string) {
+export function getSendingItemsCount (sendingGroupId: number, filter?: string, itemStatus: number = -1) {
   return httpClient.get<number>('/sending-item/filtered-count', {
     params: {
       sendingGroupId,
-      filter
+      filter,
+      itemStatus
     }
   })
 }
@@ -72,11 +73,12 @@ export function getSendingItemsCount (sendingGroupId: number, filter?: string) {
  * @param pagination
  * @returns
  */
-export function getSendingItemsData (sendingGroupId: number, filter: string | undefined, pagination: IRequestPagination) {
+export function getSendingItemsData (sendingGroupId: number, filter: string | undefined, itemStatus: number = -1, pagination: IRequestPagination) {
   return httpClient.post<ISendingItem[]>('/sending-item/filtered-data', {
     params: {
       sendingGroupId,
-      filter
+      filter,
+      itemStatus
     },
     data: pagination
   })
