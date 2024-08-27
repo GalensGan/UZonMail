@@ -1,12 +1,23 @@
 <template>
   <div class="tags-view q-ml-md row items-center justify-start">
-    <q-chip class="q-mr-xs route-tag row items-center" v-for="item in routes" :key="item.fullPath"
+    <draggable v-model="routes" group="people" @start="drag = true" @end="drag = false" item-key="fullPath">
+      <template #item="{ element: item }">
+        <q-chip class="q-mr-xs route-tag row items-center" :key="item.fullPath" :class="getTagClass(item)" square
+          clickable transition-show="jump-right" transition-hide="jump-left" @click="goToRoute(item)"
+          @mouseenter="mouseenterTag(item)" @mouseleave="item.showCloseIcon = false" @remove="onRemoveTag(item)">
+          <div>{{ getTagLabel(item) }}</div>
+          <ContextMenu :items="tagContextItems" :value="item" />
+        </q-chip>
+      </template>
+    </draggable>
+
+    <!-- <q-chip class="q-mr-xs route-tag row items-center" v-for="item in routes" :key="item.fullPath"
       :class="getTagClass(item)" square clickable transition-show="jump-right" transition-hide="jump-left"
       @click="goToRoute(item)" @mouseenter="mouseenterTag(item)" @mouseleave="item.showCloseIcon = false"
       @remove="onRemoveTag(item)">
       <div>{{ getTagLabel(item) }}</div>
       <ContextMenu :items="tagContextItems" :value="item" />
-    </q-chip>
+    </q-chip> -->
   </div>
 </template>
 
@@ -78,6 +89,11 @@ const tagContextItems: IContextMenuItem[] = [
     }
   }
 ]
+
+// #region 拖拽
+import draggable from 'vuedraggable'
+const drag = ref(false)
+// #endregion
 </script>
 
 <style lang="scss" scoped>
