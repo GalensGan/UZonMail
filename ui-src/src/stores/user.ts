@@ -110,7 +110,7 @@ export const useUserInfoStore = defineStore('userInfo', {
     hasPermission (targetAccess: string[] | string) {
       if (!targetAccess || targetAccess.length === 0) return false
       if (typeof targetAccess === 'string') targetAccess = [targetAccess]
-
+      logger.debug('[UserStore] hasPermission: ', targetAccess, this.access)
       return targetAccess.every(x => this.access.includes(x))
     },
 

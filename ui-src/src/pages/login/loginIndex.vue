@@ -42,6 +42,7 @@ import { userLogin } from 'src/api/user'
 import { getProAccess } from 'src/api/license'
 
 import { useUserInfoStore } from 'src/stores/user'
+import { useRoutesStore } from 'src/stores/routes'
 import { notifyError } from 'src/utils/dialog'
 import { resolveSvgFullName } from 'src/utils/svgHelper'
 import { md5 } from 'src/utils/encrypt'
@@ -53,6 +54,8 @@ const password = ref('')
 const isPwd = ref(true)
 
 const router = useRouter()
+const routeStore = useRoutesStore()
+
 /**
  * 用户登陆
  */
@@ -91,6 +94,7 @@ async function onUserLogin () {
 
   userInfoStore.setUserLoginInfo(userInfo, token, access)
   userInfoStore.setSecretKey(md5(password.value))
+  routeStore.resetDynamicRoutes()
 
   logger.log('[Login] 登陆成功')
   // 跳转到主页
