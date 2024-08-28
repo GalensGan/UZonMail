@@ -115,6 +115,17 @@ export const useUserInfoStore = defineStore('userInfo', {
     },
 
     /**
+     * 判断是否有权限，当有一个权限满足时，就返回 true
+     * @param targetAccess
+     * @returns
+     */
+    hasPermissionOr (targetAccess: string[] | string) {
+      if (!targetAccess || targetAccess.length === 0) return true
+      if (typeof targetAccess === 'string') targetAccess = [targetAccess]
+      return targetAccess.some(x => this.access.includes(x))
+    },
+
+    /**
      * 是否有拒绝权限
      * @param targetDenies 只要有一个权限，就返回 true
      */

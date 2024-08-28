@@ -11,16 +11,32 @@ export function usePermission () {
     return hasPermission('*')
   })
 
-  function hasPermission (access: string | string[]) {
-    if (!Array.isArray(access)) access = [access]
-    if (access.includes('*')) return true
+  const hasPermission = store.hasPermission
+  const hasPermissionOr = store.hasPermissionOr
 
-    // 判断是否有权限
-    return access.some(item => store.access.includes(item))
+  /**
+   * 是否有专业版权限
+   * @returns
+   */
+  function hasProfessionAccess () {
+    if (!store.hasProPlugin) return false
+    if (hasEnterpriseAccess()) return true
+    return hasPermissionOr(['professional'])
+  }
+
+  /**
+   * 是否有企业版权限
+   * @returns
+   */
+  function hasEnterpriseAccess () {
+    return hasPermission('enterprise')
   }
 
   return {
     hasPermission,
-    isSuperAdmin
+    hasPermissionOr,
+    isSuperAdmin,
+    hasProfessionAccess,
+    hasEnterpriseAccess
   }
 }

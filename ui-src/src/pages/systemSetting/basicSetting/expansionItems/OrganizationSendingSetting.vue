@@ -1,5 +1,5 @@
 <template>
-  <q-expansion-item popup icon="flight_takeoff" label="发件设置" caption="设置发件间隔、最大发件量等"
+  <q-expansion-item popup icon="flight_takeoff" label="组织发件设置" caption="设置所有子用户的发件间隔、最大发件量等"
     header-class="text-primary card-like-borderless" @after-show="onAfterShow" group="settings1">
     <div class="q-pa-sm">
       <div class="row justify-start items-center q-mb-sm ">

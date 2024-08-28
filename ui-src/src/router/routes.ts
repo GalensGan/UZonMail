@@ -196,14 +196,14 @@ export const dynamicRoutes: ExtendedRouteRecordRaw[] = [
         component: () => import('pages/systemSetting/proxyManage/ProxyManager.vue')
       },
       {
-        name: 'UserManage',
-        path: 'user-manage',
+        name: 'UserManager',
+        path: 'user-manager',
         meta: {
           icon: 'manage_accounts',
           label: '用户管理',
           access: ['admin', 'professional']
         },
-        component: () => import('pages/systemSetting/userManage.vue')
+        component: () => import('pages/systemSetting/userManager/UserManager.vue')
       },
       {
         name: 'PermissionManager',
