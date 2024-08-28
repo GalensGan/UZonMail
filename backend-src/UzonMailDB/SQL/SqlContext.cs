@@ -29,6 +29,8 @@ namespace UZonMail.DB.SQL
         /// <param name="modelBuilder"></param>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             new EntityTypeConfig().Configure(modelBuilder);
         }
         #endregion

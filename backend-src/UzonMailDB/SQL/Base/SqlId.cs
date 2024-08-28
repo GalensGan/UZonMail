@@ -6,7 +6,7 @@ namespace UZonMail.DB.SQL.Base
     /// <summary>
     /// 所有数据库的基类
     /// </summary>
-    public class SqlId
+    public class SqlId : ISoftDelete
     {
         /// <summary>
         /// Id 值
