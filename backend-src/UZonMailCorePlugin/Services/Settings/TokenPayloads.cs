@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using System.Security.Claims;
-using UZonMail.DB.SQL.MultiTenant;
+using UZonMail.DB.SQL.Organization;
 using UZonMail.DB.SQL.Permission;
 
 namespace UZonMail.Core.Services.Settings

@@ -1,13 +1,23 @@
 ﻿using UZonMail.DB.SQL.Base;
 using UZonMail.DB.SQL.Permission;
 
-namespace UZonMail.DB.SQL.MultiTenant
+namespace UZonMail.DB.SQL.Organization
 {
     /// <summary>
     /// 用户上下文
     /// </summary>
     public class User : SqlId
     {
+        /// <summary>
+        /// 用户类型
+        /// </summary>
+        public UserType Type { get; set; }
+
+        /// <summary>
+        /// 用户状态
+        /// </summary>
+        public UserStatus Status { get; set; }
+
         /// <summary>
         /// 当前所在组织 Id
         /// </summary>
@@ -41,12 +51,7 @@ namespace UZonMail.DB.SQL.MultiTenant
         /// <summary>
         /// signalR 连接 id
         /// </summary>
-        public string? ConnectionId { get; set; }       
-
-        /// <summary>
-        /// 禁止登录
-        /// </summary>
-        public bool ForbiddenToLogin { get; set; }
+        public string? ConnectionId { get; set; }
 
         /// <summary>
         /// 是否是超级管理员

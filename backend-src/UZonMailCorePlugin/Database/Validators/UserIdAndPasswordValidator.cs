@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using UZonMail.DB.SQL.MultiTenant;
+using UZonMail.DB.SQL.Organization;
 
 namespace UZonMail.Core.Database.Validators
 {

@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using UZonMail.Core.Utils.Database;
 using UZonMail.Core.Controllers.Users.Model;
 using UZonMail.DB.SQL;
-using UZonMail.DB.SQL.MultiTenant;
+using UZonMail.DB.SQL.Organization;
 using UZonMail.Core.Database.Validators;
 using UZonMail.Core.Utils.Extensions;
 using UZonMail.Utils.Web.Exceptions;
@@ -45,7 +45,7 @@ namespace UZonMail.Core.Controllers.Users
         /// 新建用户
         /// </summary>
         /// <returns></returns>
-        [Authorize(Roles ="Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpPost("sign-up")]
         public async Task<ResponseResult<User>> SignUp([FromBody] User user)
         {
@@ -102,9 +102,7 @@ namespace UZonMail.Core.Controllers.Users
         {
             // 从 token 中获取当前用户信息
 
-
             // 清除用户的 signR 连接
-
 
             // 返回退出成功消息
             return true.ToSuccessResponse();
@@ -151,7 +149,7 @@ namespace UZonMail.Core.Controllers.Users
         /// 只有超管才可以操作
         /// </summary>
         /// <returns></returns>
-        [Authorize("RequireAdmin")]
+        [Authorize(Roles = "Admin")]
         [HttpGet("default-password")]
         public async Task<ResponseResult<string>> GetDefaultPassword()
         {
@@ -164,7 +162,7 @@ namespace UZonMail.Core.Controllers.Users
         /// 只有超管才可以操作
         /// </summary>
         /// <returns></returns>
-        [Authorize("RequireAdmin")]
+        [Authorize(Roles = "Admin")]
         [HttpPut("reset-password")]
         public async Task<ResponseResult<bool>> ResetUserPassword([FromBody] User user)
         {
@@ -217,6 +215,33 @@ namespace UZonMail.Core.Controllers.Users
             await db.SaveChangesAsync();
 
             return relativePath.ToSuccessResponse();
+        }
+
+        /// <summary>
+        /// 修改用户类型
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        [Authorize(Roles = "Admin")]
+        [HttpPut("{userId:long}/type")]
+        public async Task<ResponseResult<bool>> ChangeUserType(long userId, UserType type)
+        {
+            await db.Users.UpdateAsync(x => x.Id == userId, x => x.SetProperty(p => p.Type, type));
+            return true.ToSuccessResponse();
+        }
+
+        /// <summary>
+        /// 修改用户状态
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        [Authorize(Roles = "Admin")]
+        [HttpPut("{userId:long}/status")]
+        public async Task<ResponseResult<bool>> ChangeUserStatus(long userId, UserStatus status)
+        {
+            await db.Users.UpdateAsync(x => x.Id == userId, x => x.SetProperty(p => p.Status, status));
+            return true.ToSuccessResponse();
         }
     }
 }

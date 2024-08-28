@@ -2,7 +2,7 @@
 using Uamazing.Utils.Web.Token;
 using UZonMail.Core.Services.Settings;
 using UZonMail.DB.SQL;
-using UZonMail.DB.SQL.MultiTenant;
+using UZonMail.DB.SQL.Organization;
 
 namespace UZonMail.Core.Utils.Token
 {
