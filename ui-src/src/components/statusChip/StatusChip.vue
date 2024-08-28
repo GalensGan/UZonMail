@@ -19,7 +19,11 @@ const defaultStatusStyles = [
   { status: 'finish', label: '完成', color: 'secondary', textColor: 'white', icon: '' },
   { status: 'cancel', label: '取消', color: 'grey', textColor: 'white', icon: '' },
   { status: 'true', label: '是', color: 'positive', textColor: 'white', icon: '' },
-  { status: 'false', label: '否', color: 'negative', textColor: 'white', icon: '' }
+  { status: 'false', label: '否', color: 'negative', textColor: 'white', icon: '' },
+  { status: 'independent', label: '独立', color: 'primary', textColor: 'white', icon: '' },
+  { status: 'subUser', label: '子账户', color: 'negative', textColor: 'white', icon: '' },
+  { status: 'normal', label: '正常', color: 'primary', textColor: 'white', icon: '' },
+  { status: 'forbiddenLogin', label: '禁用', color: 'negative', textColor: 'white', icon: '' }
 ]
 const props = defineProps({
   status: {

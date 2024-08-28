@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { httpClient } from 'src/api//base/httpClient'
-import { IUserInfo } from 'src/stores/types'
+import { IUserInfo, UserStatus, UserType } from 'src/stores/types'
 import { IRequestPagination } from 'src/compositions/types'
 import { sha256, getSmtpPasswordSecretKeys } from 'src/utils/encrypt'
 
@@ -153,5 +153,32 @@ export function updateUserAvatar (blob: Blob) {
   formData.append('file', blob, 'avatar.png')
   return httpClient.put<string>('/user/avatar', {
     data: formData
+  })
+}
+
+/**
+ * 修改用户类型
+ * @param userId
+ * @param userType
+ */
+export function setUserType (userId: number, userType: UserType) {
+  return httpClient.put<boolean>(`/user/${userId}/type`, {
+    params: {
+      userType
+    }
+  })
+}
+
+/**
+ * 修改状态
+ * @param userId
+ * @param status
+ * @returns
+ */
+export function setUserStatus (userId: number, status: UserStatus) {
+  return httpClient.put<boolean>(`/user/${userId}/status`, {
+    params: {
+      status
+    }
   })
 }

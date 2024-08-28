@@ -1,9 +1,7 @@
 <template>
   <q-list class="text-accent">
     <LogoItem />
-
     <q-separator />
-
     <MenuItem v-for="route in menuRoutes" :key="route.name" :routeRaw="route">
     </MenuItem>
   </q-list>
