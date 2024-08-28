@@ -144,7 +144,7 @@ namespace UZonMail.Core.Controllers.Emails
             entity.OrganizationId = tokenPayloads.OrganizationId;
 
             // 验证发件箱是否存在，若存在，则复用原来的发件箱
-            Inbox? existOne = db.Inboxes.SingleOrDefault(x => x.UserId == userId && x.Email == entity.Email);
+            Inbox? existOne = db.Inboxes.IgnoreQueryFilters().SingleOrDefault(x => x.UserId == userId && x.Email == entity.Email);
             if (existOne != null)
             {
                 existOne.EmailGroupId = entity.EmailGroupId;
@@ -198,7 +198,7 @@ namespace UZonMail.Core.Controllers.Emails
             }
 
             List<string> emails = entities.Select(x => x.Email).ToList();
-            List<Inbox> existEmails = await db.Inboxes.Where(x => x.UserId == userId && emails.Contains(x.Email)).ToListAsync();
+            List<Inbox> existEmails = await db.Inboxes.IgnoreQueryFilters().Where(x => x.UserId == userId && emails.Contains(x.Email)).ToListAsync();
             List<Inbox?> newEntities = emails.Except(existEmails.Select(x => x.Email))
                 .Select(x => entities.Find(e => e.Email == x))
                 .ToList();
@@ -429,9 +429,8 @@ namespace UZonMail.Core.Controllers.Emails
         [HttpDelete("inboxes/{emailBoxId:long}")]
         public async Task<ResponseResult<bool>> DeleteInboxById(long emailBoxId)
         {
-            var emailBox = await db.Inboxes.FirstOrDefaultAsync(x => x.Id == emailBoxId);
-            if (emailBox == null) throw new KnownException("邮箱不存在");
-            db.Inboxes.Remove(emailBox);
+            var emailBox = await db.Inboxes.FirstOrDefaultAsync(x => x.Id == emailBoxId) ?? throw new KnownException("邮箱不存在");
+            emailBox.IsDeleted = true;
             await db.SaveChangesAsync();
 
             return true.ToSuccessResponse();

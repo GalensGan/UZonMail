@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using UZonMail.Utils.Web.Service;
 using UZonMail.Core.Cache;
 using UZonMail.DB.SQL;
-using UZonMail.DB.SQL.MultiTenant;
+using UZonMail.DB.SQL.Organization;
 using UZonMail.Core.SignalRHubs;
 using UZonMail.Core.SignalRHubs.Extensions;
 

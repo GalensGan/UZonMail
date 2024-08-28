@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.ComponentModel.DataAnnotations.Schema;
 using UZonMail.DB.SQL.Base;
 using UZonMail.DB.SQL.EmailSending;
-using UZonMail.DB.SQL.MultiTenant;
+using UZonMail.DB.SQL.Organization;
 
 namespace UZonMail.DB.SQL.Permission
 {

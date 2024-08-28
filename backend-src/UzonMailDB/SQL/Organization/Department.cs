@@ -1,6 +1,6 @@
 ﻿using UZonMail.DB.SQL.Base;
 
-namespace UZonMail.DB.SQL.MultiTenant
+namespace UZonMail.DB.SQL.Organization
 {
     /// <summary>
     /// 部门表

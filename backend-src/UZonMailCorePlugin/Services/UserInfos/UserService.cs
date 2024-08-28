@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using UZonMail.Utils.Web.Service;
 using UZonMail.DB.SQL;
-using UZonMail.DB.SQL.MultiTenant;
+using UZonMail.DB.SQL.Organization;
 using UZonMail.Utils.Extensions;
 using UZonMail.Utils.Web.Token;
 using Microsoft.Extensions.Options;

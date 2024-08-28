@@ -62,7 +62,6 @@
 ## 🍇环境要求
 
 1. windows 7 及以上
-2. .NET Framework 4.6.2 及以上，下载地址：[dotnet-framework](https://dotnet.microsoft.com/download/dotnet-framework)
 3. webview2 环境，下载地址：[microsoft-edge/webview2/](https://developer.microsoft.com/zh-cn/microsoft-edge/webview2/)
 4. ASP.NET Core 环境，下载地址：[runtime-aspnetcore-8.0.6-windows-hosting-bundle-installer](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-aspnetcore-8.0.6-windows-hosting-bundle-installer)
 
@@ -70,9 +69,7 @@
 
 ### 安装包
 
-[UZonMail-gitee](https://gitee.com/galensgan/UZonMail/releases/latest)
-
-或者加 QQ 群 877458612 在群文件下载 (更新速度更快)
+[UZonMail Versions](https://cloud.uamazing.cn:52443/#s/-utHpk6w&view=version.md)
 
 ### 手动编译
 
@@ -88,5 +85,5 @@
 
 ## 🍇更多帮助
 
-详细文档已迁移至：[https://galens.uamazing.cn/posts/2020/2QMK677.html](https://galens.uamazing.cn/posts/2020/2QMK677.html)
+详细文档已迁移至：[UZonMail Docs](https://cloud.uamazing.cn:52443/#s/-utHpk6w)
 

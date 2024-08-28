@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using UZonMail.Core.Cache;
 using UZonMail.DB.SQL;
-using UZonMail.DB.SQL.MultiTenant;
+using UZonMail.DB.SQL.Organization;
 using UZonMail.DB.SQL.Settings;
 
 namespace UZonMail.Core.Services.Settings

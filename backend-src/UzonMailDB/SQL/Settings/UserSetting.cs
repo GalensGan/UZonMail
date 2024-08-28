@@ -17,6 +17,12 @@ namespace UZonMail.DB.SQL.Settings
         public int Priority { get; set; }
 
         /// <summary>
+        /// 部门 id
+        /// 若是子账户，则还会从部门中继承设置
+        /// </summary>
+        public long DepartmentId { get; set; }
+
+        /// <summary>
         /// 用户 id
         /// </summary>
         public long UserId { get; set; }
@@ -77,7 +83,7 @@ namespace UZonMail.DB.SQL.Settings
         /// <returns></returns>
         public int GetCooldownMilliseconds()
         {
-            if(MinOutboxCooldownSecond == MaxOutboxCooldownSecond)
+            if (MinOutboxCooldownSecond == MaxOutboxCooldownSecond)
             {
                 return MinOutboxCooldownSecond * 1000;
             }

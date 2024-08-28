@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using UZonMail.DB.SQL.Base;
-using UZonMail.DB.SQL.MultiTenant;
+using UZonMail.DB.SQL.Organization;
 
 namespace UZonMail.DB.SQL.Permission
 {
