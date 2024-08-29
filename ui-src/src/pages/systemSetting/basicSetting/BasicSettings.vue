@@ -1,15 +1,15 @@
 <template>
   <q-list class="basic-settings-container">
     <SendSetting />
-    <OrganizationSetting />
-    <OrganizationSendingSetting />
+    <!-- <OrganizationSetting />
+    <OrganizationSendingSetting /> -->
   </q-list>
 </template>
 
 <script lang="ts" setup>
 import SendSetting from './expansionItems/SendSetting.vue'
-import OrganizationSendingSetting from './expansionItems/OrganizationSendingSetting.vue'
-import OrganizationSetting from './expansionItems/OrganizationSetting.vue'
+// import OrganizationSendingSetting from './expansionItems/OrganizationSendingSetting.vue'
+// import OrganizationSetting from './expansionItems/OrganizationSetting.vue'
 
 </script>
 
