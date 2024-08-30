@@ -1,5 +1,6 @@
 ﻿using log4net;
 using MailKit.Net.Smtp;
+using MailKit.Security;
 using System.Collections.Concurrent;
 using UZonMail.Core.Services.EmailSending.Base;
 using UZonMail.Core.Services.EmailSending.OutboxPool;
@@ -42,7 +43,20 @@ namespace UZonMail.Core.Services.EmailSending.Sender
                     client.ProxyClient = proxyInfo.GetProxyClient(_logger);
                 }
 
-                client.Connect(outbox.SmtpHost, outbox.SmtpPort, outbox.EnableSSL);
+                try
+                {
+                    client.Connect(outbox.SmtpHost, outbox.SmtpPort, outbox.EnableSSL ? SecureSocketOptions.SslOnConnect : SecureSocketOptions.Auto);
+                }
+                catch (SslHandshakeException ex)
+                {
+                    _logger.Warn(ex);
+                    // 证书过期
+                    if (!outbox.Enable)
+                    {
+                        client.Connect(outbox.SmtpHost, outbox.SmtpPort, SecureSocketOptions.None);
+                    }                
+                }
+
                 // Note: only needed if the SMTP server requires authentication
                 // 进行鉴权
 #if DEBUG

@@ -88,11 +88,20 @@ namespace UZonMail.Core.Services.UserInfos
             password = password.Sha256();
             User user = await db.Users.FirstOrDefaultAsync(x => x.UserId == userId && x.Password == password)
                 ?? throw new KnownException("用户名或密码错误");
+
+            // 禁用，则返回错误
+            if (user.Status == UserStatus.ForbiddenLogin)
+                throw new KnownException("该账号已注销");
+
             var userInfo = new User()
             {
                 Id = user.Id,
                 Avatar = user.Avatar,
                 UserId = user.UserId,
+                OrganizationId = user.OrganizationId,
+                DepartmentId = user.DepartmentId,
+                Type = user.Type,
+                Status = user.Status,
             };
 
             // 生成 token
