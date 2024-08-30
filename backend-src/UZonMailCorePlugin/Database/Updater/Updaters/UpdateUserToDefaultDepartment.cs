@@ -13,28 +13,37 @@ namespace UZonMail.Core.Database.Updater.Updaters
         {
             var defaultOrganization = await db.Departments.FirstOrDefaultAsync(x => x.Type == DepartmentType.Organization && !x.IsSystem);
             // 添加默认组织
-            defaultOrganization ??= new Department
+            if (defaultOrganization == null)
             {
-                Name = Department.DefaultOrganizationName,
-                Description = "默认组织",
-                FullPath = Department.DefaultDepartmentName,
-                IsSystem = false,
-                IsHidden = false,
-                Type = DepartmentType.Organization
-            };
+                defaultOrganization = new Department
+                {
+                    Name = Department.DefaultOrganizationName,
+                    Description = "默认组织",
+                    FullPath = Department.DefaultDepartmentName,
+                    IsSystem = false,
+                    IsHidden = false,
+                    Type = DepartmentType.Organization
+                };
+                db.Add(defaultOrganization);
+            }
 
             // 添加默认部门
             var defaultDepartment = await db.Departments.FirstOrDefaultAsync(x => x.Type == DepartmentType.Department && !x.IsSystem);
-            defaultDepartment ??= new Department
+            if(defaultDepartment == null)
             {
-                Name = Department.DefaultDepartmentName,
-                Description = "默认部门",
-                FullPath = $"{Department.DefaultOrganizationName}/{Department.DefaultDepartmentName}",
-                ParentId = defaultOrganization.Id,
-                IsSystem = false,
-                IsHidden = false,
-                Type = DepartmentType.Department
-            };
+                defaultDepartment = new Department
+                {
+                    Name = Department.DefaultDepartmentName,
+                    Description = "默认部门",
+                    FullPath = $"{Department.DefaultOrganizationName}/{Department.DefaultDepartmentName}",
+                    ParentId = defaultOrganization.Id,
+                    IsSystem = false,
+                    IsHidden = false,
+                    Type = DepartmentType.Department
+                };
+                db.Add(defaultDepartment);
+            }
+            await db.SaveChangesAsync();
 
             // 将所有用户切换到默认的部门
             await db.Users.UpdateAsync(x => true, x => x.SetProperty(y => y.OrganizationId, defaultOrganization.Id)

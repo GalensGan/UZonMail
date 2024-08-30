@@ -224,9 +224,10 @@ namespace UZonMail.Core.Controllers.Users
         /// <returns></returns>
         [Authorize(Roles = "Admin")]
         [HttpPut("{userId:long}/type")]
-        public async Task<ResponseResult<bool>> ChangeUserType(long userId, UserType type)
+        public async Task<ResponseResult<bool>> ChangeUserType(long userId, UserType userType)
         {
-            await db.Users.UpdateAsync(x => x.Id == userId, x => x.SetProperty(p => p.Type, type));
+            await db.Users.UpdateAsync(x => x.Id == userId, x => x.SetProperty(p => p.Type, userType));
+            UserSettingsCache.UpdateUserSettings(userId);
             return true.ToSuccessResponse();
         }
 

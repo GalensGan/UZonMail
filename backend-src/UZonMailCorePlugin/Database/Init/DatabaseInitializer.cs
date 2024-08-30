@@ -110,28 +110,36 @@ namespace UZonMail.Core.Database.Init
 
             var defaultOrganization = await _db.Departments.FirstOrDefaultAsync(x => x.Type == DepartmentType.Organization && !x.IsSystem);
             // 添加默认组织
-            defaultOrganization ??= new Department
+            if (defaultOrganization == null)
             {
-                Name = Department.DefaultOrganizationName,
-                Description = "默认组织",
-                FullPath = Department.DefaultDepartmentName,
-                IsSystem = false,
-                IsHidden = false,
-                Type = DepartmentType.Organization
-            };
+                defaultOrganization = new Department
+                {
+                    Name = Department.DefaultOrganizationName,
+                    Description = "默认组织",
+                    FullPath = Department.DefaultDepartmentName,
+                    IsSystem = false,
+                    IsHidden = false,
+                    Type = DepartmentType.Organization
+                };
+                _db.Add(defaultOrganization);
+            }
 
             // 添加默认部门
             var defaultDepartment = await _db.Departments.FirstOrDefaultAsync(x => x.Type == DepartmentType.Department && !x.IsSystem);
-            defaultDepartment ??= new Department
+            if (defaultDepartment == null)
             {
-                Name = Department.DefaultDepartmentName,
-                Description = "默认部门",
-                FullPath = $"{Department.DefaultOrganizationName}/{Department.DefaultDepartmentName}",
-                ParentId = defaultOrganization.Id,
-                IsSystem = false,
-                IsHidden = false,
-                Type = DepartmentType.Department
-            };
+                defaultDepartment = new Department
+                {
+                    Name = Department.DefaultDepartmentName,
+                    Description = "默认部门",
+                    FullPath = $"{Department.DefaultOrganizationName}/{Department.DefaultDepartmentName}",
+                    ParentId = defaultOrganization.Id,
+                    IsSystem = false,
+                    IsHidden = false,
+                    Type = DepartmentType.Department
+                };
+                _db.Add(defaultDepartment);
+            }
 
             // 添加超管
             var adminUser = await _db.Users.FirstOrDefaultAsync(x => x.IsSuperAdmin);
@@ -139,8 +147,8 @@ namespace UZonMail.Core.Database.Init
             {
                 adminUser = new User
                 {
-                    OrganizationId = defaultOrganization.Id,
-                    DepartmentId = defaultDepartment.Id,
+                    OrganizationId = 3,
+                    DepartmentId = 4,
                     UserId = "admin",
                     UserName = "admin",
                     // 密码是进行了 Sha256 二次加密

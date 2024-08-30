@@ -76,11 +76,11 @@ namespace UZonMail.Core.Services.EmailSending
                 await ctx.SaveChangesAsync();
 
                 // 获取用户设置
-                var userSettings = await UserSettingsCache.GetUserSettings(ctx, sendingGroupData.UserId);
+                var settingsReader = await UserSettingsCache.GetUserSettingsReader(ctx, sendingGroupData.UserId);
 
                 // 将数据组装成 SendingItem 保存
                 // 要确保数据已经通过验证
-                var builder = new SendingItemsBuilder(db, sendingGroupData, userSettings, tokenService);
+                var builder = new SendingItemsBuilder(db, sendingGroupData, settingsReader.MaxSendingBatchSize.Value, tokenService);
                 List<SendingItem> items = await builder.GenerateAndSave();
 
                 // 更新发件总数量

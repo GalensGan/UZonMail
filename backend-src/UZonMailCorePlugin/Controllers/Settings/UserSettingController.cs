@@ -64,7 +64,7 @@ namespace UZonMail.Core.Controllers.Settings
             await db.SaveChangesAsync();
 
             // 更新到缓存
-            await UserSettingsCache.UpdateUserSettings(exist);
+            UserSettingsCache.UpdateUserSettings(userId);
 
             return true.ToSuccessResponse();
         }
