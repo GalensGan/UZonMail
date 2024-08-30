@@ -41,14 +41,10 @@ namespace UZonMail.DB.SQL.Organization
         public bool IsSystem { get; set; }
 
         #region 静态方法
-        public static string GetSystemOrganizationName()
-        {
-            return "SystemOrganization";
-        }
-        public static string GetSystemDepartmentName()
-        {
-            return "SystemDepartment";
-        }
+        public static string SystemOrganizationName => "SystemOrganization";
+        public static string SystemDepartmentName => "SystemDepartment";
+        public static string DefaultOrganizationName => "DefaultOrganization";
+        public static string DefaultDepartmentName => "DefaultDepartment";
         #endregion
     }
 }

@@ -37,6 +37,7 @@ namespace UZonMail.DB.SQL
 
         #region 数据表定义
         public DbSet<Organization.Department> Departments { get; set; }
+        public DbSet<Organization.DepartmentSetting> DepartmentSettings { get; set; }
         public DbSet<Organization.User> Users { get; set; }
 
         public DbSet<Permission.PermissionCode> PermissionCodes { get; set; }

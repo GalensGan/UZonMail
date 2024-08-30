@@ -6,6 +6,7 @@ using UZonMail.DB.SQL.Organization;
 using UZonMail.DB.SQL.Files;
 using UZonMail.DB.SQL.EmailSending;
 using UZonMail.Core.Config;
+using UZonMail.DB.SQL.Settings;
 
 namespace UZonMail.Core.Database.Init
 {
@@ -29,12 +30,22 @@ namespace UZonMail.Core.Database.Init
         /// </summary>
         public async Task Init()
         {
+            // 判断数据库是否已经初始化过
+            var initSignal = await _db.SystemSettings.FirstOrDefaultAsync(x => x.Key == "DatabaseInitialized");
+            if (initSignal != null) return;
+
             await InitUser();
             await InitPermission();
             await InitFileStorage();
             await ResetSendingItemsStatus();
             await ResetSendingGroup();
 
+            // 添加初始化标记
+            _db.SystemSettings.Add(new SystemSetting
+            {
+                Key = "DatabaseInitialized",
+                BoolValue = true
+            });
             _db.SaveChanges();
         }
 
@@ -42,7 +53,7 @@ namespace UZonMail.Core.Database.Init
         {
             // 判断是否有默认组织和部门
             var systemDepartments = await _db.Departments.Where(x => x.IsSystem).ToListAsync();
-            string systemOrgName = Department.GetSystemOrganizationName();
+            string systemOrgName = Department.SystemOrganizationName;
             var systemOrganization = systemDepartments.FirstOrDefault(x => x.Name == systemOrgName);
             if (systemOrganization == null)
             {
@@ -53,13 +64,14 @@ namespace UZonMail.Core.Database.Init
                     Description = "系统组织",
                     FullPath = systemOrgName,
                     IsSystem = true,
-                    IsHidden=true,
+                    IsHidden = true,
+                    Type = DepartmentType.Organization
                 };
                 _db.Add(systemOrganization);
             }
 
             // 判断是否有系统级部门
-            string systemDpName = Department.GetSystemDepartmentName();
+            string systemDpName = Department.SystemDepartmentName;
             var systemDepartment = systemDepartments.FirstOrDefault(x => x.Name == systemDpName && x.ParentId == systemOrganization.Id);
             if (systemDepartment == null)
             {
@@ -72,6 +84,7 @@ namespace UZonMail.Core.Database.Init
                     ParentId = systemOrganization.Id,
                     IsSystem = true,
                     IsHidden = true,
+                    Type = DepartmentType.Department,
                 };
                 _db.Add(systemDepartment);
             }
@@ -95,14 +108,39 @@ namespace UZonMail.Core.Database.Init
                 _db.Add(systemUser);
             }
 
-            // 设置超管,防止其它账号权限被撤销
+            var defaultOrganization = await _db.Departments.FirstOrDefaultAsync(x => x.Type == DepartmentType.Organization && !x.IsSystem);
+            // 添加默认组织
+            defaultOrganization ??= new Department
+            {
+                Name = Department.DefaultOrganizationName,
+                Description = "默认组织",
+                FullPath = Department.DefaultDepartmentName,
+                IsSystem = false,
+                IsHidden = false,
+                Type = DepartmentType.Organization
+            };
+
+            // 添加默认部门
+            var defaultDepartment = await _db.Departments.FirstOrDefaultAsync(x => x.Type == DepartmentType.Department && !x.IsSystem);
+            defaultDepartment ??= new Department
+            {
+                Name = Department.DefaultDepartmentName,
+                Description = "默认部门",
+                FullPath = $"{Department.DefaultOrganizationName}/{Department.DefaultDepartmentName}",
+                ParentId = defaultOrganization.Id,
+                IsSystem = false,
+                IsHidden = false,
+                Type = DepartmentType.Department
+            };
+
+            // 添加超管
             var adminUser = await _db.Users.FirstOrDefaultAsync(x => x.IsSuperAdmin);
             if (adminUser == null)
             {
                 adminUser = new User
                 {
-                    OrganizationId = systemOrganization.Id,
-                    DepartmentId = systemDepartment.Id,
+                    OrganizationId = defaultOrganization.Id,
+                    DepartmentId = defaultDepartment.Id,
                     UserId = "admin",
                     UserName = "admin",
                     // 密码是进行了 Sha256 二次加密
@@ -167,7 +205,7 @@ namespace UZonMail.Core.Database.Init
         private async Task ResetSendingItemsStatus()
         {
             // 对所有的 Pending 状态的发件项重置为 Created
-            await _db.SendingItems.UpdateAsync(x => x.Status == SendingItemStatus.Pending, x => x.SetProperty(y => y.Status, SendingItemStatus.Created));          
+            await _db.SendingItems.UpdateAsync(x => x.Status == SendingItemStatus.Pending, x => x.SetProperty(y => y.Status, SendingItemStatus.Created));
         }
 
         private async Task ResetSendingGroup()

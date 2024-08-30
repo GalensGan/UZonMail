@@ -98,6 +98,10 @@ namespace UZonMail.Core.Services.UserInfos
                 Id = user.Id,
                 Avatar = user.Avatar,
                 UserId = user.UserId,
+                OrganizationId = user.OrganizationId,
+                DepartmentId = user.DepartmentId,
+                Type = user.Type,
+                Status = user.Status,
             };
 
             // 生成 token

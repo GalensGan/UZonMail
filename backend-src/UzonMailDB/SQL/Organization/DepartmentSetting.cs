@@ -6,7 +6,7 @@ namespace UZonMail.DB.SQL.Organization
     /// <summary>
     /// 部门元数据
     /// </summary>
-    public class DepartmentMeta : SqlId
+    public class DepartmentSetting : SqlId
     {
         /// <summary>
         /// 部门 Id
@@ -18,6 +18,13 @@ namespace UZonMail.DB.SQL.Organization
         /// </summary>
         public SubUserStrategy SubUserStrategy { get; set; }
 
-
+        /// <summary>
+        /// 从另一个对象中更新
+        /// </summary>
+        /// <param name="departmentSetting"></param>
+        public void UpdateFrom(DepartmentSetting departmentSetting)
+        {
+            SubUserStrategy = departmentSetting.SubUserStrategy;
+        }
     }
 }

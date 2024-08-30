@@ -35,7 +35,7 @@ namespace UZonMail.Core.Services.HostedServices
             // 应用迁移
             context.Database.Migrate();
             await context.Database.EnsureCreatedAsync();
-
+            
             var appConfig = serviceProvider.GetRequiredService<IOptions<AppConfig>>();
             // 初始数据
             var initDb = new DatabaseInitializer(nv, context, appConfig.Value);
