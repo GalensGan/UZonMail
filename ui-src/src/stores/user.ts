@@ -9,32 +9,36 @@ export const useUserInfoStore = defineStore('userInfo', {
   state: () => ({
     token: useSessionStorage('token', '').value,
     access: useSessionStorage('access', []).value as string[],
-    userId: useSessionStorage('userId', '').value,
-    userName: useSessionStorage('userName', '').value,
-    avatar: useSessionStorage('avatar', '').value,
     secretKey: useSessionStorage('secretKey', '').value,
-    installedPlugins: useSessionStorage('installedPlugins', [] as string[]).value
+    installedPlugins: useSessionStorage('installedPlugins', [] as string[]).value,
+    userInfo: useSessionStorage('userInfo', {}).value as IUserInfo
   }),
   getters: {
-    userInfo: (state) => {
-      return {
-        userId: state.userId,
-        userName: state.userName,
-        avatar: state.avatar
-      }
-    },
+    // 用户 id
+    userId: (state) => state.userInfo.userId,
+
+    // 用户名称
+    userName: (state) => state.userInfo.userName,
+
+    // 部门 id
+    departmentId: (state) => state.userInfo.departmentId,
+
+    // 组织 id
+    organizationId: (state) => state.userInfo.organizationId,
+
     userAvatar: (state) => {
       // 判断是否包含 http，若不包含，添加后端的 http
-      const avatar = state.avatar
+      const avatar = state.userInfo.avatar
       if (!avatar) return avatar
 
       if (avatar.startsWith('http')) return avatar
       const url = new URL(avatar, process.env.BASE_URL?.replace('/api/v1', ''))
       return url.toString()
     },
+
     isAdmin: (state) => {
       // 目前使用 * 或者 admin 来表示超管权限
-      return state.access.includes('*') || state.userId === 'admin'
+      return state.access.includes('*') || state.userInfo.userId === 'admin'
     },
     // smtp 加密解密密钥
     smtpPasswordSecretKeys: (state) => {
@@ -62,13 +66,8 @@ export const useUserInfoStore = defineStore('userInfo', {
     },
 
     setUserInfo (userInfo: IUserInfo) {
-      this.userId = userInfo.userId
-      this.userName = userInfo.userName
-      this.avatar = userInfo.avatar
-
-      useSessionStorage('userId', this.userId).value = this.userId
-      useSessionStorage('userName', this.userName).value = this.userName
-      useSessionStorage('avatar', this.avatar).value = this.avatar
+      this.userInfo = userInfo
+      useSessionStorage('userInfo', this.userInfo).value = userInfo
     },
 
     setAccess (access: string[]) {
@@ -154,8 +153,8 @@ export const useUserInfoStore = defineStore('userInfo', {
      * @param avatarUrl
      */
     updateUserAvatar (avatarUrl: string) {
-      this.avatar = avatarUrl
-      useSessionStorage('avatar', avatarUrl).value = avatarUrl
+      this.userInfo.avatar = avatarUrl
+      useSessionStorage('userInfo', {}).value = this.userInfo
     }
   }
 })

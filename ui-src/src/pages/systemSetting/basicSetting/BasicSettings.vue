@@ -1,16 +1,19 @@
 <template>
   <q-list class="basic-settings-container">
     <SendSetting />
-    <!-- <OrganizationSetting />
-    <OrganizationSendingSetting /> -->
+    <OrganizationSetting v-if="isEnterpriseUser" />
+    <OrganizationSendingSetting v-if="isEnterpriseUser" />
   </q-list>
 </template>
 
 <script lang="ts" setup>
 import SendSetting from './expansionItems/SendSetting.vue'
-// import OrganizationSendingSetting from './expansionItems/OrganizationSendingSetting.vue'
-// import OrganizationSetting from './expansionItems/OrganizationSetting.vue'
+import OrganizationSetting from './expansionItems/OrganizationSetting.vue'
+import OrganizationSendingSetting from './expansionItems/OrganizationSendingSetting.vue'
 
+import { usePermission } from 'src/compositions/permission'
+const { hasEnterpriseAccess } = usePermission()
+const isEnterpriseUser = hasEnterpriseAccess()
 </script>
 
 <style lang="scss" scoped></style>

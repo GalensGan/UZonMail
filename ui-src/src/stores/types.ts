@@ -15,4 +15,6 @@ export interface IUserInfo {
   avatar: string,
   type: UserType,
   status: UserStatus,
+  organizationId: number,
+  departmentId: number
 }

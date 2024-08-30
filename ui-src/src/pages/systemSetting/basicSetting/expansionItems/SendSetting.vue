@@ -1,7 +1,7 @@
 <template>
-  <q-expansion-item popup icon="flight_takeoff" label="发件设置" caption="设置发件间隔、最大发件量等"
-    header-class="text-primary card-like-borderless" @after-show="onAfterShow" group="settings1">
-    <div class="q-pa-sm">
+  <q-expansion-item popup icon="flight_takeoff" :label="label" :caption="caption"
+    header-class="text-primary card-like-borderless" @before-show="onBeforeShow" group="settings1">
+    <div class="q-pa-md">
       <div class="row justify-start items-center q-mb-sm ">
         <q-input outlined class="col" standout dense v-model="outboxSettingRef.maxSendCountPerEmailDay" :debounce="500"
           type="number" label="单个发件箱每日最大发件量" placeholder="为 0 时表示不限制">
@@ -46,6 +46,30 @@ import AsyncTooltip from 'src/components/asyncTooltip/AsyncTooltip.vue'
 import { IUserSetting, getCurrentUserSetting, updateUserSetting } from 'src/api/userSetting'
 import { useUserInfoStore } from 'src/stores/user'
 import { notifySuccess } from 'src/utils/dialog'
+
+const props = defineProps({
+  label: {
+    type: String,
+    default: '发件设置'
+  },
+  caption: {
+    type: String,
+    default: '设置发件间隔、最大发件量等'
+  },
+
+  // 获取设置
+  getSettingApi: {
+    type: Function,
+    default: () => getCurrentUserSetting
+  },
+
+  // 更新设置
+  updateSettingApi: {
+    type: Function,
+    default: () => updateUserSetting
+  }
+})
+
 const userInfoStore = useUserInfoStore()
 const outboxSettingRef: Ref<IUserSetting> = ref({
   userId: userInfoStore.userId,
@@ -58,9 +82,9 @@ const outboxSettingRef: Ref<IUserSetting> = ref({
 })
 // 获取设置
 let updateSettingSignal = true
-async function onAfterShow () {
+async function onBeforeShow () {
   // 获取设置
-  const { data: setting } = await getCurrentUserSetting()
+  const { data: setting } = await props.getSettingApi()
   if (setting) {
     updateSettingSignal = false
     outboxSettingRef.value = setting
@@ -74,7 +98,7 @@ watch(outboxSettingRef, async () => {
     return
   }
 
-  await updateUserSetting(outboxSettingRef.value)
+  await props.updateSettingApi(outboxSettingRef.value)
 
   notifySuccess('设置更改已生效')
 }, { deep: true })

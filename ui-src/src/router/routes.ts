@@ -182,7 +182,8 @@ export const dynamicRoutes: ExtendedRouteRecordRaw[] = [
         path: 'basicSetting',
         meta: {
           icon: 'tune',
-          label: '基础设置'
+          label: '基础设置',
+          denies: ['subUser']
         },
         component: () => import('pages/systemSetting/basicSetting/BasicSettings.vue')
       },
