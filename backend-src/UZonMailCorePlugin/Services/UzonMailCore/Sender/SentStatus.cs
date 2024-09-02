@@ -22,9 +22,9 @@
         Failed = 1 << 2,
 
         /// <summary>
-        /// 发件箱连接错误
+        /// 发件箱错误
         /// </summary>
-        OutboxConnectError = 1 << 3,
+        OutboxError = 1 << 3,
 
         /// <summary>
         /// 空发件组

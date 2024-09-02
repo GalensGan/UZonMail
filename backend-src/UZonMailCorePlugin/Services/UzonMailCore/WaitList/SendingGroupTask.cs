@@ -625,7 +625,7 @@ namespace UZonMail.Core.Services.EmailSending.WaitList
         public async Task EmailItemSendCompleted(SendingContext sendingContext)
         {
             // 若是 outbox 连接错误，则移除所有相关发件项
-            if (sendingContext.SendResult.SentStatus.HasFlag(SentStatus.OutboxConnectError))
+            if (sendingContext.SendResult.SentStatus.HasFlag(SentStatus.OutboxError))
             {
                 await RemoveSpecificSendingItems(sendingContext);
             }

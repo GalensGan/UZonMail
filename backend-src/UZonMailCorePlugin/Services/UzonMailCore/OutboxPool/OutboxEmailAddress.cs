@@ -302,7 +302,7 @@ namespace UZonMail.Core.Services.EmailSending.OutboxPool
             }
 
             // 若是发件连接失败，则移除
-            if (sendingContext.SendResult.SentStatus.HasFlag(SentStatus.OutboxConnectError) 
+            if (sendingContext.SendResult.SentStatus.HasFlag(SentStatus.OutboxError) 
                 || sendingContext.SendResult.SentStatus.HasFlag(SentStatus.EmptySendingGroup))
             {
                 ShouldDispose = true;

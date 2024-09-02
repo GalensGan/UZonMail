@@ -2,6 +2,7 @@
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using System.Collections.Concurrent;
+using Uamazing.Utils.Environments;
 using UZonMail.Core.Services.EmailSending.Base;
 using UZonMail.Core.Services.EmailSending.OutboxPool;
 using UZonMail.Core.Services.EmailSending.Pipeline;
@@ -43,6 +44,7 @@ namespace UZonMail.Core.Services.EmailSending.Sender
                     client.ProxyClient = proxyInfo.GetProxyClient(_logger);
                 }
 
+                // 对证书过期进行兼容处理
                 try
                 {
                     client.Connect(outbox.SmtpHost, outbox.SmtpPort, outbox.EnableSSL ? SecureSocketOptions.SslOnConnect : SecureSocketOptions.Auto);
@@ -54,15 +56,13 @@ namespace UZonMail.Core.Services.EmailSending.Sender
                     if (!outbox.Enable)
                     {
                         client.Connect(outbox.SmtpHost, outbox.SmtpPort, SecureSocketOptions.None);
-                    }                
+                    }
                 }
 
                 // Note: only needed if the SMTP server requires authentication
                 // 进行鉴权
-#if DEBUG
-#else
-                if (!string.IsNullOrEmpty(outbox.AuthPassword)) client.Authenticate(outbox.AuthUserName, outbox.AuthPassword);
-#endif
+                if (!Env.IsDebug)
+                    if (!string.IsNullOrEmpty(outbox.AuthPassword)) client.Authenticate(outbox.AuthUserName, outbox.AuthPassword);
                 _smptClients.TryAdd(key, client);
                 return new FuncResult<SmtpClient>() { Data = client };
             }

@@ -215,7 +215,7 @@ namespace UZonMail.Core.Services.EmailSending.Sender
                 && string.IsNullOrEmpty(SendItemMeta.OutboxEmail))
             {
                 // TODO: 使用其它发件箱重试
-                if (sendCompleteResult.SentStatus.HasFlag(SentStatus.OutboxConnectError))
+                if (sendCompleteResult.SentStatus.HasFlag(SentStatus.OutboxError))
                 {
                     // 不再使用当前发件箱发件
                     // 向发件箱中添加标记
