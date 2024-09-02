@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using UZonMail.Core.Config;
 using UZonMail.Core.Database.Updater;
 using UZonMail.Core.Utils.Database;
 using UZonMail.DB.SQL;
@@ -19,7 +20,7 @@ namespace UZonMail.Core.Database.Updater.Updaters
         /// 开始更新数据
         /// </summary>
         /// <returns></returns>
-        public async Task Update(SqlContext db)
+        public async Task Update(SqlContext db, AppConfig config)
         {
             // 开始更新
             var systemDpIds = new List<long>() { 1, 2 };

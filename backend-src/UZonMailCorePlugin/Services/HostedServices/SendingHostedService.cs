@@ -35,14 +35,15 @@ namespace UZonMail.Core.Services.HostedServices
             // 应用迁移
             context.Database.Migrate();
             await context.Database.EnsureCreatedAsync();
-            
+
             var appConfig = serviceProvider.GetRequiredService<IOptions<AppConfig>>();
-            // 初始数据
-            var initDb = new DatabaseInitializer(nv, context, appConfig.Value);
-            await initDb.Init();
+
+            // 数据初始化
+            var initializer = new DatabaseInitializer(nv, context, appConfig.Value);
+            await initializer.Init();
 
             // 数据升级
-            var dataUpdater = new DataUpdaterManager(context);
+            var dataUpdater = new DataUpdaterManager(context, appConfig.Value);
             await dataUpdater.Update();
         }
 
@@ -64,7 +65,7 @@ namespace UZonMail.Core.Services.HostedServices
             var job = JobBuilder.Create<SentCountReseter>()
                 .WithIdentity(jobKey)
                 .Build();
-            
+
             var trigger = TriggerBuilder.Create()
                 .ForJob(jobKey)
                 .StartAt(new DateTimeOffset(DateTime.Now.AddDays(1).Date)) // 明天凌晨开始

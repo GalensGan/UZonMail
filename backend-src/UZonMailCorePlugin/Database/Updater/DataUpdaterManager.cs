@@ -3,6 +3,7 @@ using UZonMail.DB.SQL;
 using UZonMail.DB.SQL.Settings;
 using UZonMail.Core.Database.Updater.Updaters;
 using System.Reflection;
+using UZonMail.Core.Config;
 
 namespace UZonMail.Core.Database.Updater
 {
@@ -10,9 +11,9 @@ namespace UZonMail.Core.Database.Updater
     /// 数据升级管理器
     /// </summary>
     /// <param name="db"></param>
-    public class DataUpdaterManager(SqlContext db)
+    public class DataUpdaterManager(SqlContext db, AppConfig config)
     {
-        private readonly Version _requiredVersion = new("1.0.2.0");
+        public readonly static Version RequiredVersion = new("1.0.2.0");
         private string _settingKey = "DataVersion";
 
         /// <summary>
@@ -40,6 +41,7 @@ namespace UZonMail.Core.Database.Updater
         /// <summary>
         /// 更新数据
         /// </summary>
+        /// <param name="config"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
         public async Task Update()
@@ -58,24 +60,24 @@ namespace UZonMail.Core.Database.Updater
             }
 
             var originVersion = new Version(versionSetting.StringValue);
-            if (originVersion > _requiredVersion)
+            if (originVersion > RequiredVersion)
                 throw new ArgumentException("数据库版本高于当前所需版本，请更新程序后再使用");
 
             // 若版本一致时，说明已经更新过
-            if (originVersion == _requiredVersion) return;
+            if (originVersion == RequiredVersion) return;
 
             // 执行数据库升级
             // 实例化所有的更新类
-            var updaters = GetUpdaters().Where(x => x != null).Where(x => x.Version > originVersion && x.Version <= _requiredVersion)
+            var updaters = GetUpdaters().Where(x => x != null).Where(x => x.Version > originVersion && x.Version <= RequiredVersion)
                 .OrderBy(x => x.Version); // 升序排列
             foreach (var updater in updaters)
             {
-                await updater.Update(db);
+                await updater.Update(db, config);
             }
 
             // 更新版本号
-            versionSetting.StringValue = _requiredVersion.ToString();
+            versionSetting.StringValue = RequiredVersion.ToString();
             await db.SaveChangesAsync();
-        }
+        }  
     }
 }

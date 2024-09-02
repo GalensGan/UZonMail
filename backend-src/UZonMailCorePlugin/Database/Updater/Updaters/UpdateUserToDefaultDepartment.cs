@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using UZonMail.Core.Config;
 using UZonMail.Core.Utils.Database;
 using UZonMail.DB.SQL;
 using UZonMail.DB.SQL.Organization;
@@ -9,7 +10,7 @@ namespace UZonMail.Core.Database.Updater.Updaters
     {
         public Version Version => new("1.0.2.0");
 
-        public async Task Update(SqlContext db)
+        public async Task Update(SqlContext db, AppConfig config)
         {
             var defaultOrganization = await db.Departments.FirstOrDefaultAsync(x => x.Type == DepartmentType.Organization && !x.IsSystem);
             // 添加默认组织
@@ -29,7 +30,7 @@ namespace UZonMail.Core.Database.Updater.Updaters
 
             // 添加默认部门
             var defaultDepartment = await db.Departments.FirstOrDefaultAsync(x => x.Type == DepartmentType.Department && !x.IsSystem);
-            if(defaultDepartment == null)
+            if (defaultDepartment == null)
             {
                 defaultDepartment = new Department
                 {
