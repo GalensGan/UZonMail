@@ -23,7 +23,6 @@
       <q-page class="q-px-md q-pb-md full-height full-with">
         <q-scroll-area class="page__scroll-area full-height full-with" :thumb-style="thumbStyle"
           :content-style="contentStyle" :content-active-style="contentActiveStyle">
-          <!--参考：https://juejin.cn/post/7083793875390693383-->
           <router-view v-slot="{ Component }">
             <transition appear enter-active-class="animated fadeInDown">
               <keep-alive :include="cachedViews">
@@ -45,10 +44,10 @@ import MenuOpenButton from '../components/menuOpen/menuOpenButton.vue'
 import UserInfo from '../components/userInfo/userInfo.vue'
 import BreadcrumbsIndex from '../components/breadcrumbs/breadcrumbsIndex.vue'
 import TagsView from '../components/tags/tagsView.vue'
+import GlobalSignalR from '../components/signalR/GlobalSignalR.vue'
+import { useScrollAreaStyle } from 'src/compositions/scrollUtils'
 // import LeftSidebarIndex from '../components/leftSidebar/leftSidebarIndex.vue'
 import MenuTree from '../components/leftSidebar/menuTree.vue'
-import GlobalSignalR from '../components/signalR/GlobalSignalR.vue'
-
 import { getRouteId, useRouteHistories } from '../components/tags/routeHistories'
 
 const drawer = ref(false)
@@ -62,15 +61,24 @@ if ($q.platform.is.desktop && $q.screen.gt.md) {
 }
 
 // 缓存
-const routeHistories = useRouteHistories()
+const { routes: routeHistories } = useRouteHistories()
 const cachedViews = computed(() => {
   const results = routeHistories.value.filter(x => !x.noCache).map(x => x.name)
-  logger.debug('[NormalLayout] cachedViews:', results)
+  logger.debug('[Layout] cachedViews:', results)
   return results
 })
 
-import { useScrollAreaStyle } from 'src/compositions/scrollUtils'
 const { contentStyle, contentActiveStyle, thumbStyle } = useScrollAreaStyle()
+
+onMounted(() => {
+  logger.debug('[Layout] onMounted')
+})
+</script>
+
+<script lang="ts">
+export default {
+  name: 'NormalLayout'
+}
 </script>
 
 <style lang="scss" scoped>

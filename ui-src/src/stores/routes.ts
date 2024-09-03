@@ -61,10 +61,8 @@ export const useRoutesStore = defineStore('routes', {
       const accessRoutes = filterDynamicRouesByAccess(dynamicRoutes)
       logger.debug('[Router] 添加的动态路由：', accessRoutes)
       const router = useRouter()
-      const allDynamicRoutes = [...accessRoutes, ...exceptionRoutes]
-      allDynamicRoutes.forEach(route => {
-        router.addRoute(route)
-      })
+      accessRoutes.forEach(route => router.addRoute(route))
+      exceptionRoutes.forEach(route => router.addRoute(route))
 
       // 将静态和动态路由保存到 store 中
       this.loadedRoutes = [...constantRoutes, ...accessRoutes]

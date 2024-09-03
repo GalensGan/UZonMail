@@ -1,5 +1,5 @@
 import { ExtendedRouteRecordRaw } from './types'
-import NormalLayout from 'layouts/normalLayout/normalLayout.vue'
+const NormalLayout = () => import('../layouts/normalLayout/normalLayout.vue')
 
 /**
  * 使用说明
@@ -94,7 +94,7 @@ export const dynamicRoutes: ExtendedRouteRecordRaw[] = [
       label: '模板管理',
       icon: 'article'
     },
-    redirect: '/template-manage/view',
+    redirect: '/template-manage/index',
     children: [
       {
         name: 'emailTemplates',
@@ -175,11 +175,11 @@ export const dynamicRoutes: ExtendedRouteRecordRaw[] = [
       label: '系统设置',
       icon: 'settings_suggest'
     },
-    redirect: '/system/user-manage',
+    redirect: '/system/user-manager',
     children: [
       {
         name: 'BasicSetting',
-        path: 'basicSetting',
+        path: 'basic-setting',
         meta: {
           icon: 'tune',
           label: '基础设置',

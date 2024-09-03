@@ -61,8 +61,7 @@ export default route(function (/* { store, ssrContext } */) {
     if (to.path !== '/login' && routeStore.addDynamicRoutes()) {
       logger.debug('[Router] 添加动态路由')
       // 重新导航
-      router.replace(to)
-      return
+      return next({ ...to, replace: true })
     }
     next()
   })
