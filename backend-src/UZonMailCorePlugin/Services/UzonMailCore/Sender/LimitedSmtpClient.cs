@@ -2,6 +2,7 @@
 using MailKit;
 using MailKit.Net.Smtp;
 using MimeKit;
+using Uamazing.Utils.Environments;
 
 namespace UZonMail.Core.Services.EmailSending.Sender
 {
@@ -40,10 +41,10 @@ namespace UZonMail.Core.Services.EmailSending.Sender
                 await Task.Delay(timeInverval);
             }
 
-#if DEBUG
-            return "send by debug";
-#endif
-            return await base.SendAsync(message, cancellationToken, progress);
+            var sentMessage = "send by debug";
+            if (!Env.IsDebug)
+                sentMessage = await base.SendAsync(message, cancellationToken, progress);
+            return sentMessage;
         }
     }
 }

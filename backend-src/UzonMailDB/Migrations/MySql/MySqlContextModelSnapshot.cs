@@ -836,6 +836,34 @@ namespace UZonMailService.Migrations.MySql
                     b.ToTable("Departments");
                 });
 
+            modelBuilder.Entity("UZonMail.DB.SQL.Organization.DepartmentSetting", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<long>("DepartmentId")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsHidden")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<int>("SubUserStrategy")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DepartmentSettings");
+                });
+
             modelBuilder.Entity("UZonMail.DB.SQL.Organization.User", b =>
                 {
                     b.Property<long>("Id")

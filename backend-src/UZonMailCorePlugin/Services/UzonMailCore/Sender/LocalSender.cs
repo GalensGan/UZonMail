@@ -1,5 +1,7 @@
 ﻿
 using log4net;
+using MailKit;
+using MailKit.Net.Imap;
 using MailKit.Net.Proxy;
 using MailKit.Net.Smtp;
 using MimeKit;
@@ -35,11 +37,11 @@ namespace UZonMail.Core.Services.EmailSending.Sender
                 return;
             }
 
+            // 参考：https://github.com/jstedfast/MailKit/tree/master/Documentation/Examples
+            // 本机发件逻辑
+            var message = new MimeMessage();
             try
             {
-                // 参考：https://github.com/jstedfast/MailKit/tree/master/Documentation/Examples
-                // 本机发件逻辑
-                var message = new MimeMessage();
                 // 发件人
                 message.From.Add(new MailboxAddress(sendItem.Outbox.Name, sendItem.Outbox.Email));
                 // 收件人、抄送、密送           
@@ -71,7 +73,6 @@ namespace UZonMail.Core.Services.EmailSending.Sender
                         return new MailboxAddress(x, x);
                     }));
                 }
-
                 // 主题
                 message.Subject = sendItem.GetSubject();
                 // 正文
@@ -91,35 +92,72 @@ namespace UZonMail.Core.Services.EmailSending.Sender
                     lastOne.ContentDisposition.FileName = attachment.Item2;
                 }
                 message.Body = bodyBuilder.ToMessageBody();
-
-
-                var clientResult = await SmtpClientFactory.GetSmtpClientAsync(sendingContext, sendItem.Outbox, sendItem.ProxyInfo);
-                // 若返回 null,说明这个发件箱不能建立 smtp 连接，对它进行取消
-                if (!clientResult)
-                {
-                    sendingContext.SetSendResult(new SendResult(false, $"发件箱 {sendItem.Outbox.Email} 错误。{clientResult.Message}") { SentStatus = SentStatus.OutboxConnectError });
-                }
-                else
-                {
-                    //throw new NullReferenceException("测试报错");
-                    var client = clientResult.Data;
-                    string sendResult = await client.SendAsync(message);
-                    var successResult = new SendResult(true, sendResult);
-                    sendingContext.SetSendResult(successResult);
-                }
-
-                _logger.Info($"邮件发送完成：{sendItem.Outbox.Email} -> {string.Join(",", sendItem.Inboxes.Select(x => x.Email))}");
-                await EmailItemSendCompleted(sendingContext);
-                return;
             }
             catch (Exception ex)
             {
-                _logger.Error($"使用 {sendItem.Outbox.Email} 向 {sendItem.Inboxes.Select(x=>x.Email)} 发送邮件发生错误。",ex);
+                // 非发件错误
+                _logger.Error($"使用 {sendItem.Outbox.Email} 向 {sendItem.Inboxes.Select(x => x.Email)} 发送邮件发生错误。", ex);
                 var errorResult = new SendResult(false, ex.Message);
                 sendingContext.SetSendResult(errorResult);
                 await EmailItemSendCompleted(sendingContext);
                 return;
             }
+
+            try
+            {
+                var clientResult = await SmtpClientFactory.GetSmtpClientAsync(sendingContext, sendItem.Outbox, sendItem.ProxyInfo);
+                // 若返回 null,说明这个发件箱不能建立 smtp 连接，对它进行取消
+                if (!clientResult)
+                {
+                    sendingContext.SetSendResult(new SendResult(false, $"发件箱 {sendItem.Outbox.Email} 错误。{clientResult.Message}") { SentStatus = SentStatus.OutboxError });
+                    return;
+                }
+
+                // throw new NullReferenceException("测试报错");
+                var client = clientResult.Data;
+                string sendResult = await client.SendAsync(message);
+                _logger.Info($"邮件发送完成：{sendItem.Outbox.Email} -> {string.Join(",", sendItem.Inboxes.Select(x => x.Email))}");
+
+                await FinishSending(sendingContext, true, sendResult);
+                return;
+            }
+            catch (SmtpCommandException smtpCommandException)
+            {
+                if (smtpCommandException.ErrorCode == SmtpErrorCode.RecipientNotAccepted)
+                {
+                    // 说明是发件箱错误
+                    _logger.Warn(smtpCommandException);
+                    await FinishSending(sendingContext, false, smtpCommandException.Message);
+                    return;
+                }
+
+                _logger.Error(smtpCommandException);
+                await FinishSending(sendingContext, false, smtpCommandException.Message, SentStatus.OutboxError);
+                return;
+            }
+            catch (Exception error)
+            {
+                _logger.Error(error);
+                await FinishSending(sendingContext, false, error.Message, SentStatus.OutboxError);
+            }
+        }
+
+        /// <summary>
+        /// 结束发送
+        /// </summary>
+        /// <param name="sendingContext"></param>
+        /// <param name="ok"></param>
+        /// <param name="message"></param>
+        /// <param name="sentStatus"></param>
+        /// <returns></returns>
+        private async Task FinishSending(SendingContext sendingContext, bool ok, string message, SentStatus sentStatus = SentStatus.OK)
+        {
+            var successResult = new SendResult(ok, message)
+            {
+                SentStatus = sentStatus
+            };
+            sendingContext.SetSendResult(successResult);
+            await EmailItemSendCompleted(sendingContext);
         }
 
         /// <summary>

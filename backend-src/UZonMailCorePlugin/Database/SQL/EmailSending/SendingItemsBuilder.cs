@@ -15,12 +15,12 @@ namespace UZonMail.Core.Database.SQL.EmailSending
     /// </summary>
     /// <param name="group"></param>
     /// <param name="userSetting"></param>
-    public class SendingItemsBuilder(SqlContext db, SendingGroup group, UserSetting userSetting, TokenService tokenService)
+    public class SendingItemsBuilder(SqlContext db, SendingGroup group, int maxSendingBatchSize, TokenService tokenService)
     {
         /// <summary>
         /// 批量发件时的大小
         /// </summary>
-        private int _batchSize = userSetting.MaxSendingBatchSize;
+        private int _batchSize = maxSendingBatchSize;
 
         /// <summary>
         /// 生成并保存

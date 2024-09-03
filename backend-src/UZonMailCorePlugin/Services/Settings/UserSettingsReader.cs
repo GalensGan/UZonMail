@@ -66,6 +66,11 @@ namespace UZonMail.Core.Services.Settings
         [NotMapped]
         public List<string> ReplyToEmailsList => ReplyToEmails.Value.SplitBySeparators().Distinct().ToList();
 
+        /// <summary>
+        /// 最大重试次数
+        /// </summary>
+        public Lazy<int> MaxRetryCount => GetIntSetting(x => x.MaxRetryCount);
+
         #region 公开方法
         /// <summary>
         /// 获取冷却时间的毫秒数

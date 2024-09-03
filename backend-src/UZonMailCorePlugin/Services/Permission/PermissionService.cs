@@ -72,9 +72,13 @@ namespace UZonMail.Core.Services.Permission
             cacheValues ??= await UpdateUserPermissionsCache(userId);
 
             // 添加管理员权限码
-            var user = await db.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Id == userId);
-            if (user != null && user.IsSuperAdmin)
+            var user = await db.Users.AsNoTracking().FirstAsync(x => x.Id == userId);
+            if (user.IsSuperAdmin)
                 cacheValues.AddRange(["admin", "*"]);
+
+            // 如果是子账户，添加子账户权限码
+            if (user.Type == UserType.SubUser)
+                cacheValues.Add("subUser");
 
             return cacheValues;
         }
