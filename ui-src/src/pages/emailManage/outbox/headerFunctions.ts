@@ -222,6 +222,8 @@ export function useHeaderFunction (emailGroup: Ref<IEmailGroupListItem>,
 
   // 导入发件箱
   async function onImportOutboxClick (emailGroupId: number | null = null) {
+    if (typeof emailGroupId !== 'number') emailGroupId = emailGroup.value.id as number
+
     const data = await readExcel({
       sheetIndex: 0,
       selectSheet: true,

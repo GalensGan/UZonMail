@@ -11,7 +11,7 @@
           <CreateBtn tooltip="新增发件箱" @click="onNewOutboxClick" :disable="!isValidEmailGroup"
             tooltip-when-disabled="请先添加组" />
           <ExportBtn label="模板" tooltip="导出发件箱模板" @click="onExportOutboxTemplateClick" />
-          <ImportBtn tooltip="导入发件箱" @click="onImportOutboxClick" :disable="!isValidEmailGroup"
+          <ImportBtn tooltip="导入发件箱" @click="onImportOutboxClick()" :disable="!isValidEmailGroup"
             tooltip-when-disabled="请先添加组" />
         </div>
       </template>

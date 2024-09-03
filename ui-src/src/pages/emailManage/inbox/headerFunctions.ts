@@ -2,13 +2,11 @@
 import { showDialog } from 'src/components/popupDialog/PopupDialog'
 import { IPopupDialogParams, PopupDialogFieldType } from 'src/components/popupDialog/types'
 import { IEmailGroupListItem } from '../components/types'
-
 import { IInbox, createInbox, createInboxes } from 'src/api/emailBox'
-
 import { notifyError, notifySuccess, notifyUntil } from 'src/utils/dialog'
 import { IExcelColumnMapper, readExcel, writeExcel } from 'src/utils/file'
-
 import { isEmail } from 'src/utils/validator'
+import logger from 'loglevel'
 
 export function getInboxFields () {
   return [
@@ -116,6 +114,9 @@ export function useHeaderFunction (emailGroup: Ref<IEmailGroupListItem>,
 
   // 导入发件箱
   async function onImportInboxClick (emailGroupId: number | null = null) {
+    if (typeof emailGroupId !== 'number') emailGroupId = emailGroup.value.id as number
+    logger.debug(`[Inbox] import inboxes, emailGroupId: ${emailGroupId}, currentEmailGroupId: ${emailGroup.value.id}`)
+
     const data = await readExcel({
       sheetIndex: 0,
       selectSheet: true,

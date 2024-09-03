@@ -11,6 +11,8 @@ import PreviewEmailSendingBody from './components/PreviewEmailSendingBody.vue'
 import SendingProgress from '../sendingProgress/SendingProgress.vue'
 import SelectScheduleDate from './components/SelectScheduleDate.vue'
 
+import logger from 'loglevel'
+
 /**
  * 使用底部功能定义
  * @param emailInfo
@@ -46,6 +48,8 @@ export function useBottomFunctions (emailInfo: Ref<IEmailCreateInfo>) {
       if (data.outbox) outboxesCount++
       if (data.templateId || data.templateName || data.body) bodiesCount++
     }
+
+    logger.debug(`[NewEmail] inbox count: ${inboxesCount}, outbox count: ${outboxesCount}, body count: ${bodiesCount}, data count: ${dataList.length}`)
 
     return {
       inboxStatus: formateExcelDataValidateResult(inboxesCount, dataList.length),

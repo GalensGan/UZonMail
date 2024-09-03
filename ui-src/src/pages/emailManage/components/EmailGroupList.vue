@@ -20,10 +20,10 @@
         :active="item.active" active-class="text-secondary" @click="onItemClick(item)">
         <div class="row justify-between no-wrap items-center full-width">
           <div>
-            <q-icon v-if="item.icon" :name="item.icon" size="sm" />
+            <q-icon color="primary" v-if="item.icon" :name="item.icon" size="sm" />
 
             <q-checkbox v-if="selectable && item.selectable !== false" dense v-model="item.selected"
-              @click="onItemCheckboxClicked(item)" color="secondary" class="q-ml-xs">
+              @click="onItemCheckboxClicked(item)" color="secondary" class="q-ml-sm" keep-color>
             </q-checkbox>
           </div>
 
