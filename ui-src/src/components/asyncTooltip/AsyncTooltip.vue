@@ -112,7 +112,7 @@ async function generateTooltips (tooltip: Array<string> | ((params?: object) => 
     tooltipResults.push(...resultsTemp)
   }
 
-  logger.debug('[tooltip] tooltipsResult', tooltipResults)
+  logger.debug('[Tooltip] tooltipsResult', tooltipResults)
 
   return tooltipResults
 }

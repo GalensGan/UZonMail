@@ -25,11 +25,11 @@
 import ContextMenu from 'src/components/contextMenu/ContextMenu.vue'
 
 import { IRouteHistory } from './types'
-import { useRouteHistories, removeHistory } from './routeHistories'
+import { useRouteHistories } from './routeHistories'
 import { IContextMenuItem } from 'src/components/contextMenu/types'
 
 // 显示和跳转 tag
-const routes = useRouteHistories()
+const { routes, removeHistory } = useRouteHistories()
 function getTagClass (item: IRouteHistory) {
   return {
     'bg-primary': item.isActive,
