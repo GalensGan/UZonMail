@@ -55,5 +55,24 @@ namespace UZonMail.DB.SQL.Emails
         /// 默认的分组名
         /// </summary>
         public static string DefaultGroupName => "未分组";
+
+        /// <summary>
+        /// 获取默认的邮箱组
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="emailGroupType"></param>
+        /// <returns></returns>
+        public static EmailGroup GetDefaultEmailGroup(long userId, EmailGroupType emailGroupType)
+        {
+            return new EmailGroup()
+            {
+                IsDefault = true,
+                Name = DefaultGroupName,
+                Description = "默认邮箱组",
+                Order = 0,
+                Type = emailGroupType,
+                UserId = userId,
+            };
+        }
     }
 }

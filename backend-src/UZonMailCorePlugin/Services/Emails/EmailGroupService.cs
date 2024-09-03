@@ -40,15 +40,7 @@ namespace UZonMail.Core.Services.Emails
                 .FirstOrDefaultAsync();
             if (defaultGroup == null)
             {
-                defaultGroup = new EmailGroup()
-                {
-                    IsDefault = true,
-                    Name = EmailGroup.DefaultGroupName,
-                    Description = "默认邮箱组",
-                    Order = 0,
-                    Type = groupType,
-                    UserId = tokenPayloads.UserId,
-                };
+                defaultGroup = EmailGroup.GetDefaultEmailGroup(tokenPayloads.UserId, groupType);
                 await db.EmailGroups.AddAsync(defaultGroup);
             }
             await db.SaveChangesAsync();
