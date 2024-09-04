@@ -41,5 +41,16 @@ namespace UZonMail.DB.SQL.Files
         /// 用户 Id
         /// </summary>
         public long UserId { get; set; }
+
+        /// <summary>
+        /// 访问次数
+        /// </summary>
+        public int VisitedCount { get; set; }
+
+        /// <summary>
+        /// 最大访问次数
+        /// 为 0 表示不限制
+        /// </summary>
+        public int MaxVisitCount { get; set; }
     }
 }

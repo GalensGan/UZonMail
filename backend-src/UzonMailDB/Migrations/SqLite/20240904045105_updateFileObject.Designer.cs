@@ -2,17 +2,20 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using UZonMail.DB.SqLite;
 
 #nullable disable
 
-namespace UZonMailService.Migrations.SqLite
+namespace UZonMail.DB.Migrations.SqLite
 {
     [DbContext(typeof(SqLiteContext))]
-    partial class SqLiteContextModelSnapshot : ModelSnapshot
+    [Migration("20240904045105_updateFileObject")]
+    partial class updateFileObject
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.7");
@@ -130,7 +133,6 @@ namespace UZonMailService.Migrations.SqLite
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ObjectId")
-                        .IsRequired()
                         .HasColumnType("TEXT")
                         .HasColumnName("_id");
 
@@ -162,7 +164,6 @@ namespace UZonMailService.Migrations.SqLite
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ObjectId")
-                        .IsRequired()
                         .HasColumnType("TEXT")
                         .HasColumnName("_id");
 
@@ -215,7 +216,6 @@ namespace UZonMailService.Migrations.SqLite
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ObjectId")
-                        .IsRequired()
                         .HasColumnType("TEXT")
                         .HasColumnName("_id");
 
@@ -302,7 +302,6 @@ namespace UZonMailService.Migrations.SqLite
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("ObjectId")
-                        .IsRequired()
                         .HasColumnType("TEXT")
                         .HasColumnName("_id");
 
@@ -371,7 +370,6 @@ namespace UZonMailService.Migrations.SqLite
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("ObjectId")
-                        .IsRequired()
                         .HasColumnType("TEXT")
                         .HasColumnName("_id");
 
@@ -428,7 +426,6 @@ namespace UZonMailService.Migrations.SqLite
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ObjectId")
-                        .IsRequired()
                         .HasColumnType("TEXT")
                         .HasColumnName("_id");
 
@@ -495,7 +492,6 @@ namespace UZonMailService.Migrations.SqLite
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ObjectId")
-                        .IsRequired()
                         .HasColumnType("TEXT")
                         .HasColumnName("_id");
 
@@ -562,7 +558,6 @@ namespace UZonMailService.Migrations.SqLite
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ObjectId")
-                        .IsRequired()
                         .HasColumnType("TEXT")
                         .HasColumnName("_id");
 
@@ -638,7 +633,6 @@ namespace UZonMailService.Migrations.SqLite
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("ObjectId")
-                        .IsRequired()
                         .HasColumnType("TEXT")
                         .HasColumnName("_id");
 
@@ -655,6 +649,9 @@ namespace UZonMailService.Migrations.SqLite
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("AllowAnonymousReading")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("CreateDate")
@@ -676,7 +673,6 @@ namespace UZonMailService.Migrations.SqLite
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("ObjectId")
-                        .IsRequired()
                         .HasColumnType("TEXT")
                         .HasColumnName("_id");
 
@@ -723,18 +719,11 @@ namespace UZonMailService.Migrations.SqLite
                     b.Property<bool>("IsHidden")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("MaxVisitCount")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("ObjectId")
-                        .IsRequired()
                         .HasColumnType("TEXT")
                         .HasColumnName("_id");
 
                     b.Property<long>("UserId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("VisitedCount")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
@@ -774,7 +763,6 @@ namespace UZonMailService.Migrations.SqLite
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("ObjectId")
-                        .IsRequired()
                         .HasColumnType("TEXT")
                         .HasColumnName("_id");
 
@@ -825,7 +813,6 @@ namespace UZonMailService.Migrations.SqLite
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("ObjectId")
-                        .IsRequired()
                         .HasColumnType("TEXT")
                         .HasColumnName("_id");
 
@@ -864,7 +851,6 @@ namespace UZonMailService.Migrations.SqLite
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ObjectId")
-                        .IsRequired()
                         .HasColumnType("TEXT")
                         .HasColumnName("_id");
 
@@ -898,7 +884,6 @@ namespace UZonMailService.Migrations.SqLite
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("ObjectId")
-                        .IsRequired()
                         .HasColumnType("TEXT")
                         .HasColumnName("_id");
 
@@ -941,7 +926,6 @@ namespace UZonMailService.Migrations.SqLite
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("ObjectId")
-                        .IsRequired()
                         .HasColumnType("TEXT")
                         .HasColumnName("_id");
 
@@ -1000,7 +984,6 @@ namespace UZonMailService.Migrations.SqLite
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("ObjectId")
-                        .IsRequired()
                         .HasColumnType("TEXT")
                         .HasColumnName("_id");
 
@@ -1038,7 +1021,6 @@ namespace UZonMailService.Migrations.SqLite
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ObjectId")
-                        .IsRequired()
                         .HasColumnType("TEXT")
                         .HasColumnName("_id");
 
@@ -1069,7 +1051,6 @@ namespace UZonMailService.Migrations.SqLite
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("ObjectId")
-                        .IsRequired()
                         .HasColumnType("TEXT")
                         .HasColumnName("_id");
 
@@ -1109,7 +1090,6 @@ namespace UZonMailService.Migrations.SqLite
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ObjectId")
-                        .IsRequired()
                         .HasColumnType("TEXT")
                         .HasColumnName("_id");
 
@@ -1153,7 +1133,6 @@ namespace UZonMailService.Migrations.SqLite
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ObjectId")
-                        .IsRequired()
                         .HasColumnType("TEXT")
                         .HasColumnName("_id");
 
@@ -1209,7 +1188,6 @@ namespace UZonMailService.Migrations.SqLite
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("ObjectId")
-                        .IsRequired()
                         .HasColumnType("TEXT")
                         .HasColumnName("_id");
 
@@ -1254,7 +1232,6 @@ namespace UZonMailService.Migrations.SqLite
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ObjectId")
-                        .IsRequired()
                         .HasColumnType("TEXT")
                         .HasColumnName("_id");
 

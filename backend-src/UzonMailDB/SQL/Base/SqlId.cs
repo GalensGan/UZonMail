@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Sigin.ObjectId;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace UZonMail.DB.SQL.Base
@@ -8,6 +9,12 @@ namespace UZonMail.DB.SQL.Base
     /// </summary>
     public class SqlId : ISoftDelete
     {
+        /// <summary>
+        /// 字符串类型的 Id
+        /// </summary>
+        [Column("_id")]
+        public string ObjectId { get; set; } = Sigin.ObjectId.ObjectId.NewObjectId().ToString();
+
         /// <summary>
         /// Id 值
         /// </summary>

@@ -25,7 +25,7 @@ var builder = WebApplication.CreateBuilder(appOptions);
 var services = builder.Services;
 
 // 保证只有一个实例
-//services.UseSingleApp();
+// services.UseSingleApp();
 
 // 日志
 services.AddLogging();

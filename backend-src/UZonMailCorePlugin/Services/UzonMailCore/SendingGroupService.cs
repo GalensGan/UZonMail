@@ -14,6 +14,7 @@ using UZonMail.Utils.Web.Service;
 using UZonMail.Utils.Extensions;
 using UZonMail.Utils.Json;
 using UZonMail.Core.Database.SQL.EmailSending;
+using UZonMail.DB.SQL.Emails;
 
 namespace UZonMail.Core.Services.EmailSending
 {
@@ -32,14 +33,13 @@ namespace UZonMail.Core.Services.EmailSending
         /// <summary>
         /// 创建发送组
         /// </summary>
-        /// <param name="sendingGroupData"></param>
+        /// <param name="sendingGroupData">该对象要求没有被ef跟踪</param>
         /// <returns></returns>
         public async Task<SendingGroup> CreateSendingGroup(SendingGroup sendingGroupData)
         {
             var userId = tokenService.GetUserDataId();
             // 格式化 Excel 数据
             sendingGroupData.Data = await FormatExcelData(sendingGroupData.Data, userId);
-
             // 使用事务
             await db.RunTransaction(async ctx =>
             {
@@ -77,6 +77,9 @@ namespace UZonMail.Core.Services.EmailSending
 
                 // 获取用户设置
                 var settingsReader = await UserSettingsCache.GetUserSettingsReader(ctx, sendingGroupData.UserId);
+
+                // 保存发件箱
+                await SaveInboxes(sendingGroupData.Data, sendingGroupData.UserId);
 
                 // 将数据组装成 SendingItem 保存
                 // 要确保数据已经通过验证
@@ -164,6 +167,47 @@ namespace UZonMail.Core.Services.EmailSending
             }
 
             return results;
+        }
+
+        /// <summary>
+        /// 保存数据中的收件箱
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        private async Task SaveInboxes(JArray? data, long userId)
+        {
+            if (data == null) return;
+            var emails = data.Select(x => x["inbox"]).Where(x => x != null).Select(x => x.ToString()).ToList();
+            if (emails.Count == 0) return;
+
+            var existsEmails = await db.Inboxes.AsNoTracking().Where(x => x.UserId == userId && emails.Contains(x.Email))
+                                .Select(x => x.Email)
+                                .ToListAsync();
+            var newEmails = emails.Except(existsEmails);
+            // 新建 email
+            // 查找默认的收件组
+            var defaultInboxGroup = await db.EmailGroups.Where(x=>x.Type == EmailGroupType.InBox && x.IsDefault).FirstOrDefaultAsync();
+            if(defaultInboxGroup == null)
+            {
+                defaultInboxGroup = EmailGroup.GetDefaultEmailGroup(userId, EmailGroupType.InBox);
+                db.EmailGroups.Add(defaultInboxGroup);
+                await db.SaveChangesAsync();
+            }
+
+            // 新建发件箱
+            foreach(var email in newEmails)
+            {
+                var inbox = new Inbox()
+                {
+                    Email = email,
+                    UserId = userId,
+                    EmailGroupId = defaultInboxGroup.Id
+                };
+                inbox.SetStatusNormal();
+                db.Inboxes.Add(inbox);
+            }
+            await db.SaveChangesAsync();
         }
 
         /// <summary>

@@ -35,10 +35,13 @@ namespace UZonMail.Core.Database.SQL.EmailSending
 
             // allInboxes 有的是从数据中解析得到的，需要获取其 id
             var inboxesWithoutId = allInboxes.Where(x => x.Id == 0).ToList();
-            var inboxes = await db.Inboxes.AsNoTracking().Where(x => inboxesWithoutId.Select(i => i.Id).Contains(x.Id)).ToListAsync();
+            // 获取当前用户下的发件箱
+            var currentUserId = tokenService.GetUserDataId();
+            var inboxesEmails = inboxesWithoutId.Select(x => x.Email).ToList();
+            var inboxes = await db.Inboxes.AsNoTracking().Where(x => x.UserId== currentUserId && inboxesEmails.Contains(x.Email)).ToListAsync();
             inboxesWithoutId.ForEach(x =>
             {
-                var existInbox = inboxes.FirstOrDefault(i => i.Id == x.Id);
+                var existInbox = inboxes.FirstOrDefault(i => i.Email == x.Email);
                 if (existInbox == null)
                 {
                     allInboxes.Remove(x);
