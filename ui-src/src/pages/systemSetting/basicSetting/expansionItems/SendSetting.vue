@@ -46,6 +46,7 @@ import AsyncTooltip from 'src/components/asyncTooltip/AsyncTooltip.vue'
 import { IUserSetting, getCurrentUserSetting, updateUserSetting } from 'src/api/userSetting'
 import { useUserInfoStore } from 'src/stores/user'
 import { notifySuccess } from 'src/utils/dialog'
+// import logger from 'loglevel'
 
 const props = defineProps({
   label: {
@@ -60,13 +61,13 @@ const props = defineProps({
   // 获取设置
   getSettingApi: {
     type: Function,
-    default: () => getCurrentUserSetting
+    default: getCurrentUserSetting
   },
 
   // 更新设置
   updateSettingApi: {
     type: Function,
-    default: () => updateUserSetting
+    default: updateUserSetting
   }
 })
 

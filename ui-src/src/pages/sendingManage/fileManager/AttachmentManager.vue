@@ -168,6 +168,12 @@ const attachmentCtxMenuItems: IContextMenuItem[] = [
     onClick: renameAttachment
   },
   {
+    name: 'share',
+    label: '分享',
+    tooltip: ['分享文件,可通过链接直接访问', '可以将上传的图片以 img 标签的方式插入的正文中'],
+    onClick: shareAttachment
+  },
+  {
     name: 'delete',
     label: '删除',
     color: 'negative',
@@ -250,6 +256,23 @@ async function renameAttachment (row: Record<string, any>) {
   await updateDisplayName(row.id, displayName)
 
   row.displayName = displayName
+}
+
+import { createObjectPersistentReader } from 'src/api/pro/objectReader'
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function shareAttachment (row: Record<string, any>) {
+  console.log(row)
+
+  const confirm = await confirmOperation('分享确认', '分享后，其他人可以在不登陆的情况下，通过链接访问该文件，是否继续？')
+  if (!confirm) return
+
+  const { data: objectReaderId } = await createObjectPersistentReader(row.id)
+  // 生成全路径
+  const fullUrl = `${config.baseUrl}/api/pro/object-reader/stream/${objectReaderId}` as string
+  // 保存到剪切板
+  await navigator.clipboard.writeText(fullUrl)
+
+  notifySuccess('分享成功，链接已复制到剪切板')
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
