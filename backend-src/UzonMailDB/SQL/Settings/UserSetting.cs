@@ -65,6 +65,11 @@ namespace UZonMail.DB.SQL.Settings
         public int MaxRetryCount { get; set; } = 3;
 
         /// <summary>
+        /// 发送邮件跟踪器
+        /// </summary>
+        public bool EnableEmailTracker { get; set; }
+
+        /// <summary>
         /// 回复邮件地址列表
         /// </summary>
         [NotMapped]

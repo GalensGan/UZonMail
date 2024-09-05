@@ -60,6 +60,7 @@ namespace UZonMail.Core.Controllers.Settings
                 exist.MaxSendingBatchSize = userSetting.MaxSendingBatchSize;
                 exist.MinInboxCooldownHours = userSetting.MinInboxCooldownHours;
                 exist.ReplyToEmails = userSetting.ReplyToEmails;
+                exist.EnableEmailTracker = userSetting.EnableEmailTracker;
             }
             await db.SaveChangesAsync();
 

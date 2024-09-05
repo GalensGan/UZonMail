@@ -101,6 +101,10 @@ namespace UZonMail.DB.SQL.EmailSending
         [JsonField]
         public JObject? Data { get; set; }
 
+        /// <summary>
+        /// 是否启用邮件跟踪器
+        /// </summary>
+        public bool EnableEmailTracker { get; set; }
         #endregion
 
         #region 发送结果

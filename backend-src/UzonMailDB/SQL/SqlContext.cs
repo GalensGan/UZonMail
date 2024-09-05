@@ -63,6 +63,10 @@ namespace UZonMail.DB.SQL
         public DbSet<SystemSetting> SystemSettings { get; set; }
 
         public DbSet<LicenseInfo> LicenseInfos { get; set; }
+
+        public DbSet<ReadingTracker.EmailAnchor> EmailAnchors { get; set; }
+        public DbSet<ReadingTracker.EmailVisitHistory> EmailVisitHistories { get; set; }
+        public DbSet<ReadingTracker.IPInfo> IPInfos { get; set; }
         #endregion
 
         #region 测试

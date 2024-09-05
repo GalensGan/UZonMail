@@ -93,17 +93,17 @@ Write-Host "开始编译项目..." -ForegroundColor Yellow
 Write-Host "前端编译中..." -ForegroundColor Yellow
 $uiSrc = Join-Path -Path $gitRoot -ChildPath "ui-src"
 # 判断是否已经执行过 yarn install
-# $nodeModules = Join-Path -Path $uiSrc -ChildPath "node_modules"
-# if (-not (Test-Path -Path $nodeModules -PathType Container)) {
-#     Write-Host "开始安装依赖..." -ForegroundColor Yellow
-#     Set-Location -Path $uiSrc
-#     yarn install
-#     Write-Host "依赖安装完成！" -ForegroundColor Green
-#     Write-Host "开始编译..." -ForegroundColor Yellow
-# }
+$nodeModules = Join-Path -Path $uiSrc -ChildPath "node_modules"
+if (-not (Test-Path -Path $nodeModules -PathType Container)) {
+    Write-Host "开始安装依赖..." -ForegroundColor Yellow
+    Set-Location -Path $uiSrc
+    yarn install
+    Write-Host "依赖安装完成！" -ForegroundColor Green
+    Write-Host "开始编译..." -ForegroundColor Yellow
+}
 
 Set-Location -Path $uiSrc
-yarn install
+# yarn install
 yarn build
 Write-Host "前端编译完成！" -ForegroundColor Green
 

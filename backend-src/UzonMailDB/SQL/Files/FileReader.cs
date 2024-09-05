@@ -48,6 +48,16 @@ namespace UZonMail.DB.SQL.Files
         public int VisitedCount { get; set; }
 
         /// <summary>
+        /// 第一次访问日期
+        /// </summary>
+        public DateTime FirstDate { get; set; } = DateTime.MaxValue;
+
+        /// <summary>
+        /// 最近一次访问日期
+        /// </summary>
+        public DateTime LastDate { get; set; }
+
+        /// <summary>
         /// 最大访问次数
         /// 为 0 表示不限制
         /// </summary>
