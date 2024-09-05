@@ -170,7 +170,7 @@ const attachmentCtxMenuItems: IContextMenuItem[] = [
   {
     name: 'share',
     label: '分享',
-    tooltip: ['分享文件,可通过链接直接访问', '可以将上传的图片以 img 标签的方式插入到正文中'],
+    tooltip: ['分享文件,可通过链接直接访问', '可以将上传的图片以 img 标签的方式插入到正文中', '仅 pro 版本提供'],
     onClick: shareAttachment
   },
   {

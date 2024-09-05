@@ -8,7 +8,8 @@ export interface IUserSetting {
   maxOutboxCooldownSecond: number,
   maxSendingBatchSize: number,
   minInboxCooldownHours: number,
-  replyToEmails?: string
+  replyToEmails?: string,
+  enableEmailTracker: boolean,
 }
 
 /**

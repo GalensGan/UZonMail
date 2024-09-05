@@ -36,6 +36,13 @@
           <AsyncTooltip :tooltip="['设置回信时收信人地址', '为空时表示不设置', '有多个收信地址时,使用英文逗号分隔']" />
         </q-input>
       </div>
+
+      <div class="row justify-start items-center q-mb-sm">
+        <q-checkbox dense v-model="outboxSettingRef.enableEmailTracker" label="启用邮件状态跟踪" color="secondary" class="q-ml-sm"
+          keep-color>
+          <AsyncTooltip tooltip="开启后，将跟踪邮件的查阅状态"></AsyncTooltip>
+        </q-checkbox>
+      </div>
     </div>
   </q-expansion-item>
 </template>
