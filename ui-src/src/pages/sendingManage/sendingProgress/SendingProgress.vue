@@ -3,13 +3,22 @@
     <q-card class='column justify-start q-pa-sm'>
       <div class="text-subtitle1 q-mb-md text-primary">{{ title }}</div>
 
-      <LinearProgress size="40px" :value="progressValue" :width="400" />
+      <LinearProgress v-if="existSendingGroupId" size="40px" :value="progressValue" :width="400" />
+
+      <div v-else class="width-400 column items-center q-mb-md">
+        <q-circular-progress rounded indeterminate size="40px" :thickness="0.3" color="primary" track-color="secondary"
+          center-color="white" class="q-mb-md">
+        </q-circular-progress>
+
+        <div>正在处理发件数据, 请稍候...</div>
+      </div>
 
       <div v-if="existSendingGroupId" class="row justify-end q-mt-md q-gutter-sm">
         <CancelBtn @click="OnCancelSending" tooltip="取消发件" />
         <CommonBtn @click="onToggleTaskSending" :label="toggleLabel" :tooltip="toggleTooltip" />
         <OkBtn @click="onSendBackGround" label="后台" tooltip="在后台发件" />
       </div>
+
     </q-card>
   </q-dialog>
 </template>
@@ -32,6 +41,10 @@ import LinearProgress from 'src/components/Progress/LinearProgress.vue'
 import CommonBtn from 'src/components/componentWrapper/buttons/CommonBtn.vue'
 import OkBtn from 'src/components/componentWrapper/buttons/OkBtn.vue'
 import CancelBtn from 'src/components/componentWrapper/buttons/CancelBtn.vue'
+
+import { confirmOperation, notifyError, notifySuccess } from 'src/utils/dialog'
+
+import logger from 'loglevel'
 
 const props = defineProps({
   // 发件组 id
@@ -61,16 +74,18 @@ onMounted(async () => {
       const { data: groupDoc } = await props.sendingApi()
       sendingGroupIdRef.value = groupDoc.id
     } catch (error) {
-      console.log(error)
+      logger.error(error)
+      notifyError((error as Error).message)
       // 关闭进度
       onDialogCancel()
+      return
     }
   }
 
   if (!sendingGroupIdRef.value) return
 
   // 有 id 时，获取 id 信息
-  console.log(sendingGroupIdRef.value)
+  logger.debug(sendingGroupIdRef.value)
 })
 const existSendingGroupId = computed(() => {
   return sendingGroupIdRef.value
@@ -81,7 +96,6 @@ const progressValue = ref(0)
 // 发送进度
 import { subscribeOne } from 'src/signalR/signalR'
 import { UzonMailClientMethods, ISendingGroupProgressArg, SendingGroupProgressType } from 'src/signalR/types'
-import { confirmOperation, notifySuccess } from 'src/utils/dialog'
 async function onEmailGroupSendingProgressChanged (progress: ISendingGroupProgressArg) {
   console.log('onEmailGroupSendingProgressChanged', progress)
   if (!progress) return
