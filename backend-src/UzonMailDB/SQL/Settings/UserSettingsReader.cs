@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using UZonMail.DB.Extensions;
 using UZonMail.DB.SQL.Settings;
-using UZonMail.Utils.Extensions;
 
-namespace UZonMail.Core.Services.Settings
+namespace UZonMail.DB.SQL.Settings
 {
     /// <summary>
     /// 后者的值会覆盖前者的值
@@ -26,6 +26,23 @@ namespace UZonMail.Core.Services.Settings
             {
                 var values = _settings.Select(selector).Where(x => !string.IsNullOrEmpty(x)).ToList();
                 return values.Count > 0 ? values.Last() : "";
+            });
+        }
+
+        /// <summary>
+        /// 获取 bool 设置
+        /// 为空时表示不设置
+        /// </summary>
+        /// <param name="selector"></param>
+        /// <returns></returns>
+        private Lazy<bool> GetBoolSetting(Func<UserSetting, bool?> selector)
+        {
+            return new Lazy<bool>(() =>
+            {
+                var lastValue = _settings.Select(selector)
+                .Where(x => x != null)
+                .Last();
+                return lastValue ?? false;
             });
         }
 
@@ -70,6 +87,11 @@ namespace UZonMail.Core.Services.Settings
         /// 最大重试次数
         /// </summary>
         public Lazy<int> MaxRetryCount => GetIntSetting(x => x.MaxRetryCount);
+
+        /// <summary>
+        /// 是否允许发送邮件跟踪器
+        /// </summary>
+        public Lazy<bool> EnableEmailTracker => GetBoolSetting(x => x.EnableEmailTracker);
 
         #region 公开方法
         /// <summary>

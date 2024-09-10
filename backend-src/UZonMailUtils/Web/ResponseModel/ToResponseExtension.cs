@@ -1,6 +1,9 @@
-﻿using UZonMail.Utils.Web.ResponseModel;
+﻿using System.Net.Http;
+using System.Threading.Tasks;
+using UZonMail.Utils.Json;
+using UZonMail.Utils.Web.ResponseModel;
 
-namespace UZonMail.Utils.Web.Extensions
+namespace Uamazing.Utils.Web.ResponseModel
 {
     /// <summary>
     /// IResult 相关的转换器
@@ -44,6 +47,24 @@ namespace UZonMail.Utils.Web.Extensions
                 return new ErrorResponse<T>(errorMessage, data);
             }
             return new SuccessResponse<T>(data);
+        }
+
+        /// <summary>
+        /// 将 HttpResponseMessage 中的 Content 转换成 ResponseResult
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="httpResponseMessage"></param>
+        /// <returns></returns>
+        public static async Task<ResponseResult<T>> ToResponseResult<T>(this HttpResponseMessage httpResponseMessage)
+        {
+            if(!httpResponseMessage.IsSuccessStatusCode)
+            {
+                return new ErrorResponse<T>(httpResponseMessage.ReasonPhrase);
+            }
+
+            var content = await httpResponseMessage.Content.ReadAsStringAsync();
+            var response = content.JsonTo<ResponseResult<T>>();
+            return response;
         }
     }
 }

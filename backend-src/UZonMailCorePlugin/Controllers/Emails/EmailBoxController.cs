@@ -1,7 +1,6 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using UZonMail.Utils.Web.Extensions;
 using UZonMail.Utils.Web.ResponseModel;
 using UZonMail.Core.Controllers.Users.Model;
 using UZonMail.Core.Database.Validators;
@@ -15,6 +14,7 @@ using UZonMail.DB.SQL;
 using UZonMail.DB.SQL.Emails;
 using UZonMail.Utils.Web.Exceptions;
 using UZonMail.Utils.Web.PagingQuery;
+using Uamazing.Utils.Web.ResponseModel;
 
 namespace UZonMail.Core.Controllers.Emails
 {

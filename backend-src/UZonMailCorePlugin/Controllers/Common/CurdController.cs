@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using UZonMail.Utils.Web.Extensions;
 using UZonMail.Utils.Web.ResponseModel;
 using UZonMail.DB.SQL.Base;
 using UZonMail.Core.Services.Common;
+using Uamazing.Utils.Web.ResponseModel;
 
 namespace UZonMail.Core.Controllers.Common
 {

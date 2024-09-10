@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using UZonMail.Utils.Web.Extensions;
 using UZonMail.Utils.Web.ResponseModel;
 using UZonMail.Core.Services.Settings;
 using UZonMail.DB.SQL;
 using UZonMail.DB.SQL.Permission;
 using UZonMail.Utils.Web.PagingQuery;
+using Uamazing.Utils.Web.ResponseModel;
 
 namespace UZonMail.Core.Controllers.Permission
 {

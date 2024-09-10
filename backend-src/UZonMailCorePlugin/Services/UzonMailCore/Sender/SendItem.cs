@@ -9,6 +9,8 @@ using UZonMail.Core.Services.EmailSending.Pipeline;
 using UZonMail.DB.SQL.EmailSending;
 using UZonMail.Core.Database.SQL.EmailSending;
 using UZonMail.DB.SQL.Emails;
+using Uamazing.Utils.Email;
+using UZonMail.Core.Services.Settings;
 
 namespace UZonMail.Core.Services.EmailSending.Sender
 {
@@ -148,11 +150,18 @@ namespace UZonMail.Core.Services.EmailSending.Sender
         /// 在发送时调用
         /// </summary>
         /// <returns></returns>
-        public string GetBody()
+        public async Task<string> GetBody(SendingContext sendingContext)
         {
             if (!string.IsNullOrEmpty(_body)) return _body;
+
             // 替换正文变量
             _body = ComputedVariables(HtmlBody);
+
+            // 应用其它装饰器
+            var settingReader = await UserSettingsCache.GetUserSettingsReader(sendingContext.SqlContext, Outbox.UserId);
+            var emailBodyDecoratorParams = new EmailBodyDecoratorParams(sendingContext.ServiceProvider, settingReader, SendingItem, Outbox.Email);
+            _body = await EmailBodyDecorators.StartDecorating(emailBodyDecoratorParams, _body);
+
             return _body;
         }
 
@@ -259,7 +268,7 @@ namespace UZonMail.Core.Services.EmailSending.Sender
             // 更新数据
             data.FromEmail = Outbox.Email;
             data.Subject = GetSubject();
-            data.Content = GetBody();
+            data.Content = await GetBody(sendingContext);
             // 保存发送状态
             data.Status = success ? SendingItemStatus.Success : SendingItemStatus.Failed;
             data.SendResult = message;

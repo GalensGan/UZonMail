@@ -1,4 +1,6 @@
-﻿using UZonMail.DB.SQL.Base;
+﻿using Innofactor.EfCoreJsonValueConverter;
+using Newtonsoft.Json.Linq;
+using UZonMail.DB.SQL.Base;
 
 namespace UZonMail.DB.SQL.Settings
 {
@@ -27,5 +29,21 @@ namespace UZonMail.DB.SQL.Settings
         /// int 类型值
         /// </summary>
         public int IntValue { get; set; }
+
+        /// <summary>
+        /// Long 类型的值
+        /// </summary>
+        public long LongValue { get; set; }
+
+        /// <summary>
+        /// 日期时间
+        /// </summary>
+        public DateTime DateTime { get; set; }
+
+        /// <summary>
+        /// Json 数据
+        /// </summary>
+        [JsonField]
+        public JToken? Json { get; set; }
     }
 }

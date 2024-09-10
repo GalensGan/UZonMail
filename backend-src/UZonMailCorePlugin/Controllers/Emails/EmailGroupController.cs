@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using UZonMail.Utils.Web.Extensions;
 using UZonMail.Utils.Web.ResponseModel;
 using UZonMail.Core.Controllers.Common;
 using UZonMail.Core.Services.Emails;
@@ -9,6 +8,7 @@ using UZonMail.Utils.Web.Exceptions;
 using UZonMail.Core.Services.Common;
 using UZonMail.DB.SQL;
 using Microsoft.EntityFrameworkCore;
+using Uamazing.Utils.Web.ResponseModel;
 
 namespace UZonMail.Core.Controllers.Emails
 {

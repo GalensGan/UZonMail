@@ -2,17 +2,20 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using UZonMail.DB.SqLite;
 
 #nullable disable
 
-namespace UZonMailService.Migrations.SqLite
+namespace UZonMail.DB.Migrations.SqLite
 {
     [DbContext(typeof(SqLiteContext))]
-    partial class SqLiteContextModelSnapshot : ModelSnapshot
+    [Migration("20240910101114_updateLicense")]
+    partial class updateLicense
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.7");
@@ -1066,7 +1069,7 @@ namespace UZonMailService.Migrations.SqLite
                     b.Property<DateTime>("FirstVisitDate")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("InboxEmails")
+                    b.Property<string>("InboxEmail")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
@@ -1092,9 +1095,6 @@ namespace UZonMailService.Migrations.SqLite
                         .HasColumnType("INTEGER");
 
                     b.Property<long>("SendingItemId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<long>("UserId")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("VisitedCount")
