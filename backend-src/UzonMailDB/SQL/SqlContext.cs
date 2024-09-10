@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using UZonMail.DB.SQL.Emails;
 using UZonMail.DB.SQL.EmailSending;
 using UZonMail.DB.SQL.EntityConfigs;
-using UZonMail.DB.SQL.License;
 using UZonMail.DB.SQL.Settings;
 using UZonMail.DB.SQL.Templates;
 
@@ -61,8 +60,6 @@ namespace UZonMail.DB.SQL
         public DbSet<UserProxy> UserProxies { get; set; }
         public DbSet<UserSetting> UserSettings { get; set; }
         public DbSet<SystemSetting> SystemSettings { get; set; }
-
-        public DbSet<LicenseInfo> LicenseInfos { get; set; }
 
         public DbSet<ReadingTracker.EmailAnchor> EmailAnchors { get; set; }
         public DbSet<ReadingTracker.EmailVisitHistory> EmailVisitHistories { get; set; }

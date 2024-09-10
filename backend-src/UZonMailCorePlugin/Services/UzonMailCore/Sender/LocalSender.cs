@@ -6,7 +6,10 @@ using MailKit.Net.Proxy;
 using MailKit.Net.Smtp;
 using MimeKit;
 using System.IO.Pipelines;
+using Uamazing.Utils.Email;
 using UZonMail.Core.Services.EmailSending.Pipeline;
+using UZonMail.Core.Services.Settings;
+using UZonMail.DB.SQL.Organization;
 
 namespace UZonMail.Core.Services.EmailSending.Sender
 {
@@ -75,11 +78,14 @@ namespace UZonMail.Core.Services.EmailSending.Sender
                 }
                 // 主题
                 message.Subject = sendItem.GetSubject();
+
                 // 正文
+                var htmlBody =await sendItem.GetBody(sendingContext);                
                 BodyBuilder bodyBuilder = new()
                 {
-                    HtmlBody = sendItem.GetBody()
+                    HtmlBody = htmlBody
                 };
+
                 // 附件
                 var attachments = await sendItem.GetAttachments(sendingContext);
                 foreach (var attachment in attachments)

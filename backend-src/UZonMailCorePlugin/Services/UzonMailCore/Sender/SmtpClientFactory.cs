@@ -46,7 +46,7 @@ namespace UZonMail.Core.Services.EmailSending.Sender
 
                 // 对证书过期进行兼容处理
                 try
-                {
+                {                    
                     client.Connect(outbox.SmtpHost, outbox.SmtpPort, outbox.EnableSSL ? SecureSocketOptions.SslOnConnect : SecureSocketOptions.Auto);
                 }
                 catch (SslHandshakeException ex)

@@ -133,6 +133,11 @@ namespace UZonMail.DB.SQL.EmailSending
         /// 通过这个 id 去获取阅读状态
         /// </summary>
         public string? ReceiptId { get; set; }
+
+        /// <summary>
+        /// 已读时间
+        /// </summary>
+        public DateTime ReadDate { get; set; }
         #endregion
 
         /// <summary>

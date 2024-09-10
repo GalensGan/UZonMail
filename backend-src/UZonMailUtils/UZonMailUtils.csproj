@@ -29,6 +29,7 @@
   <ItemGroup>
     <Folder Include="Path\" />
     <Folder Include="Web\Captcha\" />
+    <Folder Include="Web\Extensions\" />
   </ItemGroup>
 
   <ItemGroup>

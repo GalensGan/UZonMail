@@ -39,5 +39,10 @@
         /// 已取消
         /// </summary>
         Cancel,
+
+        /// <summary>
+        /// 已读
+        /// </summary>
+        Read,
     }
 }

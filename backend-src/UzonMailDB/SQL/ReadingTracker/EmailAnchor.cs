@@ -9,6 +9,11 @@ namespace UZonMail.DB.SQL.ReadingTracker
     public class EmailAnchor : SqlId
     {
         /// <summary>
+        /// 所属用户
+        /// </summary>
+        public long UserId { get; set; }
+
+        /// <summary>
         /// 发件组 id
         /// </summary>
         public long SendingGroupId { get; set; }
@@ -26,7 +31,7 @@ namespace UZonMail.DB.SQL.ReadingTracker
         /// <summary>
         /// 邮件箱邮箱
         /// </summary>
-        public string InboxEmail { get; set; }
+        public string InboxEmails { get; set; }
 
         /// <summary>
         /// 访问数量
