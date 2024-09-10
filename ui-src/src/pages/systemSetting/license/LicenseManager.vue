@@ -52,7 +52,7 @@ function onBlur () {
 
 // 验证激活码是否合法
 const isLicenseValid = computed(() => {
-  return license.value.length === 24
+  return license.value.length > 0
 })
 const activeIconColor = computed(() => {
   return isLicenseValid.value ? 'positive' : 'white'
