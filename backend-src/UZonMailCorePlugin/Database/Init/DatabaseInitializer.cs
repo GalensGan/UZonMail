@@ -30,12 +30,13 @@ namespace UZonMail.Core.Database.Init
         {
             await ResetSendingItemsStatus();
             await ResetSendingGroup();
-        }        
+        }
 
         private async Task ResetSendingItemsStatus()
         {
             // 对所有的 Pending 状态的发件项重置为 Created
-            await _db.SendingItems.UpdateAsync(x => x.Status == SendingItemStatus.Pending, x => x.SetProperty(y => y.Status, SendingItemStatus.Created));
+            await _db.SendingItems.UpdateAsync(x => x.Status == SendingItemStatus.Pending || x.Status == SendingItemStatus.Sending, 
+                x => x.SetProperty(y => y.Status, SendingItemStatus.Created));
         }
 
         private async Task ResetSendingGroup()
