@@ -1,5 +1,5 @@
 <template>
-  <SendSetting label="组织发件设置" caption="当子账户为跟随模式时，所有账户应用该设置"
+  <SendSetting icon="local_shipping" label="组织发件设置" caption="当子账户为跟随模式时，所有账户应用该设置"
     :get-setting-api="onGetCurrentDepartmentSetting" :update-setting-api="onUpdateDepartmentSetting" />
 </template>
 
