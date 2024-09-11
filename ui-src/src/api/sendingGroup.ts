@@ -61,6 +61,9 @@ export interface ISendingGroupInfo {
   successCount: number, // 成功数
   status: SendingGroupStatus, // 状态
   sendStartDate: string, // 发送开始时间
+  sendingType?: SendingGroupType, // 发送类型
+  scheduleDate?: string, // 计划发送时间
+  createDate?: string
 }
 
 /**

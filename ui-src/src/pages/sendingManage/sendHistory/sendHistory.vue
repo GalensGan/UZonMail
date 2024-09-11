@@ -33,6 +33,12 @@
         <LinearProgress class="full-width" v-else :value="props.row.progress" :width="60"></LinearProgress>
       </q-td>
     </template>
+
+    <template v-slot:body-cell-sendingType="props">
+      <q-td :props="props">
+        <StatusChip :status="props.value"></StatusChip>
+      </q-td>
+    </template>
   </q-table>
 </template>
 
@@ -41,12 +47,14 @@ import LinearProgress from 'src/components/Progress/LinearProgress.vue'
 import StatusChip from 'src/components/statusChip/StatusChip.vue'
 import EllipsisContent from 'src/components/ellipsisContent/EllipsisContent.vue'
 
+import { formatDateStr } from 'src/utils/format'
+
 import { QTableColumn } from 'quasar'
 import { useQTable, useQTableIndex } from 'src/compositions/qTableUtils'
 import { IRequestPagination, TTableFilterObject } from 'src/compositions/types'
 import SearchInput from 'src/components/searchInput/SearchInput.vue'
 
-import { getSendingGroupsCount, getEmailTemplatesData, SendingGroupStatus, SendingGroupType } from 'src/api/sendingGroup'
+import { getSendingGroupsCount, getEmailTemplatesData, SendingGroupStatus, SendingGroupType, ISendingGroupInfo } from 'src/api/sendingGroup'
 
 const { indexColumn, QTableIndex } = useQTableIndex()
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -131,11 +139,12 @@ const columns: QTableColumn[] = [
   {
     name: 'createDate',
     required: false,
-    label: '创建日期',
+    label: '开始日期',
     align: 'left',
-    field: 'createDate',
-    format: (val: string) => {
-      return val ? new Date(val).toLocaleString() : ''
+    field: v => v,
+    format: (value: ISendingGroupInfo) => {
+      if (value.sendingType === SendingGroupType.Scheduled) return formatDateStr(value.scheduleDate)
+      return formatDateStr(value.createDate)
     },
     sortable: true
   }, {
@@ -180,6 +189,7 @@ const { openSendDetailDialog, sendingHistoryContextItems } = useContextMenu()
 // 注册进度获取回调
 import { subscribeOne } from 'src/signalR/signalR'
 import { ISendingGroupProgressArg, SendingGroupProgressType, UzonMailClientMethods } from 'src/signalR/types'
+
 // 进度变化
 function onSendingGroupProgressChanged (arg: ISendingGroupProgressArg) {
   const row = rows.value.find(r => r.id === arg.sendingGroupId)

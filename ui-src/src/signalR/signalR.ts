@@ -65,7 +65,7 @@ export function subscribeOne (methodEnum: UzonMailClientMethods, callback: (...a
   if (!hub) return
 
   const methodName = UzonMailClientMethods[methodEnum]
-  onMounted(async () => {
+  onBeforeMount(async () => {
     logger.debug('[signalR] 订阅事件', methodName)
     // hub.on(methodName, callback)
     hub.on(methodName, callback)

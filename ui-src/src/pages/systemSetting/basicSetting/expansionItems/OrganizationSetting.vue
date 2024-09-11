@@ -1,8 +1,8 @@
 <template>
-  <q-expansion-item popup icon="flight_takeoff" label="组织基础设置" caption="设置组织配置应用模式"
+  <q-expansion-item popup icon="account_tree" label="组织基础设置" caption="设置组织配置应用模式"
     header-class="text-primary card-like-borderless" @before-show="onBeforeShow" group="settings1">
     <div class="q-pa-md">
-      <div class="row justify-start items-center q-mb-sm ">
+      <div class="column justify-start q-mb-sm ">
         <div class="row justify-start items-center">
           <span>子账户策略</span>
           <div class="q-gutter-sm q-ml-sm">
