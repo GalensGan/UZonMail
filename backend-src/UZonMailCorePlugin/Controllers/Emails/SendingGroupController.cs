@@ -62,7 +62,8 @@ namespace UZonMail.Core.Controllers.Emails
                     SuccessCount = x.SuccessCount,
                     SentCount = x.SentCount,
                     CreateDate = x.CreateDate,
-                    TotalCount = x.TotalCount
+                    TotalCount = x.TotalCount,
+                    ScheduleDate = x.ScheduleDate,
                 });
 
             var results = await dbSet.Page(pagination).ToListAsync();
