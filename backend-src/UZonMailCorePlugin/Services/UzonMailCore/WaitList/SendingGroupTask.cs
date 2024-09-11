@@ -273,9 +273,9 @@ namespace UZonMail.Core.Services.EmailSending.WaitList
             _sendingItemsCounter.IncreaseTotalCount(toSendingItemMetas.Count);
 
             // 将发件项修改为发送中
-            if (sendingItemIds != null && sendingItemIds.Count > 0)
+            if (toSendingItems.Count > 0)
             {
-                await sendingContext.SqlContext.SendingItems.UpdateAsync(x => sendingItemIds.Contains(x.Id),
+                await sendingContext.SqlContext.SendingItems.UpdateAsync(x => toSendingItems.Select(x => x.Id).Contains(x.Id),
                     x => x.SetProperty(y => y.Status, SendingItemStatus.Pending));
             }
             else
@@ -612,8 +612,9 @@ namespace UZonMail.Core.Services.EmailSending.WaitList
                 return _usableProxies.FirstOrDefault(x => x.Id == proxyId)?.ToProxyInfo();
             }
 
-            // 匹配代理
-            return _usableProxies.FirstOrDefault(x => x.IsMatch(outbox.Email))?.ToProxyInfo();
+            // 随机获取匹配的代理
+            var random = new Random();
+            return _usableProxies.OrderBy(x => random.Next()).FirstOrDefault(x => x.IsMatch(outbox.Email))?.ToProxyInfo();
         }
 
         /// <summary>

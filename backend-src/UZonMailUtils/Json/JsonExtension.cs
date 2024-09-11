@@ -11,7 +11,7 @@ namespace UZonMail.Utils.Json
 {
     public static class JsonExtension
     {
-        private readonly static JsonSerializerSettings _jsonSettings = new JsonSerializerSettings()
+        private readonly static JsonSerializerSettings _jsonSettings = new()
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver()
         };

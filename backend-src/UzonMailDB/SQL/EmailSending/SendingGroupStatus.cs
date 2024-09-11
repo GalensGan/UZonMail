@@ -13,6 +13,7 @@
         /// <summary>
         /// 计划发件
         /// </summary>
+        [Obsolete("弃用，使用 type 表示计划发件")]
         Scheduled,
 
         /// <summary>

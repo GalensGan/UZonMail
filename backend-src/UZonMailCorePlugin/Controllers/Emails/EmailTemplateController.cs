@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using UZonMail.Utils.Web.Extensions;
 using UZonMail.Utils.Extensions;
 using UZonMail.Utils.Web.ResponseModel;
 using UZonMail.Core.Services.Settings;
@@ -11,6 +10,7 @@ using UZonMail.Core.Utils.Extensions;
 using UZonMail.Core.Database.Validators;
 using UZonMail.Utils.Web.Exceptions;
 using UZonMail.Utils.Web.PagingQuery;
+using Uamazing.Utils.Web.ResponseModel;
 
 
 namespace UZonMail.Core.Controllers.Emails

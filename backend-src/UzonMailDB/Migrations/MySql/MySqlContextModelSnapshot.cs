@@ -298,6 +298,9 @@ namespace UZonMailService.Migrations.MySql
                     b.Property<long>("EmailTemplateId")
                         .HasColumnType("bigint");
 
+                    b.Property<bool>("EnableEmailTracker")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<string>("FromEmail")
                         .HasColumnType("longtext");
 
@@ -327,6 +330,9 @@ namespace UZonMailService.Migrations.MySql
 
                     b.Property<long>("ProxyId")
                         .HasColumnType("bigint");
+
+                    b.Property<DateTime>("ReadDate")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("ReceiptId")
                         .HasColumnType("longtext");
@@ -744,11 +750,17 @@ namespace UZonMailService.Migrations.MySql
                     b.Property<long>("FileObjectId")
                         .HasColumnType("bigint");
 
+                    b.Property<DateTime>("FirstDate")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("tinyint(1)");
 
                     b.Property<bool>("IsHidden")
                         .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTime>("LastDate")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int>("MaxVisitCount")
                         .HasColumnType("int");
@@ -820,49 +832,6 @@ namespace UZonMailService.Migrations.MySql
                     b.HasIndex("OwnerUserId");
 
                     b.ToTable("FileUsages");
-                });
-
-            modelBuilder.Entity("UZonMail.DB.SQL.License.LicenseInfo", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<DateTime>("ActiveDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<DateTime>("CreateDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<DateTime>("ExpireDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<bool>("IsHidden")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<DateTime>("LastUpdateDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("LicenseKey")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<int>("LicenseType")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ObjectId")
-                        .IsRequired()
-                        .HasColumnType("longtext")
-                        .HasColumnName("_id");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("LicenseInfos");
                 });
 
             modelBuilder.Entity("UZonMail.DB.SQL.Organization.Department", b =>
@@ -1126,6 +1095,158 @@ namespace UZonMailService.Migrations.MySql
                     b.ToTable("UserRoles");
                 });
 
+            modelBuilder.Entity("UZonMail.DB.SQL.ReadingTracker.EmailAnchor", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("FirstVisitDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("InboxEmails")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsHidden")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTime>("LastVisitDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ObjectId")
+                        .IsRequired()
+                        .HasColumnType("longtext")
+                        .HasColumnName("_id");
+
+                    b.Property<string>("OutboxEmail")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<long>("SendingGroupId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("SendingItemId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("VisitedCount")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("EmailAnchors");
+                });
+
+            modelBuilder.Entity("UZonMail.DB.SQL.ReadingTracker.EmailVisitHistory", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<long?>("EmailAnchorId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("IP")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsHidden")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("ObjectId")
+                        .IsRequired()
+                        .HasColumnType("longtext")
+                        .HasColumnName("_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmailAnchorId");
+
+                    b.ToTable("EmailVisitHistories");
+                });
+
+            modelBuilder.Entity("UZonMail.DB.SQL.ReadingTracker.IPInfo", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("City")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Country")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("District")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("IP")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("ISP")
+                        .HasColumnType("longtext");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsHidden")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("Latitude")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Longitude")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ObjectId")
+                        .IsRequired()
+                        .HasColumnType("longtext")
+                        .HasColumnName("_id");
+
+                    b.Property<string>("PostalCode")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Region")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("TimeZone")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("UsageType")
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IP");
+
+                    b.ToTable("IPInfos");
+                });
+
             modelBuilder.Entity("UZonMail.DB.SQL.Settings.SystemSetting", b =>
                 {
                     b.Property<long>("Id")
@@ -1140,6 +1261,9 @@ namespace UZonMailService.Migrations.MySql
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<DateTime>("DateTime")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<int>("IntValue")
                         .HasColumnType("int");
 
@@ -1149,9 +1273,15 @@ namespace UZonMailService.Migrations.MySql
                     b.Property<bool>("IsHidden")
                         .HasColumnType("tinyint(1)");
 
+                    b.Property<string>("Json")
+                        .HasColumnType("longtext");
+
                     b.Property<string>("Key")
                         .IsRequired()
                         .HasColumnType("longtext");
+
+                    b.Property<long>("LongValue")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("ObjectId")
                         .IsRequired()
@@ -1232,6 +1362,9 @@ namespace UZonMailService.Migrations.MySql
 
                     b.Property<long>("DepartmentId")
                         .HasColumnType("bigint");
+
+                    b.Property<bool?>("EnableEmailTracker")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("tinyint(1)");
@@ -1512,6 +1645,14 @@ namespace UZonMailService.Migrations.MySql
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("UZonMail.DB.SQL.ReadingTracker.EmailVisitHistory", b =>
+                {
+                    b.HasOne("UZonMail.DB.SQL.ReadingTracker.EmailAnchor", null)
+                        .WithMany("VisitedHistories")
+                        .HasForeignKey("EmailAnchorId")
+                        .OnDelete(DeleteBehavior.NoAction);
+                });
+
             modelBuilder.Entity("UZonMail.DB.SQL.Emails.EmailGroup", b =>
                 {
                     b.Navigation("Inboxes");
@@ -1520,6 +1661,11 @@ namespace UZonMailService.Migrations.MySql
             modelBuilder.Entity("UZonMail.DB.SQL.Organization.User", b =>
                 {
                     b.Navigation("UserRoles");
+                });
+
+            modelBuilder.Entity("UZonMail.DB.SQL.ReadingTracker.EmailAnchor", b =>
+                {
+                    b.Navigation("VisitedHistories");
                 });
 #pragma warning restore 612, 618
         }

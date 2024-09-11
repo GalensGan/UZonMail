@@ -67,7 +67,7 @@ namespace UZonMail.DB.SQL.Settings
         /// <summary>
         /// 发送邮件跟踪器
         /// </summary>
-        public bool EnableEmailTracker { get; set; }
+        public bool? EnableEmailTracker { get; set; }
 
         /// <summary>
         /// 回复邮件地址列表

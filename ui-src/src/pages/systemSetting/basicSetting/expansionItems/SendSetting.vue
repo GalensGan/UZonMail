@@ -38,8 +38,8 @@
       </div>
 
       <div class="row justify-start items-center q-mb-sm">
-        <q-checkbox dense v-model="outboxSettingRef.enableEmailTracker" label="启用邮件状态跟踪" color="secondary" class="q-ml-sm"
-          keep-color>
+        <q-checkbox dense toggle-indeterminate v-model="outboxSettingRef.enableEmailTracker" label="启用邮件跟踪"
+          color="secondary" class="q-ml-sm" keep-color>
           <AsyncTooltip tooltip="开启后，将跟踪邮件的查阅状态"></AsyncTooltip>
         </q-checkbox>
       </div>
@@ -86,7 +86,8 @@ const outboxSettingRef: Ref<IUserSetting> = ref({
   maxOutboxCooldownSecond: 10,
   maxSendingBatchSize: 20,
   minInboxCooldownHours: 0,
-  replyToEmails: ''
+  replyToEmails: '',
+  enableEmailTracker: null
 })
 // 获取设置
 let updateSettingSignal = true
@@ -110,6 +111,11 @@ watch(outboxSettingRef, async () => {
 
   notifySuccess('设置更改已生效')
 }, { deep: true })
+
+import { updateServerBaseApiUrl } from 'src/api/systemSetting'
+watch(() => outboxSettingRef.value.enableEmailTracker, async () => {
+  await updateServerBaseApiUrl()
+})
 </script>
 
 <style lang="scss" scoped></style>
