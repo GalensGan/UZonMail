@@ -9,6 +9,8 @@ import dayjs from 'dayjs'
 export function formatDateStr (dateStr: string, format = 'YYYY-MM-DD HH:mm:ss') {
   if (!dateStr) return ''
   if (dateStr.startsWith('0001')) return ''
+  if (dateStr.startsWith('9999')) return ''
+
   console.log('dateStr', dateStr)
   return dayjs(dateStr).format(format)
 }

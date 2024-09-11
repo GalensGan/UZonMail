@@ -168,6 +168,37 @@ export const dynamicRoutes: ExtendedRouteRecordRaw[] = [
     ]
   },
   {
+    name: 'SendingStatistics',
+    path: '/sending-statistics',
+    component: NormalLayout,
+    meta: {
+      label: '统计报表',
+      icon: 'analytics'
+    },
+    redirect: '/statistics/anchor-report',
+    children: [
+      {
+        name: 'AnchorReport',
+        path: 'anchor-report',
+        meta: {
+          icon: 'mark_email_read',
+          label: '阅读统计',
+          access: ['enterprise']
+        },
+        component: () => import('pages/statisticsReport/EmailAnchor.vue')
+      }
+      // {
+      //   name: 'CustomerAnalysis',
+      //   path: 'anchor-report',
+      //   meta: {
+      //     icon: 'badge',
+      //     label: '客户分析'
+      //   },
+      //   component: () => import('pages/statisticsReport/StatisticsReport.vue')
+      // }
+    ]
+  },
+  {
     name: 'System',
     path: '/system',
     component: NormalLayout,
