@@ -347,6 +347,8 @@ export async function writeExcel (rows: any[], params: IExcelWriterParams) {
     results.push(formattedRow)
   }
 
+  logger.debug('[file] writeExcel:', results)
+
   // 创建一个新的工作表
   const newWorksheet = XLSX.utils.json_to_sheet(results)
   // 将工作表添加到工作簿

@@ -75,6 +75,10 @@ namespace UZonMail.Core.Controllers.Emails
         [HttpPost("outboxes")]
         public async Task<ResponseResult<List<Outbox>>> CreateOutboxes([FromBody] List<Outbox> entities)
         {
+            if (entities == null)
+            {
+                return ResponseResult<List<Outbox>>.Fail("未能解析发件箱数据");
+            }
             var userId = tokenService.GetUserDataId();
             foreach (var entity in entities)
             {
@@ -187,6 +191,11 @@ namespace UZonMail.Core.Controllers.Emails
         [HttpPost("inboxes")]
         public async Task<ResponseResult<List<Inbox>>> CreateInboxes([FromBody] List<Inbox> entities)
         {
+            if (entities == null)
+            {
+                return ResponseResult<List<Inbox>>.Fail("未能解析收件箱数据");
+            }
+
             var userId = tokenService.GetUserDataId();
             foreach (var entity in entities)
             {
