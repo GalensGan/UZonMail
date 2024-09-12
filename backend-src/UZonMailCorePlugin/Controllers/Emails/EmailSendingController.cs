@@ -64,7 +64,8 @@ namespace UZonMail.Core.Controllers.Emails
                 return vdResult.ToErrorResponse<SendingGroup>();
             }
 
-            sendingData.SendingType = SendingGroupType.Scheduled;
+            sendingData.SendingType = SendingGroupType.Scheduled;            
+
             // 创建发件组
             var sendingGroup = await sendingService.CreateSendingGroup(sendingData);
             await sendingService.SendSchedule(sendingGroup);

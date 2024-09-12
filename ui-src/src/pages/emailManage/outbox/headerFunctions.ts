@@ -56,7 +56,7 @@ export async function getOutboxFields (smtpPasswordSecretKeys: string[]): Promis
       name: 'smtpPort',
       label: 'smtp端口',
       type: PopupDialogFieldType.number,
-      value: 25,
+      value: 465,
       required: true
     },
     {
@@ -153,12 +153,13 @@ export function getOutboxExcelDataMapper (): IExcelColumnMapper[] {
       fieldName: 'replyToEmails'
     },
     {
-      headerName: '使用 SSL',
+      headerName: '启用SSL',
       fieldName: 'enableSSL',
       format: (value: boolean) => {
         if (typeof value === 'boolean') {
           return value ? '是' : '否'
         }
+
         if (typeof value === 'string') {
           return value === '是'
         }
@@ -208,7 +209,18 @@ export function useHeaderFunction (emailGroup: Ref<IEmailGroupListItem>,
         description: '描述(可选)',
         proxy: '格式为：http://username:password@domain:port(可选)',
         replyToEmails: '回信收件人(多个使用逗号分隔)',
-        enableSSL: '否'
+        enableSSL: true
+      }, {
+        email: 'test@163.com',
+        name: '',
+        userName: '',
+        password: 'ThisIsYour163SmtpPassword',
+        smtpHost: 'smtp.163.com',
+        smtpPort: 465,
+        description: '',
+        proxy: '',
+        replyToEmails: '',
+        enableSSL: true
       }
     ]
     await writeExcel(data, {

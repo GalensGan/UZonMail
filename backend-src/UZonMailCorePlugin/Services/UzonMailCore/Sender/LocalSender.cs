@@ -29,14 +29,13 @@ namespace UZonMail.Core.Services.EmailSending.Sender
         /// 使用本机进行发件
         /// </summary>
         /// <returns></returns>
-        public override async Task Send(SendingContext sendingContext)
+        private async Task SendCore(SendingContext sendingContext)
         {
             ArgumentNullException.ThrowIfNull(sendItem);
 
             if (!sendItem.Validate())
             {
                 sendingContext.SetSendResult(new SendResult(false, "发件项数据验证失败，取消发件") { SentStatus = SentStatus.Failed });
-                await EmailItemSendCompleted(sendingContext);
                 return;
             }
 
@@ -105,17 +104,16 @@ namespace UZonMail.Core.Services.EmailSending.Sender
                 _logger.Error($"使用 {sendItem.Outbox.Email} 向 {sendItem.Inboxes.Select(x => x.Email)} 发送邮件发生错误。", ex);
                 var errorResult = new SendResult(false, ex.Message);
                 sendingContext.SetSendResult(errorResult);
-                await EmailItemSendCompleted(sendingContext);
                 return;
             }
-
             try
             {
                 var clientResult = await SmtpClientFactory.GetSmtpClientAsync(sendingContext, sendItem.Outbox, sendItem.ProxyInfo);
                 // 若返回 null,说明这个发件箱不能建立 smtp 连接，对它进行取消
                 if (!clientResult)
                 {
-                    sendingContext.SetSendResult(new SendResult(false, $"发件箱 {sendItem.Outbox.Email} 错误。{clientResult.Message}") { SentStatus = SentStatus.OutboxError });
+                    sendingContext.SetSendResult(new SendResult(false, $"发件箱 {sendItem.Outbox.Email} 错误。{clientResult.Message}")
+                    { SentStatus = SentStatus.OutboxError });
                     return;
                 }
 
@@ -123,8 +121,7 @@ namespace UZonMail.Core.Services.EmailSending.Sender
                 var client = clientResult.Data;
                 string sendResult = await client.SendAsync(message);
                 _logger.Info($"邮件发送完成：{sendItem.Outbox.Email} -> {string.Join(",", sendItem.Inboxes.Select(x => x.Email))}");
-
-                await FinishSending(sendingContext, true, sendResult);
+                SetSendResult(sendingContext, true, sendResult);
                 return;
             }
             catch (SmtpCommandException smtpCommandException)
@@ -133,19 +130,26 @@ namespace UZonMail.Core.Services.EmailSending.Sender
                 {
                     // 说明是发件箱错误
                     _logger.Warn(smtpCommandException);
-                    await FinishSending(sendingContext, false, smtpCommandException.Message);
+                    SetSendResult(sendingContext, false, smtpCommandException.Message);
                     return;
                 }
 
                 _logger.Error(smtpCommandException);
-                await FinishSending(sendingContext, false, smtpCommandException.Message, SentStatus.OutboxError);
+                SetSendResult(sendingContext, false, smtpCommandException.Message, SentStatus.OutboxError);
                 return;
             }
             catch (Exception error)
             {
                 _logger.Error(error);
-                await FinishSending(sendingContext, false, error.Message, SentStatus.OutboxError);
+                SetSendResult(sendingContext, false, error.Message, SentStatus.OutboxError);
+                return;
             }
+        }
+
+        public override async Task Send(SendingContext sendingContext)
+        {
+            await SendCore(sendingContext);
+            await EmailItemSendCompleted(sendingContext);
         }
 
         /// <summary>
@@ -156,14 +160,13 @@ namespace UZonMail.Core.Services.EmailSending.Sender
         /// <param name="message"></param>
         /// <param name="sentStatus"></param>
         /// <returns></returns>
-        private async Task FinishSending(SendingContext sendingContext, bool ok, string message, SentStatus sentStatus = SentStatus.OK)
+        private void SetSendResult(SendingContext sendingContext, bool ok, string message, SentStatus sentStatus = SentStatus.OK)
         {
             var successResult = new SendResult(ok, message)
             {
                 SentStatus = sentStatus
             };
             sendingContext.SetSendResult(successResult);
-            await EmailItemSendCompleted(sendingContext);
         }
 
         /// <summary>
