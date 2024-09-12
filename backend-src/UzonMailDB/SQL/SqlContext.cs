@@ -64,6 +64,10 @@ namespace UZonMail.DB.SQL
         public DbSet<ReadingTracker.EmailAnchor> EmailAnchors { get; set; }
         public DbSet<ReadingTracker.EmailVisitHistory> EmailVisitHistories { get; set; }
         public DbSet<ReadingTracker.IPInfo> IPInfos { get; set; }
+
+        // 退定相关
+        public DbSet<Unsubscribes.UnsubscribeSetting> UnsubscribeSettings { get; set; }
+        public DbSet<Unsubscribes.UnsubscribePage> UnsubscribePages { get; set; }
         #endregion
 
         #region 测试
