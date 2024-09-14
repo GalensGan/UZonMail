@@ -1,5 +1,5 @@
 <template>
-  <q-chip v-bind="$attrs" outline square dense :color="statusStyle.color" :text-color="statusStyle.textColor"
+  <q-chip v-bind="$attrs" square dense :color="statusStyle.color" :text-color="statusStyle.textColor"
     :label="statusStyle.label">
     <slot name="default"></slot>
   </q-chip>
@@ -23,7 +23,11 @@ const defaultStatusStyles = [
   { status: 'independent', label: '独立', color: 'primary', textColor: 'white', icon: '' },
   { status: 'subUser', label: '子账户', color: 'negative', textColor: 'white', icon: '' },
   { status: 'normal', label: '正常', color: 'primary', textColor: 'white', icon: '' },
-  { status: 'forbiddenLogin', label: '禁用', color: 'negative', textColor: 'white', icon: '' }
+  { status: 'forbiddenLogin', label: '禁用', color: 'negative', textColor: 'white', icon: '' },
+  { status: 'read', label: '已读', color: 'positive', textColor: 'white', icon: '' },
+  { status: 'instant', label: '即时', color: 'primary', textColor: 'white', icon: '' },
+  { status: 'scheduled', label: '定时', color: 'warning', textColor: 'white', icon: '' },
+  { status: 'invalid', label: '无效', color: 'negative', textColor: 'white', icon: '' }
 ]
 const props = defineProps({
   status: {

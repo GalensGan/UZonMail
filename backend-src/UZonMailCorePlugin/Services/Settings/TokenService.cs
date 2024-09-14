@@ -5,6 +5,7 @@ using UZonMail.Utils.Web.Service;
 using UZonMail.Utils.Web.Token;
 using UZonMail.Utils.Json;
 using UZonMail.Core.Config;
+using Newtonsoft.Json.Linq;
 
 namespace UZonMail.Core.Services.Settings
 {
@@ -39,16 +40,45 @@ namespace UZonMail.Core.Services.Settings
             return token;
         }
 
+        public JObject GetTokenPayload()
+        {
+            var token = GetToken();
+            return appConfig.Value.TokenParams.GetTokenPayloads(token);
+        }
+
+        public long GetLongId(string fieldName)
+        {
+            var payloads = GetTokenPayload();
+            var idResult = payloads.SelectTokenOrDefault(fieldName, "");
+            if (long.TryParse(idResult, out long longId)) return longId;
+            return 0L;
+        }
+
         /// <summary>
         /// 获取 token 中的 userId
         /// </summary>
         /// <returns></returns>
         public long GetUserDataId()
         {
-            var token = GetToken();
-            var userId = appConfig.Value.TokenParams.GetTokenPayloads(token).SelectTokenOrDefault("userId", "");
-            if(long.TryParse(userId, out long intUserId)) return intUserId;
-            return 0L;
+            return GetLongId("userId");
+        }
+
+        /// <summary>
+        /// 获取部门 Id
+        /// </summary>
+        /// <returns></returns>
+        public long GetDepartmentId()
+        {
+           return GetLongId("departmentId");
+        }
+
+        /// <summary>
+        /// 获取组织 id
+        /// </summary>
+        /// <returns></returns>
+        public long GetOrganizationId()
+        {
+           return GetLongId("organizationId");
         }
 
         /// <summary>

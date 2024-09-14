@@ -1,5 +1,5 @@
 <template>
-  <q-expansion-item popup icon="flight_takeoff" :label="label" :caption="caption"
+  <q-expansion-item popup :icon="icon" :label="label" :caption="caption"
     header-class="text-primary card-like-borderless" @before-show="onBeforeShow" group="settings1">
     <div class="q-pa-md">
       <div class="row justify-start items-center q-mb-sm ">
@@ -75,6 +75,11 @@ const props = defineProps({
   updateSettingApi: {
     type: Function,
     default: updateUserSetting
+  },
+
+  icon: {
+    type: String,
+    default: 'flight_takeoff'
   }
 })
 
