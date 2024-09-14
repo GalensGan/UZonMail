@@ -41,7 +41,7 @@ namespace UZonMail.DB.SQL.Settings
             {
                 var lastValue = _settings.Select(selector)
                 .Where(x => x != null)
-                .Last();
+                .LastOrDefault();
                 return lastValue ?? false;
             });
         }

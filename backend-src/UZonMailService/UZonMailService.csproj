@@ -9,8 +9,8 @@
 		<ServerGarbageCollection>false</ServerGarbageCollection>
 		<ConcurrentGarbageCollection>true</ConcurrentGarbageCollection>
 		<Platforms>x64</Platforms>
-		<FileVersion>0.9.5.0</FileVersion>
-		<AssemblyVersion>0.9.5.0</AssemblyVersion>
+		<FileVersion>0.9.5.1</FileVersion>
+		<AssemblyVersion>0.9.5.1</AssemblyVersion>
 	</PropertyGroup>
 
 	<ItemGroup>
