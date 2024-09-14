@@ -3,7 +3,7 @@
     /// <summary>
     /// 用户和组织 id
     /// </summary>
-    public class UserAndOrgId : SqlId
+    public class UserAndOrgId : OrgId
     {
         /// <summary>
         /// 用户的 id
