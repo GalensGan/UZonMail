@@ -19,18 +19,21 @@
       <q-item class="plain-list__item q-my-xs" v-for="item in filteredItems" :key="item.name" clickable v-ripple
         :active="item.active" active-class="text-secondary" @click="onItemClick(item)">
         <div class="row justify-between no-wrap items-center full-width">
-          <div>
-            <q-icon color="primary" v-if="item.icon" :name="item.icon" size="sm" />
+          <div class="row justify-start items-center">
+            <div>
+              <q-icon color="primary" v-if="item.icon" :name="item.icon" size="sm" />
+              <q-checkbox v-if="selectable && item.selectable !== false" dense v-model="item.selected"
+                @click="onItemCheckboxClicked(item)" color="secondary" class="q-ml-sm" keep-color>
+              </q-checkbox>
+            </div>
 
-            <q-checkbox v-if="selectable && item.selectable !== false" dense v-model="item.selected"
-              @click="onItemCheckboxClicked(item)" color="secondary" class="q-ml-sm" keep-color>
-            </q-checkbox>
+            <div class="q-ml-sm" v-if="item.label">{{ item.label }}
+              <AsyncTooltip :tooltip="item.label" />
+            </div>
           </div>
 
-          <div class="q-px-xs" v-if="item.label">{{ item.label }}
-            <AsyncTooltip :tooltip="item.label" />
+          <div side v-if="item.side">{{ item.side }}
           </div>
-          <div side v-if="item.side">{{ item.side }}</div>
         </div>
 
         <ContextMenu v-if="!readonly" :items="itemContextMenuItems" :value="item"></ContextMenu>
