@@ -52,13 +52,21 @@
             v-model="fieldsModel[field.name]" :label="field.label">
             <AsyncTooltip anchor="bottom left" self="top start" :tooltip="field.tooltip" />
           </q-checkbox>
+
+          <div v-if="isMatchedType(field, 'editor')" class="q-mb-sm low-code__field q-px-sm">
+            <q-editor v-model="fieldsModel[field.name]" :definitions="editorDefinitions" :toolbar="editorToolbar"
+              style="max-height: 300px;" placeholder="在此处输入模板内容, 变量使用 {{ }} 号包裹, 例如 {{ variableName }}">
+            </q-editor>
+          </div>
         </template>
       </div>
 
       <!-- 按钮的例子 -->
       <q-card-actions align="right">
-        <CancelBtn @click="onDialogCancel"></CancelBtn>
-        <OkBtn :loading="okBtnLoading" @click="onOKClick"></OkBtn>
+        <CommonBtn v-for="btn in customBtns" :key="btn.label" @click="onCustomBottonClicked(btn)" :label="btn.label"
+          :color="btn.color" />
+        <CancelBtn v-if="!disableDefaultBtns.includes('cancel')" @click="onDialogCancel"></CancelBtn>
+        <OkBtn v-if="!disableDefaultBtns.includes('ok')" :loading="okBtnLoading" @click="onOKClick"></OkBtn>
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -68,13 +76,14 @@
 import { useDialogPluginComponent } from 'quasar'
 import dayjs from 'dayjs'
 
+import CommonBtn from '../componentWrapper/buttons/CommonBtn.vue'
 import OkBtn from 'src/components/componentWrapper/buttons/OkBtn.vue'
 import CancelBtn from 'src/components/componentWrapper/buttons/CancelBtn.vue'
 import AsyncTooltip from 'src/components/asyncTooltip/AsyncTooltip.vue'
 import PasswordInput from '../passwordInput/PasswordInput.vue'
 
 import { PropType } from 'vue'
-import { IPopupDialogField, PopupDialogFieldType } from './types'
+import { ICustomPopupButton, IPopupDialogField, PopupDialogFieldType } from './types'
 import { notifyError } from 'src/utils/dialog'
 import { IFunctionResult } from 'src/types'
 
@@ -119,6 +128,18 @@ const props = defineProps({
   oneColumn: {
     type: Boolean,
     default: false
+  },
+
+  // 禁用默认按钮
+  disableDefaultBtns: {
+    type: Array as PropType<Array<'ok' | 'cancel'>>,
+    default: () => []
+  },
+
+  // 自定义按钮
+  customBtns: {
+    type: Array as PropType<Array<ICustomPopupButton>>,
+    default: () => []
   }
 })
 
@@ -138,9 +159,13 @@ function getContainerClass () {
   }
 }
 
-/**
- * 数据初始化
- */
+// #region 编辑器
+// 编辑器配置
+import { useWysiwygEditor } from 'src/pages/templateManage/compositions'
+const { editorDefinitions, editorToolbar } = useWysiwygEditor()
+// #endregion
+
+// #region 数据初始化
 const { fields, dataSet } = toRefs(props)
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const dataSetRef: Ref<Record<string, any>> = ref({})
@@ -203,6 +228,7 @@ const validFields = computed(() => {
 
   return results
 })
+// #endregion
 
 // #region quasar 弹窗逻辑
 defineEmits([
@@ -278,6 +304,17 @@ async function onOKClick () {
   onDialogOK(fieldsModel.value)
   // 或使用有效载荷：onDialogOK({ ... })
   // ...它还会自动隐藏对话框
+}
+// #endregion
+
+// #region 自定义按钮
+async function onCustomBottonClicked (btn: ICustomPopupButton) {
+  // 调用
+  if (typeof btn.onClick !== 'function') {
+    notifyError('自定义按钮没有注册 onClick 函数')
+  }
+
+  await btn.onClick(fieldsModel.value)
 }
 // #endregion
 </script>

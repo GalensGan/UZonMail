@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Notify, QNotifyCreateOptions, Dialog } from 'quasar'
-
+import { i18n } from 'src/boot/i18n'
+const { t } = i18n.global
 /**
  * 错误
  * @param opts
@@ -9,7 +10,7 @@ export function notifyError (opts: QNotifyCreateOptions | string | undefined): v
   if (!opts) return
 
   let inputOptions = opts
-  if (typeof opts === 'string') { inputOptions = { message: opts } }
+  if (typeof opts === 'string') { inputOptions = { message: t(opts) } }
 
   const appNotifyOptions: QNotifyCreateOptions = {
     color: 'negative',
@@ -29,7 +30,7 @@ export function notifySuccess (opts: QNotifyCreateOptions | string | undefined):
   if (!opts) return
 
   let inputOptions = opts
-  if (typeof opts === 'string') { inputOptions = { message: opts } }
+  if (typeof opts === 'string') { inputOptions = { message: t(opts) } }
 
   const appNotifyOptions: QNotifyCreateOptions = {
     color: 'positive',
@@ -48,7 +49,7 @@ export function notifySuccess (opts: QNotifyCreateOptions | string | undefined):
  */
 export function notifyAny (opts: QNotifyCreateOptions | string | undefined): void {
   if (!opts) return
-  if (typeof opts === 'string') opts = { message: opts, type: 'success' }
+  if (typeof opts === 'string') opts = { message: t(opts), type: 'success' }
 
   switch (opts.type) {
     case 'success':
@@ -75,16 +76,16 @@ export async function confirmOperation (title: string, message: string): Promise
       ok: {
         color: 'primary',
         icon: 'check_circle',
-        label: '确认',
-        tooltip: '确认操作',
+        label: t('confirm'),
+        tooltip: t('confirmOperation'),
         size: 'md',
         dense: true
       },
       cancel: {
         color: 'negative',
         icon: 'cancel',
-        label: '取消',
-        tooltip: '取消操作',
+        label: t('cancel'),
+        tooltip: t('cancelOperation'),
         size: 'md',
         dense: true
       }
