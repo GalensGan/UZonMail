@@ -10,7 +10,7 @@ services:
     container_name: uzon-mysql
     image: mysql:8.4.0
     ports:
-      - 3307:3306
+      - 3306:3306
     environment:
       MYSQL_ROOT_PASSWORD: root3306
       MYSQL_DATABASE: uzon-mail
@@ -30,7 +30,7 @@ services:
     container_name: uzon-redis
     image: redis:7.2.5
     ports:
-      - 6380:6379
+      - 6379:6379
     volumes:
       - ./docker/redis/data:/data
     restart: always
@@ -38,19 +38,18 @@ services:
       - uzon-network
 
   # 程序主体
-  uzon-mail-server:
-    container_name: uzon-mail-server
-    image: uzon-mail
-    build: . # 使用当前目录下的 Dockerfile 文件构建镜像
+  uzon-mail:
+    container_name: uzon-mail
+    image: uzon-mail:latest
     ports:
       - 22345:22345
     volumes:
       - ./docker/uzon-mail/src:/app
     networks:
       - uzon-network
-    # command: ["dotnet", "UZonMailService.dll"]
-    init: true
-    command: [ "sh", "-c", "exec sleep infinity" ]
+    command: ["dotnet", "UZonMailService.dll"]
+    # init: true
+    # command: [ "sh", "-c", "exec sleep infinity" ]
     depends_on:
       - uzon-mysql
       - uzon-redis
