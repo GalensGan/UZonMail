@@ -5,7 +5,7 @@ namespace UZonMail.DB.SQL.Unsubscribes
     /// <summary>
     /// 取消订阅的界面设置
     /// </summary>
-    public class UnsubscribePage : OrgId
+    public class UnsubscribePage : UserAndOrgId
     {
         /// <summary>
         /// 语言
@@ -16,5 +16,10 @@ namespace UZonMail.DB.SQL.Unsubscribes
         /// Html 内容
         /// </summary>
         public string HtmlContent { get; set; }
+
+        /// <summary>
+        /// 是否是默认的退订页面
+        /// </summary>
+        public bool IsDefault { get; set; }
     }
 }
