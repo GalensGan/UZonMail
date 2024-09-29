@@ -66,12 +66,12 @@ services.AddEndpointsApiExplorer();
 // ≈‰÷√ swagger
 services.AddSwaggerGen(new OpenApiInfo()
 {
-    Title = "UZonMail",
+    Title = "UZonMail API",
     Contact = new OpenApiContact()
     {
         Name = "galens",
         Url = new Uri("https://galens.uamazing.cn"),
-        Email = "gmx_galens@163.com"
+        Email = "260827400@qq.com"
     }
 }, "UZonMailService.xml");
 

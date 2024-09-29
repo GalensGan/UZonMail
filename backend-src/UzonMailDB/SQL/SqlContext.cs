@@ -68,6 +68,7 @@ namespace UZonMail.DB.SQL
         // 退定相关
         public DbSet<Unsubscribes.UnsubscribeSetting> UnsubscribeSettings { get; set; }
         public DbSet<Unsubscribes.UnsubscribePage> UnsubscribePages { get; set; }
+        public DbSet<Unsubscribes.UnsubscribeEmail> UnsubscribeEmails { get; set; }
         #endregion
 
         #region 测试
