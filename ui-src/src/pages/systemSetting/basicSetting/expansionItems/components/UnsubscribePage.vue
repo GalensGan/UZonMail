@@ -3,7 +3,7 @@
     v-model:pagination="pagination" dense :loading="loading" :filter="filter" binary-state-sort grid
     @request="onTableRequest">
     <template v-slot:top-left>
-      <CreateBtn label="新增退订页" tooltip="按语言新增退订页面" @click="onNewUnsubscribePage" />
+      <CreateBtn label="新增退订页" :tooltip="['按语言新增退订页面', '程序会根据用户当前语言展示对应的退订页']" @click="onNewUnsubscribePage" />
     </template>
 
     <template v-slot:top-right>
@@ -12,12 +12,17 @@
 
     <template v-slot:item="props">
       <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 q-pa-xs">
-        <q-card class="column q-pa-sm ">
+        <q-card class="column q-pa-sm hoverable-container">
           <div class="text-primary">{{ props.row.language }}</div>
           <q-separator class="q-mb-sm" />
           <div class="unsubscribe_content_thubnail" v-html="props.row.htmlContent"></div>
 
-          <HoverOverlay></HoverOverlay>
+          <div class="hoverable-focus">
+            <div class="row full-height items-center justify-center q-gutter-sm">
+              <CommonBtn icon="edit" color="secondary" tooltip="修改" @click="onModifyUnsubscribePage(props.row)" />
+              <CommonBtn icon="preview" tooltip="预览" @click="onPreviewUnsubscribePage(props.row.id as number)" />
+            </div>
+          </div>
         </q-card>
       </div>
     </template>
@@ -29,9 +34,12 @@ import { QTableColumn } from 'quasar'
 import { useQTable } from 'src/compositions/qTableUtils'
 import { IRequestPagination, TTableFilterObject } from 'src/compositions/types'
 import SearchInput from 'src/components/searchInput/SearchInput.vue'
-import HoverOverlay from 'src/components/hoverOverlay/HoverOverlay.vue'
+import CommonBtn from 'src/components/componentWrapper/buttons/CommonBtn.vue'
 
-import { createUnsubscribePage, getUnsubscribePagesCount, getUnsubscribePagesData, IUnsubscribePage } from 'src/api/pro/unsubscribePage'
+import {
+  createUnsubscribePage, updateUnsubscribePage,
+  getUnsubscribePagesCount, getUnsubscribePagesData, IUnsubscribePage
+} from 'src/api/pro/unsubscribePage'
 
 const columns: QTableColumn[] = [
   {
@@ -89,7 +97,8 @@ function getPopupParams (data: IUnsubscribePage | null = null) {
         options: languages.map((lang) => ({ label: lang, value: lang })),
         required: true,
         emitValue: true,
-        value: data?.language
+        value: data?.language,
+        disable: !!data
       },
       {
         name: 'htmlContent',
@@ -131,9 +140,30 @@ async function onNewUnsubscribePage () {
 }
 // #endregion
 
+// #region 修改与预览
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function onModifyUnsubscribePage (unsubscribePage: Record<string, any>) {
+  const pageData = unsubscribePage as IUnsubscribePage
+  const initParams = getPopupParams(pageData)
+
+  const result = await showDialog(initParams)
+  if (!result.ok) return
+
+  // 更新
+  await updateUnsubscribePage(pageData.id, result.data.htmlContent)
+  pageData.htmlContent = result.data.htmlContent
+
+  notifySuccess('更新成功')
+}
+
+async function onPreviewUnsubscribePage (unsubscribePageId: number) {
+  const url = `/pages/unsubscribe?unsubscribeId=${unsubscribePageId}`
+  window.open(url, '_blank')
+}
+// #endregion
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .unsubscribe_content_thubnail {
   height: 120px;
   overflow: hidden;
@@ -143,5 +173,10 @@ async function onNewUnsubscribePage () {
   word-wrap: break-word;
   display: -webkit-box;
   -webkit-box-orient: vertical;
+}
+
+.hover-overlay {
+  // 透明
+  background-color: rgba(214, 42, 42, 0.5) !important;
 }
 </style>

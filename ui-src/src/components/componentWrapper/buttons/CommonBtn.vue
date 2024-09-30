@@ -1,5 +1,5 @@
 <template>
-  <q-btn class="q-py-none" :class="{ 'q-pr-sm': icon }" :dense="dense" :color="color" :size="size" :icon="icon"
+  <q-btn class="q-py-none" :class="{ 'q-pr-sm': icon && label }" :dense="dense" :color="color" :size="size" :icon="icon"
     :label="label" v-bind="$attrs">
     <template v-for="(slot, slotName) in $slots">
       <slot :name="slotName"></slot>
@@ -22,7 +22,7 @@ defineProps({
   },
   label: {
     type: String,
-    default: '确认'
+    default: ''
   },
   tooltip: {
     type: String,
