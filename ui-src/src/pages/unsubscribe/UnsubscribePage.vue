@@ -1,5 +1,5 @@
 <template>
-  <div class="column items-center justify-center unsubscribe-page_container">
+  <div class="column unsubscribe-page_container">
     <div v-html="unsubscribeHtml" :inert="true"></div>
     <CommonBtn class="q-mt-xl self-center" :label="btnLabel" @click="onUnsubscribeClicked" />
   </div>
