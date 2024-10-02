@@ -39,7 +39,7 @@
 
 <script lang="ts" setup>
 import { userLogin } from 'src/api/user'
-import { getProAccess } from 'src/api/license'
+import { getProAccess } from 'src/api/pro/license'
 
 import { useUserInfoStore } from 'src/stores/user'
 import { useRoutesStore } from 'src/stores/routes'

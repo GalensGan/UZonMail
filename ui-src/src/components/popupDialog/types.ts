@@ -16,7 +16,8 @@ export enum PopupDialogFieldType {
   file = 'file',
   url = 'url',
   datetimeLocal = 'datetime-local',
-  search = 'search'
+  search = 'search',
+  editor = 'editor',
 }
 
 /**
@@ -43,6 +44,15 @@ export interface IPopupDialogField {
 }
 
 /**
+ * 自定义弹出框按钮
+ */
+export interface ICustomPopupButton {
+  label: string,
+  color: string,
+  onClick: (value: Record<string, any>) => Promise<void>
+}
+
+/**
  * 弹出框参数
  */
 export interface IPopupDialogParams {
@@ -59,6 +69,7 @@ export interface IPopupDialogParams {
   onOkMain?: (params: Record<string, any>) => Promise<void | boolean>,
   // 只有一列
   oneColumn?: boolean,
+  customBtns?: ICustomPopupButton[]
 }
 
 /**

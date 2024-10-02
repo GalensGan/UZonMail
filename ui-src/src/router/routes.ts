@@ -1,5 +1,6 @@
 import { ExtendedRouteRecordRaw } from './types'
 const NormalLayout = () => import('../layouts/normalLayout/normalLayout.vue')
+const SinglePageLayout = () => import('../layouts/singlePageLayout/singlePageLayout.vue')
 
 /**
  * 使用说明
@@ -349,6 +350,32 @@ export const constantRoutes: ExtendedRouteRecordRaw[] = [
       noMenu: true, // 在菜单中隐藏
       noTag: true // 在标签中隐藏
     }
+  },
+  {
+    name: 'SinglePages',
+    path: '/pages',
+    component: SinglePageLayout,
+    meta: {
+      label: '单页面',
+      icon: 'view_carousel',
+      noMenu: true,
+      noTag: true
+    },
+    children: [
+      {
+        name: 'UnsubscribePage',
+        path: 'unsubscribe',
+        component: () => import('src/pages/unsubscribe/UnsubscribePage.vue'),
+        meta: {
+          label: 'Unsubscribe',
+          icon: 'unsubscribe',
+          noMenu: true,
+          noTag: true,
+          // 允许匿名访问
+          anoymous: true
+        }
+      }
+    ]
   }
 ]
 

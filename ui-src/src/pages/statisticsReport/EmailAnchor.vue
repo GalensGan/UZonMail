@@ -72,7 +72,7 @@ const columns: QTableColumn[] = [
   }
 ]
 
-import { getEmailAnchorsCount, getEmailAnchorsData } from 'src/api/emailTracker'
+import { getEmailAnchorsCount, getEmailAnchorsData } from 'src/api/pro/emailTracker'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function getRowsNumberCount (filterObj: TTableFilterObject) {
   const { data } = await getEmailAnchorsCount(filterObj.filter)

@@ -21,6 +21,7 @@ declare module 'vue' {
     EllipsisContent: typeof import('./src/components/ellipsisContent/EllipsisContent.vue')['default']
     ExportBtn: typeof import('./src/components/componentWrapper/buttons/ExportBtn.vue')['default']
     FilesUploaderPopup: typeof import('./src/components/uploader/FilesUploaderPopup.vue')['default']
+    HoverOverlay: typeof import('./src/components/hoverOverlay/HoverOverlay.vue')['default']
     ImageCropper: typeof import('./src/components/imageCropper/ImageCropper.vue')['default']
     ImportBtn: typeof import('./src/components/componentWrapper/buttons/ImportBtn.vue')['default']
     LinearProgress: typeof import('./src/components/Progress/LinearProgress.vue')['default']

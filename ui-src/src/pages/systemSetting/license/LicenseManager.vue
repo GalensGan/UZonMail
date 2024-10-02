@@ -35,7 +35,7 @@
 import AsyncTooltip from 'src/components/asyncTooltip/AsyncTooltip.vue'
 import { confirmOperation, notifyError, notifySuccess } from 'src/utils/dialog'
 import dayjs from 'dayjs'
-import { ILicenseInfo, LicenseType, updateLicenseInfo, getProAccess, getLicenseInfo } from 'src/api/license'
+import { ILicenseInfo, LicenseType, updateLicenseInfo, getProAccess, getLicenseInfo } from 'src/api/pro/license'
 
 const license = ref<string>('')
 
