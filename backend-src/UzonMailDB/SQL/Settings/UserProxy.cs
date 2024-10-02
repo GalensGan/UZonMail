@@ -8,6 +8,7 @@ namespace UZonMail.DB.SQL.Settings
     /// 邮件代理
     /// 包括用户代理和系统内部代理
     /// </summary>
+    [Obsolete("弃用, 使用 OrganizationProxy 替代")]
     public class UserProxy : SqlId
     {
         /// <summary>

@@ -7,6 +7,7 @@ namespace UZonMail.DB.SQL.Settings
     /// <summary>
     /// 用户设置
     /// </summary>
+    [Obsolete("弃用，使用 OrganizationSetting 替代")]
     public class UserSetting : SqlId
     {
         /// <summary>
