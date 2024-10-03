@@ -14,6 +14,12 @@ using Uamazing.Utils.Web.ResponseModel;
 
 namespace UZonMail.Core.Controllers.Permission
 {
+    /// <summary>
+    /// 角色控制器
+    /// </summary>
+    /// <param name="tokenService"></param>
+    /// <param name="db"></param>
+    /// <param name="permission"></param>
     public class RoleController(TokenService tokenService, SqlContext db, PermissionService permission) : PermissionControllerBase
     {
         /// <summary>

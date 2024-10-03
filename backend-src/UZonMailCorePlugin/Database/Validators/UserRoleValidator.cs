@@ -3,7 +3,7 @@ using UZonMail.DB.SQL.Permission;
 
 namespace UZonMail.Core.Database.Validators
 {
-    public class UserRoleValidator : AbstractValidator<UserRole>
+    public class UserRoleValidator : AbstractValidator<UserRoles>
     {
         public UserRoleValidator()
         {

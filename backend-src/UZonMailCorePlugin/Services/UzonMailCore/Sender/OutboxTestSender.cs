@@ -51,7 +51,9 @@ namespace UZonMail.Core.Services.EmailSending.Sender
                 // 获取代理
                 if (outbox.ProxyId > 0)
                 {
-                    var proxy = await sqlContext.UserProxies.Where(x => x.UserId == outbox.UserId || x.IsShared)
+                    // 获取当前用户信息
+                    var user = await sqlContext.Users.AsNoTracking().Where(x=>x.Id == outbox.UserId).FirstOrDefaultAsync();
+                    var proxy = await sqlContext.OrganizationProxies.Where(x => x.OrganizationId == user.OrganizationId)
                         .Where(x => x.Id == outbox.ProxyId)
                         .FirstOrDefaultAsync();
                     if (proxy != null)

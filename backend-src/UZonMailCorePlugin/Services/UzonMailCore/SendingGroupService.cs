@@ -76,7 +76,7 @@ namespace UZonMail.Core.Services.EmailSending
                 await ctx.SaveChangesAsync();
 
                 // 获取用户设置
-                var settingsReader = await UserSettingsCache.GetUserSettingsReader(ctx, sendingGroupData.UserId);
+                var settingsReader = await SettingsCache.GetSettingsReader(ctx, sendingGroupData.UserId);
 
                 // 保存发件箱
                 await SaveInboxes(sendingGroupData.Data, sendingGroupData.UserId);

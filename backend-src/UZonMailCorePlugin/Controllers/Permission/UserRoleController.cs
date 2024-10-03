@@ -20,13 +20,13 @@ namespace UZonMail.Core.Controllers.Permission
         /// <param name="userRole"></param>
         /// <returns></returns>
         [HttpPost()]
-        public async Task<ResponseResult<UserRole>> UpsertUserRole([FromBody] UserRole userRole)
+        public async Task<ResponseResult<UserRoles>> UpsertUserRole([FromBody] UserRoles userRole)
         {
             var validator = new UserRoleValidator();
             var vdResult = validator.Validate(userRole);
             if (!vdResult.IsValid)
             {
-                return vdResult.ToErrorResponse<UserRole>();
+                return vdResult.ToErrorResponse<UserRoles>();
             }
 
             // 查找 更新 roles
@@ -34,7 +34,7 @@ namespace UZonMail.Core.Controllers.Permission
             userRole.Roles = await db.Roles.Where(x => roleIds.Contains(x.Id)).ToListAsync();
             if (userRole.Id > 0)
             {
-                var existOne = await db.UserRoles.Where(x => x.Id == userRole.Id)
+                var existOne = await db.UserRole.Where(x => x.Id == userRole.Id)
                     .Include(x => x.Roles)
                     .FirstOrDefaultAsync();
                 existOne.UserId = userRole.UserId;
@@ -43,7 +43,7 @@ namespace UZonMail.Core.Controllers.Permission
             }
             else
             {
-                db.UserRoles.Add(userRole);
+                db.UserRole.Add(userRole);
             }
 
             await db.SaveChangesAsync();
@@ -58,7 +58,7 @@ namespace UZonMail.Core.Controllers.Permission
         [HttpGet("filtered-count")]
         public async Task<ResponseResult<int>> GetRolesCount(string filter)
         {
-            var dbSet = db.UserRoles.AsNoTracking();
+            var dbSet = db.UserRole.AsNoTracking();
             if (!string.IsNullOrEmpty(filter))
             {
                 dbSet = dbSet.Where(x => x.User.UserName.Contains(filter) || x.User.UserName.Contains(filter));
@@ -73,9 +73,9 @@ namespace UZonMail.Core.Controllers.Permission
         /// <param name="filter"></param>
         /// <returns></returns>
         [HttpPost("filtered-data")]
-        public async Task<ResponseResult<List<UserRole>>> GetRolesData(string filter, [FromBody] Pagination pagination)
+        public async Task<ResponseResult<List<UserRoles>>> GetRolesData(string filter, [FromBody] Pagination pagination)
         {
-            var dbSet = db.UserRoles.AsNoTracking();
+            var dbSet = db.UserRole.AsNoTracking();
             if (!string.IsNullOrEmpty(filter))
             {
                 dbSet = dbSet.Where(x => x.User.UserName.Contains(filter) || x.User.UserName.Contains(filter));
@@ -97,14 +97,14 @@ namespace UZonMail.Core.Controllers.Permission
         public async Task<ResponseResult<bool>> DeleteUserRole(long userRoleId)
         {
             // 先移除关联的角色
-            var userRole = await db.UserRoles.Where(x => x.Id == userRoleId)
+            var userRole = await db.UserRole.Where(x => x.Id == userRoleId)
                 .Include(x => x.Roles)
                 .FirstOrDefaultAsync();
             if (userRole == null) return false.ToErrorResponse("未找到对应的用户角色");
             userRole.Roles.Clear();
 
             // 删除本身
-            db.UserRoles.Remove(userRole);
+            db.UserRole.Remove(userRole);
             await db.SaveChangesAsync();
 
             // 更新权限缓存

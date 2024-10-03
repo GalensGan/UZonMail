@@ -55,23 +55,29 @@ namespace UZonMail.DB.SQL.Organization
 
         /// <summary>
         /// 是否是超级管理员
+        /// 超级管理员拥有所有权限
         /// </summary>
         public bool IsSuperAdmin { get; set; }
 
         /// <summary>
-        /// 是否是系统用户
+        /// 系统用户
+        /// 系统内使用的用户
         /// </summary>
-        public bool IsSystemUser { get; set; }
+        public bool IsSystsemUser { get; set; }
 
         /// <summary>
         /// 用户角色
         /// 导航属性
         /// </summary>
-        public List<UserRole> UserRoles { get; set; }
+        public UserRoles? UserRoles { get; set; }
 
         /// <summary>
         /// 权重
         /// </summary>
         public int Weight { get; set; } = 1;
+
+        #region 静态变量
+        public static string SystemUserId => "system_uzon";
+        #endregion
     }
 }

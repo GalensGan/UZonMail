@@ -158,7 +158,7 @@ namespace UZonMail.Core.Services.EmailSending.Sender
             _body = ComputedVariables(HtmlBody);
 
             // 应用其它装饰器
-            var settingReader = await UserSettingsCache.GetUserSettingsReader(sendingContext.SqlContext, Outbox.UserId);
+            var settingReader = await SettingsCache.GetSettingsReader(sendingContext.SqlContext, Outbox.UserId);
             var emailBodyDecoratorParams = new EmailBodyDecoratorParams(sendingContext.ServiceProvider, settingReader, SendingItem, Outbox.Email);
             _body = await EmailBodyDecorators.StartDecorating(emailBodyDecoratorParams, _body);
 

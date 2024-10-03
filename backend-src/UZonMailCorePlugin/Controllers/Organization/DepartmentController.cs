@@ -44,7 +44,7 @@ namespace UZonMail.Core.Controllers.Organization
 
             // 更新部门中所有子用户的设置
             var departmentUserIds = await db.Users.Where(x => x.DepartmentId == departmentId && x.Type == UserType.SubUser).Select(x => x.Id).ToListAsync();
-            departmentUserIds.ForEach(x => UserSettingsCache.UpdateUserSettings(x));
+            departmentUserIds.ForEach(x => SettingsCache.UpdateSettings(x));
 
             return true.ToSuccessResponse();
         }

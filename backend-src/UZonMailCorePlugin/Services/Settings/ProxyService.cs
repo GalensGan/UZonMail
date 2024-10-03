@@ -22,24 +22,24 @@ namespace UZonMail.Core.Services.Settings
         {
             if (string.IsNullOrEmpty(name)) return StringResult.Fail("代理名称不能为空");
 
-            var userId = tokenService.GetUserDataId();
-            bool isExist = await db.UserProxies.AnyAsync(x => x.UserId == userId && x.Name == name);
+            var organizationId = tokenService.GetOrganizationId();
+            bool isExist = await db.OrganizationProxies.AnyAsync(x => x.OrganizationId == organizationId && x.Name == name);
             return new StringResult(isExist, "代理名称已存在");
         }
 
         /// <summary>
-        /// 创建用户代理
+        /// 创建组织代理
         /// </summary>
-        /// <param name="userProxy"></param>
+        /// <param name="organizationProxy"></param>
         /// <returns></returns>
-        public async Task<UserProxy> CreateUserProxy(UserProxy userProxy)
+        public async Task<OrganizationProxy> CreateOrganizationProxy(OrganizationProxy organizationProxy)
         {
-            var userId = tokenService.GetUserDataId();
-            userProxy.UserId = userId;
-            userProxy.IsActive = true;
-            db.UserProxies.Add(userProxy);
+            var organizationId = tokenService.GetOrganizationId();
+            organizationProxy.OrganizationId = organizationId;
+            organizationProxy.IsActive = true;
+            db.OrganizationProxies.Add(organizationProxy);
             await db.SaveChangesAsync();
-            return userProxy;
+            return organizationProxy;
         }
 
         /// <summary>
@@ -47,31 +47,16 @@ namespace UZonMail.Core.Services.Settings
         /// </summary>
         /// <param name="userProxy"></param>
         /// <returns></returns>
-        public async Task<bool> UpdateUserProxy(UserProxy userProxy)
+        public async Task<bool> UpdateOrganizationProxy(OrganizationProxy userProxy)
         {
-            var userId = tokenService.GetUserDataId();
-            await db.UserProxies.UpdateAsync(x => x.UserId == userId && x.Id == userProxy.Id,
+            var organizationId = tokenService.GetOrganizationId();
+            await db.OrganizationProxies.UpdateAsync(x => x.OrganizationId == organizationId && x.Id == userProxy.Id,
                 x => x.SetProperty(y => y.Name, userProxy.Name)
                     .SetProperty(y => y.Description, userProxy.Description)
                     .SetProperty(y => y.Proxy, userProxy.Proxy)
                     .SetProperty(y => y.IsActive, userProxy.IsActive)
                     .SetProperty(y => y.MatchRegex, userProxy.MatchRegex)
                     .SetProperty(y => y.Priority, userProxy.Priority)
-                );
-            return true;
-        }
-
-        /// <summary>
-        /// 更新代理共享状态
-        /// </summary>
-        /// <param name="proxyId"></param>
-        /// <param name="statusValue"></param>
-        /// <returns></returns>
-        public async Task<bool> UpdateUserProxySharedStatus(long proxyId,bool statusValue)
-        {
-            var userId = tokenService.GetUserDataId();
-            await db.UserProxies.UpdateAsync(x => x.UserId == userId && x.Id == proxyId,
-                x => x.SetProperty(y => y.IsShared, statusValue)
                 );
             return true;
         }
