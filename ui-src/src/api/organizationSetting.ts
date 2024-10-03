@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { httpClient } from 'src/api//base/httpClient'
 
-export interface IUserSetting {
+export interface IOrganizationSetting {
   userId: string,
   maxSendCountPerEmailDay: number,
   minOutboxCooldownSecond: number,
@@ -16,17 +16,17 @@ export interface IUserSetting {
  * 获取用户设置
  * @returns
  */
-export function getCurrentUserSetting () {
-  return httpClient.get<IUserSetting>('/user-setting')
+export function getCurrentOrganizationSetting () {
+  return httpClient.get<IOrganizationSetting>('/organization-setting')
 }
 
 /**
  * 更新用户设置
- * @param userSetting
+ * @param organizationSetting
  * @returns
  */
-export function updateUserSetting (userSetting: IUserSetting) {
-  return httpClient.put<Record<string, any>>('/user-setting', {
-    data: userSetting
+export function updateOrganizationSetting (organizationSetting: IOrganizationSetting) {
+  return httpClient.put<Record<string, any>>('/organization-setting', {
+    data: organizationSetting
   })
 }

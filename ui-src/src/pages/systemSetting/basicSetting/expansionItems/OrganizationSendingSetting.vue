@@ -7,14 +7,14 @@
 import SendSetting from './SendSetting.vue'
 import { useUserInfoStore } from 'src/stores/user'
 import { getCurrentDepartmentSetting, updateDepartmentSetting } from 'src/api/pro/departmentSetting'
-import { IUserSetting } from 'src/api/userSetting'
+import { IOrganizationSetting } from 'src/api/organizationSetting'
 
 const userInfoStore = useUserInfoStore()
 async function onGetCurrentDepartmentSetting () {
   return await getCurrentDepartmentSetting(userInfoStore.departmentId)
 }
 
-async function onUpdateDepartmentSetting (userSetting: IUserSetting) {
+async function onUpdateDepartmentSetting (userSetting: IOrganizationSetting) {
   return await updateDepartmentSetting(userInfoStore.departmentId, userSetting)
 }
 </script>

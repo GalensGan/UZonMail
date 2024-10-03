@@ -50,7 +50,7 @@
 <script lang="ts" setup>
 import AsyncTooltip from 'src/components/asyncTooltip/AsyncTooltip.vue'
 
-import { IUserSetting, getCurrentUserSetting, updateUserSetting } from 'src/api/userSetting'
+import { IOrganizationSetting, getCurrentOrganizationSetting, updateOrganizationSetting } from 'src/api/organizationSetting'
 import { useUserInfoStore } from 'src/stores/user'
 import { notifySuccess } from 'src/utils/dialog'
 // import logger from 'loglevel'
@@ -68,13 +68,13 @@ const props = defineProps({
   // 获取设置
   getSettingApi: {
     type: Function,
-    default: getCurrentUserSetting
+    default: getCurrentOrganizationSetting
   },
 
   // 更新设置
   updateSettingApi: {
     type: Function,
-    default: updateUserSetting
+    default: updateOrganizationSetting
   },
 
   icon: {
@@ -84,7 +84,7 @@ const props = defineProps({
 })
 
 const userInfoStore = useUserInfoStore()
-const outboxSettingRef: Ref<IUserSetting> = ref({
+const outboxSettingRef: Ref<IOrganizationSetting> = ref({
   userId: userInfoStore.userId,
   maxSendCountPerEmailDay: 0,
   minOutboxCooldownSecond: 5,
