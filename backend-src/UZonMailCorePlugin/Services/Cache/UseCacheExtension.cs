@@ -1,8 +1,4 @@
-﻿using UZonMail.DB.MySql;
-using UZonMail.DB.SQL;
-using UZonMail.DB.SqLite;
-
-namespace UZonMail.Core.Cache
+﻿namespace UZonMail.Core.Services.Cache
 {
     public static class UseCacheExtension
     {
@@ -15,7 +11,7 @@ namespace UZonMail.Core.Cache
         {
             if (services == null) return null;
             var configuration = services.BuildServiceProvider().GetService<IConfiguration>() ?? throw new ArgumentNullException(nameof(IConfiguration));
-            var cacheService = new CacheService(configuration);
+            var cacheService = CacheService.CreateCacheService(configuration);
             services.AddSingleton(cacheService);
             return services;
         }

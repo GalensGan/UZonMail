@@ -3,13 +3,12 @@ using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 using UZonMail.Utils.Json;
 
-namespace UZonMail.Core.Cache
+namespace UZonMail.Core.Services.Cache
 {
     /// <summary>
     /// 获取缓存服务
     /// 若 redis 不可用，则使用内存作为缓存
     /// 该服务通过 UseCacheExtension 注入
-    /// !!! 不要直接在逻辑中直接调用该服务，应该将接口封装后再使用
     /// </summary>
     public class CacheService
     {
@@ -17,24 +16,7 @@ namespace UZonMail.Core.Cache
         /// 缓存服务单例
         /// </summary>
         public static CacheService Instance { get; private set; }
-
-        /// <summary>
-        /// Redis 是否可用
-        /// </summary>
-        public bool RedisEnabled { get; private set; }
-        /// <summary>
-        /// redis 数据库
-        /// </summary>
-        public IDatabaseAsync RedisCache { get; private set; }
-
-        /// <summary>
-        /// 基于内存的数据库，当 redis 不可用时，使用该数据库
-        /// </summary>
-        public IMemoryCache MemoryCache { get; private set; }
-
-        private readonly IConnectionMultiplexer _connectionMultiplexer;
-
-        public CacheService(IConfiguration configuration)
+        private CacheService(IConfiguration configuration)
         {
             // 供外部调用
             Instance = this;
@@ -47,23 +29,52 @@ namespace UZonMail.Core.Cache
             configuration.GetSection("Database:Redis").Bind(redisConfig);
             if (!redisConfig.Enable)
             {
-                RedisEnabled = false;
+                _redisEnabled = false;
                 return;
             }
 
-            _connectionMultiplexer = ConnectionMultiplexer.Connect(redisConfig.ConnectionString);
-            _connectionMultiplexer.ConnectionFailed += (sender, args) =>
+            var connectionMultiplexer = ConnectionMultiplexer.Connect(redisConfig.ConnectionString);
+            connectionMultiplexer.ConnectionFailed += (sender, args) =>
             {
                 // 链接失败
-                RedisEnabled = false;
+                _redisEnabled = false;
             };
-            _connectionMultiplexer.ConnectionRestored += (sender, args) =>
+            connectionMultiplexer.ConnectionRestored += (sender, args) =>
             {
                 // 链接成功
-                RedisEnabled = true;
-                RedisCache = _connectionMultiplexer.GetDatabase(redisConfig.Database);
+                _redisEnabled = true;
+                RedisCache = connectionMultiplexer.GetDatabase(redisConfig.Database);
             };
         }
+
+        /// <summary>
+        /// 创建缓存服务
+        /// </summary>
+        /// <param name="configuration"></param>
+        /// <returns></returns>
+        public static CacheService CreateCacheService(IConfiguration configuration)
+        {
+            if (Instance != null)
+            {
+                return Instance;
+            }
+            return new CacheService(configuration);
+        }
+
+        /// <summary>
+        /// Redis 是否可用
+        /// </summary>
+        private bool _redisEnabled = false;
+
+        /// <summary>
+        /// redis 数据库
+        /// </summary>
+        public IDatabaseAsync RedisCache { get; private set; }
+
+        /// <summary>
+        /// 基于内存的数据库，当 redis 不可用时，使用该数据库
+        /// </summary>
+        public IMemoryCache MemoryCache { get; private set; }
 
         /// <summary>
         /// 设置缓存
@@ -77,7 +88,7 @@ namespace UZonMail.Core.Cache
             if (string.IsNullOrEmpty(key) || value == null)
                 return false;
 
-            if (RedisEnabled)
+            if (_redisEnabled)
             {
                 // 将数据转为 json
                 return await RedisCache.SetAddAsync(key, value.ToJson());
@@ -100,7 +111,7 @@ namespace UZonMail.Core.Cache
             if (string.IsNullOrEmpty(key))
                 return default;
 
-            if (RedisEnabled)
+            if (_redisEnabled)
             {
                 // 将数据转为 json
                 var value = await RedisCache.StringGetAsync(key);
@@ -110,7 +121,7 @@ namespace UZonMail.Core.Cache
             }
             else
             {
-               return MemoryCache.Get<T>(key);
+                return MemoryCache.Get<T>(key);
             }
         }
 
@@ -124,7 +135,7 @@ namespace UZonMail.Core.Cache
             if (string.IsNullOrEmpty(key))
                 return false;
 
-            if (RedisEnabled)
+            if (_redisEnabled)
             {
                 return await RedisCache.KeyExistsAsync(key);
             }

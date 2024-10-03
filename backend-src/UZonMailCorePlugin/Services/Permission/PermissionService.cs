@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using UZonMail.Utils.Web.Service;
-using UZonMail.Core.Cache;
 using UZonMail.DB.SQL;
 using UZonMail.DB.SQL.Organization;
 using UZonMail.Core.SignalRHubs;
 using UZonMail.Core.SignalRHubs.Extensions;
+using UZonMail.Core.Services.Cache;
 
 namespace UZonMail.Core.Services.Permission
 {
@@ -30,7 +30,7 @@ namespace UZonMail.Core.Services.Permission
         {
             if (userIds.Count == 0) return [];
 
-            var userRoles = await db.UserRoles.AsNoTracking()
+            var userRoles = await db.UserRole.AsNoTracking()
                 .Where(x => userIds.Contains(x.UserId))
                 .Include(x => x.Roles)
                 .ThenInclude(x => x.PermissionCodes)
@@ -84,7 +84,7 @@ namespace UZonMail.Core.Services.Permission
         }
 
         /// <summary>
-        /// 通知用户权限更新
+        /// 向客户端通知用户权限更新
         /// </summary>
         /// <param name="userPermissionCodes"></param>
         /// <returns></returns>

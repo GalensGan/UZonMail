@@ -92,7 +92,7 @@ namespace UZonMail.Core.Services.EmailSending.WaitList
         /// <summary>
         /// 可用的代理，直接保存在内存中
         /// </summary>
-        private List<UserProxy> _usableProxies = [];
+        private List<OrganizationProxy> _usableProxies = [];
         /// <summary>
         /// 当前发件箱可用的的所有的模板
         /// 由于模板不多，因此直接保存在内存中
@@ -344,9 +344,10 @@ namespace UZonMail.Core.Services.EmailSending.WaitList
         /// 获取可用的代理
         /// </summary>
         /// <returns></returns>
-        private async Task<List<UserProxy>> PullUsableUserProxies(SendingContext scopeServices)
+        private async Task<List<OrganizationProxy>> PullUsableUserProxies(SendingContext scopeServices)
         {
-            var results = await scopeServices.SqlContext.UserProxies.Where(x => x.UserId == UserId || x.IsShared)
+            var user = await scopeServices.SqlContext.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Id == UserId);
+            var results = await scopeServices.SqlContext.OrganizationProxies.Where(x => x.OrganizationId == user.OrganizationId)
                 .Where(x => x.IsActive)
                 .OrderBy(x => x.IsActive)
                 .ToListAsync();
@@ -535,7 +536,7 @@ namespace UZonMail.Core.Services.EmailSending.WaitList
             sendItem.Outbox = outboxEmailAddress;
             // 赋予回信人
             sendItem.ReplyToEmails = outboxEmailAddress.ReplyToEmails;
-            var userSettingReader = await UserSettingsCache.GetUserSettingsReader(sendingContext.SqlContext, UserId);
+            var userSettingReader = await SettingsCache.GetSettingsReader(sendingContext.SqlContext, UserId);
             if (sendItem.ReplyToEmails.Count == 0)
             {
                 // 使用全局回复               
@@ -582,7 +583,7 @@ namespace UZonMail.Core.Services.EmailSending.WaitList
             }
 
             // 从缓存中读取设置数据
-            var setting = await UserSettingsCache.GetUserSettingsReader(sqlContext, UserId);
+            var setting = await SettingsCache.GetSettingsReader(sqlContext, UserId);
             if (setting.MinInboxCooldownHours.Value <= 0) return Tuple.Create(false, "");
 
             var inboxesWhithGlobalCooling = inboxes.Where(x => x.MinInboxCooldownHours < 0).ToList();

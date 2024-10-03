@@ -11,8 +11,8 @@ namespace UZonMail.DB.SQL.Permission
     /// 权限角色
     /// </summary>
     [EntityTypeConfiguration(typeof(Role))]
-    [Index(nameof(Name),IsUnique =true)]
-    public class Role : SqlId, IEntityTypeConfiguration<Role>
+    [Index(nameof(Name), IsUnique = true)]
+    public class Role : OrgId, IEntityTypeConfiguration<Role>
     {
         /// <summary>
         /// 角色名
@@ -34,6 +34,10 @@ namespace UZonMail.DB.SQL.Permission
         /// </summary>
         public int PermissionCodesCount { get; set; }
 
+
+        /// <summary>
+        /// 
+        /// </summary>
         [NotMapped]
         public List<long> PermissionCodeIds { get; set; }
 
@@ -41,12 +45,12 @@ namespace UZonMail.DB.SQL.Permission
         /// <summary>
         /// 权限码
         /// </summary>
-        public List<PermissionCode> PermissionCodes { get; set; }
+        public List<PermissionCode> PermissionCodes { get; set; } = [];
 
         /// <summary>
         /// 用户权限
         /// </summary>
-        public List<UserRole>? UserRoles { get; set; }
+        public List<UserRoles>? UserRoles { get; set; } = [];
         #endregion
 
         /// <summary>
@@ -57,5 +61,13 @@ namespace UZonMail.DB.SQL.Permission
         {
             builder.HasMany(x => x.PermissionCodes).WithMany(x => x.Roles);
         }
+
+
+        #region 静态属性
+        /// <summary>
+        /// 系统管理员角色名
+        /// </summary>
+        public static string OrganizationAdminRoleName => "OrganizationAdmin";
+        #endregion
     }
 }

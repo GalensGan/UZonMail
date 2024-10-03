@@ -13,7 +13,9 @@ namespace UZonMail.Core.Database.Updater
     /// <param name="db"></param>
     public class DataUpdaterManager(SqlContext db, AppConfig config)
     {
-        public readonly static Version RequiredVersion = new("1.0.2.0");
+        private readonly static Version _minVersionSupport = new("0.10.0.0");
+        private readonly static Version _requiredVersion = new("0.10.0.0");
+
         private string _settingKey = "DataVersion";
 
         /// <summary>
@@ -21,7 +23,7 @@ namespace UZonMail.Core.Database.Updater
         /// 当新增更新器时，在此处添加
         /// </summary>
         /// <returns></returns>
-        private List<IDataUpdater?> GetUpdaters()
+        private static List<IDataUpdater?> GetUpdaters()
         {
             // 从当前程序集中获取实现了 IDataUpdater 接口的类，并使用无参构造函数实例化
             var dataUpdaterType = typeof(IDataUpdater);
@@ -58,17 +60,25 @@ namespace UZonMail.Core.Database.Updater
                 };
                 db.SystemSettings.Add(versionSetting);
             }
+            else
+            {
+                // 判断是支持升级
+                var dbVersion = new Version(versionSetting.StringValue);
+                if(dbVersion < _minVersionSupport)
+                    throw new ArgumentException("当前数据库版本太低，不支持直接升级。请删除数据库后，重启启动");
+            }
+           
 
             var originVersion = new Version(versionSetting.StringValue);
-            if (originVersion > RequiredVersion)
+            if (originVersion > _requiredVersion)
                 throw new ArgumentException("数据库版本高于当前所需版本，请更新程序后再使用");
 
             // 若版本一致时，说明已经更新过
-            if (originVersion == RequiredVersion) return;
+            if (originVersion == _requiredVersion) return;
 
             // 执行数据库升级
             // 实例化所有的更新类
-            var updaters = GetUpdaters().Where(x => x != null).Where(x => x.Version > originVersion && x.Version <= RequiredVersion)
+            var updaters = GetUpdaters().Where(x => x != null).Where(x => x.Version > originVersion && x.Version <= _requiredVersion)
                 .OrderBy(x => x.Version); // 升序排列
             foreach (var updater in updaters)
             {
@@ -76,7 +86,7 @@ namespace UZonMail.Core.Database.Updater
             }
 
             // 更新版本号
-            versionSetting.StringValue = RequiredVersion.ToString();
+            versionSetting.StringValue = _requiredVersion.ToString();
             await db.SaveChangesAsync();
         }  
     }

@@ -3,19 +3,23 @@ using UZonMail.Core.Config;
 using UZonMail.DB.SQL;
 using UZonMail.DB.SQL.Files;
 using UZonMail.DB.SQL.Organization;
+using UZonMail.DB.SQL.Permission;
 using UZonMail.Utils.Extensions;
 
 namespace UZonMail.Core.Database.Updater.Updaters
 {
     public class InitSql : IDataUpdater
     {
-        public Version Version => new Version("0.0.0.1");
+        public Version Version => new("0.1.0.0");
 
         public async Task Update(SqlContext db, AppConfig config)
         {
-            await InitUser(db, config);
+            // 初始化权限
             await InitPermission(db);
+            // 初始化存储库
             await InitFileStorage(db, config);
+            // 初始化用户
+            await InitUser(db, config);
         }
 
         /// <summary>
@@ -44,7 +48,6 @@ namespace UZonMail.Core.Database.Updater.Updaters
                 };
                 db.Add(systemOrganization);
             }
-
             // 判断是否有系统级部门
             string systemDpName = Department.SystemDepartmentName;
             var systemDepartment = systemDepartments.FirstOrDefault(x => x.Name == systemDpName && x.ParentId == systemOrganization.Id);
@@ -63,39 +66,39 @@ namespace UZonMail.Core.Database.Updater.Updaters
                 };
                 db.Add(systemDepartment);
             }
+            await db.SaveChangesAsync();
 
             // 设置系统用户，用于挂载系统相关的数据
-            var systemUser = await db.Users.FirstOrDefaultAsync(x => x.IsSystemUser);
+            var systemUser = await db.Users.FirstOrDefaultAsync(x => x.IsSuperAdmin);
             if (systemUser == null)
             {
                 systemUser = new User
                 {
                     OrganizationId = systemOrganization.Id,
                     DepartmentId = systemDepartment.Id,
-                    UserId = "system_uzon",
+                    UserId = User.SystemUserId,
                     UserName = "系统用户",
                     // 系统用户无法登陆
                     Password = "system1234",
-                    IsSystemUser = true,
+                    IsSystsemUser = true,
                     IsHidden = true
                 };
-
                 db.Add(systemUser);
             }
-
             // 保存系统用户
             await db.SaveChangesAsync();
 
-            var defaultOrganization = await db.Departments.FirstOrDefaultAsync(x => x.Type == DepartmentType.Organization && !x.IsSystem);
+            // 添加默认组织
+            var defaultOrganization = await db.Departments.FirstOrDefaultAsync(x => x.Type == DepartmentType.Organization && x.Name == Department.DefaultOrganizationName);
             // 添加默认组织
             if (defaultOrganization == null)
             {
                 defaultOrganization = new Department
                 {
+                    Id = 3,
                     Name = Department.DefaultOrganizationName,
                     Description = "默认组织",
                     FullPath = Department.DefaultDepartmentName,
-                    IsSystem = false,
                     IsHidden = false,
                     Type = DepartmentType.Organization
                 };
@@ -103,21 +106,22 @@ namespace UZonMail.Core.Database.Updater.Updaters
             }
 
             // 添加默认部门
-            var defaultDepartment = await db.Departments.FirstOrDefaultAsync(x => x.Type == DepartmentType.Department && !x.IsSystem);
+            var defaultDepartment = await db.Departments.FirstOrDefaultAsync(x => x.Type == DepartmentType.Department && x.Name == Department.DefaultDepartmentName);
             if (defaultDepartment == null)
             {
                 defaultDepartment = new Department
                 {
+                    Id = 4,
                     Name = Department.DefaultDepartmentName,
                     Description = "默认部门",
                     FullPath = $"{Department.DefaultOrganizationName}/{Department.DefaultDepartmentName}",
-                    ParentId = 3,
-                    IsSystem = false,
+                    ParentId = defaultOrganization.Id,
                     IsHidden = false,
                     Type = DepartmentType.Department
                 };
                 db.Add(defaultDepartment);
             }
+            await db.SaveChangesAsync();
 
             // 添加超管
             var adminUser = await db.Users.FirstOrDefaultAsync(x => x.IsSuperAdmin);
@@ -125,8 +129,8 @@ namespace UZonMail.Core.Database.Updater.Updaters
             {
                 adminUser = new User
                 {
-                    OrganizationId = 3,
-                    DepartmentId = 4,
+                    OrganizationId = defaultOrganization.Id,
+                    DepartmentId = defaultDepartment.Id,
                     UserId = "admin",
                     UserName = "admin",
                     // 密码是进行了 Sha256 二次加密
@@ -147,6 +151,31 @@ namespace UZonMail.Core.Database.Updater.Updaters
                 db.Add(adminUser);
             }
             await db.SaveChangesAsync();
+
+            // 添加组织管理员角色
+            var orgAdminRole = await db.Roles.FirstOrDefaultAsync(x => x.Name == Role.OrganizationAdminRoleName);
+            if (orgAdminRole == null)
+            {
+                var permissionCode = await db.PermissionCodes.FirstOrDefaultAsync(x => x.Code == PermissionCode.OrganizationPermissionCode);
+                orgAdminRole = new Role
+                {
+                    Name = Role.OrganizationAdminRoleName,
+                    Description = "拥有管理所在组织所有功能的权限",
+                    OrganizationId = defaultOrganization.Id
+                };
+                orgAdminRole.PermissionCodes.Add(permissionCode);
+                db.Add(orgAdminRole);
+            }
+            await db.SaveChangesAsync();
+
+            // 为超管添加组织管理员角色
+            var userRole = new UserRoles
+            {
+                UserId = adminUser.Id,
+                Roles = [orgAdminRole]
+            };
+            db.Add(userRole);
+            await db.SaveChangesAsync();
         }
 
         /// <summary>
@@ -163,8 +192,9 @@ namespace UZonMail.Core.Database.Updater.Updaters
                 return;   // 如果已经有数据，直接返回
             }
 
-            // 添加初始数据
-            // db.Users.AddRange();
+            var permissionCode = new PermissionCode() { Code = PermissionCode.OrganizationPermissionCode, Description = "拥有管理所在组织所有功能的权限" };
+            db.PermissionCodes.Add(permissionCode);
+            await db.SaveChangesAsync();
         }
 
         /// <summary>

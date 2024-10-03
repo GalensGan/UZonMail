@@ -227,7 +227,7 @@ namespace UZonMail.Core.Controllers.Users
         public async Task<ResponseResult<bool>> ChangeUserType(long userId, UserType userType)
         {
             await db.Users.UpdateAsync(x => x.Id == userId, x => x.SetProperty(p => p.Type, userType));
-            UserSettingsCache.UpdateUserSettings(userId);
+            SettingsCache.UpdateSettings(userId);
             return true.ToSuccessResponse();
         }
 

@@ -18,7 +18,7 @@ namespace UZonMail.Core.Services.Settings
             Add(new Claim("userId", userInfo.Id.ToString()));
             Add(new Claim("userName", userInfo.UserId));
             // 授予角色，接口权限控制
-            Add(new Claim(ClaimTypes.Role, userInfo.IsSuperAdmin ? UserRoles.Admin.ToString() : UserRoles.User.ToString()));
+            Add(new Claim(ClaimTypes.Role, userInfo.IsSuperAdmin ? UserRoleNames.Admin.ToString() : UserRoleNames.User.ToString()));
             // signalR 需要使用此处的 Name
             Add(new Claim(ClaimTypes.Name, userInfo.Id.ToString()));
             // 参考:https://learn.microsoft.com/zh-cn/aspnet/core/signalr/groups?view=aspnetcore-8.0

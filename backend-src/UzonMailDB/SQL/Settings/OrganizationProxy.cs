@@ -5,17 +5,10 @@ using UZonMail.DB.SQL.Emails;
 namespace UZonMail.DB.SQL.Settings
 {
     /// <summary>
-    /// 邮件代理
-    /// 包括用户代理和系统内部代理
+    /// 组织中的代理
     /// </summary>
-    public class UserProxy : SqlId
+    public class OrganizationProxy : OrgId
     {
-        /// <summary>
-        /// 所属用户
-        /// 若为 0,则表示为系统代理
-        /// </summary>
-        public long UserId { get; set; }
-
         /// <summary>
         /// 代理名称
         /// </summary>
@@ -47,11 +40,6 @@ namespace UZonMail.DB.SQL.Settings
         /// 代理设置
         /// </summary>
         public string Proxy { get; set; }
-
-        /// <summary>
-        /// 是否共享
-        /// </summary>
-        public bool IsShared { get; set; }
 
         /// <summary>
         /// 是否匹配

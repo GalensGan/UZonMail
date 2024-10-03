@@ -41,7 +41,7 @@ namespace UZonMail.DB.SQL
 
         public DbSet<Permission.PermissionCode> PermissionCodes { get; set; }
         public DbSet<Permission.Role> Roles { get; set; }
-        public DbSet<Permission.UserRole> UserRoles { get; set; }
+        public DbSet<Permission.UserRoles> UserRole { get; set; }
 
         public DbSet<Files.FileBucket> FileBuckets { get; set; }
         public DbSet<Files.FileObject> FileObjects { get; set; }
@@ -57,9 +57,9 @@ namespace UZonMail.DB.SQL
         public DbSet<SendingItem> SendingItems { get; set; }
         public DbSet<SendingItemInbox> SendingItemInboxes { get; set; }
 
-        public DbSet<UserProxy> UserProxies { get; set; }
-        public DbSet<UserSetting> UserSettings { get; set; }
         public DbSet<SystemSetting> SystemSettings { get; set; }
+        public DbSet<OrganizationProxy> OrganizationProxies { get; set; }
+        public DbSet<OrganizationSetting> OrganizationSettings { get; set; }
 
         public DbSet<ReadingTracker.EmailAnchor> EmailAnchors { get; set; }
         public DbSet<ReadingTracker.EmailVisitHistory> EmailVisitHistories { get; set; }

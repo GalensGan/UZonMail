@@ -223,7 +223,7 @@ namespace UZonMail.Core.Services.EmailSending.OutboxPool
             // 启动 _timer 用于解除冷却
             // 计算随机值
             // 使用通用设置中的发送上限
-            var settingReader = await UserSettingsCache.GetUserSettingsReader(sendingContext.SqlContext, UserId);
+            var settingReader = await SettingsCache.GetSettingsReader(sendingContext.SqlContext, UserId);
             int cooldownMilliseconds = settingReader.GetCooldownMilliseconds();
             if (cooldownMilliseconds <= 0)
             {
@@ -286,7 +286,7 @@ namespace UZonMail.Core.Services.EmailSending.OutboxPool
                 Interlocked.Increment(ref _sentTotalToday);
             }
 
-            var userSetting = await UserSettingsCache.GetUserSettingsReader(sendingContext.SqlContext, UserId);
+            var userSetting = await SettingsCache.GetSettingsReader(sendingContext.SqlContext, UserId);
             // 本身有限制时，若已经达到发送上限，则不再发送
             if (MaxSendCountPerDay > 0)
             {

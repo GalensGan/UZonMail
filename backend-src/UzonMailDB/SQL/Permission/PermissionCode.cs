@@ -30,5 +30,10 @@ namespace UZonMail.DB.SQL.Permission
         /// 关联的角色
         /// </summary>
         public List<Role> Roles { get; set; }
+
+
+        #region 静态变量
+        public static string OrganizationPermissionCode => "OrganizationAdmin";
+        #endregion
     }
 }

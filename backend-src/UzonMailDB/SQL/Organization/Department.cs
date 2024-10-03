@@ -35,8 +35,7 @@ namespace UZonMail.DB.SQL.Organization
         public DepartmentType Type { get; set; }
 
         /// <summary>
-        /// 是否是系统级部门
-        /// 由初始化创建的部门属于系统级
+        /// 是否是系统保留部门
         /// </summary>
         public bool IsSystem { get; set; }
 

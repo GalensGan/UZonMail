@@ -4,28 +4,14 @@ using UZonMail.DB.SQL.Base;
 
 namespace UZonMail.DB.SQL.Settings
 {
-    /// <summary>
-    /// 用户设置
-    /// </summary>
-    public class UserSetting : SqlId
+    public class OrganizationSetting : OrgId
     {
         /// <summary>
         /// 优先级
         /// 优先级大的覆盖小的
         /// 同等优先级，按选择顺序进行覆盖，后者覆盖前者
         /// </summary>
-        public int Priority { get; set; }
-
-        /// <summary>
-        /// 部门 id
-        /// 若是子账户，则还会从部门中继承设置
-        /// </summary>
-        public long DepartmentId { get; set; }
-
-        /// <summary>
-        /// 用户 id
-        /// </summary>
-        public long UserId { get; set; }
+        public int Priority { get; set; }        
 
         /// <summary>
         /// 每日每个发件箱最大发送次数

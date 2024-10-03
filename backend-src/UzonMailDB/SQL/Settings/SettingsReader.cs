@@ -8,23 +8,31 @@ namespace UZonMail.DB.SQL.Settings
     /// 后者的值会覆盖前者的值
     /// </summary>
     /// <param name="settings"></param>
-    public class UserSettingsReader(List<UserSetting> settings)
+    public class SettingsReader(long key)
     {
-        private List<UserSetting> _settings = settings.Where(x => x != null).OrderBy(x => x.Priority).ToList();
+        /// <summary>
+        /// 键值
+        /// </summary>
+        private List<string> _keys = [key.ToString()];
 
-        private Lazy<int> GetIntSetting(Func<UserSetting, int> selector)
+        /// <summary>
+        /// 系统设置
+        /// </summary>
+        private List<OrganizationSetting> _orgSettings = [];
+
+        private Lazy<int> GetIntSetting(Func<OrganizationSetting, int> selector)
         {
             return new Lazy<int>(() =>
             {
-                var values = _settings.Select(selector).Where(x => x > 0).ToList();
+                var values = _orgSettings.Select(selector).Where(x => x > 0).ToList();
                 return values.Count > 0 ? values.Last() : 0;
             });
         }
-        private Lazy<string?> GetStringSetting(Func<UserSetting, string?> selector)
+        private Lazy<string?> GetStringSetting(Func<OrganizationSetting, string?> selector)
         {
             return new Lazy<string?>(() =>
             {
-                var values = _settings.Select(selector).Where(x => !string.IsNullOrEmpty(x)).ToList();
+                var values = _orgSettings.Select(selector).Where(x => !string.IsNullOrEmpty(x)).ToList();
                 return values.Count > 0 ? values.Last() : "";
             });
         }
@@ -35,11 +43,11 @@ namespace UZonMail.DB.SQL.Settings
         /// </summary>
         /// <param name="selector"></param>
         /// <returns></returns>
-        private Lazy<bool> GetBoolSetting(Func<UserSetting, bool?> selector)
+        private Lazy<bool> GetBoolSetting(Func<OrganizationSetting, bool?> selector)
         {
             return new Lazy<bool>(() =>
             {
-                var lastValue = _settings.Select(selector)
+                var lastValue = _orgSettings.Select(selector)
                 .Where(x => x != null)
                 .LastOrDefault();
                 return lastValue ?? false;
@@ -103,6 +111,29 @@ namespace UZonMail.DB.SQL.Settings
             if (MaxOutboxCooldownSecond.Value <= MinOutboxCooldownSecond.Value) return 0;
             var result = new Random().Next(MinOutboxCooldownSecond.Value, MaxOutboxCooldownSecond.Value) * 1000;
             return Math.Max(0, result);
+        }
+
+        /// <summary>
+        /// 添加设置
+        /// </summary>
+        /// <param name="setting"></param>
+        /// <returns></returns>
+        public bool AddSetting(OrganizationSetting? setting)
+        {
+            if (setting == null) return false;
+            _orgSettings.Add(setting);
+            _orgSettings = [.. _orgSettings.OrderBy(x => x.Priority)];
+            return true;
+        }
+
+        public bool IsMatch(string key)
+        {
+            return _keys.Contains(key);
+        }
+
+        public bool IsMatch(long key)
+        {
+            return IsMatch(key.ToString());
         }
         #endregion
     }
