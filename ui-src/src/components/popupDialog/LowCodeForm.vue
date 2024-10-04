@@ -43,12 +43,12 @@
             <template v-slot:option="{ itemProps, opt, selected, toggleOption }">
               <q-item v-bind="itemProps">
                 <q-item-section>
-                  {{ getSelectionItemLabel(opt, field) }}
+                  {{ getSelectionItemLabel(itemProps, opt, field) }}
                 </q-item-section>
                 <q-item-section side>
                   <q-toggle color="secondary" :model-value="selected" @update:model-value="toggleOption(opt)" dense />
                 </q-item-section>
-                <AsyncTooltip :tooltip="getSelectionItemTooltip(opt, field)" />
+                <AsyncTooltip :tooltip="getSelectionItemTooltip(itemProps, opt, field)" />
               </q-item>
             </template>
           </q-select>
@@ -60,7 +60,7 @@
 
           <div v-if="isMatchedType(field, 'editor')" class="q-mb-sm low-code__field q-px-sm">
             <q-editor v-model="fieldsModel[field.name]" :definitions="editorDefinitions" :toolbar="editorToolbar"
-              style="max-height: 300px;" placeholder="在此处输入模板内容, 变量使用 {{ }} 号包裹, 例如 {{ variableName }}">
+              max-height="300px" placeholder="在此处输入模板内容, 变量使用 {{ }} 号包裹, 例如 {{ variableName }}">
             </q-editor>
           </div>
         </template>
@@ -239,15 +239,17 @@ const validFields = computed(() => {
 // import logger from 'loglevel'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function getSelectionItemLabel (opt: any, field: IPopupDialogField) {
-  if (!field || !field.optionLabel || !opt) return opt
+function getSelectionItemLabel (itemProps: any, opt: any, field: IPopupDialogField) {
+  const labelField = field.optionLabel || 'label'
+
+  if (!field || !opt) return opt
   if (typeof opt !== 'object') return opt
-  return opt[field.optionLabel]
+
+  return opt[labelField]
 }
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function getSelectionItemTooltip (opt: any, field: IPopupDialogField) {
+function getSelectionItemTooltip (itemProps: any, opt: any, field: IPopupDialogField) {
   // logger.debug('[popupDialog] getSelectionItemTooltip:', opt, field)
-
   if (!field || !field.optionTooltip || !opt) return ''
   if (typeof opt !== 'object') return opt
   return opt[field.optionTooltip]

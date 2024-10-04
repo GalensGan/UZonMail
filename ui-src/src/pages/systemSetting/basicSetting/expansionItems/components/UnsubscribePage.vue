@@ -157,7 +157,7 @@ async function onModifyUnsubscribePage (unsubscribePage: Record<string, any>) {
 }
 
 async function onPreviewUnsubscribePage (unsubscribePageId: number) {
-  const url = `/pages/unsubscribe?unsubscribeId=${unsubscribePageId}`
+  const url = `/pages/unsubscribe/pls-give-me-a-shot?unsubscribeId=${unsubscribePageId}`
   window.open(url, '_blank')
 }
 // #endregion
@@ -173,6 +173,7 @@ async function onPreviewUnsubscribePage (unsubscribePageId: number) {
   word-wrap: break-word;
   display: -webkit-box;
   -webkit-box-orient: vertical;
+  width: 100% !important;
 }
 
 .hover-overlay {

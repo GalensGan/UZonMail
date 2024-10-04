@@ -32,6 +32,7 @@ export function useSendEmailHub () {
         return userInfoStore.token
       }
     })
+    .withAutomaticReconnect()
     .configureLogging(signalR.LogLevel.Information)
     .build()
   // 前端使用 on 来接收消息，若要注销，使用 off 即可
@@ -40,12 +41,16 @@ export function useSendEmailHub () {
   // })
 
   signal.onclose((err) => {
-    logger.debug('[signalR] 连接已经断开 执行函数onclose', err)
+    logger.debug('[signalR] 连接已经断开, 执行函数 onclose', err)
     signalRs.sendingProgressHub = undefined
   })
 
   signal.start().then(() => {
-    logger.debug('[signalR] signalR 连接成功')
+    logger.info('[signalR] 连接成功')
+  })
+
+  signal.onreconnected((msg) => {
+    logger.info('[signalR] 重新连接成功', msg)
   })
 
   signalRs.sendingProgressHub = signal

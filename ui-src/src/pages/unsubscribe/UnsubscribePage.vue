@@ -1,7 +1,7 @@
 <template>
   <div class="column unsubscribe-page_container">
     <div v-html="unsubscribeHtml" :inert="true"></div>
-    <CommonBtn class="q-mt-xl self-center" :label="btnLabel" @click="onUnsubscribeClicked" />
+    <CommonBtn class="q-mt-xl self-center" :label="btnLabel" @click="onUnsubscribeClicked" size="md" />
   </div>
 </template>
 
@@ -24,6 +24,7 @@ const unsubscribeId = ref(0)
 import { useRoute } from 'vue-router'
 import { useQuasar } from 'quasar'
 import { getUnsubscribePage } from 'src/api/pro/unsubscribePage'
+import { isUnsubscribed, unsubscribe } from 'src/api/pro/unsubscribe'
 
 const route = useRoute()
 const $q = useQuasar()
@@ -34,22 +35,29 @@ onMounted(async () => {
     return
   }
 
-  // 获取当前语言，根据语言获取对应的退订页面
-  unsubscribeId.value = Number(route.query.unsubscribeId) || 0
-  const { data } = await getUnsubscribePage(unsubscribeId.value, $q.lang.getLocale())
-  unsubscribeHtml.value = data.htmlContent
-
   // 获取 token
   token.value = route.query.token as string
+
+  // 获取当前语言，根据语言获取对应的退订页面
+  unsubscribeId.value = Number(route.query.unsubscribeId) || 0
+  const { data } = await getUnsubscribePage(token.value, unsubscribeId.value, $q.lang.getLocale())
+  unsubscribeHtml.value = data.htmlContent
+
+  if (token.value) {
+    const { data: isUnsubscribedResult } = await isUnsubscribed(token.value)
+    if (isUnsubscribedResult) {
+      diableUnsubscribeBtn.value = true
+      btnLabel.value = t('unsuscribePage.unsubscribed')
+    }
+  }
 })
 
 const unsubscribeHtml = ref('<div>empty</div>')
 const btnLabel = ref(t('unsuscribePage.unsubscribe'))
-
-import { unsubscribe } from 'src/api/pro/unsubscribe'
-
+const diableUnsubscribeBtn = ref(false)
 async function onUnsubscribeClicked () {
   btnLabel.value = t('unsuscribePage.unsubscribed')
+  diableUnsubscribeBtn.value = true
   if (!token.value) {
     return
   }

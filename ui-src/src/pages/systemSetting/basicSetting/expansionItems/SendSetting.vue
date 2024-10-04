@@ -118,7 +118,8 @@ watch(outboxSettingRef, async () => {
 }, { deep: true })
 
 import { updateServerBaseApiUrl } from 'src/api/systemSetting'
-watch(() => outboxSettingRef.value.enableEmailTracker, async () => {
+watch(() => outboxSettingRef.value.enableEmailTracker, async (newValue) => {
+  if (!newValue) return
   await updateServerBaseApiUrl()
 })
 </script>

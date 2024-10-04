@@ -21,13 +21,15 @@ export function createUnsubscribePage (data: IUnsubscribePage) {
 
 /**
  * 获取退订页面
+ * @param token
  * @param unsubscribePageId
  * @param language
  * @returns
  */
-export function getUnsubscribePage (unsubscribePageId: number, language?: string) {
+export function getUnsubscribePage (token: string, unsubscribePageId: number, language?: string) {
   return httpClientPro.get<IUnsubscribePage>('/unsubscribe-page', {
     params: {
+      token,
       id: unsubscribePageId,
       language
     }

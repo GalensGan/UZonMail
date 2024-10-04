@@ -1,16 +1,12 @@
 <template>
   <q-list class="basic-settings-container">
     <SendSetting />
-    <UnsubscribeSetting />
-    <OrganizationSetting v-if="isEnterpriseUser" />
-    <OrganizationSendingSetting v-if="isEnterpriseUser" />
+    <UnsubscribeSetting v-if="isEnterpriseUser" />
   </q-list>
 </template>
 
 <script lang="ts" setup>
 import SendSetting from './expansionItems/SendSetting.vue'
-import OrganizationSetting from './expansionItems/OrganizationSetting.vue'
-import OrganizationSendingSetting from './expansionItems/OrganizationSendingSetting.vue'
 import UnsubscribeSetting from './expansionItems/UnsubscribeSetting.vue'
 
 import { usePermission } from 'src/compositions/permission'

@@ -48,8 +48,6 @@ export default route(function (/* { store, ssrContext } */) {
   logger.debug('[Router] 配置前置守卫')
   // 添加路由前置守卫
   router.beforeEach((to, from, next) => {
-    logger.debug('[Router] userInfoStore: ', userInfoStore)
-
     if (!to.meta.anoymous && !userInfoStore.token && to.path !== '/login') {
       // 跳转到登陆界面
       next('/login')

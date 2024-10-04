@@ -48,7 +48,10 @@ import { setTimeoutAsync } from 'src/utils/tsUtils'
 import logger from 'loglevel'
 import { notifySuccess } from 'src/utils/dialog'
 
-const unsubscribeSetting = ref({
+import { getUnsubscribeSettings, IUnsubscribeSettings, updateUnsubscribeSettings } from 'src/api/pro/unsubscribe'
+
+const unsubscribeSetting: Ref<IUnsubscribeSettings> = ref({
+  id: 0,
   enable: false,
   type: 0,
   externalUrl: ''
@@ -63,6 +66,8 @@ async function onBeforeShow () {
   isInitializing.value = true
 
   // 从后端请求退订设置
+  const { data } = await getUnsubscribeSettings()
+  unsubscribeSetting.value = data
 
   await setTimeoutAsync(10)
   isInitializing.value = false
@@ -78,7 +83,14 @@ const enableUnsubscribePageSetting = computed(() => {
 })
 
 // #region 保存设置
+import { updateServerBaseApiUrl } from 'src/api/systemSetting'
 async function onUnsubscribeSettingSave () {
+  await updateUnsubscribeSettings(unsubscribeSetting.value.id, unsubscribeSetting.value)
+  // 保存前端的 url
+  if (unsubscribeSetting.value.enable) {
+    await updateServerBaseApiUrl()
+  }
+
   notifySuccess('保存成功')
 }
 // #endregion
