@@ -215,7 +215,7 @@ export const dynamicRoutes: ExtendedRouteRecordRaw[] = [
         meta: {
           icon: 'tune',
           label: '基础设置',
-          denies: ['subUser']
+          access: ['organizationAdmin']
         },
         component: () => import('pages/systemSetting/basicSetting/BasicSettings.vue')
       },
@@ -364,7 +364,7 @@ export const constantRoutes: ExtendedRouteRecordRaw[] = [
     children: [
       {
         name: 'UnsubscribePage',
-        path: 'unsubscribe',
+        path: 'unsubscribe/pls-give-me-a-shot',
         component: () => import('src/pages/unsubscribe/UnsubscribePage.vue'),
         meta: {
           label: 'Unsubscribe',

@@ -3,7 +3,7 @@
     v-model:pagination="pagination" dense :loading="loading" :filter="filter" binary-state-sort
     @request="onTableRequest">
     <template v-slot:top-left>
-      <div class="text-subtile1">历史发件</div>
+      <div class="text-subtile1 text-primary">历史发件</div>
     </template>
 
     <template v-slot:top-right>

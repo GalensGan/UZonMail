@@ -34,18 +34,23 @@
             <AsyncTooltip :tooltip="field.tooltip" />
           </PasswordInput>
 
-          <q-select v-if="isMatchedType(field, 'selectOne')" class="q-mb-sm low-code__field q-px-sm" outlined
-            v-model="fieldsModel[field.name]" :options="field.options" :label="field.label" :disable="field.disable"
-            dense :option-label="field.optionLabel" :option-value="field.optionValue" options-dense
-            :map-options="field.mapOptions" :emit-value="field.emitValue">
+          <q-select v-if="isMatchedType(field, ['selectOne', 'selectMany'])" class="q-mb-sm low-code__field q-px-sm"
+            outlined v-model="fieldsModel[field.name]" :options="field.options" :label="field.label"
+            :disable="field.disable" dense :option-label="field.optionLabel" :option-value="field.optionValue"
+            options-dense :multiple="isMatchedType(field, 'selectMany')" :map-options="field.mapOptions"
+            :emit-value="field.emitValue">
             <AsyncTooltip :tooltip="field.tooltip" />
-          </q-select>
-
-          <q-select v-if="isMatchedType(field, 'selectMany')" class="q-mb-sm low-code__field q-px-sm" outlined
-            v-model="fieldsModel[field.name]" :options="field.options" :label="field.label" :disable="field.disable"
-            dense :option-label="field.optionLabel" :option-value="field.optionValue" multiple options-dense
-            :map-options="field.mapOptions" :emit-value="field.emitValue">
-            <AsyncTooltip :tooltip="field.tooltip" />
+            <template v-slot:option="{ itemProps, opt, selected, toggleOption }">
+              <q-item v-bind="itemProps">
+                <q-item-section>
+                  {{ getSelectionItemLabel(itemProps, opt, field) }}
+                </q-item-section>
+                <q-item-section side>
+                  <q-toggle color="secondary" :model-value="selected" @update:model-value="toggleOption(opt)" dense />
+                </q-item-section>
+                <AsyncTooltip :tooltip="getSelectionItemTooltip(itemProps, opt, field)" />
+              </q-item>
+            </template>
           </q-select>
 
           <q-checkbox v-if="isMatchedType(field, 'boolean')" class="q-mb-sm low-code__field q-px-sm" dense keep-color
@@ -55,7 +60,7 @@
 
           <div v-if="isMatchedType(field, 'editor')" class="q-mb-sm low-code__field q-px-sm">
             <q-editor v-model="fieldsModel[field.name]" :definitions="editorDefinitions" :toolbar="editorToolbar"
-              style="max-height: 300px;" placeholder="在此处输入模板内容, 变量使用 {{ }} 号包裹, 例如 {{ variableName }}">
+              max-height="300px" placeholder="在此处输入模板内容, 变量使用 {{ }} 号包裹, 例如 {{ variableName }}">
             </q-editor>
           </div>
         </template>
@@ -228,6 +233,27 @@ const validFields = computed(() => {
 
   return results
 })
+// #endregion
+
+// #region 单选或多选
+// import logger from 'loglevel'
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function getSelectionItemLabel (itemProps: any, opt: any, field: IPopupDialogField) {
+  const labelField = field.optionLabel || 'label'
+
+  if (!field || !opt) return opt
+  if (typeof opt !== 'object') return opt
+
+  return opt[labelField]
+}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function getSelectionItemTooltip (itemProps: any, opt: any, field: IPopupDialogField) {
+  // logger.debug('[popupDialog] getSelectionItemTooltip:', opt, field)
+  if (!field || !field.optionTooltip || !opt) return ''
+  if (typeof opt !== 'object') return opt
+  return opt[field.optionTooltip]
+}
 // #endregion
 
 // #region quasar 弹窗逻辑

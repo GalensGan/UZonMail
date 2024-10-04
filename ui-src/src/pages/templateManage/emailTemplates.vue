@@ -24,9 +24,7 @@
             <div class="absolute-bottom row items-center justify-center">
               <div class="text-h6 q-mr-sm hover-underline" @click.self.stop="onEditTemplateClick(props.row)">
                 {{ props.row.name }}
-                <q-tooltip>
-                  单击编辑模板
-                </q-tooltip>
+                <AsyncTooltip tooltip="单击编辑模板" />
               </div>
               <div class="text-secondary">ID:{{ props.row.id }}</div>
             </div>
@@ -36,9 +34,7 @@
           <div class="absolute-bottom row items-center justify-center">
             <div class="text-h6 q-mr-sm hover-underline" @click.self.stop="onEditTemplateClick(props.row)">
               {{ props.row.name }}
-              <q-tooltip>
-                单击编辑模板
-              </q-tooltip>
+              <AsyncTooltip tooltip="单击编辑模板" />
             </div>
             <div class="text-secondary">ID:{{ props.row.id }}</div>
           </div>
@@ -56,6 +52,7 @@ import ContextMenu from 'src/components/contextMenu/ContextMenu.vue'
 
 import CreateBtn from 'src/components/componentWrapper/buttons/CreateBtn.vue'
 import ImportBtn from 'src/components/componentWrapper/buttons/ImportBtn.vue'
+import AsyncTooltip from 'src/components/asyncTooltip/AsyncTooltip.vue'
 import { IEmailTemplate, deleteEmailTemplate, upsertEmailTemplate } from 'src/api/emailTemplate'
 import { IContextMenuItem } from 'src/components/contextMenu/types'
 import { confirmOperation, notifySuccess } from 'src/utils/dialog'
