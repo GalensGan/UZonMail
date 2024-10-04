@@ -36,7 +36,6 @@ namespace UZonMail.DB.SQL
 
         #region 数据表定义
         public DbSet<Organization.Department> Departments { get; set; }
-        public DbSet<Organization.DepartmentSetting> DepartmentSettings { get; set; }
         public DbSet<Organization.User> Users { get; set; }
 
         public DbSet<Permission.PermissionCode> PermissionCodes { get; set; }
@@ -69,6 +68,7 @@ namespace UZonMail.DB.SQL
         public DbSet<Unsubscribes.UnsubscribeSetting> UnsubscribeSettings { get; set; }
         public DbSet<Unsubscribes.UnsubscribePage> UnsubscribePages { get; set; }
         public DbSet<Unsubscribes.UnsubscribeEmail> UnsubscribeEmails { get; set; }
+        public DbSet<Unsubscribes.UnsubscribeButton> UnsubscribeButtons { get; set; }
         #endregion
 
         #region 测试

@@ -1,9 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using UZonMail.DB.SQL;
 using UZonMail.DB.SQL.Settings;
-using UZonMail.Core.Database.Updater.Updaters;
 using System.Reflection;
-using UZonMail.Core.Config;
+using Microsoft.Extensions.Configuration;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace UZonMail.Core.Database.Updater
 {
@@ -11,12 +14,13 @@ namespace UZonMail.Core.Database.Updater
     /// 数据升级管理器
     /// </summary>
     /// <param name="db"></param>
-    public class DataUpdaterManager(SqlContext db, AppConfig config)
+    public class DataUpdaterManager(SqlContext db, IConfiguration config)
     {
         private readonly static Version _minVersionSupport = new("0.10.0.0");
         private readonly static Version _requiredVersion = new("0.10.0.0");
 
         private string _settingKey = "DataVersion";
+        private static List<Assembly> _assemblies = [];
 
         /// <summary>
         /// 获取所有的更新器
@@ -27,7 +31,7 @@ namespace UZonMail.Core.Database.Updater
         {
             // 从当前程序集中获取实现了 IDataUpdater 接口的类，并使用无参构造函数实例化
             var dataUpdaterType = typeof(IDataUpdater);
-            var updaters = Assembly.GetExecutingAssembly().GetTypes()
+            var updaters = _assemblies.SelectMany(x=>x.GetTypes())
                 .Where(x => !x.IsAbstract && x.IsClass && dataUpdaterType.IsAssignableFrom(x))
                 .Select(x =>
                 {
@@ -38,6 +42,14 @@ namespace UZonMail.Core.Database.Updater
                 .ToList();
 
             return updaters;
+        }
+
+        /// <summary>
+        /// 将调用程序集添加到列表中
+        /// </summary>
+        public static void AddCallingAssembly()
+        {
+            _assemblies.Add(Assembly.GetCallingAssembly());
         }
 
         /// <summary>

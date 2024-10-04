@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using UZonMail.Core.Config;
-using UZonMail.Core.Utils.Database;
+using Microsoft.Extensions.Configuration;
+using System;
+using System.Threading.Tasks;
 using UZonMail.DB.SQL;
 
 namespace UZonMail.Core.Database.Updater
@@ -16,6 +17,6 @@ namespace UZonMail.Core.Database.Updater
         /// 开始更新数据
         /// </summary>
         /// <returns></returns>
-        Task Update(SqlContext db,AppConfig config);
+        Task Update(SqlContext db, IConfiguration config);
     }
 }

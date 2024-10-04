@@ -18,6 +18,9 @@ using UZonMail.Utils.Extensions;
 using System.Threading.Tasks;
 using System.Threading;
 using UZonMail.Core.Utils.Database;
+using UZonMail.Managers.Cache;
+using UZonMail.DB.SQL.Settings;
+using UZonMail.DB.SQL.Organization;
 
 namespace UZonMail.Core.Services.EmailSending.OutboxPool
 {
@@ -223,7 +226,8 @@ namespace UZonMail.Core.Services.EmailSending.OutboxPool
             // 启动 _timer 用于解除冷却
             // 计算随机值
             // 使用通用设置中的发送上限
-            var settingReader = await SettingsCache.GetSettingsReader(sendingContext.SqlContext, UserId);
+            var userReader = await CacheManager.GetCache<UserReader>(sendingContext.SqlContext, UserId.ToString());
+            var settingReader = await CacheManager.GetCache<OrganizationSettingReader>(sendingContext.SqlContext, userReader.OrganizationObjectId);
             int cooldownMilliseconds = settingReader.GetCooldownMilliseconds();
             if (cooldownMilliseconds <= 0)
             {
@@ -286,7 +290,9 @@ namespace UZonMail.Core.Services.EmailSending.OutboxPool
                 Interlocked.Increment(ref _sentTotalToday);
             }
 
-            var userSetting = await SettingsCache.GetSettingsReader(sendingContext.SqlContext, UserId);
+            var userReader = await CacheManager.GetCache<UserReader>(sendingContext.SqlContext, UserId.ToString());
+            var userSetting = await CacheManager.GetCache<OrganizationSettingReader>(sendingContext.SqlContext, userReader.OrganizationObjectId);
+
             // 本身有限制时，若已经达到发送上限，则不再发送
             if (MaxSendCountPerDay > 0)
             {
@@ -296,13 +302,13 @@ namespace UZonMail.Core.Services.EmailSending.OutboxPool
                 }
             }
             // 本身没限制，使用系统的限制
-            else if (userSetting.MaxSendCountPerEmailDay.Value > 0 && SentTotalToday >= userSetting.MaxSendCountPerEmailDay.Value)
+            else if (userSetting.MaxSendCountPerEmailDay > 0 && SentTotalToday >= userSetting.MaxSendCountPerEmailDay)
             {
                 ShouldDispose = true;
             }
 
             // 若是发件连接失败，则移除
-            if (sendingContext.SendResult.SentStatus.HasFlag(SentStatus.OutboxError) 
+            if (sendingContext.SendResult.SentStatus.HasFlag(SentStatus.OutboxError)
                 || sendingContext.SendResult.SentStatus.HasFlag(SentStatus.EmptySendingGroup))
             {
                 ShouldDispose = true;

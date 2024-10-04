@@ -76,6 +76,11 @@ namespace UZonMail.DB.SQL.Organization
         /// </summary>
         public int Weight { get; set; } = 1;
 
+        /// <summary>
+        /// 由谁创建
+        /// </summary>
+        public long CreateBy { get; set; }
+
         #region 静态变量
         public static string SystemUserId => "system_uzon";
         #endregion

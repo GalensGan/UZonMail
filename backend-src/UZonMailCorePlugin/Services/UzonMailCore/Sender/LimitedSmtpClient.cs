@@ -2,7 +2,7 @@
 using MailKit;
 using MailKit.Net.Smtp;
 using MimeKit;
-using Uamazing.Utils.Environments;
+using Uamazing.Utils.Envs;
 
 namespace UZonMail.Core.Services.EmailSending.Sender
 {

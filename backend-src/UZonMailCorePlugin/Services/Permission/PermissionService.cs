@@ -6,6 +6,7 @@ using UZonMail.DB.SQL.Organization;
 using UZonMail.Core.SignalRHubs;
 using UZonMail.Core.SignalRHubs.Extensions;
 using UZonMail.Core.Services.Cache;
+using UZonMail.DB.SQL.Permission;
 
 namespace UZonMail.Core.Services.Permission
 {
@@ -62,12 +63,15 @@ namespace UZonMail.Core.Services.Permission
 
         /// <summary>
         /// 获取用户权限码
+        /// 会先从缓存中获取，如果缓存中没有则更新缓存
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
         public async Task<List<string>> GetUserPermissionCodes(long userId)
         {
             var cacheValues = await cache.GetAsync<List<string>>(GetPermissionCacheKey(userId));
+            if (cacheValues != null) return cacheValues;
+
             // 更新缓存
             cacheValues ??= await UpdateUserPermissionsCache(userId);
 
@@ -81,6 +85,26 @@ namespace UZonMail.Core.Services.Permission
                 cacheValues.Add("subUser");
 
             return cacheValues;
+        }
+
+        /// <summary>
+        /// 判断用户是否有权限
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="permissionCode"></param>
+        /// <returns></returns>
+        public async Task<bool> HasPermission(long userId, string permissionCode)
+        {
+            var permissionCodes = await GetUserPermissionCodes(userId);
+            // * 代表所有权限
+            if (permissionCode.Contains("*")) return true;
+
+            return permissionCodes.Contains(permissionCode);
+        }
+
+        public async Task<bool> HasOrganizationPermission(long userId)
+        {
+            return await HasPermission(userId, PermissionCode.OrganizationPermissionCode);
         }
 
         /// <summary>

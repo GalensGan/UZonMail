@@ -45,5 +45,9 @@ namespace UZonMail.DB.SQL.Settings
         /// </summary>
         [JsonField]
         public JToken? Json { get; set; }
+
+        #region 静态字符串
+        public static string BaseApiUrl => "baseApiUrl";
+        #endregion
     }
 }

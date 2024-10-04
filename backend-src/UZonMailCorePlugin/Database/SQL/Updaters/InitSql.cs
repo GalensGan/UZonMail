@@ -1,21 +1,25 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using UZonMail.Core.Config;
+using UZonMail.Core.Config.SubConfigs;
+using UZonMail.Core.Database.Updater;
 using UZonMail.DB.SQL;
 using UZonMail.DB.SQL.Files;
 using UZonMail.DB.SQL.Organization;
 using UZonMail.DB.SQL.Permission;
 using UZonMail.Utils.Extensions;
 
-namespace UZonMail.Core.Database.Updater.Updaters
+namespace UZonMail.Core.Database.SQL.Updaters
 {
     public class InitSql : IDataUpdater
     {
         public Version Version => new("0.1.0.0");
 
-        public async Task Update(SqlContext db, AppConfig config)
+        public async Task Update(SqlContext db, IConfiguration config)
         {
             // 初始化权限
             await InitPermission(db);
+
             // 初始化存储库
             await InitFileStorage(db, config);
             // 初始化用户
@@ -28,7 +32,7 @@ namespace UZonMail.Core.Database.Updater.Updaters
         /// <param name="db"></param>
         /// <param name="config"></param>
         /// <returns></returns>
-        private async Task InitUser(SqlContext db, AppConfig config)
+        private async Task InitUser(SqlContext db, IConfiguration config)
         {
             // 判断是否有默认组织和部门
             var systemDepartments = await db.Departments.Where(x => x.IsSystem).ToListAsync();
@@ -139,10 +143,12 @@ namespace UZonMail.Core.Database.Updater.Updaters
                     IsHidden = true,
                 };
 
+                var userConfig = new UserConfig();
+                config.GetSection("User")?.Bind(userConfig);
                 // 从配置中读取超管的信息
-                if (config?.User?.AdminUser != null)
+                if (userConfig.AdminUser!=null)
                 {
-                    var adminUserConfig = config.User.AdminUser;
+                    var adminUserConfig = userConfig.AdminUser;
                     if (!string.IsNullOrEmpty(adminUserConfig.UserId)) adminUser.UserId = adminUserConfig.UserId;
                     if (!string.IsNullOrEmpty(adminUserConfig.Password)) adminUser.Password = adminUserConfig.Password.Sha256(1);
                     if (!string.IsNullOrEmpty(adminUserConfig.Avatar)) adminUser.Avatar = adminUserConfig.Avatar;
@@ -200,17 +206,20 @@ namespace UZonMail.Core.Database.Updater.Updaters
         /// <summary>
         /// 初始化存储库
         /// </summary>
-        private async Task InitFileStorage(SqlContext db, AppConfig config)
+        private async Task InitFileStorage(SqlContext db, IConfiguration config)
         {
             bool existDefaultFileBucket = await db.FileBuckets.AnyAsync(x => x.IsDefault);
             if (existDefaultFileBucket) return;
+
+            var fileStorage = new FileStorageConfig();
+            config.GetSection("FileStorage")?.Bind(fileStorage);
 
             // 新建
             var defaultBucket = new FileBucket
             {
                 BucketName = "default",
                 Description = "默认存储桶",
-                RootDir = config.FileStorage.DefaultRootDir,
+                RootDir = fileStorage.DefaultRootDir,
                 IsDefault = true
             };
 

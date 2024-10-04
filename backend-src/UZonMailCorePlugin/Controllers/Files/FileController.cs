@@ -173,7 +173,7 @@ namespace UZonMail.Core.Controllers.Files
         public async Task<ResponseResult<bool>> UpdateDisplayName(long fileUsageId, [FromQuery]string displayName)
         {
             var fileUsage = await db.FileUsages.FirstOrDefaultAsync(x => x.Id == fileUsageId);
-            if (fileUsage == null) return false.ToErrorResponse("文件不存在");
+            if (fileUsage == null) return false.ToFailResponse("文件不存在");
 
             if (string.IsNullOrWhiteSpace(displayName)) fileUsage.DisplayName = fileUsage.FileName;
             else fileUsage.DisplayName = displayName;

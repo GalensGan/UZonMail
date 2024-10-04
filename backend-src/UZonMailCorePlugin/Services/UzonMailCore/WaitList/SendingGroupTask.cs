@@ -15,6 +15,8 @@ using UZonMail.DB.SQL.Templates;
 using UZonMail.Core.Database.SQL.EmailSending;
 using UZonMail.DB.SQL;
 using UZonMail.Utils.Json;
+using UZonMail.Managers.Cache;
+using UZonMail.DB.SQL.Organization;
 
 namespace UZonMail.Core.Services.EmailSending.WaitList
 {
@@ -536,15 +538,17 @@ namespace UZonMail.Core.Services.EmailSending.WaitList
             sendItem.Outbox = outboxEmailAddress;
             // 赋予回信人
             sendItem.ReplyToEmails = outboxEmailAddress.ReplyToEmails;
-            var userSettingReader = await SettingsCache.GetSettingsReader(sendingContext.SqlContext, UserId);
+            var userReader = await CacheManager.GetCache<UserReader>(sendingContext.SqlContext, UserId.ToString());
+            var settingsReader = await CacheManager.GetCache<OrganizationSettingReader>(sendingContext.SqlContext, userReader.OrganizationObjectId);
+
             if (sendItem.ReplyToEmails.Count == 0)
             {
                 // 使用全局回复               
-                sendItem.ReplyToEmails = userSettingReader.ReplyToEmailsList;
+                sendItem.ReplyToEmails = settingsReader.ReplyToEmailsList;
             }
 
             // 添加重试次数
-            sendItem.MaxRetryCount = userSettingReader.MaxRetryCount.Value;
+            sendItem.MaxRetryCount = settingsReader.MaxRetryCount;
 
             // 添加代理
             // 代理与发件箱进行匹配            
@@ -583,11 +587,13 @@ namespace UZonMail.Core.Services.EmailSending.WaitList
             }
 
             // 从缓存中读取设置数据
-            var setting = await SettingsCache.GetSettingsReader(sqlContext, UserId);
-            if (setting.MinInboxCooldownHours.Value <= 0) return Tuple.Create(false, "");
+            var userReader = await CacheManager.GetCache<UserReader>(sqlContext, UserId.ToString());
+            var settingsReader = await CacheManager.GetCache<OrganizationSettingReader>(sqlContext, userReader.OrganizationObjectId);
+
+            if (settingsReader.MinInboxCooldownHours <= 0) return Tuple.Create(false, "");
 
             var inboxesWhithGlobalCooling = inboxes.Where(x => x.MinInboxCooldownHours < 0).ToList();
-            coolingInbox = inboxesWhithGlobalCooling.FirstOrDefault(x => x.LastSuccessDeliveryDate.AddHours(setting.MinInboxCooldownHours.Value) > DateTime.Now);
+            coolingInbox = inboxesWhithGlobalCooling.FirstOrDefault(x => x.LastSuccessDeliveryDate.AddHours(settingsReader.MinInboxCooldownHours) > DateTime.Now);
             if (coolingInbox != null)
             {
                 return Tuple.Create(true, $"收件箱 {coolingInbox.Email} 正在冷却中");

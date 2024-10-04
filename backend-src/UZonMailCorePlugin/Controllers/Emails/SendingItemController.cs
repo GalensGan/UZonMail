@@ -105,7 +105,7 @@ namespace UZonMail.Core.Controllers.Emails
         {
             var userId = tokenService.GetUserDataId();
             var sendingItem = await db.SendingItems.FirstOrDefaultAsync(x => x.Id == sendingItemId && x.UserId == userId);
-            if (sendingItem == null) return "".ToErrorResponse("邮件已被删除");
+            if (sendingItem == null) return "".ToFailResponse("邮件已被删除");
             return sendingItem.Content.ToSuccessResponse();
         }
     }

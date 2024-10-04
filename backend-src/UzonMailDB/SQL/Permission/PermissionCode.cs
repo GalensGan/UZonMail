@@ -33,7 +33,7 @@ namespace UZonMail.DB.SQL.Permission
 
 
         #region 静态变量
-        public static string OrganizationPermissionCode => "OrganizationAdmin";
+        public static string OrganizationPermissionCode => "organizationAdmin";
         #endregion
     }
 }

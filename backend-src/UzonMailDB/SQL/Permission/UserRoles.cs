@@ -22,7 +22,7 @@ namespace UZonMail.DB.SQL.Permission
         /// <summary>
         /// 与 Role 是多对多关系
         /// </summary>
-        public List<Role> Roles { get; set; }
+        public List<Role> Roles { get; set; } = [];
         #endregion
     }
 }

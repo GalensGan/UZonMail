@@ -15,6 +15,8 @@ using UZonMail.Core.Utils.Extensions;
 using UZonMail.Utils.Web.Exceptions;
 using UZonMail.Utils.Web.PagingQuery;
 using Uamazing.Utils.Web.ResponseModel;
+using UZonMail.Managers.Cache;
+using UZonMail.DB.SQL.Settings;
 
 namespace UZonMail.Core.Controllers.Users
 {
@@ -226,9 +228,8 @@ namespace UZonMail.Core.Controllers.Users
         [HttpPut("{userId:long}/type")]
         public async Task<ResponseResult<bool>> ChangeUserType(long userId, UserType userType)
         {
-            await db.Users.UpdateAsync(x => x.Id == userId, x => x.SetProperty(p => p.Type, userType));
-            SettingsCache.UpdateSettings(userId);
-            return true.ToSuccessResponse();
+            var result = await userService.UpdateUserType(userId, userType);
+            return result.ToSuccessResponse();
         }
 
         /// <summary>

@@ -38,7 +38,6 @@ namespace UZonMail.DB.SQL.Organization
         /// 是否是系统保留部门
         /// </summary>
         public bool IsSystem { get; set; }
-
         #region 静态方法
         public static string SystemOrganizationName => "SystemOrganization";
         public static string SystemDepartmentName => "SystemDepartment";

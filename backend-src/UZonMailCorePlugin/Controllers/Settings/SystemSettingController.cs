@@ -14,15 +14,15 @@ namespace UZonMail.Core.Controllers.Settings
         public async Task<ResponseResult<bool>> UpdateBaseApiUrl([FromBody] UpdateBaseApiUrlBody dataParams)
         {
             var baseApiUrl = dataParams.BaseApiUrl;
-            if (string.IsNullOrEmpty(baseApiUrl)) return false.ToErrorResponse("baseUrl不能为空");
+            if (string.IsNullOrEmpty(baseApiUrl)) return false.ToFailResponse("baseUrl不能为空");
 
             // 开始更新
-            var setting = await db.SystemSettings.FirstOrDefaultAsync(x => x.Key == "baseApiUrl");
+            var setting = await db.SystemSettings.FirstOrDefaultAsync(x => x.Key == SystemSetting.BaseApiUrl);
             if (setting == null)
             {
                 setting = new SystemSetting
                 {
-                    Key = "baseApiUrl",
+                    Key = SystemSetting.BaseApiUrl,
                     StringValue = baseApiUrl
                 };
                 db.Add(setting);

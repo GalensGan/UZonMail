@@ -12,6 +12,11 @@ using Uamazing.Utils.Web.Token;
 using UZonMail.Utils.Web.Exceptions;
 using UZonMail.Utils.Web.PagingQuery;
 using UZonMail.Core.Services.Plugin;
+using UZonMail.Core.Services.Settings;
+using UZonMail.DB.SQL.Settings;
+using System.ComponentModel;
+using UZonMail.Managers.Cache;
+using UZonMail.DB.SQL.Permission;
 
 namespace UZonMail.Core.Services.UserInfos
 {
@@ -19,7 +24,7 @@ namespace UZonMail.Core.Services.UserInfos
     /// 只在请求生命周期内有效的服务
     /// </summary>
     public class UserService(IServiceProvider serviceProvider, SqlContext db, IOptions<AppConfig> appConfig, PermissionService permission,
-        PluginService pluginService) : IScopedService
+        PluginService pluginService, TokenService tokenService) : IScopedService
     {
         /// <summary>
         /// 判断用户是否存在
@@ -32,6 +37,118 @@ namespace UZonMail.Core.Services.UserInfos
         }
 
         /// <summary>
+        /// 创建用户的默认部门和组织
+        /// </summary>
+        /// <param name="ctx"></param>
+        /// <param name="parentOrganizationId"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        private async Task<Tuple<Department, Department>> CreateUserHomeDepartments(SqlContext ctx, long parentOrganizationId, string userId)
+        {
+            var orgName = $"Org-{userId}";
+            var departmentName = $"Department-{userId}";
+
+            var organization = await ctx.Departments.FirstOrDefaultAsync(x => x.ParentId == parentOrganizationId
+            && x.Name == orgName
+            && x.Type == DepartmentType.Organization);
+            if (organization == null)
+            {
+                var parentOrganization = await ctx.Departments.FirstOrDefaultAsync(x => x.Id == parentOrganizationId);
+                // 在当前用户组织下创建新的组织
+                organization = new Department()
+                {
+                    ParentId = parentOrganizationId,
+                    Name = orgName,
+                    Description = $"{userId}的组织",
+                    Type = DepartmentType.Organization,
+                    FullPath = $"{parentOrganization.FullPath}/{orgName}"
+                };
+                ctx.Add(organization);
+                await ctx.SaveChangesAsync();
+            }
+
+            var department = await ctx.Departments.FirstOrDefaultAsync(x => x.ParentId == organization.Id
+              && x.Name == departmentName
+              && x.Type == DepartmentType.Department);
+            if (department == null)
+            {
+                // 在组织中创建部门
+                department = new Department()
+                {
+                    ParentId = organization.Id,
+                    Name = departmentName,
+                    Description = $"{userId}的部门",
+                    Type = DepartmentType.Department,
+                    FullPath = $"{organization.FullPath}/{orgName}"
+                };
+                ctx.Add(department);
+                await ctx.SaveChangesAsync();
+            }
+
+            return new Tuple<Department, Department>(organization, department);
+        }
+
+        /// <summary>
+        /// 添加组织管理员
+        /// </summary>
+        /// <param name="ctx"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        private async Task AssignOrganizationAdminRole(SqlContext ctx, long userId)
+        {
+            // 获取超管对应的组织管理员角色
+            var adminUserRole = await ctx.UserRole.Include(x => x.User)
+                .Where(x => x.User.IsSuperAdmin)
+                .Include(x => x.Roles)
+                .ThenInclude(x => x.PermissionCodes)
+                .FirstOrDefaultAsync();
+            if (adminUserRole == null) return;
+
+            // 获取超管角色
+            var orgRole = adminUserRole.Roles.Where(x => x.PermissionCodes.Any(y => y.Code == PermissionCode.OrganizationPermissionCode)).FirstOrDefault();
+            if (orgRole == null) return;
+
+            // 为用户添加组织管理员角色
+            var userRole = await ctx.UserRole.Where(x => x.UserId == userId)
+                .Include(x => x.Roles)
+                .FirstOrDefaultAsync();
+            if (userRole == null)
+            {
+                userRole = new UserRoles()
+                {
+                    UserId = userId,
+                };
+                ctx.Add(userRole);
+            }
+
+            if (!userRole.Roles.Any(x => x.Equals(orgRole)))
+            {
+                userRole.Roles.Add(orgRole);
+            }
+            await ctx.SaveChangesAsync();
+        }
+
+        /// <summary>
+        /// 移除组织管理员
+        /// </summary>
+        /// <param name="ctx"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        private async Task RemoveOrganizationAdminRole(SqlContext ctx, long userId)
+        {
+            var userRole = await ctx.UserRole.Where(x => x.UserId == userId)
+                .Include(x => x.Roles)
+                .ThenInclude(x => x.PermissionCodes)
+                .FirstOrDefaultAsync();
+            var orgRoles = userRole.Roles.Where(x => x.PermissionCodes.Any(y => y.Code == PermissionCode.OrganizationPermissionCode)).ToList();
+            foreach (var role in orgRoles)
+            {
+                userRole.Roles.Remove(role);
+            }
+            await ctx.SaveChangesAsync();
+        }
+
+        /// <summary>
         /// 创建一个新的用户
         /// </summary>
         /// <param name="userId"></param>
@@ -39,14 +156,75 @@ namespace UZonMail.Core.Services.UserInfos
         /// <returns></returns>
         public async Task<User> CreateUser(string userId, string password)
         {
-            var user = new User()
+            var organizationId = tokenService.GetOrganizationId();
+            return await db.RunTransaction(async ctx =>
+             {
+                 var (organization, department) = await CreateUserHomeDepartments(ctx, organizationId, userId);
+                 var user = new User()
+                 {
+                     OrganizationId = organization.Id,
+                     DepartmentId = department.Id,
+                     UserId = userId,
+                     Password = password.Sha256(1),
+                     Type = UserType.Independent,
+                     CreateBy = tokenService.GetUserDataId(),
+                 };
+                 ctx.Add(user);
+                 await ctx.SaveChangesAsync();
+
+                 // 为用户分配组织管理员
+                 await AssignOrganizationAdminRole(ctx, user.Id);
+
+                 return user;
+             });
+        }
+
+        /// <summary>
+        /// 更新用户的类型
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        /// <exception cref="KnownException"></exception>
+        public async Task<bool> UpdateUserType(long userId, UserType type)
+        {
+            var user = await db.Users.FirstOrDefaultAsync(x => x.Id == userId) ?? throw new KnownException("用户不存在");
+            if (user.Type == type) return true;
+
+            // 只能修改由自己创建的用户
+            var handlerId = tokenService.GetUserDataId();
+            if (user.CreateBy != handlerId) throw new KnownException("只能操作由自己创建的用户");
+
+            user.Type = type;
+            var organizationId = tokenService.GetOrganizationId();
+
+            if (type == UserType.SubUser)
             {
-                UserId = userId,
-                Password = password.Sha256(1)
-            };
-            db.Add(user);
+                // 放到自己组织下               
+                var department = await db.Departments.FirstOrDefaultAsync(x => x.ParentId == organizationId && x.Type == DepartmentType.Department)
+                    ?? throw new KnownException("部门不存在");
+                user.OrganizationId = organizationId;
+                user.DepartmentId = department.Id;
+
+                // 移除组织管理员权限
+                await RemoveOrganizationAdminRole(db, user.Id);
+            }
+            else
+            {
+                // 放到其原来的组织下
+                var (organization, department) = await CreateUserHomeDepartments(db, organizationId, user.UserId);
+                user.OrganizationId = organization.Id;
+                user.DepartmentId = department.Id;
+
+                // 为用户分配组织管理员
+                await AssignOrganizationAdminRole(db, user.Id);
+            }
             await db.SaveChangesAsync();
-            return user;
+
+            // 更新用户的组织设置和和退订设置
+            CacheManager.UpdateCache<UserReader>(user.Id.ToString());
+
+            return true;
         }
 
         /// <summary>
@@ -147,7 +325,10 @@ namespace UZonMail.Core.Services.UserInfos
         }
         private IQueryable<User> FilterUser(string filter)
         {
+            var userId = tokenService.GetUserDataId();
+            // 只显示由自己创建的账户
             return db.Users.Where(x => !x.IsDeleted && !x.IsHidden && !x.IsSuperAdmin)
+                .Where(x => x.CreateBy == userId)
                 .Where(x => string.IsNullOrEmpty(filter) || x.UserId.Contains(filter));
         }
 

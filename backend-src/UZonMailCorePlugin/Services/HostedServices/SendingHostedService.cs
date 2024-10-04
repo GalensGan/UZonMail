@@ -43,7 +43,8 @@ namespace UZonMail.Core.Services.HostedServices
             await initializer.Init();
 
             // 数据升级
-            var dataUpdater = new DataUpdaterManager(context, appConfig.Value);
+            var config = serviceProvider.GetRequiredService<IConfiguration>();
+            var dataUpdater = new DataUpdaterManager(context, config);
             await dataUpdater.Update();
         }
 

@@ -100,7 +100,7 @@ namespace UZonMail.Core.Controllers.Permission
             var userRole = await db.UserRole.Where(x => x.Id == userRoleId)
                 .Include(x => x.Roles)
                 .FirstOrDefaultAsync();
-            if (userRole == null) return false.ToErrorResponse("未找到对应的用户角色");
+            if (userRole == null) return false.ToFailResponse("未找到对应的用户角色");
             userRole.Roles.Clear();
 
             // 删除本身

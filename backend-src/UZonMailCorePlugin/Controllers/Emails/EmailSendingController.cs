@@ -84,7 +84,7 @@ namespace UZonMail.Core.Controllers.Emails
             var sendingGroup = await db.SendingGroups.AsNoTracking().FirstOrDefaultAsync(x => x.Id == sendingGroupId);
             if (sendingGroup == null)
             {
-                return false.ToErrorResponse("发件组不存在");
+                return false.ToFailResponse("发件组不存在");
             }
 
             // 暂停发件
@@ -109,7 +109,7 @@ namespace UZonMail.Core.Controllers.Emails
             var sendingGroup = await db.SendingGroups.AsNoTracking().Where(x => x.Id == sendingGroupId).FirstOrDefaultAsync();
             if (sendingGroup == null)
             {
-                return false.ToErrorResponse("发件组不存在");
+                return false.ToFailResponse("发件组不存在");
             }
             sendingGroup.SmtpPasswordSecretKeys = smtpSecretKeys.SmtpPasswordSecretKeys;
 
@@ -131,7 +131,7 @@ namespace UZonMail.Core.Controllers.Emails
             var sendingGroup = await db.SendingGroups.FirstOrDefaultAsync(x => x.Id == sendingGroupId);
             if (sendingGroup == null)
             {
-                return false.ToErrorResponse("发件组不存在");
+                return false.ToFailResponse("发件组不存在");
             }
 
             // 若处于发送中，则取消
@@ -161,18 +161,18 @@ namespace UZonMail.Core.Controllers.Emails
                 .FirstOrDefaultAsync();
             if (sendingItem == null)
             {
-                return false.ToErrorResponse("发件项不存在");
+                return false.ToFailResponse("发件项不存在");
             }
 
             // 查找发件项
             var sendingGroup = sendingItem.SendingGroup;
             if (sendingGroup == null)
             {
-                return false.ToErrorResponse("发件组不存在");
+                return false.ToFailResponse("发件组不存在");
             }
             if (sendingGroup.SuccessCount == sendingGroup.TotalCount)
             {
-                return false.ToErrorResponse("发件组已全部成功，不支持重发");
+                return false.ToFailResponse("发件组已全部成功，不支持重发");
             }
 
             // 开始发件
@@ -194,15 +194,15 @@ namespace UZonMail.Core.Controllers.Emails
             var sendingGroup = await db.SendingGroups.FirstOrDefaultAsync(x => x.Id == sendingGroupId);
             if (sendingGroup == null)
             {
-                return false.ToErrorResponse("发件组不存在");
+                return false.ToFailResponse("发件组不存在");
             }
             if (sendingGroup.Status != SendingGroupStatus.Finish)
             {
-                return false.ToErrorResponse("发件组未结束，不支持重发");
+                return false.ToFailResponse("发件组未结束，不支持重发");
             }
             if (sendingGroup.SuccessCount == sendingGroup.TotalCount)
             {
-                return false.ToErrorResponse("发件组已全部成功，不支持重发");
+                return false.ToFailResponse("发件组已全部成功，不支持重发");
             }
 
             // 重新发送

@@ -5,7 +5,7 @@ namespace UZonMail.DB.SQL.Unsubscribes
     /// <summary>
     /// 取消订阅的界面设置
     /// </summary>
-    public class UnsubscribePage : UserAndOrgId
+    public class UnsubscribePage : OrgId
     {
         /// <summary>
         /// 语言

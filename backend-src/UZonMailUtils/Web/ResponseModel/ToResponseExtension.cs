@@ -28,7 +28,7 @@ namespace Uamazing.Utils.Web.ResponseModel
         /// <param name="data"></param>
         /// <param name="errorMessage"></param>
         /// <returns></returns>
-        public static ResponseResult<T> ToErrorResponse<T>(this T data, string errorMessage)
+        public static ResponseResult<T> ToFailResponse<T>(this T data, string errorMessage)
         {
             return new ErrorResponse<T>(errorMessage, data);
         }

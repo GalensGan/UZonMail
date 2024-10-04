@@ -85,7 +85,7 @@ namespace UZonMail.Core.Controllers.Emails
         {
             // 将组重新命名
             var emailGroup = await db.EmailGroups.Where(x => x.Id == groupId).FirstOrDefaultAsync();
-            if (emailGroup == null) return false.ToErrorResponse("未找到该邮件组");
+            if (emailGroup == null) return false.ToFailResponse("未找到该邮件组");
 
             // 将组进行重命名
             emailGroup.Name += "_deletedAt" + DateTime.Now.ToString("D");

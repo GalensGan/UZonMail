@@ -15,6 +15,9 @@ using UZonMail.Utils.Extensions;
 using UZonMail.Utils.Json;
 using UZonMail.Core.Database.SQL.EmailSending;
 using UZonMail.DB.SQL.Emails;
+using UZonMail.Managers.Cache;
+using UZonMail.DB.SQL.Settings;
+using UZonMail.DB.SQL.Organization;
 
 namespace UZonMail.Core.Services.EmailSending
 {
@@ -38,6 +41,7 @@ namespace UZonMail.Core.Services.EmailSending
         public async Task<SendingGroup> CreateSendingGroup(SendingGroup sendingGroupData)
         {
             var userId = tokenService.GetUserDataId();
+
             // 格式化 Excel 数据
             sendingGroupData.Data = await FormatExcelData(sendingGroupData.Data, userId);
             // 使用事务
@@ -76,14 +80,15 @@ namespace UZonMail.Core.Services.EmailSending
                 await ctx.SaveChangesAsync();
 
                 // 获取用户设置
-                var settingsReader = await SettingsCache.GetSettingsReader(ctx, sendingGroupData.UserId);
+                var userReader = await CacheManager.GetCache<UserReader>(ctx, sendingGroupData.UserId.ToString());
+                var settingsReader = await CacheManager.GetCache<OrganizationSettingReader>(ctx, userReader.OrganizationObjectId);
 
                 // 保存发件箱
                 await SaveInboxes(sendingGroupData.Data, sendingGroupData.UserId);
 
                 // 将数据组装成 SendingItem 保存
                 // 要确保数据已经通过验证
-                var builder = new SendingItemsBuilder(db, sendingGroupData, settingsReader.MaxSendingBatchSize.Value, tokenService);
+                var builder = new SendingItemsBuilder(db, sendingGroupData, settingsReader.MaxSendingBatchSize, tokenService);
                 List<SendingItem> items = await builder.GenerateAndSave();
 
                 // 更新发件总数量

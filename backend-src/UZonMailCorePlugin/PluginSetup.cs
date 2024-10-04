@@ -8,6 +8,7 @@ using UZonMail.Utils.Extensions;
 using Uamazing.Utils.Web.Token;
 using UZonMail.Core.Utils.Token;
 using UZonMail.Core.Services.Cache;
+using UZonMail.Core.Database.Updater;
 
 namespace UZonMail.Core
 {
@@ -28,6 +29,8 @@ namespace UZonMail.Core
 
             // 添加 TokenPayloadsBuilder
             TokenClaimsBuilders.AddBuilder(new TokenClaimsBuilder());
+            // 添加更新器
+            DataUpdaterManager.AddCallingAssembly();
         }
 
         public void UseApp(WebApplication webApplication)

@@ -5,7 +5,7 @@ namespace UZonMail.DB.SQL.Unsubscribes
     /// <summary>
     /// 退定由于需要服务器部署，因此针对的是整个组织
     /// </summary>
-    public class UnsubscribeSetting : UserAndOrgId
+    public class UnsubscribeSetting : OrgId
     {
         /// <summary>
         /// 是否启用退订
@@ -25,6 +25,6 @@ namespace UZonMail.DB.SQL.Unsubscribes
         /// <summary>
         /// 退订按钮的 Id
         /// </summary>
-        public long UnsubscribeButtonId { get; set; }
+        public long UnsubscribeButtonId { get; set; } = 1;
     }
 }

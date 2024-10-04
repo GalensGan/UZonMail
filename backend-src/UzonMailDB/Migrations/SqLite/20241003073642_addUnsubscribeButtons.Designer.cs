@@ -2,17 +2,20 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using UZonMail.DB.SqLite;
 
 #nullable disable
 
-namespace UZonMailService.Migrations.SqLite
+namespace UZonMail.DB.Migrations.SqLite
 {
     [DbContext(typeof(SqLiteContext))]
-    partial class SqLiteContextModelSnapshot : ModelSnapshot
+    [Migration("20241003073642_addUnsubscribeButtons")]
+    partial class addUnsubscribeButtons
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.7");
@@ -850,6 +853,37 @@ namespace UZonMailService.Migrations.SqLite
                     b.ToTable("Departments");
                 });
 
+            modelBuilder.Entity("UZonMail.DB.SQL.Organization.DepartmentSetting", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<long>("DepartmentId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsHidden")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ObjectId")
+                        .IsRequired()
+                        .HasColumnType("TEXT")
+                        .HasColumnName("_id");
+
+                    b.Property<int>("SubUserStrategy")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DepartmentSettings");
+                });
+
             modelBuilder.Entity("UZonMail.DB.SQL.Organization.User", b =>
                 {
                     b.Property<long>("Id")
@@ -861,9 +895,6 @@ namespace UZonMailService.Migrations.SqLite
 
                     b.Property<string>("ConnectionId")
                         .HasColumnType("TEXT");
-
-                    b.Property<long>("CreateBy")
-                        .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("TEXT");

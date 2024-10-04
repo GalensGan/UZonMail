@@ -22,7 +22,7 @@ namespace UZonMail.Core.Controllers.Files
             FileUsage? fileUsage = await db.FileUsages.FirstOrDefaultAsync(x => x.Id == fileUsageId);
 
             // 判断文件是否存在
-            if (fileUsage == null) return 0L.ToErrorResponse("文件不存在");
+            if (fileUsage == null) return 0L.ToFailResponse("文件不存在");
 
             // 生成临时读取链接
             FileReader fileReader = new(fileUsage);

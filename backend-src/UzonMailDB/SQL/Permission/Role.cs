@@ -39,7 +39,7 @@ namespace UZonMail.DB.SQL.Permission
         /// 
         /// </summary>
         [NotMapped]
-        public List<long> PermissionCodeIds { get; set; }
+        public List<long> PermissionCodeIds { get; set; } = [];
 
         #region 导航属性
         /// <summary>

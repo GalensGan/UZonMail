@@ -11,6 +11,9 @@ using UZonMail.Core.Database.SQL.EmailSending;
 using UZonMail.DB.SQL.Emails;
 using Uamazing.Utils.Email;
 using UZonMail.Core.Services.Settings;
+using UZonMail.Managers.Cache;
+using UZonMail.DB.SQL.Settings;
+using UZonMail.DB.SQL.Organization;
 
 namespace UZonMail.Core.Services.EmailSending.Sender
 {
@@ -158,7 +161,9 @@ namespace UZonMail.Core.Services.EmailSending.Sender
             _body = ComputedVariables(HtmlBody);
 
             // 应用其它装饰器
-            var settingReader = await SettingsCache.GetSettingsReader(sendingContext.SqlContext, Outbox.UserId);
+            var userReader = await CacheManager.GetCache<UserReader>(sendingContext.SqlContext, Outbox.UserId.ToString());
+            var settingReader = await CacheManager.GetCache<OrganizationSettingReader>(sendingContext.SqlContext, userReader.OrganizationObjectId);
+
             var emailBodyDecoratorParams = new EmailBodyDecoratorParams(sendingContext.ServiceProvider, settingReader, SendingItem, Outbox.Email);
             _body = await EmailBodyDecorators.StartDecorating(emailBodyDecoratorParams, _body);
 
