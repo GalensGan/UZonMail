@@ -4,8 +4,8 @@
     {
         #region 从数据库中读取的初始状态
         public int InitSuccessCount { get; }
-        public  int InitSentCount { get; }
-        public  int InitTotal { get; }
+        public int InitSentCount { get; }
+        public int InitTotal { get; }
         #endregion
 
         public SendingItemsCounter(int total, int sent, int success)
@@ -54,6 +54,8 @@
         {
             Interlocked.Add(ref _runningCount, count);
         }
+
+        public int TotalCount => InitTotal + CurrentTotal;
 
         /// <summary>
         /// 总成功数

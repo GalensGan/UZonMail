@@ -227,11 +227,12 @@ namespace UZonMail.Core.Services.EmailSending.WaitList
             var dbSet = sendingContext.SqlContext.SendingItems.AsNoTracking()
                 .Where(x => x.SendingGroupId == SendingGroupId)
                 .Where(x => x.Status == SendingItemStatus.Failed || x.Status == SendingItemStatus.Created);
+
             if (sendingItemIds != null && sendingItemIds.Count > 0)
             {
                 dbSet = dbSet.Where(x => sendingItemIds.Contains(x.Id));
             }
-            List<SendingItem> toSendingItems = await dbSet.Select(x => new SendingItem() { Id = x.Id, OutBoxId = x.OutBoxId }).ToListAsync();
+            List<SendingItem> toSendingItems = await dbSet.Select(x => new SendingItem() { Id = x.Id, OutBoxId = x.OutBoxId, Inboxes = x.Inboxes }).ToListAsync();
             HashSet<long> outboxIds = toSendingItems.Select(x => x.OutBoxId).ToHashSet();
             var outboxes = await sendingContext.SqlContext.Outboxes.Where(x => outboxIds.Contains(x.Id)).ToListAsync();
 
@@ -251,14 +252,25 @@ namespace UZonMail.Core.Services.EmailSending.WaitList
                 toSendingItems = toSendingItems.FindAll(x => !invalidSendingItemIds.Contains(x.Id)).ToList();
             }
 
-            // 新增特定发件箱
-            var outboxesPoolManager = sendingContext.ServiceProvider.GetRequiredService<UserOutboxesPoolManager>();
-            foreach (var outbox in outboxes)
+            // 对于取消订阅的邮件，进行标记
+            var userInfo = await CacheManager.GetCache<UserReader>(sendingContext.SqlContext, UserId.ToString());
+            var unsubscribedEmails = await sendingContext.SqlContext.UnsubscribeEmails.AsNoTracking()
+                .Where(x => x.OrganizationId == userInfo.OrganizationId)
+                .Where(x => !x.IsDeleted)
+                .Select(x => x.Email)
+                .ToListAsync();
+            if (unsubscribedEmails.Count > 0)
             {
-                // 获取收件项 Id
-                var sendingItemIdsTemp = toSendingItems.Where(x => x.OutBoxId == outbox.Id).Select(x => x.Id).ToList();
-                var outboxAddress = new OutboxEmailAddress(outbox, SendingGroupId, SmtpPasswordSecretKeys, OutboxEmailAddressType.Specific, sendingItemIdsTemp);
-                await outboxesPoolManager.AddOutbox(sendingContext, outboxAddress);
+                var unsubscribedSendingItemIds = toSendingItems.Where(x => x.Inboxes.Any(i => unsubscribedEmails.Contains(i.Email))).Select(x => x.Id).ToList();
+                if (unsubscribedSendingItemIds.Count > 0)
+                {
+                    // 更新邮件状态
+                    await sendingContext.SqlContext.SendingItems.UpdateAsync(x => unsubscribedSendingItemIds.Contains(x.Id),
+                                               x => x.SetProperty(y => y.Status, SendingItemStatus.Unsubscribed)
+                                                     .SetProperty(y => y.SendDate, DateTime.Now)
+                                                     .SetProperty(y => y.SendResult, "收件人已取消订阅"));
+                    toSendingItems = toSendingItems.FindAll(x => !unsubscribedSendingItemIds.Contains(x.Id));
+                }
             }
 
             // 更新待发件列表
@@ -274,21 +286,43 @@ namespace UZonMail.Core.Services.EmailSending.WaitList
             // 更新当前发件组的总数
             _sendingItemsCounter.IncreaseTotalCount(toSendingItemMetas.Count);
 
+            var client = sendingContext.HubClient.GetUserClient(UserId);
+            // 如果整个任务为空
+            if (_sendingItemsCounter.RunningCount + _sendingItemsCounter.CurrentTotal == 0)
+            {
+                // 向前端通知任务已经完成
+                if (client != null)
+                {
+                    await client.SendingGroupProgressChanged(new SendingGroupProgressArg(_sendingGroup, _startDate)
+                    {
+                        ProgressType = ProgressType.End,
+                        SendingGroupId = SendingGroupId,
+                        Current = 1,
+                        Total = 1,
+                    });
+                }
+
+                return false;
+            }
+
+            // 新增特定发件箱
+            var outboxesPoolManager = sendingContext.ServiceProvider.GetRequiredService<UserOutboxesPoolManager>();
+            foreach (var outbox in outboxes)
+            {
+                // 获取收件项 Id
+                var sendingItemIdsTemp = toSendingItems.Where(x => x.OutBoxId == outbox.Id).Select(x => x.Id).ToList();
+                var outboxAddress = new OutboxEmailAddress(outbox, SendingGroupId, SmtpPasswordSecretKeys, OutboxEmailAddressType.Specific, sendingItemIdsTemp);
+                await outboxesPoolManager.AddOutbox(sendingContext, outboxAddress);
+            }
+
             // 将发件项修改为发送中
             if (toSendingItems.Count > 0)
             {
                 await sendingContext.SqlContext.SendingItems.UpdateAsync(x => toSendingItems.Select(x => x.Id).Contains(x.Id),
                     x => x.SetProperty(y => y.Status, SendingItemStatus.Pending));
             }
-            else
-            {
-                await sendingContext.SqlContext.SendingItems.UpdateAsync(x => x.SendingGroupId == SendingGroupId,
-                                       x => x.SetProperty(y => y.Status, SendingItemStatus.Pending));
-            }
 
             // 通知用户，任务已开始
-            var hub = sendingContext.HubClient;
-            var client = hub.GetUserClient(UserId);
             if (client != null)
             {
                 await client.SendingGroupProgressChanged(new SendingGroupProgressArg(_sendingGroup, _startDate)
