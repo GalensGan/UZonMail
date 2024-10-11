@@ -174,7 +174,8 @@ export const dynamicRoutes: ExtendedRouteRecordRaw[] = [
     component: NormalLayout,
     meta: {
       label: '统计报表',
-      icon: 'analytics'
+      icon: 'analytics',
+      access: ['enterprise']
     },
     redirect: '/statistics/anchor-report',
     children: [
@@ -183,20 +184,19 @@ export const dynamicRoutes: ExtendedRouteRecordRaw[] = [
         path: 'anchor-report',
         meta: {
           icon: 'mark_email_read',
-          label: '阅读统计',
-          access: ['enterprise']
+          label: '阅读统计'
         },
         component: () => import('pages/statisticsReport/EmailAnchor.vue')
+      },
+      {
+        name: 'UnsubscribeReport',
+        path: 'unsubscribe-report',
+        meta: {
+          icon: 'unsubscribe',
+          label: '退订统计'
+        },
+        component: () => import('pages/statisticsReport/UnsubscribeReport.vue')
       }
-      // {
-      //   name: 'CustomerAnalysis',
-      //   path: 'anchor-report',
-      //   meta: {
-      //     icon: 'badge',
-      //     label: '客户分析'
-      //   },
-      //   component: () => import('pages/statisticsReport/StatisticsReport.vue')
-      // }
     ]
   },
   {

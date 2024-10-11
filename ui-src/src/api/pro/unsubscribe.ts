@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { httpClientPro } from 'src/api/base/httpClient'
+import { IRequestPagination } from 'src/compositions/types'
 
 export enum UnsubscibeType {
   /// <summary>
@@ -35,6 +36,12 @@ export interface IUnsubscribeSettings {
   /// 退订按钮的 Id
   /// </summary>
   unsubscribeButtonId?: string,
+}
+
+export interface IUnsubscribeEmail {
+  organizationId: number,
+  email: string,
+  host?: string,
 }
 
 /**
@@ -79,4 +86,33 @@ export function getUnsubscribeSettings () {
  */
 export function updateUnsubscribeSettings (settingId: number, data: IUnsubscribeSettings) {
   return httpClientPro.put<boolean>(`/unsubscribe/${settingId}`, { data })
+}
+
+/**
+ * 获取发件邮箱数量
+ * @param groupId
+ * @param filter
+ */
+export function getUnsubscribesCount (filter: string | undefined) {
+  return httpClientPro.get<number>('/unsubscribe/filtered-count', {
+    params: {
+      filter
+    }
+  })
+}
+
+/**
+ * 获取发件邮箱数据
+ * @param groupId
+ * @param filter
+ * @param pagination
+ * @returns
+ */
+export function getUnsubscribesData (filter: string | undefined, pagination: IRequestPagination) {
+  return httpClientPro.post<IUnsubscribeEmail[]>('/unsubscribe/filtered-data', {
+    params: {
+      filter
+    },
+    data: pagination
+  })
 }
