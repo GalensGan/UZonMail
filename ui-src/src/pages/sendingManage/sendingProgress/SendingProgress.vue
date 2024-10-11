@@ -99,18 +99,18 @@ import { UzonMailClientMethods, ISendingGroupProgressArg, SendingGroupProgressTy
 async function onEmailGroupSendingProgressChanged (progress: ISendingGroupProgressArg) {
   console.log('onEmailGroupSendingProgressChanged', progress)
   if (!progress) return
-  if (progress.sendingGroupId !== sendingGroupIdRef.value) return
+  if (sendingGroupIdRef.value && progress.sendingGroupId !== sendingGroupIdRef.value) return
   if (progress.progressType === SendingGroupProgressType.end) {
     onDialogCancel()
     // 不提示成功，因为全局进度条也在监听事件，由全局发出通知即可
-    // notifySuccess(`邮件任务: ${progress.sendingGroupId} 发送完成`)
 
     // 跳转到明细中
+    const sendingGroupId = sendingGroupIdRef.value || progress.sendingGroupId
     router.push({
       name: 'SendDetailTable',
       query: {
-        sendingGroupId: sendingGroupIdRef.value,
-        tagName: sendingGroupIdRef.value
+        sendingGroupId,
+        tagName: sendingGroupId
       }
     })
 

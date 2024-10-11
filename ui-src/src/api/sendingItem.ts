@@ -55,6 +55,11 @@ export enum SendingItemStatus {
   /// 已读
   /// </summary>
   Read,
+
+  /// <summary>
+  /// 已取消订阅
+  /// </summary>
+  Unsubscribed,
 }
 
 /**

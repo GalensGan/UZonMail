@@ -47,7 +47,7 @@ export function useContextMenu () {
       name: 'viewBody',
       label: '查看正文',
       tooltip: '查看当前发件的正文',
-      vif: (email: Record<string, any>) => email.status === SendingItemStatus.Success,
+      vif: (email: Record<string, any>) => email.status >= SendingItemStatus.Success,
       onClick: showEmailBody
     }
   ]

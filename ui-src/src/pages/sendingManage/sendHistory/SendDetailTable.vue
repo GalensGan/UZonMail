@@ -30,7 +30,6 @@
 
     <template v-slot:body-cell-index="props">
       <QTableIndex :props="props" />
-
       <ContextMenu :items="sendDetailContextItems" :value="props.row"></ContextMenu>
     </template>
 
@@ -39,7 +38,7 @@
         <q-circular-progress v-if="props.value === 1" indeterminate size="sm" :thickness="0.4" color="secondary"
           track-color="grey-3" center-color="primary" />
         <StatusChip :status="props.value">
-          <AsyncTooltip v-if="props.value === SendingItemStatus[SendingItemStatus.Failed]"
+          <AsyncTooltip v-if="props.value !== SendingItemStatus[SendingItemStatus.Success]"
             :tooltip="props.row.sendResult"></AsyncTooltip>
         </StatusChip>
       </q-td>
