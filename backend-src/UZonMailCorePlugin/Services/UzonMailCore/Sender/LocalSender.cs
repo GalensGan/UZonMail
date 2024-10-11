@@ -16,15 +16,13 @@ namespace UZonMail.Core.Services.EmailSending.Sender
     /// <summary>
     /// 本机发件
     /// </summary>
-    public class LocalSender : SendMethod
+    public class LocalSender(SendItem sendItem) : SendMethod
     {
+        /// <summary>
+        /// 日志
+        /// </summary>
         private readonly static ILog _logger = LogManager.GetLogger(typeof(LocalSender));
 
-        private SendItem sendItem;
-        public LocalSender(SendItem sendItem)
-        {
-            this.sendItem = sendItem;
-        }
         /// <summary>
         /// 使用本机进行发件
         /// </summary>

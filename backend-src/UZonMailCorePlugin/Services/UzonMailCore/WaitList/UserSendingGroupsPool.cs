@@ -46,8 +46,8 @@ namespace UZonMail.Core.Services.EmailSending.WaitList
         /// </summary>
         /// <param name="scopeServices"></param>
         /// <param name="sendingGroupId">传入时请保证组一定存在</param>
-        /// <param name="smtpPasswordSecretKeys"></param>
-        /// <param name="sendingItemIds"></param>
+        /// <param name="smtpPasswordSecretKeys">smtp密码密钥</param>
+        /// <param name="sendingItemIds">待发送的 Id</param>
         /// <returns></returns>
         public async Task<bool> AddSendingGroup(SendingContext scopeServices, long sendingGroupId, List<string> smtpPasswordSecretKeys, List<long>? sendingItemIds = null)
         {
