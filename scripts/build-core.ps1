@@ -137,9 +137,11 @@ New-Item -Path "$serviceDist/Quartz" -ItemType Directory  -ErrorAction SilentlyC
 Copy-Item -Path "$serviceSrc/Quartz/quartz-sqlite.sqlite3" -Destination "$serviceDist/Quartz/quartz-sqlite.sqlite3" -Force
 Write-Host "后端 UZonMailService 编译完成!" -ForegroundColor Green
 
-# 复制根目录中的 Dockerfile 和 docker-compose.yml 到编译目录
-Copy-Item -Path "$gitRoot/Dockerfile" -Destination $mainService -Force
-Copy-Item -Path "$gitRoot/docker-compose.yml" -Destination $mainService -Force
+# 复制 scripts 目录中的 Dockerfile 和 docker-compose.yml 到编译目录
+$scriptFiles = @("Dockerfile", "docker-compose.yml")
+foreach ($file in $scriptFiles) {
+    Copy-Item -Path "$gitRoot/scripts/$file" -Destination $mainService -Force
+}
 
 # 复制程序集函数
 function Copy-Assembly {
@@ -215,6 +217,7 @@ $serviceVersion = [System.Diagnostics.FileVersionInfo]::GetVersionInfo($UZonMail
 # 生成文件路径
 $zipDist = Join-Path -Path $gitRoot -ChildPath "build\uzonmail-service-$publishPlatform-$serviceVersion.zip"
 
+# 编译桌面端
 function Build-Desktop {
     # $desktop 为 false，直接返回
     if (-not $desktop) {
@@ -251,11 +254,55 @@ function Build-Desktop {
     $script:zipSrc = "$desktopDist/*"
     $script:zipDist = Join-Path -Path $gitRoot -ChildPath "build\uzonmail-desktop-$publishPlatform-$buildVersion.zip"
 }
-
 Build-Desktop
 
 # 打包文件
+if ($platform -eq "linux") {
+    # 去掉 $zipSrc 中的 /*
+    $zipSrc = $zipSrc.Replace("/*", "")
+}
+
 7z a -tzip $zipDist $zipSrc
+
+# linux 增加 docker 启动
+if ($platform -eq "linux") {
+    # 向压缩包添加启动文件: docker-deploy.sh
+    $deployFiles = @('docker-deploy.sh', 'docker-compose.yml')
+    foreach ($file in $deployFiles) {
+        $dockerDeploy = Join-Path -Path $gitRoot -ChildPath "scripts/$file"
+        7z a -tzip $zipDist $dockerDeploy
+    }
+}
+
+
+function Build-Desktop {
+    # $desktop 为 false，直接返回
+    if ($platform -ne "linux") {
+        return
+    }
+
+    # 编译 docker 镜像    
+    Write-Host "开始编译 Docker 镜像..." -ForegroundColor Yellow
+    $dockerImage = "uzon-mail:$serviceVersion"
+    $dockerBuild = Join-Path -Path $mainService -ChildPath "Dockerfile"
+    docker build -t $dockerImage -f $dockerBuild $mainService
+    docker build -t uzon-mail:latest -f $dockerBuild $mainService
+    Write-Host "Docker 镜像编译完成！" -ForegroundColor Green
+
+    # 上传镜像
+    # 判断是否登陆了 dockerhub, 包含 `Login Succeeded` 说明已经登陆
+    $dockerLogin = docker login
+    if ($dockerLogin -notlike "*Login Succeeded*") {
+        Write-Host "未登陆 DockerHub, 镜像未推送" -ForegroundColor Red
+        return
+    }
+
+    Write-Host "开始上传 Docker 镜像..." -ForegroundColor Yellow
+    docker push -a uzon-mail
+    Write-Host "Docker 镜像上传完成！" -ForegroundColor Green
+}
+
+
 
 # 回到根目录
 Set-Location -Path $sriptRoot
