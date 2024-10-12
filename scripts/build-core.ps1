@@ -218,7 +218,7 @@ $serviceVersion = [System.Diagnostics.FileVersionInfo]::GetVersionInfo($UZonMail
 $zipDist = Join-Path -Path $gitRoot -ChildPath "build\uzonmail-service-$publishPlatform-$serviceVersion.zip"
 
 # 编译桌面端
-function Build-Desktop {
+function Add-Desktop {
     # $desktop 为 false，直接返回
     if (-not $desktop) {
         return
@@ -254,7 +254,7 @@ function Build-Desktop {
     $script:zipSrc = "$desktopDist/*"
     $script:zipDist = Join-Path -Path $gitRoot -ChildPath "build\uzonmail-desktop-$publishPlatform-$buildVersion.zip"
 }
-Build-Desktop
+Add-Desktop
 
 # 打包文件
 if ($platform -eq "linux") {
@@ -275,7 +275,7 @@ if ($platform -eq "linux") {
 }
 
 
-function Build-Desktop {
+function Add-Docker {
     # $desktop 为 false，直接返回
     if ($platform -ne "linux") {
         return
@@ -301,8 +301,7 @@ function Build-Desktop {
     docker push -a uzon-mail
     Write-Host "Docker 镜像上传完成！" -ForegroundColor Green
 }
-
-
+Add-Docker
 
 # 回到根目录
 Set-Location -Path $sriptRoot
