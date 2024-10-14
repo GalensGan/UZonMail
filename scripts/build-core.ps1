@@ -299,8 +299,9 @@ function Add-Docker {
         return
     }
 
-    Write-Host "开始上传 Docker 镜像..." -ForegroundColor Yellow
+    Write-Host "开始上传 Docker 镜像: $imageVersion ..." -ForegroundColor Yellow
     docker push $dockerImage
+    Write-Host "开始上传 Docker 镜像: latest ..." -ForegroundColor Yellow
     docker push gmxgalens/uzon-mail:latest
     Write-Host "Docker 镜像上传完成！" -ForegroundColor Green
 }

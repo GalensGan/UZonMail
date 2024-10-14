@@ -14,6 +14,20 @@ using Uamazing.Utils.Plugin;
 using UZonMail.Utils.Web.Filters;
 using UZonMail.DB.SQL;
 
+// 生成默认的配置文件
+var productConfig = "appsettings.Production.json";
+if(!File.Exists(productConfig))
+{
+    File.WriteAllText(productConfig, "{\n}");
+}
+// 复制 quartz 数据库
+var quartzDb = "data/db/quartz-sqlite.sqlite3";
+if(!File.Exists(quartzDb))
+{
+    Directory.CreateDirectory(Path.GetDirectoryName(quartzDb));
+    File.Copy("Quartz/quartz-sqlite.sqlite3", quartzDb);
+}
+
 var appOptions = new WebApplicationOptions
 {
     ApplicationName = typeof(Program).Assembly.FullName,
