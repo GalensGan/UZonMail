@@ -21,7 +21,7 @@ fi
 
 cd service-linux-x64
 # 开始构建
-docker build -t uzon-mail:latest .
+docker build -t gmxgalens/uzon-mail:latest .
 # 启动 docker-compose
 cd ..
 docker compose up -d

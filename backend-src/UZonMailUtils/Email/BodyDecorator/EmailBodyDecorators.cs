@@ -5,7 +5,7 @@ using UZonMail.DB.SQL;
 using UZonMail.DB.SQL.EmailSending;
 using UZonMail.DB.SQL.Settings;
 
-namespace Uamazing.Utils.Email
+namespace UZonMail.Utils.Email.BodyDecorator
 {
     public class EmailBodyDecorators
     {
@@ -26,7 +26,7 @@ namespace Uamazing.Utils.Email
         /// <param name="decoratorParams"></param>
         /// <param name="originBody"></param>
         /// <returns></returns>
-        public static async Task<string> StartDecorating(EmailBodyDecoratorParams decoratorParams,string originBody)
+        public static async Task<string> StartDecorating(EmailDecoratorParams decoratorParams, string originBody)
         {
             var bodyTemp = originBody;
             foreach (var decorator in Decorators)

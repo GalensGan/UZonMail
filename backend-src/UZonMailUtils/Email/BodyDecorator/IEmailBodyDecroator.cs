@@ -4,7 +4,7 @@ using UZonMail.DB.SQL;
 using UZonMail.DB.SQL.EmailSending;
 using UZonMail.DB.SQL.Settings;
 
-namespace Uamazing.Utils.Email
+namespace UZonMail.Utils.Email.BodyDecorator
 {
     /// <summary>
     /// 邮件正文修饰器
@@ -18,6 +18,6 @@ namespace Uamazing.Utils.Email
         /// <param name="decoratorParams"></param>
         /// <param name="originBody"></param>
         /// <returns></returns>
-        public Task<string> StartDecorating(EmailBodyDecoratorParams decoratorParams, string originBody);
+        Task<string> StartDecorating(EmailDecoratorParams decoratorParams, string originBody);
     }
 }

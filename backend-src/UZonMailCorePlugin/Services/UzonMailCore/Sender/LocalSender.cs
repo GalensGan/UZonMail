@@ -1,15 +1,10 @@
 ﻿
 using log4net;
-using MailKit;
-using MailKit.Net.Imap;
-using MailKit.Net.Proxy;
 using MailKit.Net.Smtp;
 using MimeKit;
-using System.IO.Pipelines;
-using Uamazing.Utils.Email;
+
 using UZonMail.Core.Services.EmailSending.Pipeline;
-using UZonMail.Core.Services.Settings;
-using UZonMail.DB.SQL.Organization;
+using UZonMail.Utils.Email.MessageDecorator;
 
 namespace UZonMail.Core.Services.EmailSending.Sender
 {
@@ -77,7 +72,7 @@ namespace UZonMail.Core.Services.EmailSending.Sender
                 message.Subject = sendItem.GetSubject();
 
                 // 正文
-                var htmlBody =await sendItem.GetBody(sendingContext);                
+                var htmlBody = await sendItem.GetBody(sendingContext);
                 BodyBuilder bodyBuilder = new()
                 {
                     HtmlBody = htmlBody
@@ -95,6 +90,10 @@ namespace UZonMail.Core.Services.EmailSending.Sender
                     lastOne.ContentDisposition.FileName = attachment.Item2;
                 }
                 message.Body = bodyBuilder.ToMessageBody();
+
+                // 对 message 进行额外的设置
+                var emailDecoratorParams = await sendItem.GetDecoratorParamsAsync(sendingContext);
+                message = await MimeMessageDecorators.StartDecorating(emailDecoratorParams, message);
             }
             catch (Exception ex)
             {

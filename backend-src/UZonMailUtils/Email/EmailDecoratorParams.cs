@@ -2,9 +2,9 @@
 using UZonMail.DB.SQL.EmailSending;
 using UZonMail.DB.SQL.Settings;
 
-namespace Uamazing.Utils.Email
+namespace UZonMail.Utils.Email
 {
-    public class EmailBodyDecoratorParams(IServiceProvider serviceProvider, OrganizationSettingReader settingReader, SendingItem sendingItem, string outboxEmail)
+    public class EmailDecoratorParams(IServiceProvider serviceProvider, OrganizationSettingReader settingReader, SendingItem sendingItem, string outboxEmail)
     {
         public IServiceProvider ServiceProvider { get; } = serviceProvider;
 
@@ -12,6 +12,9 @@ namespace Uamazing.Utils.Email
 
         public SendingItem SendingItem { get; } = sendingItem;
 
+        /// <summary>
+        /// 发件箱
+        /// </summary>
         public string OutboxEmail { get; set; } = outboxEmail;
     }
 }
