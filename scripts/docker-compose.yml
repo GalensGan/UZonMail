@@ -1,6 +1,6 @@
 # 说明
 # 该文件是 uzon-mail 的 docker-compose 配置文件，用于在 linux 中启动程序
-# 使用时，需要将该文件放置在 uzon-mail 的根目录下，然后执行 docker-compose up -d 命令即可启动程序
+# 使用时，执行 docker-compose up -d 命令即可启动程序
 #
 
 version: '3.9'
@@ -44,7 +44,7 @@ services:
     ports:
       - 22345:22345
     volumes:
-      # - ./data/uzon-mail/appsettings.Production.json:/app/appsettings.Production.json # 需修改系统配置时打开
+      # - ./data/uzon-mail/appsettings.Production.json:/app/appsettings.Production.json # 若需修改系统配置时打开
       - ./data/uzon-mail/data:/app/data # 数据存储
     networks:
       - uzon-network
