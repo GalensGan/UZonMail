@@ -43,8 +43,9 @@ services:
     image: gmxgalens/uzon-mail:latest
     ports:
       - 22345:22345
-    # volumes:
-      # - ./data/uzon-mail/src:/app
+    volumes:
+      - ./data/uzon-mail/appsettings.Production.json:/app/appsettings.Production.json # 系统配置
+      - ./data/uzon-mail/data:/app/data # 数据存储
     networks:
       - uzon-network
     command: ["dotnet", "UZonMailService.dll"]
