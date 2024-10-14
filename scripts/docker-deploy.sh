@@ -1,4 +1,4 @@
-#!binbash
+#!/bin/bash
 
 # 检查 docker
 if ! command -v docker &> /dev/null

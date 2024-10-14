@@ -5,7 +5,7 @@
 
 version: '3.8'
 services:
-  # mysql, 若要启用 sql 服务，请取消下面的注释
+  # # mysql, 若要启用 sql 服务，请取消下面的注释
   # uzon-mysql:
   #   container_name: uzon-mysql
   #   image: mysql:8.4.0
@@ -25,7 +25,7 @@ services:
   #   networks:
   #     - uzon-network
 
-  # redis 缓存, 若要启用 redis 服务，请取消下面的注释
+  # # redis 缓存, 若要启用 redis 服务，请取消下面的注释
   # uzon-redis:
   #   container_name: uzon-redis
   #   image: redis:7.2.5
@@ -40,19 +40,17 @@ services:
   # 程序主体
   uzon-mail:
     container_name: uzon-mail
-    image: uzon-mail:latest
+    image: gmxgalens/uzon-mail:latest
     ports:
       - 22345:22345
-    volumes:
-      - ./data/uzon-mail/src:/app
+    # volumes:
+      # - ./data/uzon-mail/src:/app
     networks:
       - uzon-network
     command: ["dotnet", "UZonMailService.dll"]
-    # init: true
-    # command: [ "sh", "-c", "exec sleep infinity" ]
-    depends_on:
-      - uzon-mysql
-      - uzon-redis
+    # depends_on:
+    #   - uzon-mysql
+    #   - uzon-redis
 
 networks:
   uzon-network:

@@ -17,7 +17,7 @@ namespace UZonMail.DB.SqLite
             _sqLiteConnectionConfig = new SqLiteConnectionConfig();
             configuration.GetSection("Database:SqLite").Bind(_sqLiteConnectionConfig);
 
-            var sqlLiteFilePath = _sqLiteConnectionConfig.GetSqLiteFilePath();
+            var sqlLiteFilePath = _sqLiteConnectionConfig.DataSource;
             if (!string.IsNullOrEmpty(sqlLiteFilePath))
             {
                 var directory = Path.GetDirectoryName(sqlLiteFilePath);

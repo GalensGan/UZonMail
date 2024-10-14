@@ -1,4 +1,5 @@
 data/*
 public
 obj
-Quarts/quartz-sqlite*
+quartz-sqlite.sqlite3
+*.db

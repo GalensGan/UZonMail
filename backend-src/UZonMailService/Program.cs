@@ -104,7 +104,9 @@ services.Configure<QuartzOptions>(options =>
     options.Scheduling.IgnoreDuplicates = true; // default: false
     options.Scheduling.OverWriteExistingData = true; // default: true
 });
+// 注入到 ioc 中
 services.AddQuartz();
+// 启动服务
 services.AddQuartzHostedService(
     q => q.WaitForJobsToComplete = false);
 

@@ -132,9 +132,9 @@ New-Item -Path "$serviceDist/Plugins" -ItemType Directory -Force
 # 创建 assembly 目录
 New-Item -Path "$serviceDist/Assembly" -ItemType Directory -Force
 
-# 复制 Quartz/quartz-sqlite.sqlite3 到 Quartz 目录中
-New-Item -Path "$serviceDist/Quartz" -ItemType Directory  -ErrorAction SilentlyContinue
-Copy-Item -Path "$serviceSrc/Quartz/quartz-sqlite.sqlite3" -Destination "$serviceDist/Quartz/quartz-sqlite.sqlite3" -Force
+# 复制 Quartz/quartz-sqlite.sqlite3 到 data/db 目录中
+New-Item -Path "$serviceDist/data/db" -ItemType Directory  -ErrorAction SilentlyContinue
+Copy-Item -Path "$serviceSrc/Quartz/quartz-sqlite.sqlite3" -Destination "$serviceDist/data/db/quartz-sqlite.sqlite3" -Force
 Write-Host "后端 UZonMailService 编译完成!" -ForegroundColor Green
 
 # 复制 scripts 目录中的 Dockerfile 和 docker-compose.yml 到编译目录
@@ -283,22 +283,25 @@ function Add-Docker {
 
     # 编译 docker 镜像    
     Write-Host "开始编译 Docker 镜像..." -ForegroundColor Yellow
-    $dockerImage = "uzon-mail:$serviceVersion"
+    # 生成版本号，去掉最后的 .0
+    $imageVersion = $serviceVersion -replace "\.0$", ""
+    $dockerImage = "gmxgalens/uzon-mail:$imageVersion"
     $dockerBuild = Join-Path -Path $mainService -ChildPath "Dockerfile"
     docker build -t $dockerImage -f $dockerBuild $mainService
-    docker build -t uzon-mail:latest -f $dockerBuild $mainService
+    docker build -t gmxgalens/uzon-mail:latest -f $dockerBuild $mainService
     Write-Host "Docker 镜像编译完成！" -ForegroundColor Green
 
     # 上传镜像
     # 判断是否登陆了 dockerhub, 包含 `Login Succeeded` 说明已经登陆
     $dockerLogin = docker login
-    if ($dockerLogin -notlike "*Login Succeeded*") {
+    if (-not($dockerLogin -match "Login Succeeded")) {
         Write-Host "未登陆 DockerHub, 镜像未推送" -ForegroundColor Red
         return
     }
 
     Write-Host "开始上传 Docker 镜像..." -ForegroundColor Yellow
-    docker push -a uzon-mail
+    docker push $dockerImage
+    docker push gmxgalens/uzon-mail:latest
     Write-Host "Docker 镜像上传完成！" -ForegroundColor Green
 }
 Add-Docker
