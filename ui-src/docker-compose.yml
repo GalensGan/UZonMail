@@ -7,6 +7,5 @@ services:
     working_dir: /app/uzon-mail
     ports:
       - 9000:9000
-    # 下面两行是当无法启动容器时，可以打开注释，进入容器进行操作
     init: true
     command: [ "sh", "-c", "exec sleep infinity" ]
