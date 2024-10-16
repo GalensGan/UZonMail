@@ -1,0 +1,26 @@
+.row {
+  display: flex;
+  flex-direction: row;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.text-primary {
+  color: #3eaf7c;
+}
+
+.q-mx-md {
+  margin-left: 1rem;
+  margin-right: 1rem;
+}

@@ -1,3 +1,7 @@
+---
+title: 支持作者
+---
+
 <div class="column justify-center items-center">
   <h6 class="text-primary">支持作者</h6>
   <p class="q-mx-md">如果觉得这个软件对您有帮助，欢迎对我进行赞助。</p>
