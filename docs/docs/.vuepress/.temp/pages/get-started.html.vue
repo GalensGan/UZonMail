@@ -552,21 +552,6 @@
 <li>定时任务</li>
 </ul>
 <p>请查看配置文件进行理解。</p>
-<h2 id="🌵反馈与建议" tabindex="-1"><a class="header-anchor" href="#🌵反馈与建议"><span>🌵反馈与建议</span></a></h2>
-<p>如果你在使用中发现了 bug, 或者对该软件有任何建议，都欢迎联系我，让我们将这款软件一起变得更优秀吧！</p>
-<p>bug 反馈优先选择<a href="https://github.com/GalensGan/SendMultipleEmails/issues" target="_blank" rel="noopener noreferrer">Github Issues</a>，这样我能第一时间知道。</p>
-<p>如果有紧急问题，请通过邮件联系。</p>
-<p>QQ 和 QQ 群会不定时查看，所以不会很及时。</p>
-<h2 id="🌶️联系方式" tabindex="-1"><a class="header-anchor" href="#🌶️联系方式"><span>🌶️联系方式</span></a></h2>
-<p>QQ群：877458612</p>
-<p>邮箱：260827400@qq.com</p>
-<p>GitHub：<a href="https://github.com/GalensGan/UZonMail" target="_blank" rel="noopener noreferrer">GalensGan/UZonMail (github.com)</a></p>
-<p>个人主页：<a href="https://galens.uamazing.cn" target="_blank" rel="noopener noreferrer">https://galens.uamazing.cn</a></p>
-<h2 id="🍉致谢名单" tabindex="-1"><a class="header-anchor" href="#🍉致谢名单"><span>🍉致谢名单</span></a></h2>
-<p>感谢老铁们对该软件的肯定，感谢大家的支持与鼓励！</p>
-<p>感谢 QQ 用户 <code v-pre>来了来了</code>、<code v-pre>Me</code> 协助管理 QQ 群。</p>
-<p>感谢以下用户的赞助（按先后时间排序）：</p>
-<p>磊、鹏</p>
 </div></template>
 
 

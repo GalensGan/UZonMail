@@ -1,5 +1,5 @@
 import comp from "/home/gmx/app/docker-dev-envs/uzonmail/src/docs/docs/.vuepress/.temp/pages/contact-us.html.vue"
-const data = JSON.parse("{\"path\":\"/contact-us.html\",\"title\":\"联系我们\",\"lang\":\"zh-CN\",\"frontmatter\":{\"title\":\"联系我们\"},\"headers\":[{\"level\":2,\"title\":\"🌵反馈与建议\",\"slug\":\"🌵反馈与建议\",\"link\":\"#🌵反馈与建议\",\"children\":[]},{\"level\":2,\"title\":\"🌶️技术支持\",\"slug\":\"🌶️技术支持\",\"link\":\"#🌶️技术支持\",\"children\":[]}],\"git\":{\"updatedTime\":null,\"contributors\":[]},\"filePathRelative\":\"contact-us.md\"}")
+const data = JSON.parse("{\"path\":\"/contact-us.html\",\"title\":\"联系我们\",\"lang\":\"zh-CN\",\"frontmatter\":{\"title\":\"联系我们\",\"sidebar\":false},\"headers\":[{\"level\":2,\"title\":\"🌵反馈与建议\",\"slug\":\"🌵反馈与建议\",\"link\":\"#🌵反馈与建议\",\"children\":[]},{\"level\":2,\"title\":\"🌶️技术支持\",\"slug\":\"🌶️技术支持\",\"link\":\"#🌶️技术支持\",\"children\":[]}],\"git\":{\"updatedTime\":1729078977000,\"contributors\":[{\"name\":\"galens\",\"email\":\"gmx_galens@163.com\",\"commits\":1}]},\"filePathRelative\":\"contact-us.md\"}")
 export { comp, data }
 
 if (import.meta.webpackHot) {

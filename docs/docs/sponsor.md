@@ -1,5 +1,6 @@
 ---
 title: 支持作者
+sidebar: false
 ---
 
 <div class="column justify-center items-center">
@@ -9,7 +10,7 @@ title: 支持作者
   <p class="q-mx-md">感谢您的慷慨支持！</p>
   <div class="row justify-center items-center q-gutter-lg">
     <div class="column items-center">
-      <img class="max-width-200 hover-card" src="https://s2.loli.net/2024/06/03/snNj5Q9wfuV8cRH.png" alt="支付宝红包">
+      <img class="hover-card" style="max-width:188px;" src="https://s2.loli.net/2024/06/03/snNj5Q9wfuV8cRH.png" alt="支付宝红包">
       <div class="q-mt-sm">扫码领支付宝红包</div>
     </div>
     <div class="column items-center">

@@ -2,6 +2,8 @@ import { defaultTheme } from '@vuepress/theme-default'
 import { defineUserConfig } from 'vuepress/cli'
 import { viteBundler } from '@vuepress/bundler-vite'
 
+// 配置参考:https://v1.vuepress.vuejs.org/zh/theme/default-theme-config.html#%E9%A6%96%E9%A1%B5
+
 export default defineUserConfig({
   lang: 'zh-CN',
 
@@ -10,17 +12,33 @@ export default defineUserConfig({
 
   theme: defaultTheme({
     logo: '/images/logo.svg',
+    search: true,
+    searchMaxSuggestions: 10,
     navbar: [
       {
         text: '首页',
         link: '/'
       },
       {
-        text: '开始使用',
-        link: '/get-started'
+        text: '文档',
+        link: '/get-started',
+        children: [
+          {
+            text: '开始使用',
+            link: '/get-started'
+          },
+          {
+            text: '视频介绍',
+            link: '/video-introduction'
+          },
+          {
+            text: '致谢名单',
+            link: '/thanks-list'
+          }
+        ]
       },
       {
-        text: '历史版本',
+        text: '下载',
         link: '/versions'
       },
       {

@@ -17,121 +17,162 @@ abbrlink: 2QMK677
 
 常见的应用场景有：
 
-1. 财务批量向员工发送每个人对应的工资条
-2. 外贸批量群发营销邮件
+2. 批量群发营销邮件
+2. 批量发送资条
+3. 批量发送发票
 
-> 开源地址：[UZonMail](https://github.com/GalensGan/SendMultipleEmails)
+> 开源地址：[UZonMail](https://github.com/GalensGan/UZonMail)
 
 <!--more-->
 
-## 🍎特点
+## 🍎功能介绍
 
 ![image-20240614121857800](https://obs.uamazing.cn:52443/public/files/images/image-20240614121857800.png)
 
 1. 支持多个发件人同时发件
 
-   可以添加多个**不同的**发件人，同时发件，提高发件效率。
+   可以添加任意多个不同的发件人，同时发件，不仅提高发件效率，而且突破了单个发件箱每日发件数量的限制，理论上，若有足够多的发件箱，可以不受约束地发送海量的邮件。
 
-2. 支持多个收件人批量收件
+2. 支持邮件内容模板自定义
 
-   可以添加多个收件人，实现批量发送
+   发件内容可以直接输入，也可以采用预定义模块。
 
-3. 支持邮件内容模板自定义
+   模板可根据需要进行自定义，定义完成后保存到模板库，可以轻易实现模板的复用。
 
-   模板完全可自定义，可根据需要定义自己所需的模板，并保存到模板库，实现模板的复用。
+   模板板采用 HTML 格式定义，程序同时提供可视化界面进行编辑，对于新手和大神都很友好，模板虽然使用下限低，但是上限很高。
 
-   模板板采用 html 格式定义，程序也提供可视化界面进行编辑，对于新手和大神都很友好。
+3. 支持无限变量，邮件封封不同
 
-4. 支持无限变量，邮件封封不同
+   可以在模板中引入变量，在发送的过程中，程序会自动将变量替换成真实的值进行发送，可以实现同一套模板，不同的收件人，接收的具体内容不同。
 
-   可以在模板中引入变量，在发送的过程中，会自动将变量值替换成其真实的值进行发送，可以实现同一套模板，不同的收件人，接收的具体内容不同。
+4. 多线程并发发送，日发可达 10 万+
 
-5. 多线程并发发送，日发可达 10 万+
-
-   每个发件人采用单独的线程进行发送，当一个发件箱出问题之后并不会使发件停止，会由其它发件的所在线程继续发件。
+   每个发件人采用单独的线程进行发送，当一个发件箱出问题之后并不会使发件停止，会由其它发件箱的所在线程继续发件。
 
    若有足够多的发件箱，日发 10 万不是问题。
 
-6. 失败自动重发
+   由于不同的发件箱对发件频率有限制，若想提升发件速度，建议在一次发件任务中选择多个发件箱
+
+5. 失败重发
 
    当有多个发件箱时，若 A 发件箱发件失败后，会转由 B 发件箱继续进行发送。
 
-   如果仅有一个发件箱，当发件失败后，会在其它邮件发送完成后，再次发送，可重发次数最大为5次。
+   如果仅有一个发件箱，当发件失败后，可以在发件历史中重新对失败项进行重发。
 
-7. 支持失败手动重发
+6. 自研随机算法，可实现发件人，发件模板智能随机
 
-   所有的发送过程都有记录，对于未发送成功的邮件，可以在发送任务完成后，手动进行重发。
+   当有多个发件人、发件模板时，程序会智能随机选择，提升邮件的到达率。
 
-8. 支持发件箱每日发件总量限制
+7. 支持发件箱每日发件总量限制
 
-9. 支持抄送、密送
+8. 支持抄送、密送
 
    支持多封邮件抄送到特定邮箱或者不同邮件抄送到不同的邮箱。
+
+9. 支持邮件阅读跟踪
+
+10. 支持取消订阅功能
+
+11. 支持权限管理
+
+    企业组织管理员可以管理查看所有子用户的数据、设置。方便集中管理
+
+12. 原生爬虫支持，助力外贸市场开拓
 
 ## 🍇环境要求
 
 1. Windows 7 及以上
-2. .NET Framework 4.6.2 及以上，下载地址：[dotnet-framework](https://dotnet.microsoft.com/download/dotnet-framework)
 3. Webview2 环境，下载地址：[microsoft-edge/webview2/](https://developer.microsoft.com/zh-cn/microsoft-edge/webview2/)
 4. ASP.NET Core 环境，下载地址：[runtime-aspnetcore-8.0.6-windows-hosting-bundle-installer](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-aspnetcore-8.0.6-windows-hosting-bundle-installer)
 
-## 🌱Windows 安装使用
+## 🌱软件安装
 
-### 环境安装
+### 软件下载
 
-**Win7**:
+可以从 [历史版本](https://uzonmail.pages.dev/versions) 中下载指定版本
 
-1. .NET Framework 4.6.2 及以上（这个一般都有，可以不用安装），下载地址：[dotnet-framework](https://dotnet.microsoft.com/download/dotnet-framework)
-2. Webview2 环境，下载地址：[microsoft-edge/webview2/-腾讯微云](https://share.weiyun.com/RAh0rLTA) 
-3. ASP.NET Core 环境，下载地址：[runtime-aspnetcore-8.0.6-windows-hosting-bundle-installer](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-aspnetcore-8.0.6-windows-hosting-bundle-installer)
+### 桌面版本安装
 
-> 温馨提示：
->
-> win7 与 win10 使用的 webview2 版本不一致
+**Web 方式**：
 
-**Win10 及以上**：
+1. 安装 [ASP.NET Core，单击下载](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-aspnetcore-8.0.6-windows-hosting-bundle-installer)
 
-1. .NET Framework 4.6.2 及以上，下载地址：[dotnet-framework](https://dotnet.microsoft.com/download/dotnet-framework)
-2. Webview2 环境，下载地址：[microsoft-edge/webview2/](https://developer.microsoft.com/zh-cn/microsoft-edge/webview2/)
-3. ASP.NET Core 环境，下载地址：[runtime-aspnetcore-8.0.6-windows-hosting-bundle-installer](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-aspnetcore-8.0.6-windows-hosting-bundle-installer)
+2. 从历史版本中下载 `uzonmail-desktop-win-x64` 版本，解压
 
-**网页版**：
+3. 打开 `service/UZonMailService.exe` 程序
 
-1. ASP.NET Core 环境，下载地址：[runtime-aspnetcore-8.0.6-windows-hosting-bundle-installer](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-aspnetcore-8.0.6-windows-hosting-bundle-installer)
+   打开后界面如下图所示，其中的 WARN 不用理会。	![image-20241017221814354](https://obs.uamazing.cn:52443/public/files/images/image-20241017221814354.png)
 
-### 直接下载安装包
+4. 打开浏览器，输入 [http://localhost:22345/](http://localhost:22345/) 进行使用
 
-[UZonMail-gitee](https://gitee.com/galensgan/UZonMail/releases/latest)
+**Windows 7**：
 
-或者加 QQ 群 877458612 在群文件下载 (更新速度更快)
+由于微软已经停止对 Win7 的维护，因此本软件只是有限支持，可以参考 Web 的使用方式。
 
-### 自己手动编译
+**Windows 10+**
 
-1. 克隆仓库，切换到 `master` 分支；
+1. 安装 [ASP.NET Core，单击下载](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-aspnetcore-8.0.6-windows-hosting-bundle-installer)
+2. 安装 [DotNET windows desktop](https://download.visualstudio.microsoft.com/download/pr/f398d462-9d4e-4b9c-abd3-86c54262869a/4a8e3a10ca0a9903a989578140ef0499/windowsdesktop-runtime-8.0.10-win-x64.exe)(一般系统自带)
+3. 安装 [Webview2](https://developer.microsoft.com/zh-cn/microsoft-edge/webview2/)(一般系统自带)
+4. 从历史版本中下载 `uzonmail-desktop-win-x64` 版本，解压
+5. 打开 `UZonMailDesktop.exe` 开始使用
 
-2. 使用命令行进入到项目根目录，执行 `./build.ps1` 开始编译，编译结果在 `build` 目录中。
+> 第 2、3 步可以忽略，若打开 `UZonMailDesktop.exe` 闪退或者空白，说明这两个环境缺失，手动安装一下即可
+
+若不想使用客户端版本，也可以参照上面 Web 的配置方式进行安装使用
+
+### 服务器版本安装
+
+本节将介绍服务器的安装方式，主要分为 3 个部分：
+
+1. 介绍在每个环境下的服务安装方式
+2. 配置 UZonMail
+3. 配置代理
+
+#### Docker 安装
+
+#### Windows Server 安装
+
+#### Linux 安装
+
+#### UZonMail 配置
+
+#### Nginx 反向代理
+
+### 手动编译
+
+建议普通用户不要采用这种方式，手动编译需要有一定的编程能力。
+
+此处仅介绍在 Windows 环境的编译。
+
+#### 环境要求
+
+- Git
+- 7z
+- DotNET 8.0 SDK
+- Node
+- Docker
+
+#### 编译步骤
+
+1. 打开终端
+
+2. 克隆仓库 `git clone https://github.com/GalensGan/UZonMail`，切换到 `master` 分支；
+
+3. 进入到项目根目录下的 `scripts` 目录，执行下面的命令 开始编译，编译结果在 `build` 目录中。
+
+   | 类型           | 命令                        | 位置                                       |
+   | -------------- | --------------------------- | ------------------------------------------ |
+   | desktop        | ./build-desktop.ps1         | build/uzonmail-desktop-win-x64-version.zip |
+   | windows server | ./build-win-server.ps1      | build/uzonmail-service-win-x64-version.zip |
+   | linux server   | ./build-linux.ps1           | build/uzonmail-linux-x64-version.zip       |
+   | docker         | 在进行 linux 编译，自动编译 | docker 镜像，镜像名为 uzon-mail:latest     |
 
    编译成功截图：
 
    ![image-20240616124656131](https://obs.uamazing.cn:52443/public/files/images/image-20240616124656131.png)
 
 > 手动编译时，会自动检测环境，若没有相关环境，请根据提示进行安装。
-
-### 使用
-
-本节只讲述通过安装包的使用方式。
-
-1. 下载安装包
-2. 安装对应方式所需要的环境
-
-直接使用：
-
-解压后，直接打开文件 `UzonMailDesktop.exe` 即可开始使用
-
-网页端使用：
-
-1. 首先启动服务：打开 `UzonMailDesktop.exe` 或 `service/UZonMailService.exe` 文件
-2. 在浏览器中输入地址：`http://localhost:22345` 打开网页
 
 ## 🍒发件步骤
 
@@ -664,32 +705,3 @@ export default {
 
 请查看配置文件进行理解。
 
-## 🌵反馈与建议
-
-如果你在使用中发现了 bug, 或者对该软件有任何建议，都欢迎联系我，让我们将这款软件一起变得更优秀吧！
-
-bug 反馈优先选择[Github Issues](https://github.com/GalensGan/SendMultipleEmails/issues)，这样我能第一时间知道。
-
-如果有紧急问题，请通过邮件联系。
-
-QQ 和 QQ 群会不定时查看，所以不会很及时。
-
-## 🌶️联系方式
-
-QQ群：877458612
-
-邮箱：260827400@qq.com
-
-GitHub：[GalensGan/UZonMail (github.com)](https://github.com/GalensGan/UZonMail)
-
-个人主页：[https://galens.uamazing.cn](https://galens.uamazing.cn)
-
-## 🍉致谢名单
-
-感谢老铁们对该软件的肯定，感谢大家的支持与鼓励！
-
-感谢 QQ 用户 `来了来了`、`Me` 协助管理 QQ 群。
-
-感谢以下用户的赞助（按先后时间排序）：
-
-磊、鹏

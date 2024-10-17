@@ -4,11 +4,11 @@ title: 主页
 heroImage: /images/hero.svg
 actions:
   - text: 开始使用
-    link: /getting-started.html
+    link: /get-started
     type: primary
-    
-  - text: 详细介绍
-    link: https://vuejs.press/guide/introduction.html
+
+  - text: 软件下载
+    link: /versions
     type: secondary
 
 features:
@@ -32,7 +32,3 @@ features:
 
 footer: Apache-2.0 license | Copyright © 2021-persent UZonMail
 ---
-
-This is the content of home page. Check [Home Page Docs][default-theme-home] for more details.
-
-[default-theme-home]: https://vuejs.press/reference/default-theme/frontmatter.html#home-page
