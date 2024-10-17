@@ -1,5 +1,5 @@
 node_modules
-package-lock.json
+# package-lock.json
 
 # VuePress 默认临时文件目录
 .vuepress/.temp
