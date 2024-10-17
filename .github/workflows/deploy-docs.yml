@@ -26,15 +26,16 @@ jobs:
         with:
           node-version: 20
           cache: npm
+          cache-dependency-path: ./docs/package-lock.json  # 指定依赖锁文件路径
 
       - name: 安装依赖
-        run: |-
-          cd ./docs
-          npm ci
+        working-directory: ./docs
+        run: npm ci
 
       - name: 构建文档
         env:
           NODE_OPTIONS: --max_old_space_size=8192
+        working-directory: ./docs
         run: |-
           npm run docs:build
           > docs/.vuepress/dist/.nojekyll
