@@ -1,6 +1,5 @@
 # 说明
-# 该文件是 uzon-mail 的 docker-compose 配置文件，用于在 linux 中启动程序
-# 使用时，执行 docker-compose up -d 命令即可启动程序
+# 该文件是 uzon-mail 的 docker-compose 配置文件，使用时，在当前目录执行 docker-compose up -d 命令即可启动程序
 #
 
 version: '3.9'

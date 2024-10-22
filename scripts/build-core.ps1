@@ -3,7 +3,9 @@
 # 设置参数
 param(
     [string]$platform = "win",
-    [bool]$desktop = $false
+    [bool]$desktop = $false,
+    [bool]$rebuildFrontend = $true,
+    [bool]$docker = $false
 )
 
 $publishPlatform = "win-x64"
@@ -90,22 +92,29 @@ git pull
 Write-Host "开始编译项目..." -ForegroundColor Yellow
 
 # 编译前端
-Write-Host "前端编译中..." -ForegroundColor Yellow
 $uiSrc = Join-Path -Path $gitRoot -ChildPath "ui-src"
-# 判断是否已经执行过 yarn install
-$nodeModules = Join-Path -Path $uiSrc -ChildPath "node_modules"
-if (-not (Test-Path -Path $nodeModules -PathType Container)) {
-    Write-Host "开始安装依赖..." -ForegroundColor Yellow
-    Set-Location -Path $uiSrc
-    yarn install
-    Write-Host "依赖安装完成！" -ForegroundColor Green
-    Write-Host "开始编译..." -ForegroundColor Yellow
-}
+function Update-Frontend {
+    if (-not $rebuildFrontend) {
+        return
+    }
 
-Set-Location -Path $uiSrc
-# yarn install
-yarn build
-Write-Host "前端编译完成！" -ForegroundColor Green
+    Write-Host "前端编译中..." -ForegroundColor Yellow    
+    # 判断是否已经执行过 yarn install
+    $nodeModules = Join-Path -Path $uiSrc -ChildPath "node_modules"
+    if (-not (Test-Path -Path $nodeModules -PathType Container)) {
+        Write-Host "开始安装依赖..." -ForegroundColor Yellow
+        Set-Location -Path $uiSrc
+        yarn install
+        Write-Host "依赖安装完成！" -ForegroundColor Green
+        Write-Host "开始编译..." -ForegroundColor Yellow
+    }
+    
+    Set-Location -Path $uiSrc
+    # yarn install
+    yarn build
+    Write-Host "前端编译完成！" -ForegroundColor Green
+}
+Update-Frontend
 
 # 编译后端 UZonMailService
 Write-Host "开始编译后端 UZonMailService ..." -ForegroundColor Yellow
@@ -292,12 +301,8 @@ function Add-Docker {
     Write-Host "Docker 镜像编译完成！" -ForegroundColor Green
 
     # 上传镜像
-    # 判断是否登陆了 dockerhub, 包含 `Login Succeeded` 说明已经登陆
-    $dockerLogin = docker login
-    if (-not($dockerLogin -match "Login Succeeded")) {
-        Write-Host "未登陆 DockerHub, 镜像未推送" -ForegroundColor Red
-        return
-    }
+    # 登陆 docker
+    docker login
 
     Write-Host "开始上传 Docker 镜像: $imageVersion ..." -ForegroundColor Yellow
     docker push $dockerImage
@@ -305,8 +310,14 @@ function Add-Docker {
     docker push gmxgalens/uzon-mail:latest
     Write-Host "Docker 镜像上传完成！" -ForegroundColor Green
 }
-Add-Docker
+
+if ($docker) {
+    Add-Docker
+}
 
 # 回到根目录
 Set-Location -Path $sriptRoot
 Write-Host "编译完成：$zipDist" -ForegroundColor Green
+
+# 返回编译后的文件路径
+return $zipDist
