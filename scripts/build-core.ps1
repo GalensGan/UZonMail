@@ -152,6 +152,19 @@ foreach ($file in $scriptFiles) {
     Copy-Item -Path "$gitRoot/scripts/$file" -Destination $mainService -Force
 }
 
+
+# 添加 windows 服务
+function Add-WindowsService {
+    if ($publishPlatform -ne "win-x64") {
+        return
+    }
+
+    # 复制 backendSrc/WindowsService 中所有的文件到编译目录
+    $windowsService = Join-Path -Path $backendSrc -ChildPath "WindowsService"
+    Copy-Item -Path "$windowsService/*" -Destination $mainService -Recurse -Force
+}
+Add-WindowsService
+
 # 复制程序集函数
 function Copy-Assembly {
     param(
@@ -280,6 +293,14 @@ if ($platform -eq "linux") {
     foreach ($file in $deployFiles) {
         $dockerDeploy = Join-Path -Path $gitRoot -ChildPath "scripts/$file"
         7z a -tzip $zipDist $dockerDeploy
+    }
+
+    # 向压缩包中增加安装脚本
+    $linuxInstall = Join-Path -Path $backendSrc -ChildPath "LinuxService"
+    $installFiles = @('install.sh', 'uzon-mail.service')
+    foreach ($file in $installFiles) {
+        $installFile = Join-Path -Path $linuxInstall -ChildPath $file
+        7z a -tzip $zipDist $installFile
     }
 }
 
