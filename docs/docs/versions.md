@@ -14,7 +14,13 @@ title: 历史版本
 
 ### 下载地址
 
+[uzonmail-desktop-win-x64-0.10.0.0.zip](https://obs.uamazing.cn:52443/public/files/soft/uzonmail-desktop-win-x64-0.10.0.0.zip)
 
+[uzonmail-service-win-x64-0.10.0.0.zip](https://obs.uamazing.cn:52443/public/files/soft/uzonmail-service-win-x64-0.10.0.0.zip)
+
+[uzonmail-service-linux-x64-0.10.0.0.zip](https://obs.uamazing.cn:52443/public/files/soft/uzonmail-service-linux-x64-0.10.0.0.zip)
+
+[docker](https://hub.docker.com/r/gmxgalens/uzon-mail/tags)
 
 ## 0.9.5.1
 

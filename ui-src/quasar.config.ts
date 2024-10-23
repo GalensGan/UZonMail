@@ -13,10 +13,10 @@ import { QuasarContext } from '@quasar/app-vite/types/configuration/context'
 import { ElementPlusResolver, QuasarResolver } from 'unplugin-vue-components/resolvers'
 
 // 导入用户配置
-import { useConfigAsync } from 'src/config'
+import { useConfig } from 'src/config'
 
 async function buildConfig (ctx: QuasarContext): Promise<QuasarConf> {
-  const userConfig = await useConfigAsync(ctx)
+  const userConfig = await useConfig(ctx)
   return {
     eslint: {
       // fix: true,
