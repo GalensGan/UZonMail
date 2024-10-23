@@ -7,7 +7,7 @@ import { IAppConfig } from './types'
  * 具体的配置接口
  */
 const config: IAppConfig = {} as IAppConfig
-let initConfig = false
+let isConfigInitialized = false
 
 /**
  * 获取配置
@@ -16,8 +16,8 @@ let initConfig = false
  */
 export function useConfig (quasarContext?: QuasarContext): IAppConfig {
   // 当为空时，根据环境使用配置
-  if (!initConfig) {
-    initConfig = true
+  if (!isConfigInitialized) {
+    isConfigInitialized = true
 
     // 参考：https://vitejs.dev/guide/env-and-mode.html
     // console.log(import.meta.env, '----', process.env)
