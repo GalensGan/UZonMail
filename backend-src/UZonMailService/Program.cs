@@ -14,6 +14,9 @@ using Uamazing.Utils.Plugin;
 using UZonMail.Utils.Web.Filters;
 using UZonMail.DB.SQL;
 
+// 修改当前目录
+Directory.SetCurrentDirectory(AppContext.BaseDirectory);
+
 // 生成默认的配置文件
 var productConfig = "appsettings.Production.json";
 if(!File.Exists(productConfig))
