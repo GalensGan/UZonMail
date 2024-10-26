@@ -31,11 +31,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.7" />
-		<PackageReference Include="Microsoft.OpenApi" Version="1.6.17" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.10" />
+		<PackageReference Include="Microsoft.AspNetCore.SignalR.Core" Version="1.1.0" />
+		<PackageReference Include="Microsoft.OpenApi" Version="1.6.22" />
 		<PackageReference Include="Quartz" Version="3.13.0" />
-		<PackageReference Include="StackExchange.Redis" Version="2.8.0" />
-		<PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.7.0" />
+		<PackageReference Include="StackExchange.Redis" Version="2.8.16" />
+		<PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.9.0" />
 	</ItemGroup>
 
 	<ItemGroup>
