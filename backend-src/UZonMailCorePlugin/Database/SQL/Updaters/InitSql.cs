@@ -22,6 +22,7 @@ namespace UZonMail.Core.Database.SQL.Updaters
 
             // 初始化存储库
             await InitFileStorage(db, config);
+
             // 初始化用户
             await InitUser(db, config);
         }

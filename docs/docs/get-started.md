@@ -99,7 +99,7 @@ abbrlink: 2QMK677
 
 ### 桌面版本安装
 
-**Web 方式**：
+#### Web 方式
 
 1. 安装 [ASP.NET Core，单击下载](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-aspnetcore-8.0.6-windows-hosting-bundle-installer)
 
@@ -111,11 +111,11 @@ abbrlink: 2QMK677
 
 4. 打开浏览器，输入 [http://localhost:22345/](http://localhost:22345/) 进行使用
 
-**Windows 7**：
+#### Windows 7
 
 由于微软已经停止对 Win7 的维护，因此本软件只是有限支持，可以参考 Web 的使用方式。
 
-**Windows 10+**
+#### Windows 10+
 
 1. 安装 [ASP.NET Core，单击下载](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-aspnetcore-8.0.6-windows-hosting-bundle-installer)
 2. 安装 [DotNET windows desktop](https://download.visualstudio.microsoft.com/download/pr/f398d462-9d4e-4b9c-abd3-86c54262869a/4a8e3a10ca0a9903a989578140ef0499/windowsdesktop-runtime-8.0.10-win-x64.exe)(一般系统自带)
@@ -554,7 +554,7 @@ server {
 4. 打开【新建发件】，输入主题 --> 选择收件人 --> 选择模板 --> 选择数据 -->预览确认发件数量和模板正确性 --> 退出预览 -->点击【发送】
 5. 如果提示发送失败，转到【发件历史】，进行重发
 
-### 邮件经常进发件箱怎么办
+### 邮件经常进垃圾箱怎么办
 
 可以使用 [Newsletters spam test by mail-tester.com](https://www.mail-tester.com/) 检查待发邮件的内容。
 
