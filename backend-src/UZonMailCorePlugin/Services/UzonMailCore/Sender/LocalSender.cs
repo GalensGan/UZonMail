@@ -138,7 +138,8 @@ namespace UZonMail.Core.Services.EmailSending.Sender
             catch (Exception error)
             {
                 _logger.Error(error);
-                SetSendResult(sendingContext, false, error.Message, SentStatus.OutboxError);
+                // 发件箱问题，返回失败
+                SetSendResult(sendingContext, false, error.Message, SentStatus.Failed);
                 return;
             }
         }
