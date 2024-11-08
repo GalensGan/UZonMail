@@ -186,22 +186,29 @@ namespace UZonMail.Core.Services.EmailSending
             var emails = data.Select(x => x["inbox"]).Where(x => x != null).Select(x => x.ToString()).ToList();
             if (emails.Count == 0) return;
 
-            var existsEmails = await db.Inboxes.AsNoTracking().Where(x => x.UserId == userId && emails.Contains(x.Email))
-                                .Select(x => x.Email)
-                                .ToListAsync();
+            var existsEmails = await db.Inboxes.AsNoTracking()
+                .IgnoreQueryFilters()
+                .Where(x => x.UserId == userId && emails.Contains(x.Email))
+                .Select(x => x.Email)
+                .ToListAsync();
+
             var newEmails = emails.Except(existsEmails);
             // 新建 email
             // 查找默认的收件组
-            var defaultInboxGroup = await db.EmailGroups.Where(x=>x.Type == EmailGroupType.InBox && x.IsDefault).FirstOrDefaultAsync();
-            if(defaultInboxGroup == null)
+            var defaultInboxGroup = await db.EmailGroups.Where(x => x.Type == EmailGroupType.InBox && x.IsDefault).FirstOrDefaultAsync();
+            if (defaultInboxGroup == null)
             {
                 defaultInboxGroup = EmailGroup.GetDefaultEmailGroup(userId, EmailGroupType.InBox);
                 db.EmailGroups.Add(defaultInboxGroup);
                 await db.SaveChangesAsync();
             }
 
+            // 某些发件箱可能被删除，恢复数据
+            await db.Inboxes.IgnoreQueryFilters().Where(x => x.UserId == userId && x.IsDeleted && emails.Contains(x.Email))
+                .ExecuteUpdateAsync(x => x.SetProperty(y => y.IsDeleted, false));
+
             // 新建发件箱
-            foreach(var email in newEmails)
+            foreach (var email in newEmails)
             {
                 var inbox = new Inbox()
                 {

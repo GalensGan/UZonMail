@@ -19,6 +19,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UZonMailDesktop", "UZonMail
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UZonMailDBTests", "UZonMailDBTests\UZonMailDBTests.csproj", "{302E642D-76ED-4D77-A910-9271A5FAC549}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{5D127B6A-DE0A-4507-A96E-D524D21100C0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
