@@ -88,7 +88,7 @@ namespace UZonMail.Core.Services.EmailSending
 
                 // 将数据组装成 SendingItem 保存
                 // 要确保数据已经通过验证
-                var builder = new SendingItemsBuilder(db, sendingGroupData, settingsReader.MaxSendingBatchSize, tokenService);
+                var builder = new SendingItemsBuilder(ctx, sendingGroupData, settingsReader.MaxSendingBatchSize, tokenService);
                 List<SendingItem> items = await builder.GenerateAndSave();
 
                 // 更新发件总数量
@@ -102,10 +102,21 @@ namespace UZonMail.Core.Services.EmailSending
                 }
 
                 // 增加附件使用记录
-                if (sendingGroupData.Attachments != null && sendingGroupData.Attachments.Count > 0)
+                var incInfos = items
+                    .Select(x => x.Attachments)
+                    .Where(x => x != null)
+                    .SelectMany(x => x)
+                    .Select(x => x.FileObjectId)
+                    .GroupBy(x => x)
+                    .Select(x => new
+                    {
+                        count = x.Count(),
+                        fileObjectId = x.Key
+                    })
+                    .ToList();
+                foreach (var info in incInfos)
                 {
-                    var attachmentObjectIds = sendingGroupData.Attachments.Select(x => x.FileObjectId).ToList();
-                    await ctx.FileObjects.UpdateAsync(x => attachmentObjectIds.Contains(x.Id), obj => obj.SetProperty(x => x.LinkCount, y => y.LinkCount + 1));
+                    await ctx.FileObjects.Where(x => x.Id == info.fileObjectId).ExecuteUpdateAsync(x => x.SetProperty(e => e.LinkCount, e => e.LinkCount + 1));
                 }
 
                 return await ctx.SaveChangesAsync();

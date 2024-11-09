@@ -275,7 +275,7 @@ namespace UZonMail.Core.Services.EmailSending.WaitList
 
             // 更新待发件列表
             // 由于初始化时，不是并发的，不需要加锁
-            var toSendingItemMetas = toSendingItems.Where(x => x.OutBoxId == 0).Select(x => new SendItemMeta(x))
+            var toSendingItemMetas = toSendingItems.Select(x => new SendItemMeta(x))
                 .Except(_sendingItemMetas)
                 .ToList();
             toSendingItemMetas.ForEach(x =>

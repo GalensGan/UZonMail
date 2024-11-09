@@ -52,6 +52,7 @@ namespace UZonMail.Core.Database.SQL.EmailSending
 
             // 生成发件项与收件箱对应关系
             var sendingIitemes = await GenerateSendingItems(allInboxes);
+
             // 保存到数据库中
             db.SendingItems.AddRange(sendingIitemes);
             await db.SaveChangesAsync();
