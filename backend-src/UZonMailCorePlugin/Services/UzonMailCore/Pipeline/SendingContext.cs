@@ -4,6 +4,7 @@ using System;
 using UZonMail.Core.Services.EmailSending.OutboxPool;
 using UZonMail.Core.Services.EmailSending.Sender;
 using UZonMail.Core.Services.EmailSending.WaitList;
+using UZonMail.Core.Services.SendCore.Outboxes;
 using UZonMail.Core.SignalRHubs;
 using UZonMail.DB.SQL;
 
@@ -45,7 +46,7 @@ namespace UZonMail.Core.Services.EmailSending.Pipeline
         /// <summary>
         /// 用户发件箱池
         /// </summary>
-        public UserOutboxesPool? UserOutboxesPool { get; set; }
+        public OutboxesPool? UserOutboxesPool { get; set; }
 
         /// <summary>
         /// 发件箱
@@ -96,7 +97,7 @@ namespace UZonMail.Core.Services.EmailSending.Pipeline
         {
             if (OutboxEmailAddress != null)
             {
-                await OutboxEmailAddress.SetCooldown(this);
+                await OutboxEmailAddress.StartCooling(this);
                 OutboxEmailAddress.UnlockUsing();
             }
 

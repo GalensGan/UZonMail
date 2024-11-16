@@ -222,7 +222,7 @@ namespace UZonMail.Core.Services.UserInfos
             await db.SaveChangesAsync();
 
             // 更新用户的组织设置和和退订设置
-            CacheManager.UpdateCache<UserReader>(user.Id.ToString());
+            CacheManager.UpdateCache<UserInfoCache>(user.Id.ToString());
 
             return true;
         }

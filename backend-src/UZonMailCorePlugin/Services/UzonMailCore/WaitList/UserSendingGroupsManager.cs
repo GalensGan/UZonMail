@@ -1,8 +1,8 @@
 ﻿using log4net;
 using System.Collections.Concurrent;
-using UZonMail.Core.Services.EmailSending.OutboxPool;
 using UZonMail.Core.Services.EmailSending.Pipeline;
 using UZonMail.Core.Services.EmailSending.Sender;
+using UZonMail.Core.Services.SendCore.Outboxes;
 using UZonMail.DB.SQL.EmailSending;
 using UZonMail.Utils.Web.Service;
 

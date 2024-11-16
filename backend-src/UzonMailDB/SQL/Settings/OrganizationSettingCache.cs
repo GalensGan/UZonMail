@@ -12,7 +12,7 @@ namespace UZonMail.DB.SQL.Settings
     /// 后者的值会覆盖前者的值
     /// </summary>
     /// <param name="settings"></param>
-    public class OrganizationSettingReader : OrganizationSetting, ICacheReader
+    public class OrganizationSettingCache : OrganizationSetting, ICache
     {
         #region 接口实现
         /// <summary>
@@ -38,7 +38,7 @@ namespace UZonMail.DB.SQL.Settings
 
             // 获取设置
             // key 为 organizationId
-            SettingKey = CacheManager.GetFullKey<OrganizationSettingReader>(organizationObjectId);
+            SettingKey = CacheManager.GetFullKey<OrganizationSettingCache>(organizationObjectId);
             var organization = await db.Departments.AsNoTracking().FirstOrDefaultAsync(x => x.ObjectId == organizationObjectId);
 
             var setting = await db.OrganizationSettings.AsNoTracking().FirstOrDefaultAsync(x => x.OrganizationId == organization.Id);

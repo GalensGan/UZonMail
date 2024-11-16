@@ -1,51 +1,50 @@
-﻿using System.Text.RegularExpressions;
-using System.Timers;
-using UZonMail.Core.Services.EmailSending.Base;
+﻿using UZonMail.Core.Services.EmailSending.Base;
 using Timer = System.Timers.Timer;
-using UZonMail.Core.Services.EmailSending.Event;
 using UZonMail.Core.Services.EmailSending.Event.Commands;
 using System.Collections.Concurrent;
 using UZonMail.Core.Services.EmailSending.Pipeline;
 using UZonMail.Core.Services.EmailSending.Sender;
-using log4net;
-using System.Collections.Generic;
-using UZonMail.DB.SQL.Emails;
-using UZonMail.DB.SQL.EmailSending;
-using System;
-using System.Linq;
-using UZonMail.Core.Services.Settings;
 using UZonMail.Utils.Extensions;
-using System.Threading.Tasks;
-using System.Threading;
 using UZonMail.Core.Utils.Database;
+using log4net;
+using UZonMail.DB.SQL.EmailSending;
+using UZonMail.DB.SQL.Emails;
 using UZonMail.Managers.Cache;
-using UZonMail.DB.SQL.Settings;
 using UZonMail.DB.SQL.Organization;
+using UZonMail.DB.SQL.Settings;
+using UZonMail.Core.Services.SendCore.Utils;
+using UZonMail.Core.Services.SendCore.Interfaces;
 
-namespace UZonMail.Core.Services.EmailSending.OutboxPool
+namespace UZonMail.Core.Services.SendCore.Outboxes
 {
     /// <summary>
     /// 发件箱地址
     /// 该地址可能仅用于部分发件箱
     /// 也有可能是用于通用发件
     /// </summary>
-    public class OutboxEmailAddress : EmailAddress, IDisposable, IWeight
+    public class OutboxEmailAddress : EmailAddress, IWeight
     {
-        #region 分布式锁
-        public readonly object SendingItemIdsLock = new();
-        #endregion
-
         private readonly static ILog _logger = LogManager.GetLogger(typeof(OutboxEmailAddress));
 
-        #region 属性参数
-        public OutboxEmailAddressType Type { get; private set; } = OutboxEmailAddressType.Specific;
+        #region 私有变量
+        private readonly object _lock = new();
 
-        public Outbox _outbox;
+        // 发件箱数据
+        private Outbox _outbox;
 
         /// <summary>
-        /// 当指定收件箱时，此处有值
+        /// 当指定邮件被指定收件箱时，此处有值
         /// </summary>
-        public ConcurrentQueue<long> SendingItemIds { get; } = [];
+        private HashSet<long> _sendingItemIds { get; } = [];
+
+        /// <summary>
+        /// 所属的发件箱组 id
+        /// </summary>
+        private HashSet<long> _sendingGroupIds = [];
+        #endregion
+
+        #region 公开属性
+        public OutboxEmailAddressType Type { get; private set; } = OutboxEmailAddressType.Specific;
 
         /// <summary>
         /// 用户 ID
@@ -70,10 +69,19 @@ namespace UZonMail.Core.Services.EmailSending.OutboxPool
         /// </summary>
         public string? AuthPassword { get; private set; }
 
+        /// <summary>
+        /// SMTP 服务器地址
+        /// </summary>
         public string SmtpHost => _outbox.SmtpHost;
 
+        /// <summary>
+        /// SMTP 端口
+        /// </summary>
         public int SmtpPort => _outbox.SmtpPort;
 
+        /// <summary>
+        /// 开启 SSL
+        /// </summary>
         public bool EnableSSL => _outbox.EnableSSL;
 
         /// <summary>
@@ -98,10 +106,6 @@ namespace UZonMail.Core.Services.EmailSending.OutboxPool
         /// 回复至邮箱
         /// </summary>
         public List<string> ReplyToEmails { get; set; } = [];
-        /// <summary>
-        /// 所属的发件箱组 id
-        /// </summary>
-        public HashSet<long> SendingGroupIds = [];
 
         /// <summary>
         /// 是否应释放
@@ -113,11 +117,11 @@ namespace UZonMail.Core.Services.EmailSending.OutboxPool
         /// </summary>
         public bool Enable
         {
-            get => !ShouldDispose && !_isCooldown && !_isUsing;
+            get => !ShouldDispose && !_isCooling && !_usingLock.IsLocked;
         }
         #endregion
 
-        #region 构造
+        #region 构造函数
         /// <summary>
         /// 生成发件地址
         /// </summary>
@@ -130,57 +134,47 @@ namespace UZonMail.Core.Services.EmailSending.OutboxPool
         {
             _outbox = outbox;
             AuthPassword = outbox.Password.DeAES(smtpPasswordSecretKeys.First(), smtpPasswordSecretKeys.Last());
-            SendingGroupIds.Add(sendingGroupId);
+            _sendingGroupIds.Add(sendingGroupId);
             Type = type;
-            if (sendingItemIds != null)
-            {
-                foreach (var id in sendingItemIds.Distinct())
-                {
-                    SendingItemIds.Enqueue(id);
-                }
-            }
+
+            sendingItemIds?.ForEach(x => _sendingItemIds.Add(x));
 
             CreateDate = DateTime.Now;
             Email = outbox.Email;
             Name = outbox.Name;
             Id = outbox.Id;
+
             ReplyToEmails = outbox.ReplyToEmails.SplitBySeparators().Distinct().ToList();
             _sentTotalToday = outbox.SentTotalToday;
-
             Weight = outbox.Weight > 0 ? outbox.Weight : 1;
         }
         #endregion
 
-        #region 更新
+        #region 更新发件箱
         /// <summary>
-        /// 更新发件地址
+        /// 使用 OutboxEmailAddress 更新既有的发件地址
         /// 非并发操作
         /// </summary>
         /// <param name="data"></param>
         public void Update(OutboxEmailAddress data)
         {
-            // 更新发件组 id
-            foreach (var id in data.SendingGroupIds)
-            {
-                SendingGroupIds.Add(id);
-            }
-
-            // 更新发送项 id
-            var existIds = data.SendingItemIds.Except(SendingItemIds).ToList();
-            existIds.ForEach(x => SendingItemIds.Enqueue(x));
-
             // 更新类型
             Type |= data.Type;
+
+            // 更新关联的项
+            data._sendingItemIds?.ToList()
+                .ForEach(x => _sendingItemIds.Add(x));
+            data._sendingGroupIds?.ToList()
+                .ForEach(x => _sendingGroupIds.Add(x));
         }
         #endregion
 
         #region 使用和冷却状态切换
-        private readonly object _usingLock = new();
-        private bool _isUsing = false;
+        // 使用状态锁
+        private readonly Locker _usingLock = new();
 
-        private DateTime _startDate = DateTime.Now;
-        private bool _isCooldown = false;
-        private Timer? _timer = null;
+        // 标志
+        private bool _isCooling = false;
 
         /// <summary>
         /// 锁定使用权
@@ -188,15 +182,7 @@ namespace UZonMail.Core.Services.EmailSending.OutboxPool
         /// <returns></returns>
         public bool LockUsing()
         {
-            lock (_usingLock)
-            {
-                if (_isUsing)
-                {
-                    return false;
-                }
-                _isUsing = true;
-                return true;
-            }
+            return _usingLock.Lock();
         }
 
         /// <summary>
@@ -205,10 +191,7 @@ namespace UZonMail.Core.Services.EmailSending.OutboxPool
         /// </summary>
         public void UnlockUsing()
         {
-            lock (_usingLock)
-            {
-                _isUsing = false;
-            }
+            _usingLock.Unlock();
         }
 
         /// <summary>
@@ -216,61 +199,21 @@ namespace UZonMail.Core.Services.EmailSending.OutboxPool
         /// 若设置失败，则返回 false
         /// </summary>
         /// <returns></returns>
-        public async Task SetCooldown(SendingContext sendingContext)
+        public void ChangeCoolingSate(bool cooling)
         {
-            // 说明被其它线程已经使用了
-            if (_isCooldown)
-                return;
-            _isCooldown = true;
-
-            // 启动 _timer 用于解除冷却
-            // 计算随机值
-            // 使用通用设置中的发送上限
-            var userReader = await CacheManager.GetCache<UserReader>(sendingContext.SqlContext, UserId.ToString());
-            var settingReader = await CacheManager.GetCache<OrganizationSettingReader>(sendingContext.SqlContext, userReader.OrganizationObjectId);
-            int cooldownMilliseconds = settingReader.GetCooldownMilliseconds();
-            if (cooldownMilliseconds <= 0)
-            {
-                _isCooldown = false;
-                // 通知可以继续发件
-                return;
-            }
-
-            _logger.Debug($"发件箱 {Email} 进入冷却状态，冷却时间 {cooldownMilliseconds} 毫秒");
-            _timer?.Dispose();
-            _timer = new Timer(cooldownMilliseconds)
-            {
-                AutoReset = false,
-                Enabled = true
-            };
-            _timer.Elapsed += async (sender, args) =>
-            {
-                _timer.Stop();
-                _isCooldown = false;
-                _logger.Debug($"发件箱 {Email} 退出冷却状态");
-                // 通知可以继续发件
-                await new StartSendingCommand(1).Execute(this);
-            };
-            return;
+            _isCooling = cooling;
         }
         #endregion
 
         #region 外部调用方法
         /// <summary>
-        /// 验证是否有效
+        /// 是否被禁用
+        /// 
         /// </summary>
         /// <returns></returns>
-        public bool Validate()
+        public bool IsLimited()
         {
-            return true;
-        }
-
-        /// <summary>
-        /// 释放资源
-        /// </summary>
-        public void Dispose()
-        {
-            _timer?.Dispose();
+            return this._sentTotalToday >= this.MaxSendCountPerDay;
         }
 
         /// <summary>
@@ -290,8 +233,8 @@ namespace UZonMail.Core.Services.EmailSending.OutboxPool
                 Interlocked.Increment(ref _sentTotalToday);
             }
 
-            var userReader = await CacheManager.GetCache<UserReader>(sendingContext.SqlContext, UserId.ToString());
-            var userSetting = await CacheManager.GetCache<OrganizationSettingReader>(sendingContext.SqlContext, userReader.OrganizationObjectId);
+            var userReader = await CacheManager.GetCache<UserInfoCache>(sendingContext.SqlContext, UserId.ToString());
+            var userSetting = await CacheManager.GetCache<OrganizationSettingCache>(sendingContext.SqlContext, userReader.OrganizationObjectId);
 
             // 本身有限制时，若已经达到发送上限，则不再发送
             if (MaxSendCountPerDay > 0)
@@ -318,7 +261,7 @@ namespace UZonMail.Core.Services.EmailSending.OutboxPool
             if (sendingContext.OutboxEmailAddress.ShouldDispose)
             {
                 // 受影响的发件任务
-                var sendingGroupIds = sendingContext.OutboxEmailAddress.SendingGroupIds;
+                var sendingGroupIds = sendingContext.OutboxEmailAddress._sendingGroupIds;
                 // 移除指定发件箱的发件项
                 foreach (var sendingGroupId in sendingGroupIds)
                 {
@@ -326,7 +269,7 @@ namespace UZonMail.Core.Services.EmailSending.OutboxPool
 
                     // 判断当前发件组是否还有发件箱
                     var existOtherOutbox = sendingContext.UserOutboxesPool.Values.Any(x => x.Email != sendingContext.OutboxEmailAddress.Email
-                        && x.SendingGroupIds.Contains(sendingGroupId));
+                        && x._sendingGroupIds.Contains(sendingGroupId));
                     if (!existOtherOutbox)
                     {
                         // 移除发件组

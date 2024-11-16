@@ -80,8 +80,8 @@ namespace UZonMail.Core.Services.EmailSending
                 await ctx.SaveChangesAsync();
 
                 // 获取用户设置
-                var userReader = await CacheManager.GetCache<UserReader>(ctx, sendingGroupData.UserId.ToString());
-                var settingsReader = await CacheManager.GetCache<OrganizationSettingReader>(ctx, userReader.OrganizationObjectId);
+                var userReader = await CacheManager.GetCache<UserInfoCache>(ctx, sendingGroupData.UserId.ToString());
+                var settingsReader = await CacheManager.GetCache<OrganizationSettingCache>(ctx, userReader.OrganizationObjectId);
 
                 // 保存发件箱
                 await SaveInboxes(sendingGroupData.Data, sendingGroupData.UserId);

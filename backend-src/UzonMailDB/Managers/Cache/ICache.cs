@@ -6,7 +6,7 @@ namespace UZonMail.Managers.Cache
     /// <summary>
     /// 设置接口
     /// </summary>
-    public interface ICacheReader
+    public interface ICache
     {
         string SettingKey { get;}
 

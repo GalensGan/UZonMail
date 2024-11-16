@@ -1,4 +1,4 @@
-﻿namespace UZonMail.Core.Services.EmailSending.OutboxPool
+﻿namespace UZonMail.Core.Services.SendCore.Outboxes
 {
     /// <summary>
     /// 发件箱地址类型

@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
-using UZonMail.Core.Services.EmailSending.OutboxPool;
 using UZonMail.Core.SignalRHubs.Extensions;
 using UZonMail.Core.SignalRHubs.SendEmail;
 using UZonMail.Core.Utils.Database;
@@ -14,6 +13,7 @@ using UZonMail.DB.SQL.Settings;
 using UZonMail.DB.SQL.Organization;
 using UZonMail.Utils.Email.BodyDecorator;
 using UZonMail.Utils.Email;
+using UZonMail.Core.Services.SendCore.Outboxes;
 
 namespace UZonMail.Core.Services.EmailSending.Sender
 {
@@ -169,8 +169,8 @@ namespace UZonMail.Core.Services.EmailSending.Sender
 
         public async Task<EmailDecoratorParams> GetDecoratorParamsAsync(SendingContext sendingContext)
         {
-            var userReader = await CacheManager.GetCache<UserReader>(sendingContext.SqlContext, Outbox.UserId.ToString());
-            var settingReader = await CacheManager.GetCache<OrganizationSettingReader>(sendingContext.SqlContext, userReader.OrganizationObjectId);
+            var userReader = await CacheManager.GetCache<UserInfoCache>(sendingContext.SqlContext, Outbox.UserId.ToString());
+            var settingReader = await CacheManager.GetCache<OrganizationSettingCache>(sendingContext.SqlContext, userReader.OrganizationObjectId);
             var emailBodyDecoratorParams = new EmailDecoratorParams(sendingContext.ServiceProvider, settingReader, SendingItem, Outbox.Email);
             return emailBodyDecoratorParams;
         }

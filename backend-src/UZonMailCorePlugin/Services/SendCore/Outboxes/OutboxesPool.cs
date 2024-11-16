@@ -9,36 +9,31 @@ using UZonMail.Core.Services.EmailSending.Base;
 using UZonMail.Core.Services.EmailSending.Event;
 using UZonMail.Core.Services.EmailSending.Event.Commands;
 using UZonMail.Core.Services.EmailSending.Pipeline;
-using UZonMail.Core.Services.EmailSending.Utils;
+using UZonMail.Core.Services.UzonMailCore.Utils;
 
-namespace UZonMail.Core.Services.EmailSending.OutboxPool
+namespace UZonMail.Core.Services.SendCore.Outboxes
 {
     /// <summary>
     /// 单个用户的发件箱池
     /// 每个邮箱账号共用冷却池
     /// key: 邮箱 userId+邮箱号 ，value: 发件箱列表
     /// </summary>
-    public class UserOutboxesPool : ConcurrentDictionary<string, OutboxEmailAddress>, IWeight, ISendingComplete
+    /// <param name="userId">所属用户id</param>
+    /// <param name="weight">权重</param>
+    public class OutboxesPool(long userId, int weight) : IWeight
     {
-        private readonly static ILog _logger = LogManager.GetLogger(typeof(UserOutboxesPool));
-        private readonly IServiceScopeFactory _ssf;
-
-        public UserOutboxesPool(IServiceScopeFactory ssf, long userId, int weight)
-        {
-            _ssf = ssf;
-            UserId = userId;
-            Weight = weight > 0 ? weight : 1;
-        }
+        private readonly static ILog _logger = LogManager.GetLogger(typeof(OutboxesPool));
+        private readonly ConcurrentDictionary<string, OutboxEmailAddress> _outboxes = new();
 
         #region 自定义参数
-        public long UserId { get; }
+        public long UserId { get; } = userId;
         #endregion
 
         #region 接口实现
         /// <summary>
         /// 权重
         /// </summary>
-        public int Weight { get; private set; }
+        public int Weight { get; private set; } = weight > 0 ? weight : 1;
 
         /// <summary>
         /// 是否可用
@@ -47,8 +42,8 @@ namespace UZonMail.Core.Services.EmailSending.OutboxPool
         {
             get
             {
-                if (this.Count == 0) return false;
-                return this.Values.Any(x => x.Enable);
+                if (_outboxes.Count == 0) return false;
+                return _outboxes.Values.Any(x => x.Enable);
             }
         }
         #endregion
@@ -57,24 +52,16 @@ namespace UZonMail.Core.Services.EmailSending.OutboxPool
         /// 添加发件箱
         /// </summary>
         /// <param name="outbox"></param>
-        public async Task<bool> AddOutbox(OutboxEmailAddress outbox)
+        public bool AddOutbox(OutboxEmailAddress outbox)
         {
-            if (this.TryGetValue(outbox.Email, out var existValue))
+            if (_outboxes.TryGetValue(outbox.Email, out var existValue))
             {
                 existValue.Update(outbox);
                 return true;
             }
 
-            // 验证发件箱是否有效
-            if (!outbox.Validate())
-            {
-                return false;
-            }
-
-
             // 不存在则添加
-            this.TryAdd(outbox.Email, outbox);
-            return true;
+            return _outboxes.TryAdd(outbox.Email, outbox);
         }
 
         /// <summary>
@@ -124,12 +111,13 @@ namespace UZonMail.Core.Services.EmailSending.OutboxPool
             };
         }
 
+
         public async Task EmailItemSendCompleted(SendingContext sendingContext)
         {
             // 移除发件箱
             if (sendingContext.OutboxEmailAddress.ShouldDispose)
             {
-                this.TryRemove(sendingContext.OutboxEmailAddress.Email, out _);
+                TryRemove(sendingContext.OutboxEmailAddress.Email, out _);
                 _logger.Info($"{sendingContext.OutboxEmailAddress.Email} 被标记为释放，从发件池中移除");
             }
 

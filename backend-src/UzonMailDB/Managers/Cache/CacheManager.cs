@@ -8,16 +8,19 @@ using System.Collections.Concurrent;
 
 namespace UZonMail.Managers.Cache
 {
+    /// <summary>
+    /// 缓存管理器
+    /// </summary>
     public class CacheManager
     {
-        private static ILog _logger = LogManager.GetLogger(typeof(CacheManager));
-        private static ConcurrentDictionary<string, ICacheReader> _settingsDic = [];
+        private readonly static ILog _logger = LogManager.GetLogger(typeof(CacheManager));
+        private static readonly ConcurrentDictionary<string, ICache> _settingsDic = [];
 
         /// <summary>
         /// 添加设置
         /// </summary>
         /// <param name="setting"></param>
-        public static void AddCacheReader(ICacheReader setting)
+        public static void AddCacheReader(ICache setting)
         {
             _settingsDic.TryAdd(setting.SettingKey, setting);
         }
@@ -28,7 +31,7 @@ namespace UZonMail.Managers.Cache
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static string GetFullKey<T>(string key) where T : ICacheReader, new()
+        public static string GetFullKey<T>(string key) where T : ICache, new()
         {
             return $"{typeof(T).FullName}:{key}";
         }
@@ -38,7 +41,7 @@ namespace UZonMail.Managers.Cache
         /// </summary>
         /// <param name="objectIdKey"></param>
         /// <returns></returns>
-        public static bool UpdateCache<T>(string objectIdKey) where T : ICacheReader, new()
+        public static bool UpdateCache<T>(string objectIdKey) where T : ICache, new()
         {
             var fullKey = GetFullKey<T>(objectIdKey);
 
@@ -54,7 +57,7 @@ namespace UZonMail.Managers.Cache
         /// <param name="db"></param>
         /// <param name="objectIdKey">建议使用 objectId</param>
         /// <returns></returns>
-        public static async Task<T?> GetCache<T>(SqlContext db, string objectIdKey) where T : ICacheReader, new()
+        public static async Task<T?> GetCache<T>(SqlContext db, string objectIdKey) where T : ICache, new()
         {
             var fullKey = GetFullKey<T>(objectIdKey);
 

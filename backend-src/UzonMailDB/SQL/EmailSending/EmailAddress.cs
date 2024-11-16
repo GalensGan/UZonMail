@@ -15,6 +15,7 @@ namespace UZonMail.DB.SQL.EmailSending
         public string Email { get; set; }
 
         private string? _name;
+
         /// <summary>
         /// 姓名，若为空则为邮箱地址
         /// </summary>

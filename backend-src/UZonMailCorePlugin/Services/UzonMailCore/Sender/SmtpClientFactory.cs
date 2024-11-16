@@ -4,8 +4,8 @@ using MailKit.Security;
 using System.Collections.Concurrent;
 using Uamazing.Utils.Envs;
 using UZonMail.Core.Services.EmailSending.Base;
-using UZonMail.Core.Services.EmailSending.OutboxPool;
 using UZonMail.Core.Services.EmailSending.Pipeline;
+using UZonMail.Core.Services.SendCore.Outboxes;
 using UZonMail.Core.Services.Settings;
 using UZonMail.DB.SQL.Emails;
 using UZonMail.DB.SQL.Organization;
@@ -37,8 +37,8 @@ namespace UZonMail.Core.Services.EmailSending.Sender
             }
 
             _logger.Info($"初始化 SmtpClient: {outbox.AuthUserName}");
-            var userReader = await CacheManager.GetCache<UserReader>(sendingContext.SqlContext, outbox.UserId.ToString());
-            var settingReader = await CacheManager.GetCache<OrganizationSettingReader>(sendingContext.SqlContext, userReader.OrganizationObjectId);
+            var userReader = await CacheManager.GetCache<UserInfoCache>(sendingContext.SqlContext, outbox.UserId.ToString());
+            var settingReader = await CacheManager.GetCache<OrganizationSettingCache>(sendingContext.SqlContext, userReader.OrganizationObjectId);
 
             int cooldownMilliseconds = settingReader.MinOutboxCooldownSecond;
             var client = new LimitedSmtpClient(outbox.Email, cooldownMilliseconds);

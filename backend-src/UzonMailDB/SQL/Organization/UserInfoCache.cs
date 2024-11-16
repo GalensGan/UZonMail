@@ -4,7 +4,7 @@ using UZonMail.Managers.Cache;
 
 namespace UZonMail.DB.SQL.Organization
 {
-    public class UserReader: ICacheReader
+    public class UserInfoCache: ICache
     {
         public string? SettingKey { get; private set; }
 

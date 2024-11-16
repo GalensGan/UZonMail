@@ -17,6 +17,7 @@ using UZonMail.DB.SQL;
 using UZonMail.Utils.Json;
 using UZonMail.Managers.Cache;
 using UZonMail.DB.SQL.Organization;
+using UZonMail.Core.Services.SendCore.Outboxes;
 
 namespace UZonMail.Core.Services.EmailSending.WaitList
 {
@@ -253,7 +254,7 @@ namespace UZonMail.Core.Services.EmailSending.WaitList
             }
 
             // 对于取消订阅的邮件，进行标记
-            var userInfo = await CacheManager.GetCache<UserReader>(sendingContext.SqlContext, UserId.ToString());
+            var userInfo = await CacheManager.GetCache<UserInfoCache>(sendingContext.SqlContext, UserId.ToString());
             var unsubscribedEmails = await sendingContext.SqlContext.UnsubscribeEmails.AsNoTracking()
                 .Where(x => x.OrganizationId == userInfo.OrganizationId)
                 .Where(x => !x.IsDeleted)
@@ -572,8 +573,8 @@ namespace UZonMail.Core.Services.EmailSending.WaitList
             sendItem.Outbox = outboxEmailAddress;
             // 赋予回信人
             sendItem.ReplyToEmails = outboxEmailAddress.ReplyToEmails;
-            var userReader = await CacheManager.GetCache<UserReader>(sendingContext.SqlContext, UserId.ToString());
-            var settingsReader = await CacheManager.GetCache<OrganizationSettingReader>(sendingContext.SqlContext, userReader.OrganizationObjectId);
+            var userReader = await CacheManager.GetCache<UserInfoCache>(sendingContext.SqlContext, UserId.ToString());
+            var settingsReader = await CacheManager.GetCache<OrganizationSettingCache>(sendingContext.SqlContext, userReader.OrganizationObjectId);
 
             if (sendItem.ReplyToEmails.Count == 0)
             {
@@ -621,8 +622,8 @@ namespace UZonMail.Core.Services.EmailSending.WaitList
             }
 
             // 从缓存中读取设置数据
-            var userReader = await CacheManager.GetCache<UserReader>(sqlContext, UserId.ToString());
-            var settingsReader = await CacheManager.GetCache<OrganizationSettingReader>(sqlContext, userReader.OrganizationObjectId);
+            var userReader = await CacheManager.GetCache<UserInfoCache>(sqlContext, UserId.ToString());
+            var settingsReader = await CacheManager.GetCache<OrganizationSettingCache>(sqlContext, userReader.OrganizationObjectId);
 
             if (settingsReader.MinInboxCooldownHours <= 0) return Tuple.Create(false, "");
 

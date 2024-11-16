@@ -79,7 +79,7 @@ namespace UZonMail.Core.Controllers.Settings
 
             // 更新到缓存
             var organization = await db.Departments.FirstOrDefaultAsync(x => x.Id == exist.OrganizationId);
-            CacheManager.UpdateCache<OrganizationSettingReader>(organization.ObjectId);
+            CacheManager.UpdateCache<OrganizationSettingCache>(organization.ObjectId);
 
             return true.ToSuccessResponse();
         }

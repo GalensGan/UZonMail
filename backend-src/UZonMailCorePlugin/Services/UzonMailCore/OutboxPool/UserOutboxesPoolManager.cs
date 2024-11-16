@@ -10,7 +10,8 @@ using UZonMail.Core.Services.EmailSending.Base;
 using UZonMail.Core.Services.EmailSending.Event;
 using UZonMail.Core.Services.EmailSending.Event.Commands;
 using UZonMail.Core.Services.EmailSending.Pipeline;
-using UZonMail.Core.Services.EmailSending.Utils;
+using UZonMail.Core.Services.UzonMailCore.Utils;
+using UZonMail.Core.Services.SendCore.Outboxes;
 
 namespace UZonMail.Core.Services.EmailSending.OutboxPool
 {
@@ -21,12 +22,12 @@ namespace UZonMail.Core.Services.EmailSending.OutboxPool
     {
         private readonly static ILog _logger = LogManager.GetLogger(typeof(UserOutboxesPoolManager));
         private IServiceScopeFactory _ssf = ssf;
-        private readonly ConcurrentDictionary<long, UserOutboxesPool> _userOutboxesPools = new();
+        private readonly ConcurrentDictionary<long, OutboxesPool> _userOutboxesPools = new();
 
         /// <summary>
         /// 用户发件箱池
         /// </summary>
-        public ConcurrentDictionary<long, UserOutboxesPool> UserOutboxesPools => _userOutboxesPools;
+        public ConcurrentDictionary<long, OutboxesPool> UserOutboxesPools => _userOutboxesPools;
 
         /// <summary>
         /// 通过用户发件池的权重先筛选出发件池，然后从这个用户的发件池中选择一个发件箱
@@ -57,7 +58,7 @@ namespace UZonMail.Core.Services.EmailSending.OutboxPool
             sendingContext.UserOutboxesPoolManager = this;
 
             // 获取子项
-            var userOutboxesPool = data.Data as UserOutboxesPool;
+            var userOutboxesPool = data.Data as OutboxesPool;
             var result = await userOutboxesPool.GetOutboxByWeight(sendingContext);
             sendingContext.OutboxEmailAddress = result.Data;
             return result;
@@ -77,7 +78,7 @@ namespace UZonMail.Core.Services.EmailSending.OutboxPool
                     .Select(x => new { x.Weight })
                     .FirstOrDefaultAsync();
 
-                var outboxPool = new UserOutboxesPool(_ssf, outbox.UserId, userInfo.Weight);
+                var outboxPool = new OutboxesPool(_ssf, outbox.UserId, userInfo.Weight);
                 await outboxPool.AddOutbox(outbox);
                 _userOutboxesPools.TryAdd(outbox.UserId, outboxPool);
                 return;
