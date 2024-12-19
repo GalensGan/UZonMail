@@ -1,13 +1,17 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.ComponentModel.DataAnnotations.Schema;
 using UZonMail.DB.SQL.Base;
 using UZonMail.DB.SQL.EmailSending;
+using UZonMail.DB.SQL.Organization;
 
 namespace UZonMail.DB.SQL.Templates
 {
     /// <summary>
     /// 邮箱模板
     /// </summary>
-    public class EmailTemplate : SqlId
+    [EntityTypeConfiguration(typeof(EmailTemplate))]
+    public class EmailTemplate : SqlId, IEntityTypeConfiguration<EmailTemplate>
     {
         /// <summary>
         /// 用户 id
@@ -35,10 +39,27 @@ namespace UZonMail.DB.SQL.Templates
         public string? Thumbnail { get; set; }
 
         /// <summary>
+        /// 分享给某个用户
+        /// </summary>
+        public List<User> ShareToUsers { get; set; } = [];
+
+        /// <summary>
+        /// 分类给某个组织
+        /// </summary>
+        public List<Department> ShareToOrganizations { get; set; } = [];
+
+        /// <summary>
         /// 模板类型，在运行时会自动设置
         /// </summary>
         [NotMapped]
         public TemplateType Type { get; set; }
+
+
+        public void Configure(EntityTypeBuilder<EmailTemplate> builder)
+        {
+            builder.HasMany(x => x.ShareToUsers).WithMany();
+            builder.HasMany(x=>x.ShareToOrganizations).WithMany();
+        }
     }
 
     [Flags]

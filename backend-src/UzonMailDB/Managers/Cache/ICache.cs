@@ -1,26 +1,36 @@
 ﻿using System.Threading.Tasks;
 using UZonMail.DB.SQL;
 
-namespace UZonMail.Managers.Cache
+namespace UZonMail.DB.Managers.Cache
 {
     /// <summary>
     /// 设置接口
     /// </summary>
     public interface ICache
     {
-        string SettingKey { get;}
+        /// <summary>
+        /// 设置 Key
+        /// </summary>
+        /// <param name="key"></param>
+        void SetKey(string key);
 
         /// <summary>
         /// 初始化
-        /// 每次调用时，都需要调用该方法
+        /// 对象每次从缓存中取出时，都会被调用
+        /// 里面需要自行判断是否需要更新
         /// </summary>
         /// <param name="db"></param>
         /// <param name="key"></param>
-        Task Initialize(SqlContext db, string key);
+        Task Update(SqlContext db);
 
         /// <summary>
         /// 设置需要更新
         /// </summary>
-        void NeedUpdate();
+        void SetDirty(bool isDirty);
+
+        /// <summary>
+        /// 释放资源
+        /// </summary>
+        void Dispose();
     }
 }

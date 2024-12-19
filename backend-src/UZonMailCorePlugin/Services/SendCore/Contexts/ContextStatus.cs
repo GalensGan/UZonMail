@@ -24,8 +24,9 @@
         ShouldExitThread = 1 << 3,
 
         /// <summary>
-        /// 跳过下一步
+        /// 退出责任链
+        /// 相当于只执行一个空的责任链方法
         /// </summary>
-        SkipNext = 1 << 4,
+        BreakChain = 1 << 4
     }
 }

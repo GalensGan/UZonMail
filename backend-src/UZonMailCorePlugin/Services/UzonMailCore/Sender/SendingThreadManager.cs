@@ -3,7 +3,7 @@ using UZonMail.Core.Services.EmailSending.Event;
 using UZonMail.Core.Services.EmailSending.Event.Commands;
 using UZonMail.Core.Services.EmailSending.OutboxPool;
 using UZonMail.Core.Services.EmailSending.Pipeline;
-using UZonMail.Core.Services.EmailSending.WaitList;
+using UZonMail.Core.Services.SendCore.WaitList;
 using UZonMail.Utils.Web.Service;
 using Timer = System.Timers.Timer;
 
@@ -17,7 +17,7 @@ namespace UZonMail.Core.Services.EmailSending.Sender
         private ILog _logger = LogManager.GetLogger(typeof(SendingThreadManager));
 
         private IServiceScopeFactory ssf;
-        private UserSendingGroupsManager waitList;
+        private GroupTasksList waitList;
         private UserOutboxesPoolManager outboxesPool;
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace UZonMail.Core.Services.EmailSending.Sender
         /// <param name="outboxesPool"></param>
         public SendingThreadManager(
               IServiceScopeFactory ssf
-            , UserSendingGroupsManager waitList
+            , GroupTasksList waitList
             , UserOutboxesPoolManager outboxesPool)
         {
             this.ssf = ssf;

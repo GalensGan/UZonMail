@@ -13,7 +13,7 @@
         /// </summary>
         /// <param name="sendItem"></param>
         /// <returns></returns>
-        public static SendMethod BuildSendMethod(SendItem sendItem)
+        public static SendMethod BuildSendMethod(EmailItem sendItem)
         {
             if (sendItem.SendItemType == SendItemType.Local)
                 return new LocalSender(sendItem);

@@ -2,7 +2,7 @@
 
 namespace UZonMail.Core.Services.SendCore.ResponsibilityChains
 {
-    public class SendingGroupsDisposer : AbstractSendingHandler
+    public class OutboxesPostHandler : AbstractSendingHandler
     {
         protected override Task HandleCore(SendingContext context)
         {

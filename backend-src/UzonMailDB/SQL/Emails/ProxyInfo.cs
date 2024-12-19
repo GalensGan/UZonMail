@@ -66,6 +66,7 @@ namespace UZonMail.DB.SQL.Emails
         }
 
         private ProxyClient _proxyClient;
+
         /// <summary>
         /// 生成代理客户端
         /// </summary>

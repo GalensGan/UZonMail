@@ -1,6 +1,6 @@
 ﻿using System;
+using UZonMail.DB.Managers.Cache;
 using UZonMail.DB.SQL.EmailSending;
-using UZonMail.DB.SQL.Settings;
 
 namespace UZonMail.Utils.Email
 {

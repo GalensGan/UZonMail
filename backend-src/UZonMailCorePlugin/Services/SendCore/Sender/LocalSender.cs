@@ -2,16 +2,17 @@
 using log4net;
 using MailKit.Net.Smtp;
 using MimeKit;
-
 using UZonMail.Core.Services.EmailSending.Pipeline;
+using UZonMail.Core.Services.EmailSending.Sender;
+using UZonMail.Core.Services.SendCore.WaitList;
 using UZonMail.Utils.Email.MessageDecorator;
 
-namespace UZonMail.Core.Services.EmailSending.Sender
+namespace UZonMail.Core.Services.SendCore.Sender
 {
     /// <summary>
     /// 本机发件
     /// </summary>
-    public class LocalSender(SendItem sendItem) : SendMethod
+    public class LocalSender(/*EmailItem*/ SendItemMeta sendItem) : SendMethod
     {
         /// <summary>
         /// 日志
@@ -26,7 +27,7 @@ namespace UZonMail.Core.Services.EmailSending.Sender
         {
             ArgumentNullException.ThrowIfNull(sendItem);
 
-            if (!sendItem.Validate())
+            if (!sendItem.Validate(out _))
             {
                 sendingContext.SetSendResult(new SendResult(false, "发件项数据验证失败，取消发件") { SentStatus = SentStatus.Failed });
                 return;

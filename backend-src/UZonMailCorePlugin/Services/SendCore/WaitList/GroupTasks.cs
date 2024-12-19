@@ -1,27 +1,27 @@
 ﻿using log4net;
 using System.Collections.Concurrent;
 using UZonMail.Core.Services.EmailSending.Base;
-using UZonMail.Core.Services.EmailSending.Pipeline;
-using UZonMail.Core.Services.EmailSending.Sender;
+using UZonMail.Core.Services.SendCore.Contexts;
 using UZonMail.Core.Services.SendCore.Outboxes;
 using UZonMail.Core.Utils.Database;
 using UZonMail.DB.SQL.EmailSending;
+using UZonMail.Core.Services.EmailSending.WaitList;
 
-namespace UZonMail.Core.Services.EmailSending.WaitList
+namespace UZonMail.Core.Services.SendCore.WaitList
 {
     /// <summary>
     /// 单个用户的发件任务管理
     /// 先添加先发送
     /// </summary>
-    public class UserSendingGroupsPool : ConcurrentDictionary<long, SendingGroupTask>
+    public class GroupTasks : ConcurrentDictionary<long, GroupTask>
     {
-        private static readonly ILog _logger = LogManager.GetLogger(typeof(UserSendingGroupsPool));
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(GroupTasks));
 
         /// <summary>
         /// 构造函数
         /// </summary>
         /// <param name="userId"></param>
-        public UserSendingGroupsPool(long userId)
+        public GroupTasks(long userId)
         {
             UserId = userId;
         }
@@ -52,21 +52,21 @@ namespace UZonMail.Core.Services.EmailSending.WaitList
         public async Task<bool> AddSendingGroup(SendingContext scopeServices, long sendingGroupId, List<string> smtpPasswordSecretKeys, List<long>? sendingItemIds = null)
         {
             // 有可能发件组已经存在
-            if (!this.TryGetValue(sendingGroupId, out var existTask))
+            if (!TryGetValue(sendingGroupId, out var existTask))
             {
                 // 重新初始化
                 // 添加到列表
-                var newTask = await SendingGroupTask.Create(scopeServices, sendingGroupId, smtpPasswordSecretKeys);
+                var newTask = await GroupTask.Create(scopeServices, sendingGroupId, smtpPasswordSecretKeys);
                 if (newTask == null) return false;
 
                 var success = await newTask.InitSendingItems(scopeServices, sendingItemIds);
                 if (!success) return false;
-                return this.TryAdd(sendingGroupId, newTask);
+                return TryAdd(sendingGroupId, newTask);
             }
             else
             {
                 // 复用原来的数据
-               return await existTask.InitSendingItems(scopeServices, sendingItemIds);
+                return await existTask.InitSendingItems(scopeServices, sendingItemIds);
             }
         }
 
@@ -74,19 +74,13 @@ namespace UZonMail.Core.Services.EmailSending.WaitList
         /// 获取组中可被 outboxId 发送的邮件项
         /// </summary>
         /// <returns></returns>
-        public async Task<SendItem?> GetSendItem(SendingContext scopeServices, OutboxEmailAddress outbox)
+        public async Task<SendItemMeta?> GetEmailItem(SendingContext context)
         {
             // 依次获取发件项
             foreach (var kv in this)
             {
                 var groupTask = kv.Value;
-                var sendItem = await groupTask.GetSendItem(scopeServices, outbox);
-                if (sendItem != null)
-                {
-                    // 保存用户发件组池
-                    scopeServices.UserSendingGroupsPool = this;
-                    return sendItem;
-                }
+                return await groupTask.GetEmailItem(context);
             }
 
             return null;
@@ -112,17 +106,17 @@ namespace UZonMail.Core.Services.EmailSending.WaitList
             await sendingContext.UserSendingGroupsManager.EmailItemSendCompleted(sendingContext);
         }
 
-        public async Task<FuncResult<SendingGroupTask>> TryRemoveSendingGroupTask(SendingContext sendingContext,long sendingGroupId)
+        public async Task<FuncResult<GroupTask>> TryRemoveSendingGroupTask(SendingContext sendingContext, long sendingGroupId)
         {
-            if (!this.TryRemove(sendingContext.SendingGroupTask.SendingGroupId, out var value))
-                return new FuncResult<SendingGroupTask>()
+            if (!TryRemove(sendingContext.SendingGroupTask.SendingGroupId, out var value))
+                return new FuncResult<GroupTask>()
                 {
                     Ok = false,
                 };
 
             // 更新数据库
             await sendingContext.SqlContext.SendingGroups.UpdateAsync(x => x.Id == sendingGroupId, x => x.SetProperty(y => y.Status, SendingGroupStatus.Finish));
-            return new FuncResult<SendingGroupTask>()
+            return new FuncResult<GroupTask>()
             {
                 Ok = true,
                 Data = value,

@@ -9,20 +9,21 @@ using UZonMail.DB.SQL.EmailSending;
 using UZonMail.Core.Database.SQL.EmailSending;
 using UZonMail.DB.SQL.Emails;
 using UZonMail.Managers.Cache;
-using UZonMail.DB.SQL.Settings;
-using UZonMail.DB.SQL.Organization;
 using UZonMail.Utils.Email.BodyDecorator;
 using UZonMail.Utils.Email;
 using UZonMail.Core.Services.SendCore.Outboxes;
+using UZonMail.DB.Managers.Cache;
+using UZonMail.Core.Services.SendCore.Contexts;
+using UZonMail.Core.Services.SendCore.WaitList;
 
 namespace UZonMail.Core.Services.EmailSending.Sender
 {
     /// <summary>
     /// 发件项
     /// </summary>
-    public class SendItem
+    public class EmailItem
     {
-        private readonly static ILog _logger = LogManager.GetLogger(typeof(SendItem));
+        private readonly static ILog _logger = LogManager.GetLogger(typeof(EmailItem));
         public SendItemMeta SendItemMeta { get; private set; }
         public SendingItem SendingItem { get; private set; }
 
@@ -31,7 +32,7 @@ namespace UZonMail.Core.Services.EmailSending.Sender
         /// 构造函数
         /// </summary>
         /// <param name="sendingItem"></param>
-        public SendItem(SendItemMeta itemMeta, SendingItem sendingItem)
+        public EmailItem(SendItemMeta itemMeta, SendingItem sendingItem)
         {
             SendItemMeta = itemMeta;
             SendingItem = sendingItem;
@@ -169,8 +170,8 @@ namespace UZonMail.Core.Services.EmailSending.Sender
 
         public async Task<EmailDecoratorParams> GetDecoratorParamsAsync(SendingContext sendingContext)
         {
-            var userReader = await CacheManager.GetCache<UserInfoCache>(sendingContext.SqlContext, Outbox.UserId.ToString());
-            var settingReader = await CacheManager.GetCache<OrganizationSettingCache>(sendingContext.SqlContext, userReader.OrganizationObjectId);
+            var userReader = await DBCacher.GetCache<UserInfoCache>(sendingContext.SqlContext, Outbox.UserId.ToString());
+            var settingReader = await DBCacher.GetCache<OrganizationSettingCache>(sendingContext.SqlContext, userReader.OrganizationObjectId);
             var emailBodyDecoratorParams = new EmailDecoratorParams(sendingContext.ServiceProvider, settingReader, SendingItem, Outbox.Email);
             return emailBodyDecoratorParams;
         }
@@ -317,7 +318,7 @@ namespace UZonMail.Core.Services.EmailSending.Sender
         #region 重写相等的逻辑
         public override bool Equals(object? obj)
         {
-            if (obj is SendItem compareTo) return compareTo.SendingItem.Id.Equals(SendingItem.Id);
+            if (obj is EmailItem compareTo) return compareTo.SendingItem.Id.Equals(SendingItem.Id);
             return false;
         }
 

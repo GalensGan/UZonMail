@@ -192,10 +192,9 @@ namespace UZonMail.DB.SQL.EmailSending
         /// <returns></returns>
         public string GetRandSubject()
         {
-            SplitSubjects();
-
+            var subjects = SplitSubjects();
             // 返回随机主题
-            return _subjects[new Random().Next(_subjects.Count)];
+            return subjects[new Random().Next(subjects.Count)];
         }
 
         /// <summary>

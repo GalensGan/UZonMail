@@ -3,8 +3,8 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using UZonMail.Core.Services.EmailSending.OutboxPool;
 using UZonMail.Core.Services.EmailSending.Sender;
-using UZonMail.Core.Services.EmailSending.WaitList;
 using UZonMail.Core.Services.SendCore.Outboxes;
+using UZonMail.Core.Services.SendCore.WaitList;
 using UZonMail.Core.SignalRHubs;
 using UZonMail.DB.SQL;
 
@@ -58,12 +58,12 @@ namespace UZonMail.Core.Services.EmailSending.Pipeline
         /// <summary>
         /// 所有用户的发件组管理器
         /// </summary>
-        public UserSendingGroupsManager? UserSendingGroupsManager { get; set; }
+        public GroupTasksList? UserSendingGroupsManager { get; set; }
 
         /// <summary>
         /// 用户发件池队列
         /// </summary>
-        public UserSendingGroupsPool? UserSendingGroupsPool { get; set; }
+        public GroupTasks? UserSendingGroupsPool { get; set; }
 
         /// <summary>
         /// 发送任务
@@ -73,7 +73,7 @@ namespace UZonMail.Core.Services.EmailSending.Pipeline
         /// <summary>
         /// 发送项
         /// </summary>
-        public SendItem? SendItem { get; set; }
+        public EmailItem? SendItem { get; set; }
         #endregion
 
         #region 发送结果

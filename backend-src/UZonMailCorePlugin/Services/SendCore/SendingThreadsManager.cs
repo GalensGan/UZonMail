@@ -103,7 +103,7 @@ namespace UZonMail.Core.Services.SendCore
             var scope = _ssf.CreateAsyncScope();
             Interlocked.Increment(ref _runningTasksCount);
 
-            _logger.Info($"线程 {Environment.CurrentManagedThreadId} 开始工作...");
+            _logger.Info($"线程 {Environment.CurrentManagedThreadId} 开始工作 ...");
 
             while (true)
             {
@@ -114,12 +114,13 @@ namespace UZonMail.Core.Services.SendCore
                 // 创建职责链
                 var chainHandlers = new List<Type>()
                 {
-                    typeof(OutboxGetter),
-                    typeof(SendingItemGetter),
-                    typeof(EmailSender),
-                    typeof(SendingGroupsDisposer),
-                    typeof(OutboxesDisposer),
-                    typeof(OutboxCooler),
+                    typeof(OutboxGetter), // 获取发件箱
+                    typeof(EmailItemGetter), // 获取邮件
+                    typeof(LocalEmailSender), // 开始发件
+                    typeof(EmailItemPostHandler), // 发件回调
+                    typeof(GroupTaskPostHandler), // 发件任务回调
+                    typeof(OutboxesPostHandler), // 发件箱回调
+                    typeof(OutboxCooler), // 发件箱冷却重置
                 } 
                 .Select(provider.GetRequiredService)
                 .Where(x => x != null)

@@ -46,7 +46,7 @@ namespace UZonMail.DB.SQL.Settings
         /// </summary>
         /// <param name="email"></param>
         /// <returns></returns>
-        public bool IsMatch(string email)
+        public bool IsMatch(string outboxEmail)
         {
             if (string.IsNullOrEmpty(this.MatchRegex)) return true;
 
@@ -60,7 +60,7 @@ namespace UZonMail.DB.SQL.Settings
                 return false;
             }
 
-            return Regex.IsMatch(email, MatchRegex);
+            return Regex.IsMatch(outboxEmail, MatchRegex);
         }
 
         /// <summary>

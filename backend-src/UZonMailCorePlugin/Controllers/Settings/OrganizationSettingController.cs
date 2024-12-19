@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Uamazing.Utils.Web.ResponseModel;
 using UZonMail.Core.Services.Permission;
 using UZonMail.Core.Services.Settings;
+using UZonMail.DB.Managers.Cache;
 using UZonMail.DB.SQL;
 using UZonMail.DB.SQL.Settings;
 using UZonMail.Managers.Cache;
@@ -79,7 +80,7 @@ namespace UZonMail.Core.Controllers.Settings
 
             // 更新到缓存
             var organization = await db.Departments.FirstOrDefaultAsync(x => x.Id == exist.OrganizationId);
-            CacheManager.UpdateCache<OrganizationSettingCache>(organization.ObjectId);
+            DBCacher.SetCacheDirty<OrganizationSettingCache>(organization.ObjectId);
 
             return true.ToSuccessResponse();
         }

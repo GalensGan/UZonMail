@@ -13,31 +13,26 @@ namespace UZonMail.Core.Services.SendCore.Outboxes
     /// <summary>
     /// 发件箱池
     /// </summary>
-    public class OutboxPoolsContainer(ServiceProvider serviceProvider) : ISingletonService
+    public class OutboxesPoolList(ServiceProvider serviceProvider) : ISingletonService
     {
         private readonly static ILog _logger = LogManager.GetLogger(typeof(UserOutboxesPoolManager));
 
         // key : 用户id，value: 发件箱池
         private readonly ConcurrentDictionary<long, OutboxesPool> _pools = new();
 
-        // 权重计算器
-        private readonly WeightCalculator<long> _weightCalculator = new();
 
         /// <summary>
         /// 添加发件箱
         /// </summary>
         /// <param name="outbox"></param>
-        public async Task AddOutbox(OutboxEmailAddress outbox,)
+        public async Task AddOutbox(OutboxEmailAddress outbox)
         {
             var outboxPool = new OutboxesPool(outbox.UserId, outbox.Weight);
             if (!_pools.TryAdd(outbox.UserId, outboxPool))
             {
                 // 若存在，获取既有的发件箱池
-                var existOutboxPool = _pools[outbox.UserId];
-                
-                // 更新权重
+                outboxPool = _pools[outbox.UserId];
             }
-
             // 向发件箱池中添加发件箱
             outboxPool.AddOutbox(outbox);
         }
@@ -48,27 +43,29 @@ namespace UZonMail.Core.Services.SendCore.Outboxes
         /// <returns></returns>
         public OutboxEmailAddress? GetOutbox()
         {
-            if (this.Count == 0)
+            if (_pools.Count == 0)
             {
                 _logger.Info("系统发件池为空");
                 return null;
             }
 
-            var data = this.GetDataByWeight();
+            // 通过权重获取发件箱池
+            var data = _pools.GetDataByWeight();
 
             // 未获取到发件箱
-            if (!data)
+            if (data==null)
             {
                 return null;
             }
 
-            // 保存当前引用
-            sendingContext.UserOutboxesPoolManager = this;
-
             // 获取子项
-            var userOutboxesPool = data.Data as OutboxesPool;
-            var result = await userOutboxesPool.GetOutboxByWeight(sendingContext);
-            sendingContext.OutboxEmailAddress = result.Data;
+            if(data is not OutboxesPool outboxesPool)
+            {
+                _logger.Error("获取发件箱池失败");
+                return null;
+            }
+
+            var result = outboxesPool.GetOutboxByWeight();
             return result;
         }
 

@@ -9,11 +9,9 @@ using UZonMail.Core.Utils.Database;
 using log4net;
 using UZonMail.DB.SQL.EmailSending;
 using UZonMail.DB.SQL.Emails;
-using UZonMail.Managers.Cache;
-using UZonMail.DB.SQL.Organization;
-using UZonMail.DB.SQL.Settings;
 using UZonMail.Core.Services.SendCore.Utils;
 using UZonMail.Core.Services.SendCore.Interfaces;
+using UZonMail.DB.Managers.Cache;
 
 namespace UZonMail.Core.Services.SendCore.Outboxes
 {
@@ -106,6 +104,11 @@ namespace UZonMail.Core.Services.SendCore.Outboxes
         /// 回复至邮箱
         /// </summary>
         public List<string> ReplyToEmails { get; set; } = [];
+
+        /// <summary>
+        /// 错误原因
+        /// </summary>
+        public string ErroredMessage { get; private set; }
 
         /// <summary>
         /// 是否应释放
@@ -205,15 +208,35 @@ namespace UZonMail.Core.Services.SendCore.Outboxes
         }
         #endregion
 
-        #region 外部调用方法
+        #region 外部调用，改变内部状态
+
         /// <summary>
         /// 是否被禁用
-        /// 
         /// </summary>
         /// <returns></returns>
         public bool IsLimited()
         {
             return this._sentTotalToday >= this.MaxSendCountPerDay;
+        }
+
+        /// <summary>
+        /// 是否包含指定的发件组
+        /// </summary>
+        /// <param name="sendingGroupId"></param>
+        /// <returns></returns>
+        public bool ContainsSendingGroup(long sendingGroupId)
+        {
+            return _sendingGroupIds.Contains(sendingGroupId);
+        }
+
+        /// <summary>
+        /// 标记应该释放
+        /// </summary>
+        /// <param name="erroredMessage"></param>
+        public void MarkShouldDispose(string erroredMessage)
+        {
+            ErroredMessage = erroredMessage;
+            ShouldDispose = true;
         }
 
         /// <summary>
@@ -233,8 +256,8 @@ namespace UZonMail.Core.Services.SendCore.Outboxes
                 Interlocked.Increment(ref _sentTotalToday);
             }
 
-            var userReader = await CacheManager.GetCache<UserInfoCache>(sendingContext.SqlContext, UserId.ToString());
-            var userSetting = await CacheManager.GetCache<OrganizationSettingCache>(sendingContext.SqlContext, userReader.OrganizationObjectId);
+            var userReader = await DBCacher.GetCache<UserInfoCache>(sendingContext.SqlContext, UserId.ToString());
+            var userSetting = await DBCacher.GetCache<OrganizationSettingCache>(sendingContext.SqlContext, userReader.OrganizationObjectId);
 
             // 本身有限制时，若已经达到发送上限，则不再发送
             if (MaxSendCountPerDay > 0)

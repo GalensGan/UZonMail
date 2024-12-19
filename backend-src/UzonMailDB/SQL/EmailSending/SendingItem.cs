@@ -11,7 +11,7 @@ namespace UZonMail.DB.SQL.EmailSending
     /// 邮件项
     /// 实体配置参考：https://learn.microsoft.com/zh-cn/ef/core/modeling/#grouping-configuration
     /// </summary>
-    //[EntityTypeConfiguration(typeof(SendingItem))]
+    [EntityTypeConfiguration(typeof(SendingItem))]
     public class SendingItem : OrgId, IEntityTypeConfiguration<SendingItem>
     {
         #region EF 定义

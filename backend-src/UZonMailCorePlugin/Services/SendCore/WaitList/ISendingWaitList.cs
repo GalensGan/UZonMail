@@ -1,6 +1,6 @@
 ﻿using UZonMail.Core.Services.EmailSending.Sender;
 
-namespace UZonMail.Core.Services.EmailSending.WaitList
+namespace UZonMail.Core.Services.SendCore.WaitList
 {
     /// <summary>
     /// 待发件列表
@@ -20,6 +20,6 @@ namespace UZonMail.Core.Services.EmailSending.WaitList
         /// 返回 null 时，发送模块会暂停
         /// </summary>
         /// <returns></returns>
-        SendItem? GetSendItem();
+        EmailItem? GetSendItem();
     }
 }

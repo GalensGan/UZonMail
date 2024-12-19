@@ -68,47 +68,23 @@ namespace UZonMail.Core.Services.SendCore.Outboxes
         /// 按用户设置的权重获取发件箱
         /// </summary>
         /// <returns></returns>
-        public async Task<FuncResult<OutboxEmailAddress>> GetOutboxByWeight(SendingContext scopeServices)
+        public OutboxEmailAddress? GetOutboxByWeight()
         {
-            var data = this.GetDataByWeight();
-            if (data.NotOk) return new FuncResult<OutboxEmailAddress>()
+            var data = this._outboxes.GetDataByWeight();
+            if(data is not OutboxEmailAddress outbox)
             {
-                Message = data.Message,
-                Ok = data.Ok,
-                Status = data.Status,
-                Data = data.Data as OutboxEmailAddress
-            };
-
-            // outbox
-            // 判断是否可用
-            if (data.Data is not OutboxEmailAddress outbox)
-            {
-                return new FuncResult<OutboxEmailAddress>()
-                {
-                    Ok = false,
-                    Status = PoolResultStatus.EmptyError,
-                    Message = $"未能从{UserId}池中获取发件箱"
-                };
+                _logger.Info($"未能从{UserId}池中获取发件箱");
+                return null;
             }
-
+            
             if (!outbox.LockUsing())
             {
-                // 获取使用权失败
-                return new FuncResult<OutboxEmailAddress>()
-                {
-                    Ok = false,
-                    Status = PoolResultStatus.LockError,
-                    Message = $"发件箱 {outbox.Email} 已被其它线程使用，锁定失败"
-                };
+                _logger.Info($"发件箱 {outbox.Email} 已被其它线程使用，锁定失败");
+                return null;                
             }
 
             // 保存当前引用
-            scopeServices.UserOutboxesPool = this;
-            return new FuncResult<OutboxEmailAddress>()
-            {
-                Data = outbox,
-                Ok = true
-            };
+            return outbox;
         }
 
 

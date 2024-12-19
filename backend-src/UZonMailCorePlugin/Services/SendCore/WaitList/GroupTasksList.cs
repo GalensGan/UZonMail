@@ -1,25 +1,20 @@
 ﻿using log4net;
 using System.Collections.Concurrent;
-using UZonMail.Core.Services.EmailSending.Pipeline;
-using UZonMail.Core.Services.EmailSending.Sender;
+using UZonMail.Core.Services.SendCore.Contexts;
+using UZonMail.Core.Services.SendCore.Interfaces;
 using UZonMail.Core.Services.SendCore.Outboxes;
 using UZonMail.DB.SQL.EmailSending;
 using UZonMail.Utils.Web.Service;
 
-namespace UZonMail.Core.Services.EmailSending.WaitList
+namespace UZonMail.Core.Services.SendCore.WaitList
 {
     /// <summary>
     /// 系统级的待发件调度器
-    /// 请求时，平均向各个用户请求资源
-    /// 每位用户的资源都是公平的
-    /// 今后可以考虑加入权重
     /// </summary>
-    public class UserSendingGroupsManager(IServiceScopeFactory ssf) : ISingletonService
+    public class GroupTasksList() : ISingletonService
     {
-        private static readonly ILog _logger = LogManager.GetLogger(typeof(UserSendingGroupsManager));
-        private readonly ConcurrentDictionary<long, UserSendingGroupsPool> _userTasks = new();
-
-        public ConcurrentDictionary<long, UserSendingGroupsPool> UserTasks => _userTasks;
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(GroupTasksList));
+        private readonly ConcurrentDictionary<long, GroupTasks> _userTasks = new();
 
         /// <summary>
         /// 将发件组添加到待发件队列
@@ -41,15 +36,15 @@ namespace UZonMail.Core.Services.EmailSending.WaitList
             }
 
             // 判断是否有用户发件管理器
-            if (!_userTasks.TryGetValue(group.UserId, out var taskManager))
+            if (!_userTasks.TryGetValue(group.UserId, out var groupTasks))
             {
                 // 新建用户发件管理器
-                taskManager = new UserSendingGroupsPool(group.UserId);
-                _userTasks.TryAdd(group.UserId, taskManager);
+                groupTasks = new GroupTasks(group.UserId);
+                _userTasks.TryAdd(group.UserId, groupTasks);
             }
 
             // 向发件管理器添加发件组
-            bool result = await taskManager.AddSendingGroup(sendingContext, group.Id, group.SmtpPasswordSecretKeys, sendingItemIds);
+            bool result = await groupTasks.AddSendingGroup(sendingContext, group.Id, group.SmtpPasswordSecretKeys, sendingItemIds);
             return result;
         }
 
@@ -58,28 +53,23 @@ namespace UZonMail.Core.Services.EmailSending.WaitList
         /// 若返回空，会导致发送任务暂停
         /// </summary>
         /// <returns></returns>
-        public async Task<SendItem?> GetSendItem(SendingContext sendingContext, OutboxEmailAddress outbox)
+        public async Task<SendItemMeta?> GetEmailItem(SendingContext sendingContext)
         {
-            // 用户发件池
-            var sendingGroupsPool = GetSendingGroupPool(sendingContext.OutboxEmailAddress.UserId);
-            if (sendingGroupsPool == null)
+            var outbox = sendingContext.OutboxAddress;
+            if (outbox == null)
             {
-                // 要移除当前收件箱
-                sendingContext.SetSendResult(new SendResult(false, "发件组为空")
-                {
-                    SentStatus = SentStatus.EmptySendingGroup
-                });
-
-                // 移除当前的收件箱
-                outbox.Dispose();
-                sendingContext.UserOutboxesPool.TryRemove(outbox.Email, out _);
-
+                _logger.Error("GetSendItem 调用失败, 请先获取发件箱");
                 return null;
             }
 
-            // 保存当前引用
-            sendingContext.UserSendingGroupsManager = this;
-            return await sendingGroupsPool.GetSendItem(sendingContext, outbox);
+            // 用户发件池
+            var groupTasks = GetGroupTasks(outbox.UserId);
+            if (groupTasks == null)
+            {               
+                return null;
+            }
+
+            return await groupTasks.GetEmailItem(sendingContext);
         }
 
         /// <summary>
@@ -87,7 +77,7 @@ namespace UZonMail.Core.Services.EmailSending.WaitList
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        private UserSendingGroupsPool? GetSendingGroupPool(long userId)
+        private GroupTasks? GetGroupTasks(long userId)
         {
             if (_userTasks.Count == 0)
             {

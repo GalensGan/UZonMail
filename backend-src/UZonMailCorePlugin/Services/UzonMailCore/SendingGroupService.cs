@@ -5,7 +5,6 @@ using UZonMail.Core.Jobs;
 using UZonMail.Core.Services.EmailSending.OutboxPool;
 using UZonMail.Core.Services.EmailSending.Pipeline;
 using UZonMail.Core.Services.EmailSending.Sender;
-using UZonMail.Core.Services.EmailSending.WaitList;
 using UZonMail.Core.Services.Settings;
 using UZonMail.Core.Utils.Database;
 using UZonMail.DB.SQL;
@@ -16,8 +15,8 @@ using UZonMail.Utils.Json;
 using UZonMail.Core.Database.SQL.EmailSending;
 using UZonMail.DB.SQL.Emails;
 using UZonMail.Managers.Cache;
-using UZonMail.DB.SQL.Settings;
-using UZonMail.DB.SQL.Organization;
+using UZonMail.Core.Services.SendCore.WaitList;
+using UZonMail.DB.Managers.Cache;
 
 namespace UZonMail.Core.Services.EmailSending
 {
@@ -27,7 +26,7 @@ namespace UZonMail.Core.Services.EmailSending
     public class SendingGroupService(SqlContext db
         , TokenService tokenService
         , SendingThreadManager tasksService
-        , UserSendingGroupsManager waitList
+        , GroupTasksList waitList
         , UserOutboxesPoolManager userOutboxesPoolManager
         , ISchedulerFactory schedulerFactory
         , IServiceProvider serviceProvider
@@ -80,8 +79,8 @@ namespace UZonMail.Core.Services.EmailSending
                 await ctx.SaveChangesAsync();
 
                 // 获取用户设置
-                var userReader = await CacheManager.GetCache<UserInfoCache>(ctx, sendingGroupData.UserId.ToString());
-                var settingsReader = await CacheManager.GetCache<OrganizationSettingCache>(ctx, userReader.OrganizationObjectId);
+                var userReader = await DBCacher.GetCache<UserInfoCache>(ctx, sendingGroupData.UserId.ToString());
+                var settingsReader = await DBCacher.GetCache<OrganizationSettingCache>(ctx, userReader.OrganizationObjectId);
 
                 // 保存发件箱
                 await SaveInboxes(sendingGroupData.Data, sendingGroupData.UserId);

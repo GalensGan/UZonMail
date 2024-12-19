@@ -1,5 +1,5 @@
 ﻿using UZonMail.DB.SQL.EmailSending;
-using UZonMail.Core.Services.EmailSending.WaitList;
+using UZonMail.Core.Services.SendCore.WaitList;
 
 namespace UZonMail.Core.SignalRHubs.SendEmail
 {
@@ -19,7 +19,7 @@ namespace UZonMail.Core.SignalRHubs.SendEmail
             Subject = sendingGroup.GetFirstSubject();
         }
 
-        public SendingGroupProgressArg(long sendingGroupId, SendingItemsCounter counter,DateTime startDate)
+        public SendingGroupProgressArg(long sendingGroupId, SendingItemList counter,DateTime startDate)
         {
             Total = counter.InitTotal;
             Current = counter.TotalSentCount;

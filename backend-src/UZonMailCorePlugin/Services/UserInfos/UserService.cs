@@ -17,6 +17,7 @@ using UZonMail.DB.SQL.Settings;
 using System.ComponentModel;
 using UZonMail.Managers.Cache;
 using UZonMail.DB.SQL.Permission;
+using UZonMail.DB.Managers.Cache;
 
 namespace UZonMail.Core.Services.UserInfos
 {
@@ -222,7 +223,7 @@ namespace UZonMail.Core.Services.UserInfos
             await db.SaveChangesAsync();
 
             // 更新用户的组织设置和和退订设置
-            CacheManager.UpdateCache<UserInfoCache>(user.Id.ToString());
+            DBCacher.SetCacheDirty<UserInfoCache>(user.Id.ToString());
 
             return true;
         }

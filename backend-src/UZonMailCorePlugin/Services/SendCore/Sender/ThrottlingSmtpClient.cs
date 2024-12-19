@@ -4,14 +4,15 @@ using MailKit.Net.Smtp;
 using MimeKit;
 using Uamazing.Utils.Envs;
 
-namespace UZonMail.Core.Services.EmailSending.Sender
+namespace UZonMail.Core.Services.SendCore.Sender
 {
     /// <summary>
-    /// 具有速度限制的 smtp 客户端
+    /// 具有发件速率限制的 smtp 客户端
     /// </summary>
-    public class LimitedSmtpClient(string email, int cooldownMilliseconds) : SmtpClient
+    public class ThrottlingSmtpClient(string email, int cooldownMilliseconds) : SmtpClient
     {
-        private static readonly ILog _logger = LogManager.GetLogger(typeof(LimitedSmtpClient));
+        private static readonly ILog _logger = LogManager.GetLogger(typeof(ThrottlingSmtpClient));
+
         /// <summary>
         /// 至少间隔时间
         /// </summary>

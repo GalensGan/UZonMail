@@ -1,9 +1,8 @@
 ﻿using log4net;
 using UZonMail.Core.Services.SendCore.Contexts;
 using UZonMail.Core.Services.SendCore.Utils;
+using UZonMail.DB.Managers.Cache;
 using UZonMail.DB.SQL;
-using UZonMail.DB.SQL.Organization;
-using UZonMail.DB.SQL.Settings;
 using UZonMail.Managers.Cache;
 
 namespace UZonMail.Core.Services.SendCore.ResponsibilityChains
@@ -28,8 +27,8 @@ namespace UZonMail.Core.Services.SendCore.ResponsibilityChains
             if (outbox.IsLimited()) return;
 
             // 计算冷却时间
-            var userInfo = await CacheManager.GetCache<UserInfoCache>(sqlContext, outbox.UserId.ToString());
-            var orgSetting = await CacheManager.GetCache<OrganizationSettingCache>(sqlContext, userInfo.OrganizationObjectId);
+            var userInfo = await DBCacher.GetCache<UserInfoCache>(sqlContext, outbox.UserId.ToString());
+            var orgSetting = await DBCacher.GetCache<OrganizationSettingCache>(sqlContext, userInfo.OrganizationObjectId);
             int cooldownMilliseconds = orgSetting.GetCooldownMilliseconds();
             if (cooldownMilliseconds <= 0) return;
 

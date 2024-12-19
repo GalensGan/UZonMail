@@ -11,10 +11,15 @@ namespace UZonMail.Core.Services.SendCore.ResponsibilityChains
     {
         private ISendingHandler? _nextHandler;
 
+        /// <summary>
+        /// 职责链的处理方法
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public async Task Handle(SendingContext context)
         {
             // 触发当前处理者的处理方法
-            if(!context.Status.HasFlag(ContextStatus.SkipNext))
+            if(!context.Status.HasFlag(ContextStatus.BreakChain))
             {
                 await HandleCore(context);
             }
